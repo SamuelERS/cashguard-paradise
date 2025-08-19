@@ -6,31 +6,31 @@
 
 @layer base {
   :root {
-    /* iOS 26 Inspired Color Palette - Cash Control Paradise v4.0 Official */
+    /* iOS 26 Official Palette - Ultra Modern Glass */
     --bg-primary: #000000;
     --bg-secondary: #000000;
-    --bg-tertiary: #1a1a1a;
-    --bg-surface: rgba(20, 20, 25, 0.3);
+    --bg-tertiary: #0a0a0a;
+    --bg-surface: rgba(5, 5, 8, 0.15);
     
-    /* iOS 26 Accent Colors - More Vibrant */
-    --accent-primary: #007aff;
-    --accent-secondary: #5856d6;
-    --accent-light: #40c8e0;
-    --accent-glow: rgba(0, 122, 255, 0.4);
+    /* iOS 26 Refined Colors - Lower Saturation */
+    --accent-primary: #0a84ff;
+    --accent-secondary: #5e5ce6;
+    --accent-light: #64d2ff;
+    --accent-glow: rgba(10, 132, 255, 0.25);
     
-    /* System States - iOS 26 Enhanced */
-    --success: #32d74b;
-    --success-glow: rgba(50, 215, 75, 0.4);
-    --warning: #ffcc02;
-    --warning-glow: rgba(255, 204, 2, 0.4);
-    --danger: #ff3b30;
-    --danger-glow: rgba(255, 59, 48, 0.4);
+    /* System States - iOS 26 Muted */
+    --success: #30d158;
+    --success-glow: rgba(48, 209, 88, 0.25);
+    --warning: #ff9f0a;
+    --warning-glow: rgba(255, 159, 10, 0.25);
+    --danger: #ff453a;
+    --danger-glow: rgba(255, 69, 58, 0.25);
     
-    /* Ultra Glass Effects - iOS 26 Style */
-    --glass-bg: rgba(255, 255, 255, 0.02);
-    --glass-border: rgba(255, 255, 255, 0.04);
-    --glass-hover: rgba(255, 255, 255, 0.06);
-    --glass-surface: rgba(15, 15, 20, 0.25);
+    /* Ultra Subtle Glass - iOS 26 */
+    --glass-bg: rgba(255, 255, 255, 0.01);
+    --glass-border: rgba(255, 255, 255, 0.03);
+    --glass-hover: rgba(255, 255, 255, 0.04);
+    --glass-surface: rgba(8, 8, 12, 0.2);
     
     /* Typography */
     --text-primary: rgba(255, 255, 255, 0.92);
@@ -131,21 +131,21 @@
   }
 }
 
-/* Glass Morphism Components - iOS 26 Ultra Theme */
+/* Glass Morphism Components - iOS 26 Ultra Subtle */
 @layer components {
-  /* Ultra Glass Card with iOS 26 enhanced transparency */
+  /* Ultra Subtle Glass Card - Almost Invisible Transparency */
   .glass-card {
     background: var(--glass-surface);
-    backdrop-filter: blur(40px) saturate(200%);
-    -webkit-backdrop-filter: blur(40px) saturate(200%);
+    backdrop-filter: blur(60px) saturate(150%);
+    -webkit-backdrop-filter: blur(60px) saturate(150%);
     border: 1px solid var(--glass-border);
-    border-radius: 20px;
+    border-radius: 16px;
     box-shadow: 
-      0 0 0 1px rgba(255, 255, 255, 0.02) inset,
-      0 8px 32px rgba(0, 0, 0, 0.9);
+      0 0 0 1px rgba(255, 255, 255, 0.015) inset,
+      0 4px 24px rgba(0, 0, 0, 0.85);
     position: relative;
     overflow: hidden;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .glass-card::before {
@@ -157,37 +157,37 @@
     height: 1px;
     background: linear-gradient(90deg, 
       transparent, 
-      rgba(0, 122, 255, 0.6), 
+      rgba(10, 132, 255, 0.3), 
       transparent);
-    animation: shine 4s infinite;
+    animation: shine 6s infinite;
   }
   
   .glass-card:hover {
-    transform: translateY(-2px);
+    transform: translateY(-1px);
     box-shadow: 
-      0 16px 48px rgba(0, 0, 0, 0.95),
-      0 0 60px rgba(0, 122, 255, 0.2),
-      inset 0 1px 0 rgba(255, 255, 255, 0.06);
-    border-color: rgba(0, 122, 255, 0.4);
+      0 8px 32px rgba(0, 0, 0, 0.9),
+      0 0 40px rgba(10, 132, 255, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    border-color: rgba(10, 132, 255, 0.2);
     background: var(--glass-hover);
   }
 
-  /* Glass Modal - Without hover effects to prevent interaction issues */
+  /* Ultra Subtle Glass Modal */
   .glass-modal {
     background: var(--glass-surface);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border: 1px solid var(--glass-border);
-    border-radius: 20px;
-    box-shadow: var(--shadow-md);
+    backdrop-filter: blur(80px) saturate(120%);
+    -webkit-backdrop-filter: blur(80px) saturate(120%);
+    border: 1px solid rgba(255, 255, 255, 0.02);
+    border-radius: 18px;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.9);
   }
 
-  /* Premium Input Fields - iOS Style */
+  /* Ultra Subtle Input Fields */
   .input-field {
-    background: rgba(28, 28, 30, 0.5);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 12px;
+    background: rgba(5, 5, 8, 0.3);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.02);
+    border-radius: 10px;
     padding: 1rem;
     color: var(--text-primary);
     font-size: 16px;
@@ -195,14 +195,14 @@
   }
 
   .input-field:hover {
-    border-color: rgba(10, 132, 255, 0.3);
+    border-color: rgba(10, 132, 255, 0.1);
   }
 
   .input-field:focus {
     outline: none;
-    border-color: var(--accent-primary);
-    background: rgba(10, 132, 255, 0.1);
-    box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.2);
+    border-color: rgba(10, 132, 255, 0.3);
+    background: rgba(10, 132, 255, 0.05);
+    box-shadow: 0 0 0 2px rgba(10, 132, 255, 0.1);
   }
 
   /* Coin Badges - iOS 26 Golden Enhanced */

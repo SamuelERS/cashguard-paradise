@@ -25,14 +25,14 @@ export default {
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				primary: {
-					DEFAULT: 'hsl(214, 100%, 50%)', /* iOS 26 Blue */
+					DEFAULT: 'hsl(213, 100%, 52%)', /* iOS 26 Refined Blue */
 					foreground: 'hsl(var(--primary-foreground))',
 					glow: 'hsl(206, 100%, 70%)'
 				},
 				secondary: {
-					DEFAULT: 'hsl(var(--secondary))',
+					DEFAULT: 'hsl(245, 50%, 72%)', /* iOS 26 Purple */
 					foreground: 'hsl(var(--secondary-foreground))',
-					glow: 'hsl(var(--secondary-glow))'
+					glow: 'hsl(245, 50%, 82%)'
 				},
 				destructive: {
 					DEFAULT: 'hsl(var(--destructive))',
