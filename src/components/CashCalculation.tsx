@@ -145,6 +145,99 @@ const CashCalculation = ({
       .join('\n');
   };
 
+  // Generate display for remaining denominations when Phase 2 was skipped
+  const generateRemainingDenominationsDisplay = (remainingCash: CashCount) => {
+    const denominations = [
+      { key: 'penny', label: '1¢', value: 0.01 },
+      { key: 'nickel', label: '5¢', value: 0.05 },
+      { key: 'dime', label: '10¢', value: 0.10 },
+      { key: 'quarter', label: '25¢', value: 0.25 },
+      { key: 'dollarCoin', label: '$1 moneda', value: 1.00 },
+      { key: 'bill1', label: '$1', value: 1.00 },
+      { key: 'bill5', label: '$5', value: 5.00 },
+      { key: 'bill10', label: '$10', value: 10.00 },
+      { key: 'bill20', label: '$20', value: 20.00 },
+      { key: 'bill50', label: '$50', value: 50.00 },
+      { key: 'bill100', label: '$100', value: 100.00 }
+    ];
+
+    return denominations
+      .filter(d => remainingCash[d.key as keyof CashCount] > 0)
+      .map(d => (
+        <div key={d.key} className="flex justify-between text-xs bg-success/5 rounded px-2 py-1">
+          <span>{d.label}</span>
+          <span className="font-semibold">× {remainingCash[d.key as keyof CashCount]} = {formatCurrency(remainingCash[d.key as keyof CashCount] * d.value)}</span>
+        </div>
+      ));
+  };
+
+  // Generate display for remaining denominations after Phase 2 completion
+  const generateRemainingDenominationsFromPhase2 = () => {
+    // This would use the verified denominations from Phase 2
+    // For now, we'll calculate what should remain ($50 worth)
+    const changeResult = calculateChange50(cashCount);
+    if (changeResult.possible && changeResult.change) {
+      const denominations = [
+        { key: 'penny', label: '1¢', value: 0.01 },
+        { key: 'nickel', label: '5¢', value: 0.05 },
+        { key: 'dime', label: '10¢', value: 0.10 },
+        { key: 'quarter', label: '25¢', value: 0.25 },
+        { key: 'dollarCoin', label: '$1 moneda', value: 1.00 },
+        { key: 'bill1', label: '$1', value: 1.00 },
+        { key: 'bill5', label: '$5', value: 5.00 },
+        { key: 'bill10', label: '$10', value: 10.00 },
+        { key: 'bill20', label: '$20', value: 20.00 },
+        { key: 'bill50', label: '$50', value: 50.00 },
+        { key: 'bill100', label: '$100', value: 100.00 }
+      ];
+
+      return denominations
+        .filter(d => changeResult.change[d.key as keyof CashCount] > 0)
+        .map(d => (
+          <div key={d.key} className="flex justify-between text-xs bg-success/5 rounded px-2 py-1">
+            <span>{d.label}</span>
+            <span className="font-semibold">× {changeResult.change[d.key as keyof CashCount]} = {formatCurrency((changeResult.change[d.key as keyof CashCount] || 0) * d.value)}</span>
+          </div>
+        ));
+    }
+    return <div className="text-xs text-warning">No se pudo calcular el cambio exacto</div>;
+  };
+
+  // Generate calculated $50 display as fallback
+  const generateCalculated50Display = () => {
+    const changeResult = calculateChange50(cashCount);
+    if (changeResult.possible && changeResult.change) {
+      const denominations = [
+        { key: 'penny', label: '1¢', value: 0.01 },
+        { key: 'nickel', label: '5¢', value: 0.05 },
+        { key: 'dime', label: '10¢', value: 0.10 },
+        { key: 'quarter', label: '25¢', value: 0.25 },
+        { key: 'dollarCoin', label: '$1 moneda', value: 1.00 },
+        { key: 'bill1', label: '$1', value: 1.00 },
+        { key: 'bill5', label: '$5', value: 5.00 },
+        { key: 'bill10', label: '$10', value: 10.00 },
+        { key: 'bill20', label: '$20', value: 20.00 },
+        { key: 'bill50', label: '$50', value: 50.00 },
+        { key: 'bill100', label: '$100', value: 100.00 }
+      ];
+
+      return denominations
+        .filter(d => changeResult.change[d.key as keyof CashCount] > 0)
+        .map(d => (
+          <div key={d.key} className="flex justify-between text-xs bg-success/5 rounded px-2 py-1">
+            <span>{d.label}</span>
+            <span className="font-semibold">× {changeResult.change[d.key as keyof CashCount]} = {formatCurrency((changeResult.change[d.key as keyof CashCount] || 0) * d.value)}</span>
+          </div>
+        ));
+    }
+    return (
+      <div className="text-center text-warning">
+        <AlertTriangle className="w-8 h-8 mx-auto mb-2" />
+        <p className="text-xs">No hay suficiente efectivo para cambio de $50.00</p>
+      </div>
+    );
+  };
+
   const generateCompleteReport = () => {
     try {
       validatePhaseCompletion();
@@ -392,37 +485,46 @@ Firma Digital: ${dataHash}`;
               </CardContent>
             </Card>
 
-            <Card className="glass-card">
+            <Card className="glass-card border-success/20 bg-success/5">
               <CardHeader>
-                <CardTitle className="text-success">Cambio para Mañana</CardTitle>
+                <CardTitle className="text-success flex items-center gap-2">
+                  <span className="text-2xl">💰</span>
+                  Cambio para Mañana
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                {calculationData.changeResult.possible ? (
-                  <div className="space-y-4">
-                    <div className="text-center">
-                      <div className="text-3xl font-bold text-success">
-                        {formatCurrency(calculationData.changeResult.total)}
-                      </div>
-                      <p className="text-sm text-muted-foreground">Cambio calculado</p>
+                <div className="space-y-4">
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-success mb-2">
+                      $50.00
                     </div>
-                    <div className="bg-success/10 border border-success/30 rounded-lg p-3">
-                      <p className="text-sm font-medium text-success mb-2">Detalle del cambio:</p>
-                      <pre className="text-xs whitespace-pre-wrap">
-                        {generateDenominationSummary(calculationData.changeResult.change)}
-                      </pre>
+                    <p className="text-sm text-muted-foreground">Cambio calculado</p>
+                  </div>
+                  
+                  <div className="glass-card bg-success/10 border border-success/30 p-4">
+                    <p className="text-sm font-medium text-success mb-3 flex items-center gap-2">
+                      <span>📋</span> Detalle del cambio:
+                    </p>
+                    
+                    <div className="space-y-2">
+                      {/* Show exact denominations remaining in cash after Phase 2 */}
+                      {phaseState?.shouldSkipPhase2 ? (
+                        // If Phase 2 was skipped, show all original denominations  
+                        <div className="space-y-1">
+                          {generateRemainingDenominationsDisplay(cashCount)}
+                        </div>
+                      ) : (
+                        // If Phase 2 was completed, show what should remain ($50 worth)
+                        <div className="space-y-1">
+                          {deliveryCalculation?.remainingDenominations ? 
+                            generateRemainingDenominationsFromPhase2() :
+                            generateCalculated50Display()
+                          }
+                        </div>
+                      )}
                     </div>
                   </div>
-                ) : (
-                  <div className="text-center space-y-4">
-                    <AlertTriangle className="w-12 h-12 text-warning mx-auto" />
-                    <p className="text-warning font-medium">
-                      No hay suficiente efectivo para cambio de $50.00
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      Se requiere gestionar más efectivo antes del siguiente turno
-                    </p>
-                  </div>
-                )}
+                </div>
               </CardContent>
             </Card>
           </div>
