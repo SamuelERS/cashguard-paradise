@@ -101,6 +101,16 @@ const CashCounter = ({ onBack }: CashCounterProps) => {
       }
     }
   };
+
+  // Auto-confirm total fields when they become active
+  useEffect(() => {
+    if (currentField === 'totalCash' || currentField === 'totalElectronic') {
+      const timer = setTimeout(() => {
+        handleGuidedFieldConfirm('0'); // Value doesn't matter for auto-calculated fields
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [currentField]);
   
   const handleInvalidAccess = () => {
     toast.error("Debe completar el campo actual antes de continuar");
@@ -135,21 +145,6 @@ const CashCounter = ({ onBack }: CashCounterProps) => {
     
     if (onBack) onBack();
   };
-
-  // Auto-confirm calculated steps to finish the guided flow
-  useEffect(() => {
-    if (currentField === 'totalCash' || currentField === 'totalElectronic') {
-      confirmCurrentField(
-        'auto',
-        handleCashCountChange,
-        handleElectronicChange,
-        electronicPayments,
-        cashCount
-      );
-    }
-    // We only depend on currentField to trigger exactly when we reach totals
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentField]);
 
   const renderStoreSelection = () => (
     <motion.div

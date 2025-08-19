@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { CreditCard, Building, ArrowLeftRight, Wallet, Check, Lock, ArrowRight } from "lucide-react";
 import { ElectronicPayments } from "@/types/cash";
 import { GuidedDenominationItem } from "@/components/ui/GuidedDenominationItem";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -57,9 +57,22 @@ export const GuidedElectronicInputSection = ({
   onAttemptAccess
 }: GuidedElectronicInputSectionProps) => {
   const [inputValues, setInputValues] = useState<Record<string, string>>({});
+  const inputRefs = useRef<Record<string, HTMLInputElement | null>>({});
   
   const totalElectronic = Object.values(electronicPayments).reduce((sum, val) => sum + val, 0);
   const completedPayments = paymentMethods.filter(method => isFieldCompleted(method.key)).length;
+
+  // Auto-focus active input field
+  useEffect(() => {
+    const activeMethod = paymentMethods.find(method => isFieldActive(method.key));
+    if (activeMethod && inputRefs.current[activeMethod.key]) {
+      const timer = setTimeout(() => {
+        inputRefs.current[activeMethod.key]?.focus();
+        inputRefs.current[activeMethod.key]?.select();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isFieldActive]);
 
   const handleInputChange = (key: string, value: string) => {
     if (isFieldActive(key)) {
@@ -174,6 +187,9 @@ export const GuidedElectronicInputSection = ({
                 <div className="relative flex-1">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted">$</span>
                   <Input
+                    ref={(el) => {
+                      inputRefs.current[method.key] = el;
+                    }}
                     type="number"
                     step="0.01"
                     min="0"
