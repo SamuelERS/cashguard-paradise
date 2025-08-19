@@ -8,13 +8,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { FloatingOrbs } from "@/components/FloatingOrbs";
 import CashCalculation from "@/components/CashCalculation";
-import { CoinSection } from "@/components/cash-counting/CoinSection";
-import { BillSection } from "@/components/cash-counting/BillSection";
-import { ElectronicSection } from "@/components/cash-counting/ElectronicSection";
+import { GuidedProgressIndicator } from "@/components/ui/GuidedProgressIndicator";
+import { GuidedCoinSection } from "@/components/cash-counting/GuidedCoinSection";
+import { GuidedBillSection } from "@/components/cash-counting/GuidedBillSection";
+import { GuidedElectronicInputSection } from "@/components/cash-counting/GuidedElectronicInputSection";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { AnimatedButton } from "@/components/ui/AnimatedButton";
 import { STORES, EMPLOYEES, getEmployeesByStore } from "@/data/paradise";
 import { CashCount, ElectronicPayments } from "@/types/cash";
+import { useGuidedCounting } from "@/hooks/useGuidedCounting";
+import { toast } from "sonner";
 
 interface CashCounterProps {
   onBack?: () => void;
@@ -26,6 +29,20 @@ const CashCounter = ({ onBack }: CashCounterProps) => {
   const [selectedCashier, setSelectedCashier] = useState("");
   const [selectedWitness, setSelectedWitness] = useState("");
   const [expectedSales, setExpectedSales] = useState("");
+  
+  // Guided counting hook
+  const {
+    guidedState,
+    currentField,
+    progressText,
+    instructionText,
+    isFieldActive,
+    isFieldCompleted,
+    isFieldAccessible,
+    confirmCurrentField,
+    resetGuidedCounting,
+    FIELD_ORDER
+  } = useGuidedCounting();
 
   // Cash count state
   const [cashCount, setCashCount] = useState<CashCount>({
@@ -60,6 +77,24 @@ const CashCounter = ({ onBack }: CashCounterProps) => {
     }));
   };
 
+  const handleGuidedFieldConfirm = (value: string) => {
+    const success = confirmCurrentField(
+      value,
+      handleCashCountChange,
+      handleElectronicChange,
+      electronicPayments,
+      cashCount
+    );
+    
+    if (success) {
+      toast.success(`✓ ${currentField} confirmado: ${value}`);
+    }
+  };
+  
+  const handleInvalidAccess = () => {
+    toast.error("Debe completar el campo actual antes de continuar");
+  };
+
   const handleElectronicChange = (method: string, value: string) => {
     const numValue = parseFloat(value) || 0;
     setElectronicPayments(prev => ({
@@ -85,6 +120,7 @@ const CashCounter = ({ onBack }: CashCounterProps) => {
     setElectronicPayments({
       credomatic: 0, promerica: 0, bankTransfer: 0, paypal: 0,
     });
+    resetGuidedCounting();
     
     if (onBack) onBack();
   };
@@ -239,33 +275,59 @@ const CashCounter = ({ onBack }: CashCounterProps) => {
       className="space-y-6"
     >
       <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-primary mb-2">Paso 2: Conteo de Efectivo</h2>
-        <p className="text-muted-foreground">Ingrese las cantidades físicas (no valores)</p>
+        <h2 className="text-2xl font-bold text-primary mb-2">Paso 2: Conteo Guiado</h2>
+        <p className="text-muted-foreground">Complete cada denominación en orden secuencial</p>
       </div>
 
-      {/* Coins Section */}
-      <CoinSection 
-        cashCount={cashCount}
-        onChange={handleCashCountChange}
+      {/* Guided Progress Indicator */}
+      <GuidedProgressIndicator
+        currentStep={guidedState.currentStep}
+        totalSteps={guidedState.totalSteps}
+        currentFieldLabel={currentField}
+        instructionText={instructionText}
+        isCompleted={guidedState.isCompleted}
       />
 
-      {/* Bills Section */}
-      <BillSection 
-        cashCount={cashCount}
-        onChange={handleCashCountChange}
-      />
-
-      {/* Electronic Payments */}
-      <ElectronicSection 
-        electronicPayments={electronicPayments}
-        onChange={handleElectronicChange}
-      />
+      {/* Coins Section - Always visible during guided counting */}
+      <div className="space-y-6">
+        <GuidedCoinSection
+          cashCount={cashCount}
+          isFieldActive={isFieldActive}
+          isFieldCompleted={isFieldCompleted}
+          isFieldAccessible={isFieldAccessible}
+          onFieldConfirm={handleGuidedFieldConfirm}
+          onAttemptAccess={handleInvalidAccess}
+        />
+        
+        {/* Bills Section - Always visible during guided counting */}
+        <GuidedBillSection
+          cashCount={cashCount}
+          isFieldActive={isFieldActive}
+          isFieldCompleted={isFieldCompleted}
+          isFieldAccessible={isFieldAccessible}
+          onFieldConfirm={handleGuidedFieldConfirm}
+          onAttemptAccess={handleInvalidAccess}
+        />
+        
+        {/* Electronic Input Section - Shows when electronic payment fields are active or completed */}
+        {FIELD_ORDER.slice(11, 15).some(field => isFieldActive(field) || isFieldCompleted(field) || isFieldAccessible(field)) && (
+          <GuidedElectronicInputSection
+            electronicPayments={electronicPayments}
+            isFieldActive={isFieldActive}
+            isFieldCompleted={isFieldCompleted}
+            isFieldAccessible={isFieldAccessible}
+            onFieldConfirm={handleGuidedFieldConfirm}
+            onAttemptAccess={handleInvalidAccess}
+          />
+        )}
+      </div>
 
       <div className="flex gap-3">
         <AnimatedButton
           onClick={() => setCurrentStep(1)}
           variant="glass"
           className="flex-1"
+          disabled={!guidedState.isCompleted}
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Volver
@@ -275,6 +337,7 @@ const CashCounter = ({ onBack }: CashCounterProps) => {
           variant="primary"
           glow
           className="flex-1"
+          disabled={!guidedState.isCompleted}
         >
           <Calculator className="w-4 h-4 mr-2" />
           Calcular Totales
