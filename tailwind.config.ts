@@ -25,9 +25,9 @@ export default {
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				primary: {
-					DEFAULT: 'hsl(var(--primary))',
+					DEFAULT: 'hsl(214, 100%, 50%)', /* iOS 26 Blue */
 					foreground: 'hsl(var(--primary-foreground))',
-					glow: 'hsl(var(--primary-glow))'
+					glow: 'hsl(206, 100%, 70%)'
 				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
