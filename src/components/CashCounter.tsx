@@ -37,6 +37,7 @@ const CashCounter = ({ onBack }: CashCounterProps) => {
     deliveryCalculation,
     startPhase1,
     completePhase1,
+    completePhase2Verification,
     resetAllPhases
   } = usePhaseManager();
   
@@ -150,6 +151,7 @@ const CashCounter = ({ onBack }: CashCounterProps) => {
   };
 
   const handlePhase2Complete = () => {
+    completePhase2Verification();
     toast.success("✅ Fase 2 completada correctamente");
     toast.info("📊 Procediendo a generar reporte final (Fase 3)", { duration: 3000 });
   };
