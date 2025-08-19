@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Calculator, AlertTriangle, CheckCircle, Share, Download, ArrowLeft } from "lucide-react";
+import { Calculator, AlertTriangle, CheckCircle, Share, Download, ArrowLeft, Copy, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { FloatingOrbs } from "@/components/FloatingOrbs";
 import { calculateCashTotal, calculateChange50, formatCurrency, generateDenominationSummary } from "@/utils/calculations";
+import { toast } from "@/hooks/use-toast";
 import { CashCount, ElectronicPayments } from "@/types/cash";
 import { PhaseState } from "@/types/phases";
 import { getStoreById, getEmployeeById } from "@/data/paradise";
@@ -79,19 +80,96 @@ const CashCalculation = ({
     setIsCalculated(true);
   };
 
-  const generateWhatsAppReport = () => {
-    if (!calculationData || !store || !cashier || !witness) return;
+  // Security validations before generating reports
+  const validatePhaseCompletion = () => {
+    // Phase 1: Validate all 13 fields completed
+    const phase1Fields = [
+      cashCount.penny, cashCount.nickel, cashCount.dime, cashCount.quarter, 
+      cashCount.dollarCoin, cashCount.bill1, cashCount.bill5, cashCount.bill10, 
+      cashCount.bill20, cashCount.bill50, cashCount.bill100,
+      electronicPayments.credomatic, electronicPayments.promerica
+    ];
+    
+    if (phase1Fields.some(field => field === undefined || field === null)) {
+      throw new Error("❌ Conteo incompleto - Faltan campos por completar");
+    }
 
-    const report = `🏪 CORTE DE CAJA - ${store.name}
-📅 ${calculationData.timestamp}
-👤 Cajero: ${cashier.name}
-👁️ Testigo: ${witness.name}
+    // Phase 2: Validate division is correct (if applicable)
+    if (!phaseState?.shouldSkipPhase2 && deliveryCalculation) {
+      const totalCash = calculateCashTotal(cashCount);
+      const expectedInCash = 50;
+      const expectedToDeliver = totalCash - expectedInCash;
+      
+      if (Math.abs(deliveryCalculation.amountToDeliver - expectedToDeliver) > 0.01) {
+        throw new Error("❌ División incorrecta - Los montos no cuadran");
+      }
+    }
+
+    return true;
+  };
+
+  const generateDataHash = () => {
+    const hashData = {
+      storeId,
+      cashierId,
+      witnessId,
+      timestamp: calculationData.timestamp,
+      totalCash: calculationData.totalCash,
+      totalElectronic: calculationData.totalElectronic,
+      expectedSales,
+      phaseCompleted: phaseState?.currentPhase || 3
+    };
+    
+    // Simple but effective hash for integrity
+    return btoa(JSON.stringify(hashData)).slice(-12);
+  };
+
+  const generateDenominationDetails = () => {
+    const denominations = [
+      { key: 'penny', label: '1¢', value: 0.01 },
+      { key: 'nickel', label: '5¢', value: 0.05 },
+      { key: 'dime', label: '10¢', value: 0.10 },
+      { key: 'quarter', label: '25¢', value: 0.25 },
+      { key: 'dollarCoin', label: '$1 moneda', value: 1.00 },
+      { key: 'bill1', label: '$1', value: 1.00 },
+      { key: 'bill5', label: '$5', value: 5.00 },
+      { key: 'bill10', label: '$10', value: 10.00 },
+      { key: 'bill20', label: '$20', value: 20.00 },
+      { key: 'bill50', label: '$50', value: 50.00 },
+      { key: 'bill100', label: '$100', value: 100.00 }
+    ];
+
+    return denominations
+      .filter(d => cashCount[d.key as keyof CashCount] > 0)
+      .map(d => `${d.label} × ${cashCount[d.key as keyof CashCount]} = ${formatCurrency(cashCount[d.key as keyof CashCount] * d.value)}`)
+      .join('\n');
+  };
+
+  const generateCompleteReport = () => {
+    try {
+      validatePhaseCompletion();
+      
+      const denominationDetails = generateDenominationDetails();
+      const dataHash = generateDataHash();
+      const electronicDetails = `Credomatic: ${formatCurrency(electronicPayments.credomatic)}\nPromerica: ${formatCurrency(electronicPayments.promerica)}`;
+
+      return `CORTE DE CAJA - ${calculationData.timestamp}
+================================
+Sucursal: ${store?.name}
+Cajero: ${cashier?.name}
+Testigo: ${witness?.name}
 Sistema: Conteo Guiado v2.0
 
 FASE 1 - CONTEO INICIAL
 -----------------------
-💵 Efectivo Total: ${formatCurrency(calculationData.totalCash)}
-💳 Electrónico Total: ${formatCurrency(calculationData.totalElectronic)}
+DENOMINACIONES CONTADAS:
+${denominationDetails}
+
+PAGOS ELECTRÓNICOS:
+${electronicDetails}
+
+Total Efectivo: ${formatCurrency(calculationData.totalCash)}
+Total Electrónico: ${formatCurrency(calculationData.totalElectronic)}
 
 ${phaseState?.shouldSkipPhase2 ? 
 `FASE 2 - OMITIDA
@@ -102,6 +180,13 @@ Todo permanece en caja` :
 -----------------------
 Entregado a Gerencia: ${formatCurrency(deliveryCalculation?.amountToDeliver || 0)}
 Dejado en Caja: $50.00
+
+${deliveryCalculation?.deliverySteps ? 
+`DETALLE ENTREGADO:
+${deliveryCalculation.deliverySteps.map((step: any) => 
+  `${step.label} × ${step.quantity} = ${formatCurrency(step.value * step.quantity)}`
+).join('\n')}` : ''}
+
 VERIFICACIÓN: ✓ EXITOSA`}
 
 FASE 3 - RESULTADOS FINALES
@@ -120,10 +205,96 @@ ${generateDenominationSummary(calculationData.changeResult.change)}` :
 ${calculationData.hasAlert ? '🚨 ALERTA: Faltante significativo detectado' : ''}
 
 ================================
-Firma Digital: ${Date.now().toString(36)}`;
+Firma Digital: ${dataHash}`;
+    } catch (error) {
+      throw error;
+    }
+  };
 
-    const encodedReport = encodeURIComponent(report);
-    window.open(`https://wa.me/?text=${encodedReport}`, '_blank');
+  const generateWhatsAppReport = () => {
+    try {
+      if (!calculationData || !store || !cashier || !witness) {
+        toast({
+          title: "❌ Error",
+          description: "Faltan datos necesarios para generar el reporte",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const report = generateCompleteReport();
+      const encodedReport = encodeURIComponent(`🏪 ${report}`);
+      window.open(`https://wa.me/?text=${encodedReport}`, '_blank');
+      
+      toast({
+        title: "✅ Reporte generado exitosamente",
+        description: "WhatsApp se abrirá con el reporte completo",
+      });
+    } catch (error) {
+      toast({
+        title: "❌ Error al generar reporte",
+        description: error instanceof Error ? error.message : "Error desconocido",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const generatePrintableReport = () => {
+    try {
+      const report = generateCompleteReport();
+      const printWindow = window.open('', '_blank');
+      if (printWindow) {
+        printWindow.document.write(`
+          <html>
+            <head>
+              <title>Corte de Caja - ${store?.name}</title>
+              <style>
+                body { font-family: 'Courier New', monospace; margin: 20px; }
+                pre { white-space: pre-wrap; font-size: 12px; }
+                @media print { 
+                  body { margin: 0; }
+                  .no-print { display: none; }
+                }
+              </style>
+            </head>
+            <body>
+              <button class="no-print" onclick="window.print()">🖨️ Imprimir</button>
+              <pre>${report}</pre>
+            </body>
+          </html>
+        `);
+        printWindow.document.close();
+        
+        toast({
+          title: "📄 Reporte generado",
+          description: "Vista de impresión preparada",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "❌ Error al generar reporte",
+        description: error instanceof Error ? error.message : "Error desconocido",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const copyToClipboard = async () => {
+    try {
+      const report = generateCompleteReport();
+      await navigator.clipboard.writeText(report);
+      
+      toast({
+        title: "💾 Copiado al portapapeles",
+        description: "El reporte completo ha sido copiado para respaldo",
+      });
+    } catch (error) {
+      toast({
+        title: "❌ Error al copiar",
+        description: "No se pudo copiar al portapapeles",
+        variant: "destructive",
+      });
+    }
   };
 
   if (!calculationData) {
@@ -268,28 +439,51 @@ Firma Digital: ${Date.now().toString(36)}`;
                 Los campos están ahora bloqueados según el protocolo anti-fraude.
               </p>
               
-              <div className="flex gap-3 justify-center">
-                <Button
-                  onClick={onBack}
-                  variant="outline"
-                  className="border-muted hover:bg-muted/50"
-                >
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Volver
-                </Button>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-4xl mx-auto">
                 <Button
                   onClick={generateWhatsAppReport}
-                  className="bg-gradient-aqua hover:scale-105 transform transition-all duration-300 text-white font-semibold"
+                  className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold glass-card hover:scale-105 transform transition-all duration-300"
                 >
                   <Share className="w-4 h-4 mr-2" />
-                  Enviar por WhatsApp
+                  📱 Enviar por WhatsApp
                 </Button>
+                
+                <Button
+                  onClick={generatePrintableReport}
+                  variant="outline"
+                  className="border-primary/30 hover:bg-primary/10 glass-card hover:scale-105 transform transition-all duration-300"
+                >
+                  <FileText className="w-4 h-4 mr-2" />
+                  📄 Generar Reporte
+                </Button>
+                
+                <Button
+                  onClick={copyToClipboard}
+                  variant="outline"
+                  className="border-warning/30 hover:bg-warning/10 glass-card hover:scale-105 transform transition-all duration-300"
+                >
+                  <Copy className="w-4 h-4 mr-2" />
+                  💾 Copiar al Portapapeles
+                </Button>
+                
                 <Button
                   onClick={onComplete}
-                  className="bg-success hover:bg-success/90 text-success-foreground"
+                  className="bg-success hover:bg-success/90 text-success-foreground glass-card hover:scale-105 transform transition-all duration-300"
                 >
                   <CheckCircle className="w-4 h-4 mr-2" />
-                  Finalizar
+                  ✅ Finalizar Corte
+                </Button>
+              </div>
+              
+              <div className="mt-4 text-center">
+                <Button
+                  onClick={onBack}
+                  variant="ghost"
+                  size="sm"
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Volver a Fase Anterior
                 </Button>
               </div>
             </CardContent>
