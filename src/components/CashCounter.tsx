@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, Calculator, Users, MapPin, DollarSign } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -124,6 +124,21 @@ const CashCounter = ({ onBack }: CashCounterProps) => {
     
     if (onBack) onBack();
   };
+
+  // Auto-confirm calculated steps to finish the guided flow
+  useEffect(() => {
+    if (currentField === 'totalCash' || currentField === 'totalElectronic') {
+      confirmCurrentField(
+        'auto',
+        handleCashCountChange,
+        handleElectronicChange,
+        electronicPayments,
+        cashCount
+      );
+    }
+    // We only depend on currentField to trigger exactly when we reach totals
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentField]);
 
   const renderStoreSelection = () => (
     <motion.div
