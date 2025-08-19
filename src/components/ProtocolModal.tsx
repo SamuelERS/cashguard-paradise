@@ -58,7 +58,7 @@ const ProtocolModal = ({ isOpen, onClose, onAccept }: ProtocolModalProps) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="glass-card border-2 border-primary/30 max-w-2xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="glass-modal border-2 border-primary/30 max-w-2xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-3 text-2xl text-primary">
             <Shield className="w-8 h-8" />
@@ -89,7 +89,7 @@ const ProtocolModal = ({ isOpen, onClose, onAccept }: ProtocolModalProps) => {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className={`flex items-start gap-3 p-3 rounded-lg ${
+                className={`protocol-rule flex items-start gap-3 p-3 rounded-lg ${
                   rule.critical 
                     ? "bg-destructive/5 border border-destructive/20" 
                     : "bg-success/5 border border-success/20"

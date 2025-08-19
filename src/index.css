@@ -150,6 +150,16 @@
       inset 0 1px 0 rgba(255, 255, 255, 0.15);
   }
 
+  /* Glass Modal - Without hover effects to prevent interaction issues */
+  .glass-modal {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    box-shadow: var(--glass-shadow);
+  }
+
   /* Premium Input Fields */
   .input-field {
     height: 56px;
@@ -248,6 +258,16 @@
     background: rgba(255, 255, 255, 0.15);
     border-color: rgba(255, 255, 255, 0.3);
     transform: translateY(-1px);
+  }
+
+  /* Protocol Rule Items - Remove hover effects to prevent interaction issues */
+  .protocol-rule {
+    transition: none !important;
+    transform: none !important;
+  }
+
+  .protocol-rule:hover {
+    transform: none !important;
   }
 
   /* Floating Particles */
