@@ -13,13 +13,13 @@ export const GlassCard = ({ children, className, hover = false, glow = false }: 
   return (
     <motion.div
       className={cn(
-        "backdrop-blur-xl bg-glass-bg border border-glass-border shadow-glass rounded-xl",
-        hover && "hover:bg-primary/10 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/20 transition-all duration-300",
-        glow && "shadow-lg shadow-primary/20",
+        "glass-card",
+        hover && "hover:shadow-lg hover:shadow-primary/25 hover:border-primary/20",
+        glow && "shadow-lg shadow-primary/30",
         className
       )}
-      whileHover={hover ? { scale: 1.02, y: -2 } : undefined}
-      transition={{ duration: 0.2 }}
+      whileHover={hover ? { scale: 1.005, y: -1 } : undefined}
+      transition={{ duration: 0.3, type: "spring", stiffness: 400 }}
     >
       {children}
     </motion.div>

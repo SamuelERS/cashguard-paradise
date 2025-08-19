@@ -77,56 +77,52 @@ export const GuidedDenominationItem = ({
   return (
     <motion.div 
       className={cn(
-        "space-y-3 p-4 rounded-lg border-2 transition-all duration-300",
-        isActive && "border-accent-primary bg-glass-bg shadow-lg shadow-accent-glow",
-        isCompleted && "border-success bg-success/10",
-        !isAccessible && "border-bg-tertiary bg-bg-secondary/50 opacity-60"
+        "glass-card space-y-3 p-5 transition-all duration-500",
+        isActive && "border-2 border-primary/40 shadow-lg shadow-primary/30",
+        isCompleted && "border-2 border-success/60 bg-success/5",
+        !isAccessible && "opacity-30 cursor-not-allowed"
       )}
-      whileHover={isAccessible ? { scale: 1.02 } : {}}
-      transition={{ duration: 0.2 }}
+      whileHover={isAccessible ? { scale: 1.01, y: -1 } : {}}
+      transition={{ duration: 0.3, type: "spring", stiffness: 300 }}
       onClick={handleClick}
     >
-      <div className="flex items-center gap-3">
-        {/* Status Icon */}
+      <div className="flex items-center gap-4">
+        {/* Enhanced Status Icon with Glow */}
         <div className={cn(
-          "w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0",
-          isCompleted && "bg-success text-white",
-          isActive && "bg-accent-primary text-white animate-pulse",
-          !isAccessible && "bg-bg-tertiary text-text-muted"
+          "w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-300",
+          isCompleted && "bg-success text-white shadow-lg shadow-success/40",
+          isActive && "bg-primary text-white shadow-lg shadow-primary/40 animate-pulse",
+          !isAccessible && "bg-muted/30 text-muted-foreground"
         )}>
           {isCompleted ? (
-            <Check className="w-4 h-4" />
+            <Check className="w-5 h-5" />
           ) : isActive ? (
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-5 h-5" />
           ) : (
-            <Lock className="w-4 h-4" />
+            <Lock className="w-5 h-5" />
           )}
         </div>
 
-        {/* Visual representation */}
+        {/* Enhanced Visual representation */}
         <div className={cn(
-          "flex-shrink-0 shadow-lg",
+          "flex-shrink-0 transition-all duration-300",
           type === "coin" 
-            ? "w-8 h-8 rounded-full bg-gradient-to-br from-warning/80 via-warning to-warning/60" 
-            : "w-10 h-6 rounded bg-gradient-to-br from-success/80 via-success to-success/60",
-          !isAccessible && "grayscale opacity-50"
+            ? "coin-badge" 
+            : "bill-badge",
+          !isAccessible && "grayscale opacity-50 blur-sm"
         )}>
           {type === "coin" ? (
-            <div className="w-full h-full rounded-full bg-gradient-to-br from-warning/60 to-warning shadow-inner flex items-center justify-center">
-              <span className="text-xs font-bold text-white">¢</span>
-            </div>
+            <span className="text-sm font-bold">¢</span>
           ) : (
-            <div className="w-full h-full rounded bg-gradient-to-br from-success/60 to-success shadow-inner flex items-center justify-center">
-              <span className="text-xs font-bold text-white">$</span>
-            </div>
+            <span className="text-sm font-bold">$</span>
           )}
         </div>
         
         <Label className={cn(
-          "text-sm font-medium flex-1",
-          isActive && "text-accent-primary font-bold",
+          "text-base font-semibold flex-1 transition-all duration-300",
+          isActive && "text-primary glow",
           isCompleted && "text-success",
-          !isAccessible && "text-text-muted"
+          !isAccessible && "text-muted-foreground"
         )}>
           {denomination.name}
         </Label>
@@ -135,14 +131,14 @@ export const GuidedDenominationItem = ({
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="text-xs bg-accent-primary text-white px-2 py-1 rounded-full"
+            className="floating-badge"
           >
             ACTIVO
           </motion.div>
         )}
       </div>
       
-      <div className="flex gap-2">
+      <div className="flex gap-3">
         <Input
           ref={inputRef}
           type="number"
@@ -153,13 +149,10 @@ export const GuidedDenominationItem = ({
           placeholder={isActive ? "Ingrese cantidad..." : "0"}
           disabled={!isActive}
           className={cn(
-            "text-center transition-all duration-200 flex-1",
-            isActive && "bg-glass-bg border-accent-primary focus:border-accent-primary focus:ring-2 focus:ring-accent-glow",
-            isCompleted && "bg-success/10 border-success cursor-default",
-            !isAccessible && "bg-bg-secondary border-bg-tertiary cursor-not-allowed",
-            type === "coin" 
-              ? "border-warning/30" 
-              : "border-success/30"
+            "input-field text-center text-lg font-semibold flex-1",
+            isActive && "active",
+            isCompleted && "completed",
+            !isAccessible && "blocked"
           )}
         />
         
@@ -168,7 +161,7 @@ export const GuidedDenominationItem = ({
             onClick={handleConfirm}
             disabled={!inputValue}
             size="sm"
-            className="bg-accent-primary hover:bg-accent-primary/90 text-white px-4"
+            className="btn-primary px-6 py-2 text-lg"
           >
             ✓
           </Button>
@@ -179,14 +172,14 @@ export const GuidedDenominationItem = ({
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="text-xs text-center bg-success/20 text-success px-3 py-1 rounded-full"
+          className="floating-badge success text-center"
         >
           Total: ${total.toFixed(2)}
         </motion.div>
       )}
 
       {!isAccessible && (
-        <div className="text-xs text-center text-text-muted bg-bg-tertiary/50 px-3 py-1 rounded-full">
+        <div className="floating-badge warning text-center text-xs">
           Debe completar el campo actual antes de continuar
         </div>
       )}

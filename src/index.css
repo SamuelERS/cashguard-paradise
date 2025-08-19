@@ -131,9 +131,9 @@
   }
 }
 
-/* Glass Morphism Components - iOS 26 Ultra Subtle */
+/* iOS 26 Glass Morphism Components */
 @layer components {
-  /* Ultra Subtle Glass Card - Almost Invisible Transparency */
+  /* Ultra Refined Glass Card */
   .glass-card {
     background: var(--glass-surface);
     backdrop-filter: blur(60px) saturate(150%);
@@ -142,10 +142,11 @@
     border-radius: 16px;
     box-shadow: 
       0 0 0 1px rgba(255, 255, 255, 0.015) inset,
-      0 4px 24px rgba(0, 0, 0, 0.85);
+      0 4px 24px rgba(0, 0, 0, 0.85),
+      0 1px 0 rgba(255, 255, 255, 0.08) inset;
     position: relative;
     overflow: hidden;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
   }
 
   .glass-card::before {
@@ -157,52 +158,148 @@
     height: 1px;
     background: linear-gradient(90deg, 
       transparent, 
-      rgba(10, 132, 255, 0.3), 
+      rgba(10, 132, 255, 0.4), 
       transparent);
-    animation: shine 6s infinite;
+    animation: shine 8s ease-in-out infinite;
   }
   
   .glass-card:hover {
-    transform: translateY(-1px);
+    transform: translateY(-2px);
     box-shadow: 
-      0 8px 32px rgba(0, 0, 0, 0.9),
-      0 0 40px rgba(10, 132, 255, 0.15),
-      inset 0 1px 0 rgba(255, 255, 255, 0.03);
-    border-color: rgba(10, 132, 255, 0.2);
+      0 12px 48px rgba(0, 0, 0, 0.9),
+      0 0 60px rgba(10, 132, 255, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    border-color: rgba(10, 132, 255, 0.25);
     background: var(--glass-hover);
   }
 
-  /* Ultra Subtle Glass Modal */
+  /* Enhanced Glass Modal */
   .glass-modal {
-    background: var(--glass-surface);
-    backdrop-filter: blur(80px) saturate(120%);
-    -webkit-backdrop-filter: blur(80px) saturate(120%);
-    border: 1px solid rgba(255, 255, 255, 0.02);
-    border-radius: 18px;
-    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.9);
+    background: rgba(8, 8, 12, 0.3);
+    backdrop-filter: blur(100px) saturate(140%);
+    -webkit-backdrop-filter: blur(100px) saturate(140%);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    border-radius: 20px;
+    box-shadow: 
+      0 20px 60px rgba(0, 0, 0, 0.95),
+      0 0 0 1px rgba(255, 255, 255, 0.02) inset;
   }
 
-  /* Ultra Subtle Input Fields */
+  /* State-Aware Input Fields */
   .input-field {
-    background: rgba(5, 5, 8, 0.3);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.02);
-    border-radius: 10px;
-    padding: 1rem;
+    background: rgba(5, 5, 8, 0.4);
+    backdrop-filter: blur(30px);
+    border: 1.5px solid rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
     color: var(--text-primary);
     font-size: 16px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-weight: 500;
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    position: relative;
   }
 
   .input-field:hover {
-    border-color: rgba(10, 132, 255, 0.1);
+    border-color: rgba(10, 132, 255, 0.15);
+    background: rgba(10, 132, 255, 0.02);
   }
 
-  .input-field:focus {
+  /* Active Field - Luminous Border with Glow */
+  .input-field:focus,
+  .input-field.active {
     outline: none;
-    border-color: rgba(10, 132, 255, 0.3);
-    background: rgba(10, 132, 255, 0.05);
-    box-shadow: 0 0 0 2px rgba(10, 132, 255, 0.1);
+    border-color: rgba(10, 132, 255, 0.5);
+    background: rgba(10, 132, 255, 0.08);
+    box-shadow: 
+      0 0 0 3px rgba(10, 132, 255, 0.15),
+      0 0 20px rgba(10, 132, 255, 0.25),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transform: scale(1.02);
+  }
+
+  /* Completed Field - Success State with Checkmark */
+  .input-field.completed {
+    border-color: rgba(48, 209, 88, 0.6);
+    background: rgba(48, 209, 88, 0.08);
+    box-shadow: 
+      0 0 0 2px rgba(48, 209, 88, 0.2),
+      0 4px 20px rgba(48, 209, 88, 0.15);
+    position: relative;
+  }
+
+  .input-field.completed::after {
+    content: '✓';
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%) scale(0);
+    color: var(--success);
+    font-weight: 700;
+    font-size: 18px;
+    animation: checkmark-appear 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+  }
+
+  /* Blocked Field - Reduced Opacity, No Interaction */
+  .input-field.blocked,
+  .input-field:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    pointer-events: none;
+    background: rgba(5, 5, 8, 0.2);
+    border-color: rgba(255, 255, 255, 0.01);
+    filter: grayscale(0.8);
+  }
+
+  /* Floating Message Badges */
+  .floating-badge {
+    background: rgba(10, 132, 255, 0.12);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(10, 132, 255, 0.2);
+    border-radius: 20px;
+    padding: 0.5rem 1rem;
+    color: var(--accent-light);
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: 
+      0 4px 20px rgba(0, 0, 0, 0.4),
+      0 0 30px rgba(10, 132, 255, 0.15);
+    animation: float-bounce 3s ease-in-out infinite;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .floating-badge::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+      transparent, 
+      rgba(255, 255, 255, 0.1), 
+      transparent);
+    animation: badge-shimmer 2s linear infinite;
+  }
+
+  /* Success Badge */
+  .floating-badge.success {
+    background: rgba(48, 209, 88, 0.12);
+    border-color: rgba(48, 209, 88, 0.3);
+    color: var(--success);
+    box-shadow: 
+      0 4px 20px rgba(0, 0, 0, 0.4),
+      0 0 30px rgba(48, 209, 88, 0.2);
+  }
+
+  /* Warning Badge */
+  .floating-badge.warning {
+    background: rgba(255, 159, 10, 0.12);
+    border-color: rgba(255, 159, 10, 0.3);
+    color: var(--warning);
+    box-shadow: 
+      0 4px 20px rgba(0, 0, 0, 0.4),
+      0 0 30px rgba(255, 159, 10, 0.2);
   }
 
   /* Coin Badges - iOS 26 Golden Enhanced */
@@ -524,6 +621,42 @@
   @keyframes shine {
     0%, 100% { opacity: 0; }
     50% { opacity: 1; }
+  }
+
+  /* New iOS 26 Animations */
+  @keyframes checkmark-appear {
+    0% {
+      transform: translateY(-50%) scale(0) rotate(-180deg);
+      opacity: 0;
+    }
+    50% {
+      transform: translateY(-50%) scale(1.2) rotate(-90deg);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(-50%) scale(1) rotate(0deg);
+      opacity: 1;
+    }
+  }
+
+  @keyframes float-bounce {
+    0%, 100% {
+      transform: translateY(0px) scale(1);
+      opacity: 0.9;
+    }
+    50% {
+      transform: translateY(-8px) scale(1.02);
+      opacity: 1;
+    }
+  }
+
+  @keyframes badge-shimmer {
+    0% {
+      left: -100%;
+    }
+    100% {
+      left: 100%;
+    }
   }
   
   .animate-pulse-glow {

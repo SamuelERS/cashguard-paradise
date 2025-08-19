@@ -23,12 +23,12 @@ export const AnimatedButton = ({
   const baseClasses = "relative overflow-hidden font-semibold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
   
   const variants = {
-    primary: "bg-gradient-aqua text-white focus:ring-primary",
-    secondary: "bg-gradient-to-r from-secondary to-secondary-glow text-white focus:ring-secondary",
-    glass: "glass-card text-foreground hover:bg-primary/20 focus:ring-primary",
-    success: "bg-gradient-to-r from-success to-green-400 text-white focus:ring-success",
-    warning: "bg-gradient-to-r from-warning to-yellow-400 text-black focus:ring-warning",
-    danger: "bg-gradient-to-r from-destructive to-red-400 text-white focus:ring-destructive"
+    primary: "btn-primary",
+    secondary: "btn-secondary", 
+    glass: "glass-card hover:bg-primary/10 hover:border-primary/20 text-foreground",
+    success: "btn-success",
+    warning: "bg-gradient-to-r from-warning to-yellow-400 text-black focus:ring-warning shadow-lg shadow-warning/30",
+    danger: "bg-gradient-to-r from-destructive to-red-400 text-white focus:ring-destructive shadow-lg shadow-destructive/30"
   };
   
   const sizes = {
