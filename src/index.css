@@ -201,12 +201,29 @@
 
   /* Glass input styles with state awareness */
   .glass-input {
-    @apply bg-glass/20 border border-border/30 backdrop-blur-xl 
-           rounded-xl px-4 py-3 
-           transition-all duration-300 ease-out
-           hover:border-border/50 hover:bg-glass/30
-           focus:border-primary/60 focus:bg-glass/40 focus:shadow-glow-primary
-           placeholder:text-muted-foreground/60;
+    background: var(--glass-surface);
+    border: 1px solid hsl(var(--border) / 0.3);
+    backdrop-filter: blur(30px);
+    border-radius: 12px;
+    padding: 12px 16px;
+    transition: all 0.3s ease-out;
+    color: hsl(var(--foreground));
+  }
+  
+  .glass-input:hover {
+    border-color: hsl(var(--border) / 0.5);
+    background: var(--glass-hover);
+  }
+  
+  .glass-input:focus {
+    outline: none;
+    border-color: hsl(var(--primary) / 0.6);
+    background: rgba(10, 132, 255, 0.05);
+    box-shadow: 0 0 20px rgba(10, 132, 255, 0.25);
+  }
+  
+  .glass-input::placeholder {
+    color: hsl(var(--muted-foreground) / 0.6);
   }
 
   /* Glass dropdown styles */
