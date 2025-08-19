@@ -26,11 +26,11 @@ export const BillSection = ({ cashCount, onChange, readonly = false }: BillSecti
             >
               <span>$</span>
             </motion.div>
-            <h3 className="text-xl font-bold" style={{ color: 'var(--accent-money)' }}>Billetes</h3>
+            <h3 className="text-xl font-bold" style={{ color: 'var(--success)' }}>Billetes</h3>
           </div>
           <div className="text-right">
-            <p className="text-sm opacity-70">Total</p>
-            <p className="text-lg font-bold total-amount">${billTotal.toFixed(2)}</p>
+            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Total</p>
+            <p className="bills-total text-lg font-bold">${billTotal.toFixed(2)}</p>
           </div>
         </div>
         
@@ -59,11 +59,11 @@ export const BillSection = ({ cashCount, onChange, readonly = false }: BillSecti
             animate={{ opacity: 1 }}
             className="mt-4 p-3 rounded-lg"
             style={{ 
-              background: 'rgba(0, 208, 132, 0.1)', 
-              border: '1px solid rgba(0, 208, 132, 0.3)' 
+              background: 'rgba(48, 209, 88, 0.1)', 
+              border: '1px solid rgba(48, 209, 88, 0.3)' 
             }}
           >
-            <p className="text-sm text-center" style={{ color: 'var(--accent-money)' }}>
+            <p className="text-sm text-center" style={{ color: 'var(--success)' }}>
               💵 {billTotal.toFixed(2)} dólares en billetes contabilizados
             </p>
           </motion.div>

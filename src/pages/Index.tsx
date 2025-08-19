@@ -35,15 +35,15 @@ const Index = () => {
           className="text-center mb-12"
         >
           <div className="flex items-center justify-center gap-3 mb-6">
-            <Fish className="w-12 h-12" style={{ color: 'var(--accent-green)' }} />
+            <Fish className="w-12 h-12" style={{ color: 'var(--accent-primary)' }} />
             <h1 className="text-4xl font-bold" style={{ color: 'var(--text-primary)' }}>
               ACUARIOS PARADISE
             </h1>
           </div>
-          <h2 className="text-2xl font-semibold mb-2" style={{ color: 'var(--accent-green)' }}>
+          <h2 className="text-2xl font-semibold mb-2" style={{ color: 'var(--accent-primary)' }}>
             Sistema de Control de Caja
           </h2>
-          <p className="text-lg opacity-80" style={{ color: 'var(--text-secondary)' }}>
+          <p className="text-lg" style={{ color: 'var(--text-secondary)' }}>
             Prevención de fraude mediante protocolos estrictos
           </p>
         </motion.div>
@@ -56,19 +56,19 @@ const Index = () => {
           >
             <div className="glass-card h-full">
               <div className="text-center p-6">
-                <Shield className="w-12 h-12 mx-auto mb-4" style={{ color: 'var(--accent-green)' }} />
+                <Shield className="w-12 h-12 mx-auto mb-4" style={{ color: 'var(--accent-primary)' }} />
                 <h3 className="text-xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Anti-Fraude</h3>
                 <ul className="space-y-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
                   <li className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4" style={{ color: 'var(--accent-green)' }} />
+                    <CheckCircle className="w-4 h-4" style={{ color: 'var(--success)' }} />
                     Un solo conteo permitido
                   </li>
                   <li className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4" style={{ color: 'var(--accent-green)' }} />
+                    <CheckCircle className="w-4 h-4" style={{ color: 'var(--success)' }} />
                     Validación cruzada obligatoria
                   </li>
                   <li className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4" style={{ color: 'var(--accent-green)' }} />
+                    <CheckCircle className="w-4 h-4" style={{ color: 'var(--success)' }} />
                     Campos inmutables post-cálculo
                   </li>
                 </ul>
@@ -83,19 +83,19 @@ const Index = () => {
           >
             <div className="glass-card h-full">
               <div className="text-center p-6">
-                <DollarSign className="w-12 h-12 mx-auto mb-4" style={{ color: 'var(--accent-money)' }} />
+                <DollarSign className="w-12 h-12 mx-auto mb-4" style={{ color: 'var(--success)' }} />
                 <h3 className="text-xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Cálculo Automático</h3>
                 <ul className="space-y-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
                   <li className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4" style={{ color: 'var(--accent-green)' }} />
+                    <CheckCircle className="w-4 h-4" style={{ color: 'var(--success)' }} />
                     Cambio objetivo de $50.00
                   </li>
                   <li className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4" style={{ color: 'var(--accent-green)' }} />
+                    <CheckCircle className="w-4 h-4" style={{ color: 'var(--success)' }} />
                     Algoritmo inteligente
                   </li>
                   <li className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4" style={{ color: 'var(--accent-green)' }} />
+                    <CheckCircle className="w-4 h-4" style={{ color: 'var(--success)' }} />
                     Alertas automáticas
                   </li>
                 </ul>
@@ -110,19 +110,19 @@ const Index = () => {
           >
             <div className="glass-card h-full">
               <div className="text-center p-6">
-                <Fish className="w-12 h-12 mx-auto mb-4" style={{ color: 'var(--text-secondary)' }} />
+                <Fish className="w-12 h-12 mx-auto mb-4" style={{ color: 'var(--accent-secondary)' }} />
                 <h3 className="text-xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>100% Offline</h3>
                 <ul className="space-y-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
                   <li className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4" style={{ color: 'var(--accent-green)' }} />
+                    <CheckCircle className="w-4 h-4" style={{ color: 'var(--success)' }} />
                     Funciona sin internet
                   </li>
                   <li className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4" style={{ color: 'var(--accent-green)' }} />
+                    <CheckCircle className="w-4 h-4" style={{ color: 'var(--success)' }} />
                     PWA instalable
                   </li>
                   <li className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4" style={{ color: 'var(--accent-green)' }} />
+                    <CheckCircle className="w-4 h-4" style={{ color: 'var(--success)' }} />
                     Sincronización automática
                   </li>
                 </ul>

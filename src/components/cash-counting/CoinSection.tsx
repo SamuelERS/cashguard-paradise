@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import { GlassCard } from "@/components/ui/GlassCard";
 import { DenominationItem } from "@/components/ui/DenominationItem";
 import { DENOMINATIONS, CashCount } from "@/types/cash";
 
@@ -27,11 +26,11 @@ export const CoinSection = ({ cashCount, onChange, readonly = false }: CoinSecti
             >
               <span>¢</span>
             </motion.div>
-            <h3 className="text-xl font-bold" style={{ color: 'var(--accent-gold)' }}>Monedas</h3>
+            <h3 className="text-xl font-bold" style={{ color: 'var(--warning)' }}>Monedas</h3>
           </div>
           <div className="text-right">
-            <p className="text-sm opacity-70">Total</p>
-            <p className="text-lg font-bold total-amount">${coinTotal.toFixed(2)}</p>
+            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Total</p>
+            <p className="coins-total text-lg font-bold">${coinTotal.toFixed(2)}</p>
           </div>
         </div>
         
@@ -60,12 +59,12 @@ export const CoinSection = ({ cashCount, onChange, readonly = false }: CoinSecti
             animate={{ opacity: 1 }}
             className="mt-4 p-3 rounded-lg"
             style={{ 
-              background: 'rgba(255, 215, 0, 0.1)', 
-              border: '1px solid rgba(255, 215, 0, 0.3)' 
+              background: 'rgba(255, 214, 10, 0.1)', 
+              border: '1px solid rgba(255, 214, 10, 0.3)' 
             }}
           >
-            <p className="text-sm text-center" style={{ color: 'var(--accent-gold)' }}>
-              💰 {coinTotal.toFixed(2)} dólares en monedas contabilizados
+            <p className="text-sm text-center" style={{ color: 'var(--warning)' }}>
+              🪙 {coinTotal.toFixed(2)} dólares en monedas contabilizados
             </p>
           </motion.div>
         )}

@@ -6,59 +6,125 @@
 
 @layer base {
   :root {
-    /* Premium Glassmorphism Theme - Paradise Aquarium */
-    --bg-gradient-start: #0a4f4f;
-    --bg-gradient-middle: #0d7377;
-    --bg-gradient-end: #14a085;
-    --overlay-dark: rgba(0, 0, 0, 0.4);
-    --text-primary: rgba(255, 255, 255, 0.95);
-    --text-secondary: #a0f0e8;
-    --accent-green: #00ff88;
-    --accent-gold: #ffd700;
-    --accent-money: #00d084;
-    --glass-bg: rgba(255, 255, 255, 0.08);
-    --glass-border: rgba(255, 255, 255, 0.12);
+    /* iOS 16 Inspired Color Palette - Cash Control Paradise v4.0 */
+    --bg-primary: #000000;
+    --bg-secondary: #0a0a0a;
+    --bg-tertiary: #1c1c1e;
+    --bg-surface: rgba(28, 28, 30, 0.65);
+    
+    /* iOS Accent Colors */
+    --accent-primary: #0a84ff;
+    --accent-secondary: #5e5ce6;
+    --accent-light: #64d2ff;
+    --accent-glow: rgba(10, 132, 255, 0.3);
+    
+    /* System States */
+    --success: #30d158;
+    --success-glow: rgba(48, 209, 88, 0.3);
+    --warning: #ffd60a;
+    --warning-glow: rgba(255, 214, 10, 0.3);
+    --danger: #ff453a;
+    --danger-glow: rgba(255, 69, 58, 0.3);
+    
+    /* Enhanced Glass Effects */
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-hover: rgba(255, 255, 255, 0.08);
+    --glass-surface: rgba(28, 28, 30, 0.72);
+    
+    /* Typography */
+    --text-primary: rgba(255, 255, 255, 0.92);
+    --text-secondary: rgba(255, 255, 255, 0.65);
+    --text-muted: rgba(255, 255, 255, 0.45);
+    
+    /* Shadows */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.6);
+    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.7);
+    --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.8);
+    --shadow-glow: 0 0 40px rgba(10, 132, 255, 0.15);
 
     /* Legacy CSS variables for compatibility */
-    --background: 180 15% 15%;
-    --foreground: 180 100% 95%;
+    --background: 0 0% 0%;
+    --foreground: 0 0% 92%;
 
-    --card: 180 15% 15%;
-    --card-foreground: 180 100% 95%;
-    --card-glass: 180 50% 15%;
+    --card: 210 6% 11%;
+    --card-foreground: 0 0% 92%;
+    --card-glass: 210 6% 11%;
 
-    --popover: 180 15% 15%;
-    --popover-foreground: 180 100% 95%;
+    --popover: 210 6% 11%;
+    --popover-foreground: 0 0% 92%;
 
-    --primary: 150 100% 55%;
-    --primary-foreground: 180 15% 15%;
-    --primary-glow: 150 100% 65%;
+    --primary: 213 100% 52%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 206 100% 70%;
 
-    --secondary: 180 100% 40%;
-    --secondary-foreground: 180 100% 95%;
-    --secondary-glow: 180 100% 60%;
+    --secondary: 245 50% 72%;
+    --secondary-foreground: 0 0% 100%;
+    --secondary-glow: 245 50% 82%;
 
-    --muted: 180 15% 20%;
-    --muted-foreground: 180 30% 70%;
+    --muted: 210 6% 15%;
+    --muted-foreground: 0 0% 65%;
 
-    --accent: 150 100% 55%;
-    --accent-foreground: 180 15% 15%;
+    --accent: 213 100% 52%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 100% 60%;
+    --destructive: 4 90% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 180 20% 25%;
-    --input: 180 20% 20%;
-    --ring: 150 100% 55%;
+    --border: 210 6% 15%;
+    --input: 210 6% 15%;
+    --ring: 213 100% 52%;
 
-    --success: 150 100% 55%;
-    --success-foreground: 0 0% 100%;
-    --warning: 45 100% 60%;
-    --warning-foreground: 0 0% 0%;
+    --radius: 0.75rem;
 
-    /* Enhanced Glass Effects */
-    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.37), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    --glass-surface: rgba(255, 255, 255, 0.08);
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 0 0% 0%;
+    --foreground: 0 0% 92%;
+
+    --card: 210 6% 11%;
+    --card-foreground: 0 0% 92%;
+
+    --popover: 210 6% 11%;
+    --popover-foreground: 0 0% 92%;
+
+    --primary: 213 100% 52%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 6% 15%;
+    --secondary-foreground: 0 0% 92%;
+
+    --muted: 210 6% 15%;
+    --muted-foreground: 0 0% 65%;
+
+    --accent: 213 100% 52%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 4 90% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 210 6% 15%;
+    --input: 210 6% 15%;
+    --ring: 213 100% 52%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
 
     /* Gradients */
     --gradient-aqua: linear-gradient(135deg, hsl(180, 100%, 40%), hsl(174, 100%, 35%));
@@ -130,87 +196,109 @@
   }
 }
 
-/* Glass Morphism Components - Premium Theme */
+/* Glass Morphism Components - iOS 16 Premium Theme */
 @layer components {
-  /* Enhanced Glass Card */
+  /* Enhanced Glass Card with iOS colors */
   .glass-card {
-    background: var(--glass-bg);
+    background: var(--glass-surface);
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
     border: 1px solid var(--glass-border);
-    border-radius: 20px;
-    box-shadow: var(--glass-shadow);
+    border-radius: 24px;
+    box-shadow: 
+      0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+      var(--shadow-md);
+    position: relative;
+    overflow: hidden;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .glass-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, 
+      transparent, 
+      rgba(10, 132, 255, 0.5), 
+      transparent);
+    animation: shine 3s infinite;
   }
   
   .glass-card:hover {
-    transform: translateY(-2px);
+    transform: translateY(-4px);
     box-shadow: 
-      0 12px 40px rgba(0, 0, 0, 0.45),
-      inset 0 1px 0 rgba(255, 255, 255, 0.15);
+      var(--shadow-lg),
+      var(--shadow-glow),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    border-color: rgba(10, 132, 255, 0.3);
+    background: rgba(28, 28, 30, 0.8);
   }
 
   /* Glass Modal - Without hover effects to prevent interaction issues */
   .glass-modal {
-    background: var(--glass-bg);
+    background: var(--glass-surface);
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
     border: 1px solid var(--glass-border);
     border-radius: 20px;
-    box-shadow: var(--glass-shadow);
+    box-shadow: var(--shadow-md);
   }
 
-  /* Premium Input Fields */
+  /* Premium Input Fields - iOS Style */
   .input-field {
-    height: 56px;
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(28, 28, 30, 0.5);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 12px;
-    padding: 16px 20px;
+    padding: 1rem;
     color: var(--text-primary);
     font-size: 16px;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .input-field:hover {
-    border-color: rgba(0, 255, 136, 0.5);
+    border-color: rgba(10, 132, 255, 0.3);
   }
 
   .input-field:focus {
     outline: none;
-    border: 2px solid var(--accent-green);
-    box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+    border-color: var(--accent-primary);
+    background: rgba(10, 132, 255, 0.1);
+    box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.2);
   }
 
-  /* Coin Badges */
+  /* Coin Badges - Golden Warning Color */
   .coin-badge {
     width: 48px;
     height: 48px;
     border-radius: 50%;
-    background: radial-gradient(circle, var(--accent-gold) 0%, #ffb347 100%);
+    background: radial-gradient(circle at 30% 30%, #ffd700, #ffb347 40%, #ffa500 80%);
     border: 2px solid rgba(255, 215, 0, 0.5);
     box-shadow: 
-      0 4px 12px rgba(255, 215, 0, 0.3),
-      inset 0 1px 2px rgba(255, 255, 255, 0.4);
+      0 2px 4px rgba(0, 0, 0, 0.3),
+      0 4px 8px rgba(255, 215, 0, 0.25),
+      inset 0 1px 2px rgba(255, 255, 255, 0.6);
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 14px;
     font-weight: 700;
-    color: #0a4f4f;
+    color: #333;
   }
 
-  /* Bill Badges */
+  /* Bill Badges - Green Success Color */
   .bill-badge {
     width: 60px;
     height: 35px;
     border-radius: 6px;
-    background: linear-gradient(135deg, var(--accent-money) 0%, var(--accent-green) 100%);
-    border: 2px solid rgba(0, 208, 132, 0.5);
+    background: linear-gradient(135deg, #00c896 0%, #00a77a 100%);
+    border: 2px solid rgba(0, 200, 150, 0.5);
     box-shadow: 
-      0 4px 12px rgba(0, 208, 132, 0.3),
-      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      0 2px 4px rgba(0, 0, 0, 0.3),
+      0 4px 8px rgba(0, 200, 150, 0.2);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -219,45 +307,63 @@
     color: #ffffff;
   }
 
-  /* Primary Button */
+  /* Primary Button - iOS Blue */
   .btn-primary {
-    background: linear-gradient(135deg, var(--accent-money) 0%, var(--accent-green) 100%);
-    color: #0a4f4f;
-    padding: 14px 40px;
-    border-radius: 12px;
+    background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 14px;
     border: none;
     font-size: 16px;
     font-weight: 600;
-    box-shadow: 0 4px 20px rgba(0, 255, 136, 0.4);
+    box-shadow: 0 4px 15px var(--accent-glow);
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .btn-primary:hover {
-    transform: scale(1.05) translateY(-2px);
-    box-shadow: 0 6px 30px rgba(0, 255, 136, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px var(--accent-glow);
   }
 
   .btn-primary:active {
     transform: scale(0.98);
   }
 
-  /* Secondary Button */
+  /* Success Button - iOS Green */
+  .btn-success {
+    background: linear-gradient(135deg, var(--success) 0%, #00b894 100%);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 14px;
+    border: none;
+    font-weight: 600;
+    box-shadow: 0 4px 15px var(--success-glow);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px var(--success-glow);
+  }
+
+  /* Secondary Button - Glass */
   .btn-secondary {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: var(--text-primary);
-    padding: 14px 32px;
-    border-radius: 12px;
+    background: rgba(10, 132, 255, 0.1);
+    border: 1px solid rgba(10, 132, 255, 0.3);
+    color: var(--accent-light);
+    padding: 1rem 2rem;
+    border-radius: 14px;
     font-size: 16px;
     transition: all 0.3s ease;
     cursor: pointer;
   }
 
   .btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.3);
-    transform: translateY(-1px);
+    background: rgba(10, 132, 255, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px var(--accent-glow);
   }
 
   /* Protocol Rule Items - Remove hover effects to prevent interaction issues */
@@ -281,37 +387,51 @@
 
   .particle {
     position: absolute;
-    background: rgba(0, 255, 136, 0.1);
+    background: rgba(10, 132, 255, 0.1);
     border-radius: 50%;
     animation: particle-float linear infinite;
   }
 
-  /* Total Amount Highlight */
+  /* Total Amount Highlight - iOS Colors */
   .total-amount {
-    animation: pulse 2s ease-in-out infinite;
+    animation: pulse-glow 2s ease-in-out infinite;
     font-size: 24px;
     font-weight: 700;
-    color: var(--accent-green);
-    text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+    color: var(--success);
+    text-shadow: 0 0 10px var(--success-glow);
+  }
+
+  /* Coins Total - Warning Color */
+  .coins-total {
+    color: var(--warning);
+    font-weight: 700;
+    text-shadow: 0 0 10px var(--warning-glow);
+  }
+
+  /* Bills Total - Success Color */
+  .bills-total {
+    color: var(--success);
+    font-weight: 700;
+    text-shadow: 0 0 10px var(--success-glow);
   }
 
   /* Depth Shadows */
   .depth-1 {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-sm);
   }
 
   .depth-2 {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    box-shadow: var(--shadow-md);
   }
 
   .depth-3 {
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--shadow-lg);
   }
 
   .depth-4 {
     box-shadow: 
-      0 12px 48px rgba(0, 0, 0, 0.25),
-      0 0 80px rgba(0, 255, 136, 0.1);
+      var(--shadow-lg),
+      var(--shadow-glow);
   }
 
   /* States */
@@ -343,13 +463,56 @@
   }
 
   .success {
-    border-color: var(--accent-green) !important;
-    box-shadow: 0 0 20px rgba(0, 255, 136, 0.4) !important;
+    border-color: var(--success) !important;
+    box-shadow: 0 0 20px var(--success-glow) !important;
   }
 
   .error {
-    border-color: #ff4444 !important;
-    box-shadow: 0 0 20px rgba(255, 68, 68, 0.4) !important;
+    border-color: var(--danger) !important;
+    box-shadow: 0 0 20px var(--danger-glow) !important;
+  }
+
+  /* Difference Colors */
+  .difference-positive {
+    color: var(--success);
+    font-weight: 700;
+    text-shadow: 0 0 10px var(--success-glow);
+  }
+
+  .difference-negative {
+    color: var(--danger);
+    font-weight: 700;
+    text-shadow: 0 0 10px var(--danger-glow);
+  }
+
+  /* Payment Method Cards */
+  .payment-method {
+    background: rgba(28, 28, 30, 0.5);
+    border: 1px solid rgba(10, 132, 255, 0.08);
+    border-radius: 16px;
+    padding: 1.25rem;
+    transition: all 0.3s ease;
+  }
+
+  .payment-method:hover {
+    background: rgba(10, 132, 255, 0.05);
+    border-color: rgba(10, 132, 255, 0.2);
+  }
+
+  .payment-credomatic {
+    border-left: 3px solid #0066cc;
+  }
+
+  .payment-promerica {
+    border-left: 3px solid #00a650;
+  }
+
+  .payment-transfer {
+    border-left: 3px solid var(--accent-light);
+  }
+
+  .payment-paypal {
+    border-left: 3px solid #003087;
   }
 }
 
@@ -411,12 +574,21 @@
   }
 
   @keyframes pulse-glow {
-    0%, 100% {
-      box-shadow: 0 0 20px var(--accent-green);
+    0%, 100% { 
+      box-shadow: 
+        var(--shadow-md),
+        0 0 30px var(--success-glow);
     }
-    50% {
-      box-shadow: 0 0 40px var(--accent-green), 0 0 60px var(--accent-green);
+    50% { 
+      box-shadow: 
+        var(--shadow-md),
+        0 0 50px var(--success-glow);
     }
+  }
+
+  @keyframes shine {
+    0%, 100% { opacity: 0; }
+    50% { opacity: 1; }
   }
   
   .animate-pulse-glow {
@@ -440,35 +612,37 @@
     @apply border-border;
   }
 
-  /* Typography */
+  /* Typography - iOS 16 Style */
   body {
-    font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', 'Roboto', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     @apply min-h-screen overflow-x-hidden;
+    line-height: 1.6;
     
-    /* Premium Teal Gradient Background */
-    background: linear-gradient(
-      135deg,
-      var(--bg-gradient-start) 0%,
-      var(--bg-gradient-middle) 40%,
-      var(--bg-gradient-end) 100%
-    );
-    background-attachment: fixed;
+    /* Pure Black Background with iOS Gradients */
+    background: var(--bg-primary);
     color: var(--text-primary);
     position: relative;
   }
 
+  /* Background Container with Subtle iOS Blue Gradients */
   body::before {
     content: '';
-    position: absolute;
-    inset: 0;
-    background: var(--overlay-dark);
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: -2;
+    background: 
+      radial-gradient(ellipse at top right, rgba(10, 132, 255, 0.15) 0%, transparent 40%),
+      radial-gradient(ellipse at bottom left, rgba(94, 92, 230, 0.12) 0%, transparent 40%),
+      linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
     pointer-events: none;
-    z-index: 0;
   }
 
-  /* Typography Hierarchy */
+  /* Typography Hierarchy - iOS Style */
   h1 {
     font-size: 32px;
     font-weight: 700;
@@ -482,9 +656,15 @@
     color: var(--text-primary);
   }
 
+  h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
   .subtitle {
     font-size: 16px;
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--text-secondary);
     font-weight: 400;
   }
 
@@ -503,12 +683,15 @@
   }
 }
 
-/* Responsive Design */
+/* Responsive Design - Optimized for iOS */
 @media (max-width: 768px) {
   .glass-card {
     margin: 10px;
     padding: 20px;
     border-radius: 16px;
+    /* Reduced blur for better mobile performance */
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
   }
   
   .grid {
@@ -516,20 +699,19 @@
     gap: 16px;
   }
 
-  /* Reduce glassmorphism complexity on mobile for performance */
-  * {
-    backdrop-filter: blur(10px) !important;
-    -webkit-backdrop-filter: blur(10px) !important;
-  }
-
   .input-field {
     height: 48px;
     font-size: 16px; /* Prevent zoom on iOS */
   }
 
-  .btn-primary, .btn-secondary {
+  .btn-primary, .btn-secondary, .btn-success {
     padding: 12px 24px;
     font-size: 16px;
+  }
+
+  /* Disable heavy animations on mobile */
+  .gradient-orb {
+    display: none;
   }
 }
 
@@ -542,7 +724,7 @@
 
 @media (min-width: 1025px) {
   .container {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
   }
   
