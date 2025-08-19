@@ -177,125 +177,243 @@ const CashCounter = ({ onBack }: CashCounterProps) => {
 
   const renderStoreSelection = () => (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, y: 30, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ 
+        duration: 0.6, 
+        ease: [0.23, 1, 0.32, 1],
+        staggerChildren: 0.1
+      }}
       className="space-y-6"
     >
-      <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-primary mb-2">Paso 1: Información Inicial</h2>
-        <p className="text-muted-foreground">Seleccione la sucursal y el personal</p>
-      </div>
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.5 }}
+        className="text-center mb-8"
+      >
+        <h2 className="text-2xl font-bold bg-gradient-to-r from-primary via-primary-glow to-secondary bg-clip-text text-transparent mb-2">
+          Paso 1: Información Inicial
+        </h2>
+        <p className="text-muted-foreground/80">Seleccione la sucursal y el personal</p>
+      </motion.div>
 
-      <GlassCard hover>
-        <div className="p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <MapPin className="w-6 h-6 text-primary" />
-            <h3 className="text-xl font-bold text-primary">Sucursal</h3>
-          </div>
-          <div className="space-y-4">
-          <Select value={selectedStore} onValueChange={setSelectedStore}>
-            <SelectTrigger className="bg-input/50 border-primary/30">
-              <SelectValue placeholder="Seleccione una sucursal" />
-            </SelectTrigger>
-            <SelectContent>
-              {STORES.map(store => (
-                <SelectItem key={store.id} value={store.id}>
-                  <div>
-                    <div className="font-medium">{store.name}</div>
-                    <div className="text-sm text-muted-foreground">{store.address}</div>
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          </div>
-        </div>
-      </GlassCard>
-
-      <GlassCard hover>
-        <div className="p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <Users className="w-6 h-6 text-secondary" />
-            <h3 className="text-xl font-bold text-secondary">Personal</h3>
-          </div>
-          <div className="space-y-4">
-          <div>
-            <Label htmlFor="cashier" className="text-sm font-medium mb-2 block">
-              Cajero/a
-            </Label>
-            <Select value={selectedCashier} onValueChange={setSelectedCashier} disabled={!selectedStore}>
-              <SelectTrigger className="bg-input/50 border-primary/30">
-                <SelectValue placeholder="Seleccione el cajero" />
-              </SelectTrigger>
-              <SelectContent>
-                {availableEmployees.map(employee => (
-                  <SelectItem key={employee.id} value={employee.id}>
-                    <div>
-                      <div className="font-medium">{employee.name}</div>
-                      <div className="text-sm text-muted-foreground">{employee.role}</div>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div>
-            <Label htmlFor="witness" className="text-sm font-medium mb-2 block">
-              Testigo
-            </Label>
-            <Select value={selectedWitness} onValueChange={setSelectedWitness} disabled={!selectedStore}>
-              <SelectTrigger className="bg-input/50 border-primary/30">
-                <SelectValue placeholder="Seleccione el testigo" />
-              </SelectTrigger>
-              <SelectContent>
-                {availableEmployees
-                  .filter(emp => emp.id !== selectedCashier)
-                  .map(employee => (
-                    <SelectItem key={employee.id} value={employee.id}>
-                      <div>
-                        <div className="font-medium">{employee.name}</div>
-                        <div className="text-sm text-muted-foreground">{employee.role}</div>
-                      </div>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1, duration: 0.5, ease: "easeOut" }}
+      >
+        <GlassCard hover glow className="overflow-hidden">
+          <div className="p-6 relative">
+            <div className="flex items-center gap-3 mb-6">
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.3, duration: 0.4 }}
+                className="p-2 rounded-full bg-primary/20 border border-primary/30"
+              >
+                <MapPin className="w-6 h-6 text-primary" />
+              </motion.div>
+              <h3 className="text-xl font-bold text-primary">Sucursal</h3>
+            </div>
+            <motion.div 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.4, duration: 0.4 }}
+              className="space-y-4"
+            >
+              <Select value={selectedStore} onValueChange={setSelectedStore}>
+                <SelectTrigger className={`
+                  glass-input transition-all duration-300 group
+                  ${selectedStore ? 'border-primary/50 bg-primary/5 shadow-glow-primary' : 'border-primary/30'}
+                  hover:border-primary/60 hover:shadow-md hover:shadow-primary/20
+                `}>
+                  <SelectValue placeholder="Seleccione una sucursal" />
+                </SelectTrigger>
+                <SelectContent className="glass-dropdown">
+                  {STORES.map((store, index) => (
+                    <SelectItem 
+                      key={store.id} 
+                      value={store.id}
+                      className="hover:bg-primary/10 focus:bg-primary/15 transition-colors duration-200"
+                    >
+                      <motion.div
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.05, duration: 0.3 }}
+                      >
+                        <div className="font-medium">{store.name}</div>
+                        <div className="text-sm text-muted-foreground/70">{store.address}</div>
+                      </motion.div>
                     </SelectItem>
                   ))}
-              </SelectContent>
-            </Select>
+                </SelectContent>
+              </Select>
+            </motion.div>
           </div>
+        </GlassCard>
+      </motion.div>
 
-          {selectedCashier === selectedWitness && selectedCashier && (
-            <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-3">
-              <p className="text-destructive text-sm">
-                ⚠️ El cajero y el testigo deben ser personas diferentes (protocolo anti-fraude)
-              </p>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.5, ease: "easeOut" }}
+      >
+        <GlassCard hover glow className="overflow-hidden">
+          <div className="p-6 relative">
+            <div className="flex items-center gap-3 mb-6">
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.5, duration: 0.4 }}
+                className="p-2 rounded-full bg-secondary/20 border border-secondary/30"
+              >
+                <Users className="w-6 h-6 text-secondary" />
+              </motion.div>
+              <h3 className="text-xl font-bold text-secondary">Personal</h3>
             </div>
-          )}
-          </div>
-        </div>
-      </GlassCard>
+            <motion.div 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.6, duration: 0.4 }}
+              className="space-y-6"
+            >
+              <div>
+                <Label htmlFor="cashier" className="text-sm font-medium mb-3 block text-foreground/90">
+                  Cajero/a
+                </Label>
+                <Select value={selectedCashier} onValueChange={setSelectedCashier} disabled={!selectedStore}>
+                  <SelectTrigger className={`
+                    glass-input transition-all duration-300
+                    ${!selectedStore ? 'opacity-50 cursor-not-allowed' : ''}
+                    ${selectedCashier ? 'border-secondary/50 bg-secondary/5 shadow-glow-secondary' : 'border-secondary/30'}
+                    hover:border-secondary/60 hover:shadow-md hover:shadow-secondary/20
+                  `}>
+                    <SelectValue placeholder="Seleccione el cajero" />
+                  </SelectTrigger>
+                  <SelectContent className="glass-dropdown">
+                    {availableEmployees.map((employee, index) => (
+                      <SelectItem 
+                        key={employee.id} 
+                        value={employee.id}
+                        className="hover:bg-secondary/10 focus:bg-secondary/15 transition-colors duration-200"
+                      >
+                        <motion.div
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.05, duration: 0.3 }}
+                        >
+                          <div className="font-medium">{employee.name}</div>
+                          <div className="text-sm text-muted-foreground/70">{employee.role}</div>
+                        </motion.div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-      <GlassCard hover>
-        <div className="p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <DollarSign className="w-6 h-6 text-success" />
-            <h3 className="text-xl font-bold text-success">Venta Esperada del Sistema</h3>
-          </div>
-          <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
-            <Input
-              type="number"
-              step="0.01"
-              min="0"
-              value={expectedSales}
-              onChange={(e) => setExpectedSales(e.target.value)}
-              placeholder="0.00"
-              className="pl-8 bg-input/50 border-primary/30 focus:border-primary"
-            />
-          </div>
-        </div>
-      </GlassCard>
+              <div>
+                <Label htmlFor="witness" className="text-sm font-medium mb-3 block text-foreground/90">
+                  Testigo
+                </Label>
+                <Select value={selectedWitness} onValueChange={setSelectedWitness} disabled={!selectedStore}>
+                  <SelectTrigger className={`
+                    glass-input transition-all duration-300
+                    ${!selectedStore ? 'opacity-50 cursor-not-allowed' : ''}
+                    ${selectedWitness ? 'border-accent/50 bg-accent/5 shadow-glow-accent' : 'border-accent/30'}
+                    hover:border-accent/60 hover:shadow-md hover:shadow-accent/20
+                  `}>
+                    <SelectValue placeholder="Seleccione el testigo" />
+                  </SelectTrigger>
+                  <SelectContent className="glass-dropdown">
+                    {availableEmployees
+                      .filter(emp => emp.id !== selectedCashier)
+                      .map((employee, index) => (
+                        <SelectItem 
+                          key={employee.id} 
+                          value={employee.id}
+                          className="hover:bg-accent/10 focus:bg-accent/15 transition-colors duration-200"
+                        >
+                          <motion.div
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: index * 0.05, duration: 0.3 }}
+                          >
+                            <div className="font-medium">{employee.name}</div>
+                            <div className="text-sm text-muted-foreground/70">{employee.role}</div>
+                          </motion.div>
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-      <div className="flex gap-3">
+              {selectedCashier === selectedWitness && selectedCashier && (
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  transition={{ duration: 0.4, ease: "easeOut" }}
+                  className="glass-card-warning p-4 rounded-xl border border-destructive/30 bg-destructive/5"
+                >
+                  <p className="text-destructive text-sm font-medium">
+                    ⚠️ El cajero y el testigo deben ser personas diferentes (protocolo anti-fraude)
+                  </p>
+                </motion.div>
+              )}
+            </motion.div>
+          </div>
+        </GlassCard>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3, duration: 0.5, ease: "easeOut" }}
+      >
+        <GlassCard hover glow className="overflow-hidden">
+          <div className="p-6 relative">
+            <div className="flex items-center gap-3 mb-6">
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.7, duration: 0.4 }}
+                className="p-2 rounded-full bg-success/20 border border-success/30"
+              >
+                <DollarSign className="w-6 h-6 text-success" />
+              </motion.div>
+              <h3 className="text-xl font-bold text-success">Venta Esperada del Sistema</h3>
+            </div>
+            <motion.div 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.8, duration: 0.4 }}
+              className="relative"
+            >
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-success/70 font-medium z-10">$</span>
+              <Input
+                type="number"
+                step="0.01"
+                min="0"
+                value={expectedSales}
+                onChange={(e) => setExpectedSales(e.target.value)}
+                placeholder="0.00"
+                className={`
+                  pl-8 glass-input transition-all duration-300
+                  ${expectedSales ? 'border-success/50 bg-success/5 shadow-glow-success' : 'border-success/30'}
+                  focus:border-success/70 focus:shadow-lg focus:shadow-success/25
+                `}
+              />
+            </motion.div>
+          </div>
+        </GlassCard>
+      </motion.div>
+
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4, duration: 0.5 }}
+        className="flex gap-4 pt-4"
+      >
         <AnimatedButton
           onClick={onBack}
           variant="glass"
@@ -314,7 +432,7 @@ const CashCounter = ({ onBack }: CashCounterProps) => {
           Iniciar Fase 1: Conteo
           <DollarSign className="w-4 h-4 ml-2" />
         </AnimatedButton>
-      </div>
+      </motion.div>
     </motion.div>
   );
 
