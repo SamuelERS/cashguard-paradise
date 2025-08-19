@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Calculator, Users, MapPin, DollarSign, CreditCard } from "lucide-react";
+import { ArrowLeft, Calculator, Users, MapPin, DollarSign } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -8,8 +8,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { FloatingOrbs } from "@/components/FloatingOrbs";
 import CashCalculation from "@/components/CashCalculation";
+import { CoinSection } from "@/components/cash-counting/CoinSection";
+import { BillSection } from "@/components/cash-counting/BillSection";
+import { ElectronicSection } from "@/components/cash-counting/ElectronicSection";
+import { GlassCard } from "@/components/ui/GlassCard";
+import { AnimatedButton } from "@/components/ui/AnimatedButton";
 import { STORES, EMPLOYEES, getEmployeesByStore } from "@/data/paradise";
-import { DENOMINATIONS, CashCount, ElectronicPayments } from "@/types/cash";
+import { CashCount, ElectronicPayments } from "@/types/cash";
 
 interface CashCounterProps {
   onBack?: () => void;
@@ -95,14 +100,13 @@ const CashCounter = ({ onBack }: CashCounterProps) => {
         <p className="text-muted-foreground">Seleccione la sucursal y el personal</p>
       </div>
 
-      <Card className="glass-card">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-primary">
-            <MapPin className="w-5 h-5" />
-            Sucursal
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      <GlassCard hover>
+        <div className="p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <MapPin className="w-6 h-6 text-primary" />
+            <h3 className="text-xl font-bold text-primary">Sucursal</h3>
+          </div>
+          <div className="space-y-4">
           <Select value={selectedStore} onValueChange={setSelectedStore}>
             <SelectTrigger className="bg-input/50 border-primary/30">
               <SelectValue placeholder="Seleccione una sucursal" />
@@ -118,17 +122,17 @@ const CashCounter = ({ onBack }: CashCounterProps) => {
               ))}
             </SelectContent>
           </Select>
-        </CardContent>
-      </Card>
+          </div>
+        </div>
+      </GlassCard>
 
-      <Card className="glass-card">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-secondary">
-            <Users className="w-5 h-5" />
-            Personal
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      <GlassCard hover>
+        <div className="p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <Users className="w-6 h-6 text-secondary" />
+            <h3 className="text-xl font-bold text-secondary">Personal</h3>
+          </div>
+          <div className="space-y-4">
           <div>
             <Label htmlFor="cashier" className="text-sm font-medium mb-2 block">
               Cajero/a
@@ -180,17 +184,16 @@ const CashCounter = ({ onBack }: CashCounterProps) => {
               </p>
             </div>
           )}
-        </CardContent>
-      </Card>
+          </div>
+        </div>
+      </GlassCard>
 
-      <Card className="glass-card">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-success">
-            <DollarSign className="w-5 h-5" />
-            Venta Esperada del Sistema
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+      <GlassCard hover>
+        <div className="p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <DollarSign className="w-6 h-6 text-success" />
+            <h3 className="text-xl font-bold text-success">Venta Esperada del Sistema</h3>
+          </div>
           <div className="relative">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
             <Input
@@ -203,26 +206,28 @@ const CashCounter = ({ onBack }: CashCounterProps) => {
               className="pl-8 bg-input/50 border-primary/30 focus:border-primary"
             />
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </GlassCard>
 
       <div className="flex gap-3">
-        <Button
+        <AnimatedButton
           onClick={onBack}
-          variant="outline"
-          className="flex-1 border-muted hover:bg-muted/50"
+          variant="glass"
+          className="flex-1"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Volver
-        </Button>
-        <Button
+        </AnimatedButton>
+        <AnimatedButton
           onClick={() => setCurrentStep(2)}
           disabled={!canProceedToStep2}
-          className="flex-1 bg-gradient-aqua hover:scale-105 transform transition-all duration-300 text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+          variant="primary"
+          glow
+          className="flex-1"
         >
           Continuar al Conteo
           <DollarSign className="w-4 h-4 ml-2" />
-        </Button>
+        </AnimatedButton>
       </div>
     </motion.div>
   );
@@ -239,149 +244,41 @@ const CashCounter = ({ onBack }: CashCounterProps) => {
       </div>
 
       {/* Coins Section */}
-      <Card className="glass-card">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-warning">
-            <div className="w-6 h-6 cash-coin rounded-full"></div>
-            Monedas
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            {Object.entries(DENOMINATIONS.COINS).map(([key, denom]) => (
-              <div key={key} className="space-y-2">
-                <Label className="text-sm font-medium">{denom.name}</Label>
-                <Input
-                  type="number"
-                  min="0"
-                  value={cashCount[key as keyof typeof cashCount]}
-                  onChange={(e) => handleCashCountChange(key, e.target.value)}
-                  placeholder="0"
-                  className="bg-input/50 border-warning/30 focus:border-warning text-center"
-                />
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      <CoinSection 
+        cashCount={cashCount}
+        onChange={handleCashCountChange}
+      />
 
       {/* Bills Section */}
-      <Card className="glass-card">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-success">
-            <div className="w-8 h-5 cash-bill rounded"></div>
-            Billetes
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
-            {Object.entries(DENOMINATIONS.BILLS).map(([key, denom]) => (
-              <div key={key} className="space-y-2">
-                <Label className="text-sm font-medium">{denom.name}</Label>
-                <Input
-                  type="number"
-                  min="0"
-                  value={cashCount[key as keyof typeof cashCount]}
-                  onChange={(e) => handleCashCountChange(key, e.target.value)}
-                  placeholder="0"
-                  className="bg-input/50 border-success/30 focus:border-success text-center"
-                />
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      <BillSection 
+        cashCount={cashCount}
+        onChange={handleCashCountChange}
+      />
 
       {/* Electronic Payments */}
-      <Card className="glass-card">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-secondary">
-            <CreditCard className="w-5 h-5" />
-            Pagos Electrónicos
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">Credomatic</Label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
-                <Input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={electronicPayments.credomatic}
-                  onChange={(e) => handleElectronicChange('credomatic', e.target.value)}
-                  placeholder="0.00"
-                  className="pl-8 bg-input/50 border-secondary/30 focus:border-secondary"
-                />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">Promerica</Label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
-                <Input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={electronicPayments.promerica}
-                  onChange={(e) => handleElectronicChange('promerica', e.target.value)}
-                  placeholder="0.00"
-                  className="pl-8 bg-input/50 border-secondary/30 focus:border-secondary"
-                />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">Transferencia</Label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
-                <Input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={electronicPayments.bankTransfer}
-                  onChange={(e) => handleElectronicChange('bankTransfer', e.target.value)}
-                  placeholder="0.00"
-                  className="pl-8 bg-input/50 border-secondary/30 focus:border-secondary"
-                />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">PayPal</Label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
-                <Input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={electronicPayments.paypal}
-                  onChange={(e) => handleElectronicChange('paypal', e.target.value)}
-                  placeholder="0.00"
-                  className="pl-8 bg-input/50 border-secondary/30 focus:border-secondary"
-                />
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <ElectronicSection 
+        electronicPayments={electronicPayments}
+        onChange={handleElectronicChange}
+      />
 
       <div className="flex gap-3">
-        <Button
+        <AnimatedButton
           onClick={() => setCurrentStep(1)}
-          variant="outline"
-          className="flex-1 border-muted hover:bg-muted/50"
+          variant="glass"
+          className="flex-1"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Volver
-        </Button>
-        <Button
+        </AnimatedButton>
+        <AnimatedButton
           onClick={() => setCurrentStep(3)}
-          className="flex-1 bg-gradient-aqua hover:scale-105 transform transition-all duration-300 text-white font-semibold"
+          variant="primary"
+          glow
+          className="flex-1"
         >
           <Calculator className="w-4 h-4 mr-2" />
           Calcular Totales
-        </Button>
+        </AnimatedButton>
       </div>
     </motion.div>
   );
