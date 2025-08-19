@@ -16,22 +16,22 @@ export const CoinSection = ({ cashCount, onChange, readonly = false }: CoinSecti
   }, 0);
 
   return (
-    <GlassCard hover={!readonly}>
+    <div className="glass-card">
       <div className="p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <motion.div
-              className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-400 via-yellow-500 to-yellow-600 shadow-lg shadow-yellow-500/30 flex items-center justify-center"
+              className="coin-badge"
               animate={{ rotate: readonly ? 0 : [0, 10, -10, 0] }}
               transition={{ duration: 4, repeat: readonly ? 0 : Infinity }}
             >
-              <span className="text-yellow-900 font-bold">¢</span>
+              <span>¢</span>
             </motion.div>
-            <h3 className="text-xl font-bold text-warning">Monedas</h3>
+            <h3 className="text-xl font-bold" style={{ color: 'var(--accent-gold)' }}>Monedas</h3>
           </div>
           <div className="text-right">
-            <p className="text-sm text-muted-foreground">Total</p>
-            <p className="text-lg font-bold text-warning">${coinTotal.toFixed(2)}</p>
+            <p className="text-sm opacity-70">Total</p>
+            <p className="text-lg font-bold total-amount">${coinTotal.toFixed(2)}</p>
           </div>
         </div>
         
@@ -58,14 +58,18 @@ export const CoinSection = ({ cashCount, onChange, readonly = false }: CoinSecti
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="mt-4 p-3 bg-warning/10 border border-warning/30 rounded-lg"
+            className="mt-4 p-3 rounded-lg"
+            style={{ 
+              background: 'rgba(255, 215, 0, 0.1)', 
+              border: '1px solid rgba(255, 215, 0, 0.3)' 
+            }}
           >
-            <p className="text-sm text-warning/80 text-center">
+            <p className="text-sm text-center" style={{ color: 'var(--accent-gold)' }}>
               💰 {coinTotal.toFixed(2)} dólares en monedas contabilizados
             </p>
           </motion.div>
         )}
       </div>
-    </GlassCard>
+    </div>
   );
 };

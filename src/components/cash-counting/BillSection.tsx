@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import { GlassCard } from "@/components/ui/GlassCard";
 import { DenominationItem } from "@/components/ui/DenominationItem";
 import { DENOMINATIONS, CashCount } from "@/types/cash";
 
@@ -16,24 +15,22 @@ export const BillSection = ({ cashCount, onChange, readonly = false }: BillSecti
   }, 0);
 
   return (
-    <GlassCard hover={!readonly}>
+    <div className="glass-card">
       <div className="p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <motion.div
-              className="w-12 h-8 rounded bg-gradient-to-br from-green-400 via-green-500 to-green-600 shadow-lg shadow-green-500/20 flex items-center justify-center relative overflow-hidden"
+              className="bill-badge"
               animate={{ scale: readonly ? 1 : [1, 1.05, 1] }}
               transition={{ duration: 3, repeat: readonly ? 0 : Infinity }}
             >
-              {/* Security pattern */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-green-300/30 to-transparent transform skew-x-12" />
-              <span className="relative text-green-900 font-bold text-sm">$</span>
+              <span>$</span>
             </motion.div>
-            <h3 className="text-xl font-bold text-success">Billetes</h3>
+            <h3 className="text-xl font-bold" style={{ color: 'var(--accent-money)' }}>Billetes</h3>
           </div>
           <div className="text-right">
-            <p className="text-sm text-muted-foreground">Total</p>
-            <p className="text-lg font-bold text-success">${billTotal.toFixed(2)}</p>
+            <p className="text-sm opacity-70">Total</p>
+            <p className="text-lg font-bold total-amount">${billTotal.toFixed(2)}</p>
           </div>
         </div>
         
@@ -60,14 +57,18 @@ export const BillSection = ({ cashCount, onChange, readonly = false }: BillSecti
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="mt-4 p-3 bg-success/10 border border-success/30 rounded-lg"
+            className="mt-4 p-3 rounded-lg"
+            style={{ 
+              background: 'rgba(0, 208, 132, 0.1)', 
+              border: '1px solid rgba(0, 208, 132, 0.3)' 
+            }}
           >
-            <p className="text-sm text-success/80 text-center">
+            <p className="text-sm text-center" style={{ color: 'var(--accent-money)' }}>
               💵 {billTotal.toFixed(2)} dólares en billetes contabilizados
             </p>
           </motion.div>
         )}
       </div>
-    </GlassCard>
+    </div>
   );
 };
