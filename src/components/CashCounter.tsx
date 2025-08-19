@@ -327,7 +327,6 @@ const CashCounter = ({ onBack }: CashCounterProps) => {
           onClick={() => setCurrentStep(1)}
           variant="glass"
           className="flex-1"
-          disabled={!guidedState.isCompleted}
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Volver

@@ -49,8 +49,10 @@ export const GuidedDenominationItem = ({
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && isActive) {
+    if (e.key === 'Enter' && isActive && inputValue !== "") {
+      e.preventDefault();
       handleConfirm();
+      // Auto-focus next field would happen naturally due to state change
     }
   };
 
