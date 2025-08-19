@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Check, Lock, ArrowRight } from "lucide-react";
 import { Label } from "@/components/ui/label";
@@ -33,7 +33,19 @@ export const GuidedDenominationItem = ({
   onAttemptAccess
 }: GuidedDenominationItemProps) => {
   const [inputValue, setInputValue] = useState(isCompleted ? quantity.toString() : "");
+  const inputRef = useRef<HTMLInputElement>(null);
   const total = quantity * denomination.value;
+
+  // Auto-focus when field becomes active
+  useEffect(() => {
+    if (isActive && inputRef.current) {
+      const timer = setTimeout(() => {
+        inputRef.current?.focus();
+        inputRef.current?.select();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isActive]);
 
   const handleInputChange = (value: string) => {
     if (isActive) {
@@ -132,6 +144,7 @@ export const GuidedDenominationItem = ({
       
       <div className="flex gap-2">
         <Input
+          ref={inputRef}
           type="number"
           min="0"
           value={isCompleted ? quantity.toString() : inputValue}
