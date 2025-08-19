@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { FloatingOrbs } from "@/components/FloatingOrbs";
 import { calculateCashTotal, calculateChange50, formatCurrency, generateDenominationSummary } from "@/utils/calculations";
 import { CashCount, ElectronicPayments } from "@/types/cash";
+import { PhaseState } from "@/types/phases";
 import { getStoreById, getEmployeeById } from "@/data/paradise";
 
 interface CashCalculationProps {
@@ -17,6 +18,8 @@ interface CashCalculationProps {
   expectedSales: number;
   cashCount: CashCount;
   electronicPayments: ElectronicPayments;
+  deliveryCalculation?: any;
+  phaseState?: PhaseState;
   onBack: () => void;
   onComplete: () => void;
 }
@@ -28,6 +31,8 @@ const CashCalculation = ({
   expectedSales,
   cashCount,
   electronicPayments,
+  deliveryCalculation,
+  phaseState,
   onBack,
   onComplete
 }: CashCalculationProps) => {
@@ -81,12 +86,26 @@ const CashCalculation = ({
 📅 ${calculationData.timestamp}
 👤 Cajero: ${cashier.name}
 👁️ Testigo: ${witness.name}
+Sistema: Conteo Guiado v2.0
 
-💵 EFECTIVO
-Total: ${formatCurrency(calculationData.totalCash)}
+FASE 1 - CONTEO INICIAL
+-----------------------
+💵 Efectivo Total: ${formatCurrency(calculationData.totalCash)}
+💳 Electrónico Total: ${formatCurrency(calculationData.totalElectronic)}
 
-💳 ELECTRÓNICO: ${formatCurrency(calculationData.totalElectronic)}
+${phaseState?.shouldSkipPhase2 ? 
+`FASE 2 - OMITIDA
+-----------------------
+Total ≤ $50.00 - Sin entrega a gerencia
+Todo permanece en caja` :
+`FASE 2 - DIVISIÓN
+-----------------------
+Entregado a Gerencia: ${formatCurrency(deliveryCalculation?.amountToDeliver || 0)}
+Dejado en Caja: $50.00
+VERIFICACIÓN: ✓ EXITOSA`}
 
+FASE 3 - RESULTADOS FINALES
+-----------------------
 📊 TOTAL GENERAL: ${formatCurrency(calculationData.totalGeneral)}
 🎯 Venta Esperada: ${formatCurrency(expectedSales)}
 ${calculationData.difference >= 0 ? '✅ Sobrante' : '⚠️ Faltante'}: ${formatCurrency(Math.abs(calculationData.difference))}
@@ -100,8 +119,8 @@ ${generateDenominationSummary(calculationData.changeResult.change)}` :
 
 ${calculationData.hasAlert ? '🚨 ALERTA: Faltante significativo detectado' : ''}
 
----
-Sistema Paradise Cash Control v2.0`;
+================================
+Firma Digital: ${Date.now().toString(36)}`;
 
     const encodedReport = encodeURIComponent(report);
     window.open(`https://wa.me/?text=${encodedReport}`, '_blank');

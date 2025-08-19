@@ -12,11 +12,13 @@ import { GuidedProgressIndicator } from "@/components/ui/GuidedProgressIndicator
 import { GuidedCoinSection } from "@/components/cash-counting/GuidedCoinSection";
 import { GuidedBillSection } from "@/components/cash-counting/GuidedBillSection";
 import { GuidedElectronicInputSection } from "@/components/cash-counting/GuidedElectronicInputSection";
+import { Phase2Manager } from "@/components/phases/Phase2Manager";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { AnimatedButton } from "@/components/ui/AnimatedButton";
 import { STORES, EMPLOYEES, getEmployeesByStore } from "@/data/paradise";
 import { CashCount, ElectronicPayments } from "@/types/cash";
 import { useGuidedCounting } from "@/hooks/useGuidedCounting";
+import { usePhaseManager } from "@/hooks/usePhaseManager";
 import { toast } from "sonner";
 
 interface CashCounterProps {
@@ -24,13 +26,21 @@ interface CashCounterProps {
 }
 
 const CashCounter = ({ onBack }: CashCounterProps) => {
-  const [currentStep, setCurrentStep] = useState(1);
   const [selectedStore, setSelectedStore] = useState("");
   const [selectedCashier, setSelectedCashier] = useState("");
   const [selectedWitness, setSelectedWitness] = useState("");
   const [expectedSales, setExpectedSales] = useState("");
   
-  // Guided counting hook
+  // Phase management
+  const {
+    phaseState,
+    deliveryCalculation,
+    startPhase1,
+    completePhase1,
+    resetAllPhases
+  } = usePhaseManager();
+  
+  // Guided counting hook (for Phase 1)
   const {
     guidedState,
     currentField,
@@ -124,12 +134,28 @@ const CashCounter = ({ onBack }: CashCounterProps) => {
     }));
   };
 
-  const canProceedToStep2 = selectedStore && selectedCashier && selectedWitness && 
-                           selectedCashier !== selectedWitness && expectedSales;
+  const canProceedToPhase1 = selectedStore && selectedCashier && selectedWitness && 
+                            selectedCashier !== selectedWitness && expectedSales;
+
+  const handleCompletePhase1 = () => {
+    // Complete Phase 1 and calculate delivery requirements
+    completePhase1(cashCount);
+    toast.success("✅ Fase 1 completada correctamente");
+    
+    if (phaseState.shouldSkipPhase2) {
+      toast.info("💡 Total ≤ $50. Saltando a reporte final.", { duration: 3000 });
+    } else {
+      toast.info("💰 Procediendo a división del efectivo (Fase 2)", { duration: 3000 });
+    }
+  };
+
+  const handlePhase2Complete = () => {
+    toast.success("✅ Fase 2 completada correctamente");
+    toast.info("📊 Procediendo a generar reporte final (Fase 3)", { duration: 3000 });
+  };
 
   const handleCompleteCalculation = () => {
-    // Reset form and go back to beginning
-    setCurrentStep(1);
+    // Reset everything and go back to beginning
     setSelectedStore("");
     setSelectedCashier("");
     setSelectedWitness("");
@@ -142,6 +168,7 @@ const CashCounter = ({ onBack }: CashCounterProps) => {
       credomatic: 0, promerica: 0, bankTransfer: 0, paypal: 0,
     });
     resetGuidedCounting();
+    resetAllPhases();
     
     if (onBack) onBack();
   };
@@ -276,28 +303,32 @@ const CashCounter = ({ onBack }: CashCounterProps) => {
           Volver
         </AnimatedButton>
         <AnimatedButton
-          onClick={() => setCurrentStep(2)}
-          disabled={!canProceedToStep2}
+          onClick={startPhase1}
+          disabled={!canProceedToPhase1}
           variant="primary"
           glow
           className="flex-1"
         >
-          Continuar al Conteo
+          Iniciar Fase 1: Conteo
           <DollarSign className="w-4 h-4 ml-2" />
         </AnimatedButton>
       </div>
     </motion.div>
   );
 
-  const renderCashCounting = () => (
+  const renderPhase1 = () => (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="space-y-6"
     >
       <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-primary mb-2">Paso 2: Conteo Guiado</h2>
-        <p className="text-muted-foreground">Complete cada denominación en orden secuencial</p>
+        <h2 className="text-2xl font-bold text-primary mb-2">
+          Fase 1: Conteo Inicial Obligatorio
+        </h2>
+        <p className="text-muted-foreground">
+          Complete cada denominación en orden secuencial (13 pasos)
+        </p>
       </div>
 
       {/* Guided Progress Indicator */}
@@ -345,28 +376,37 @@ const CashCounter = ({ onBack }: CashCounterProps) => {
 
       <div className="flex gap-3">
         <AnimatedButton
-          onClick={() => setCurrentStep(1)}
+          onClick={() => resetAllPhases()}
           variant="glass"
           className="flex-1"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Volver
+          Volver a Inicio
         </AnimatedButton>
         <AnimatedButton
-          onClick={() => setCurrentStep(3)}
+          onClick={handleCompletePhase1}
           variant="primary"
           glow
           className="flex-1"
           disabled={!guidedState.isCompleted}
         >
           <Calculator className="w-4 h-4 mr-2" />
-          Calcular Totales
+          Completar Fase 1
         </AnimatedButton>
       </div>
     </motion.div>
   );
 
-  if (currentStep === 3) {
+  const renderPhase2 = () => (
+    <Phase2Manager
+      deliveryCalculation={deliveryCalculation}
+      onPhase2Complete={handlePhase2Complete}
+      onBack={() => resetAllPhases()}
+    />
+  );
+
+  // Phase 3: Final Report Generation
+  if (phaseState.currentPhase === 3) {
     return (
       <CashCalculation
         storeId={selectedStore}
@@ -375,7 +415,9 @@ const CashCounter = ({ onBack }: CashCounterProps) => {
         expectedSales={parseFloat(expectedSales)}
         cashCount={cashCount}
         electronicPayments={electronicPayments}
-        onBack={() => setCurrentStep(2)}
+        deliveryCalculation={deliveryCalculation}
+        phaseState={phaseState}
+        onBack={() => resetAllPhases()}
         onComplete={handleCompleteCalculation}
       />
     );
@@ -386,8 +428,9 @@ const CashCounter = ({ onBack }: CashCounterProps) => {
       <FloatingOrbs />
       
       <div className="relative z-10 container mx-auto px-4 py-8 max-w-4xl">
-        {currentStep === 1 && renderStoreSelection()}
-        {currentStep === 2 && renderCashCounting()}
+        {phaseState.currentPhase === 1 && !phaseState.phase1Completed && renderStoreSelection()}
+        {phaseState.currentPhase === 1 && phaseState.phase1Completed && renderPhase1()}
+        {phaseState.currentPhase === 2 && renderPhase2()}
       </div>
     </div>
   );
