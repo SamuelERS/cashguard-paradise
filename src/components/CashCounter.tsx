@@ -87,7 +87,18 @@ const CashCounter = ({ onBack }: CashCounterProps) => {
     );
     
     if (success) {
-      toast.success(`✓ ${currentField} confirmado: ${value}`);
+      // Show special message when transitioning to electronic payments
+      if (currentField === 'bill100') {
+        toast.success(`✓ ${currentField} confirmado: ${value}`);
+        setTimeout(() => {
+          toast.info('💳 Ahora ingrese MONTOS en dólares para pagos electrónicos', {
+            duration: 4000,
+          });
+        }, 500);
+      } else {
+        const isElectronic = ['credomatic', 'promerica', 'bankTransfer', 'paypal'].includes(currentField);
+        toast.success(`✓ ${currentField} confirmado: ${isElectronic ? '$' + value : value}`);
+      }
     }
   };
   

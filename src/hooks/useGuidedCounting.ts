@@ -193,8 +193,15 @@ export function useGuidedCounting() {
     if (guidedState.isCompleted) {
       return '✓ Conteo completado correctamente';
     }
+    
+    const currentField = getCurrentField();
+    // Special message for electronic payments section
+    if (['credomatic', 'promerica', 'bankTransfer', 'paypal'].includes(currentField)) {
+      return `💳 Ingrese el MONTO en dólares de: ${getCurrentFieldLabel()}`;
+    }
+    
     return `👉 Ingrese la cantidad de: ${getCurrentFieldLabel()}`;
-  }, [guidedState.isCompleted, getCurrentFieldLabel]);
+  }, [guidedState.isCompleted, getCurrentFieldLabel, getCurrentField]);
 
   return {
     guidedState,
