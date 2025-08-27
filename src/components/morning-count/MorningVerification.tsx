@@ -441,22 +441,14 @@ Sistema CashGuard Paradise v1.1.13
               </p>
               
               {/* Botones de acción en grid - 🤖 [IA] - v1.1.11: Coherente con CashCalculation */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 lg:max-w-3xl mx-auto">
+              {/* 🤖 [IA] - v1.2.8: Removido botón Reporte, grid ajustado a 3 columnas */}
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 lg:max-w-3xl mx-auto">
                 <Button
                   onClick={handleWhatsApp}
                   className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold hover:scale-105 transform transition-all duration-300 text-xs sm:text-sm px-2 py-2"
                 >
                   <Share className="w-4 h-4 mr-2" />
                   WhatsApp
-                </Button>
-                
-                <Button
-                  onClick={generatePrintableReport}
-                  variant="outline"
-                  className="border-primary/30 hover:bg-primary/10 hover:scale-105 transform transition-all duration-300 text-xs sm:text-sm px-2 py-2"
-                >
-                  <FileText className="w-4 h-4 mr-2" />
-                  Reporte
                 </Button>
                 
                 <Button
@@ -470,7 +462,7 @@ Sistema CashGuard Paradise v1.1.13
                 
                 <Button
                   onClick={onComplete}
-                  className="bg-gradient-to-r from-[#f4a52a] to-[#ffb84d] hover:from-[#e89a1a] hover:to-[#ffa83d] text-white font-semibold hover:scale-105 transform transition-all duration-300 text-xs sm:text-sm px-2 py-2"
+                  className="bg-gradient-to-r from-[#f4a52a] to-[#ffb84d] hover:from-[#e89a1a] hover:to-[#ffa83d] text-white font-semibold hover:scale-105 transform transition-all duration-300 text-xs sm:text-sm px-2 py-2 md:col-span-1 col-span-2"
                 >
                   <CheckCircle className="w-4 h-4 mr-2" />
                   Finalizar

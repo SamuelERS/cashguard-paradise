@@ -674,22 +674,14 @@ Firma Digital: ${dataHash}`;
               </p>
               
               {/* 🤖 [IA] - v1.1.01: Responsive buttons para desktop */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 lg:max-w-3xl mx-auto">
+              {/* 🤖 [IA] - v1.2.8: Removido botón Reporte, grid ajustado a 3 columnas */}
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 lg:max-w-3xl mx-auto">
                 <Button
                   onClick={generateWhatsAppReport}
                   className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold glass-card hover:scale-105 transform transition-all duration-300 text-xs sm:text-sm px-2 py-2"
                 >
                   <Share className="w-4 h-4 mr-2" />
                   WhatsApp
-                </Button>
-                
-                <Button
-                  onClick={generatePrintableReport}
-                  variant="outline"
-                  className="border-primary/30 hover:bg-primary/10 glass-card hover:scale-105 transform transition-all duration-300 text-xs sm:text-sm px-2 py-2"
-                >
-                  <FileText className="w-4 h-4 mr-2" />
-                  Reporte
                 </Button>
                 
                 <Button
@@ -703,7 +695,7 @@ Firma Digital: ${dataHash}`;
                 
                 <Button
                   onClick={onComplete}
-                  className="bg-success hover:bg-success/90 text-success-foreground glass-card hover:scale-105 transform transition-all duration-300 text-xs sm:text-sm px-2 py-2"
+                  className="bg-success hover:bg-success/90 text-success-foreground glass-card hover:scale-105 transform transition-all duration-300 text-xs sm:text-sm px-2 py-2 md:col-span-1 col-span-2"
                 >
                   <CheckCircle className="w-4 h-4 mr-2" />
                   Finalizar
