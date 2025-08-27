@@ -424,75 +424,22 @@ export function GuidedFieldView({
             </div>
         </div>
 
-        {/* 🤖 [IA] - v1.0.95: Resumen de campos completados mejorado para desktop */}
-        <Card className="glass-card" style={{
-          backgroundColor: 'rgba(36, 36, 36, 0.5)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          border: '1px solid rgba(0, 186, 124, 0.3)',
-          borderRadius: '16px',
-          boxShadow: '0 4px 16px rgba(0, 186, 124, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
-        }}>
-          <CardContent className="pt-3 pb-3">
-            <div className="flex items-center justify-between mb-2">
-              <h4 className="text-sm font-medium text-success">
-                ✓ Campos Completados
-              </h4>
-              <Badge variant="outline" className="border-success text-success text-center min-w-[100px]">
-                Total: {formatCurrency(accumulatedTotal)}
-              </Badge>
+        {/* 🤖 [IA] - v1.2.7: Barra de progreso pura sin valores monetarios (sistema anti-fraude) */}
+        {completedFields.length > 0 && (
+          <div className="px-3 mb-3">
+            <div className="h-1 bg-black/40 rounded-full overflow-hidden">
+              <div 
+                className="h-full rounded-full transition-all duration-300"
+                style={{ 
+                  width: `${(completedFields.length / totalSteps) * 100}%`,
+                  background: isMorningCount 
+                    ? 'linear-gradient(90deg, #f4a52a, #ffb84d)'
+                    : 'linear-gradient(90deg, #0a84ff, #5e5ce6)'
+                }}
+              />
             </div>
-            {/* 🤖 [IA] - v1.0.95: Grid optimizado para mejor visualización en desktop */}
-            {completedFields.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-                {completedFields.map((field, index) => (
-                  <motion.div
-                    key={`${field.name}-${index}`}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: index * 0.05 }}
-                    className="flex items-center gap-2 p-2 rounded-lg bg-success/10 text-success text-sm"
-                  >
-                    <Check className="w-3 h-3" />
-                    <span className="truncate">
-                      {/* 🤖 [IA] - v1.0.49: Formato homogéneo y descriptivo para todas las denominaciones */}
-                      {(() => {
-                        const name = field.name;
-                        
-                        // Pagos electrónicos: "Nombre: $monto"
-                        if (field.quantity === 1 && !name.includes('¢') && !name.includes('$')) {
-                          return `${name}: ${formatCurrency(field.total)}`;
-                        }
-                        
-                        // Billetes: "cantidad x $valor billete"
-                        if (name.startsWith('$') && !name.includes('moneda')) {
-                          return `${field.quantity}x ${name} billete`;
-                        }
-                        
-                        // Monedas con centavos (ya incluidos en el nombre)
-                        if (name.includes('¢')) {
-                          return `${field.quantity}x ${name}`;
-                        }
-                        
-                        // $1 moneda
-                        if (name.includes('moneda')) {
-                          return `${field.quantity}x ${name}`;
-                        }
-                        
-                        // Default (no debería llegar aquí)
-                        return `${field.quantity}x ${name}`;
-                      })()}
-                    </span>
-                  </motion.div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-4 text-muted-foreground text-sm">
-                Esperando primer ingreso...
-              </div>
-            )}
-          </CardContent>
-        </Card>
+          </div>
+        )}
 
         {/* Instrucciones adicionales */}
         <Card className="glass-card bg-muted/20">
