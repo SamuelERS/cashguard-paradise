@@ -125,6 +125,17 @@ const CashCounter = ({
     }
   }, [hasInitialData]);
 
+  // 🤖 [IA] - v1.2.7 - Auto-confirmar totalCash en conteo matutino
+  useEffect(() => {
+    if (currentField === 'totalCash' && isMorningCount && phaseState.currentPhase === 1) {
+      // Auto-confirmar después de un pequeño delay para que el usuario vea el campo
+      const timer = setTimeout(() => {
+        handleGuidedFieldConfirm('0');
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [currentField, isMorningCount, phaseState.currentPhase]);
+
   const handleCashCountChange = (denomination: string, value: string) => {
     const numValue = parseInt(value) || 0;
     setCashCount(prev => ({
@@ -134,6 +145,27 @@ const CashCounter = ({
   };
 
   const handleGuidedFieldConfirm = (value: string) => {
+    // 🤖 [IA] - v1.2.7: Auto-confirmar totalCash en conteo matutino (sistema anti-fraude)
+    if (currentField === 'totalCash' && isMorningCount) {
+      // Auto-avanzar sin mostrar valor total
+      const success = confirmCurrentField(
+        '0', // Valor dummy, no se usa para totalCash
+        handleCashCountChange,
+        handleElectronicChange,
+        electronicPayments,
+        cashCount
+      );
+      
+      if (success) {
+        // Completar Fase 1 automáticamente después de confirmar totalCash
+        setTimeout(() => {
+          handleCompletePhase1();
+        }, 100); // Pequeño delay para que el usuario vea la transición
+      }
+      return;
+    }
+    
+    // Flujo normal para otros campos
     const success = confirmCurrentField(
       value,
       handleCashCountChange,
@@ -641,8 +673,8 @@ const CashCounter = ({
               />
             )}
             
-            {/* Totals Summary Section - Solo si está activo el total */}
-            {(currentField === 'totalCash' || (!isMorningCount && currentField === 'totalElectronic')) && (
+            {/* 🤖 [IA] - v1.2.7: TotalsSummarySection solo visible después de Fase 1 (anti-fraude) */}
+            {phaseState.currentPhase > 1 && (currentField === 'totalCash' || (!isMorningCount && currentField === 'totalElectronic')) && (
               <TotalsSummarySection
                 totalCash={Object.entries({...cashCount}).reduce((sum, [key, val]) => {
                   if (typeof val === 'number' && !['credomatic', 'promerica', 'bankTransfer', 'paypal'].includes(key)) {

@@ -81,7 +81,7 @@ export function GuidedFieldView({
   };
 
   const denominationValue = getDenominationValue();
-  const totalValue = parseInt(inputValue || '0') * denominationValue;
+  // 🤖 [IA] - v1.2.7: totalValue removido para sistema anti-fraude
   
   // 🤖 [IA] - v1.1.16: Detectar si la app está en modo PWA standalone
   const [isStandalone, setIsStandalone] = useState(false);
@@ -276,11 +276,7 @@ export function GuidedFieldView({
                 }}>
                   {currentFieldLabel}
                 </h3>
-                {denominationValue > 0 && (
-                  <p className="text-xs text-text-secondary">
-                    Valor unitario: {formatCurrency(denominationValue)}
-                  </p>
-                )}
+                {/* 🤖 [IA] - v1.2.7: Valor unitario ocultado para sistema anti-fraude */}
               </div>
               
               {/* Badge de progreso con indicador de sección */}
@@ -386,28 +382,19 @@ export function GuidedFieldView({
                 </Button>
               </div>
 
-              {/* Mostrar valor total calculado con animación elegante */}
-              <AnimatePresence>
-                {inputValue && denominationValue > 0 && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                    transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                    style={{
-                      background: gradientBgLight,
-                      border: `1px solid ${borderColor}`,
-                      borderRadius: '10px',
-                      padding: '10px',
-                      textAlign: 'center'
-                    }}
-                  >
-                    <p className="text-base font-semibold" style={{ color: primaryColor }}>
-                      Total: <span className="text-xl font-bold">{formatCurrency(totalValue)}</span>
-                    </p>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              {/* 🤖 [IA] - v1.2.7: Indicador minimalista sin valores monetarios (anti-fraude) */}
+              {inputValue && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="mt-2 flex justify-center"
+                >
+                  <div className="flex items-center gap-1 text-xs opacity-50">
+                    <Check className="w-3 h-3" />
+                    <span>Cantidad registrada</span>
+                  </div>
+                </motion.div>
+              )}
 
               {/* Mensaje de error si es necesario */}
               {showError && (
