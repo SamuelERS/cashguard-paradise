@@ -1,10 +1,10 @@
-# CLAUDE.md v1.2.6
+# CLAUDE.md v1.1.15
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview
 
-CashGuard Paradise v1.2.6 is a cash management system for "Acuarios Paradise" retail stores, built with React, TypeScript, Vite, and shadcn/ui. The application now implements **dual operation modes**: morning cash count (inicio de turno) and evening cash cut (fin de turno), with multi-phase protocols, anti-fraud measures, complete CI/CD automation, and optimized responsive design for Android devices.
+CashGuard Paradise v1.1.15 is a cash management system for "Acuarios Paradise" retail stores, built with React, TypeScript, Vite, and shadcn/ui. The application now implements **dual operation modes**: morning cash count (inicio de turno) and evening cash cut (fin de turno), with multi-phase protocols and anti-fraud measures.
 
 ### 🧪 Testing Status - 100% Docker Containerized
 - **SECTOR 1 ✅**: Testing framework foundation (10 smoke tests) - Ejecutándose en Docker
@@ -198,6 +198,28 @@ Flujo de 5 pasos optimizado:
 - **Consolidación:** Updates similares agrupados por tema (UX/UI, Responsive, etc.)
 - **Archivado:** Versiones v1.0.66-v1.0.79 movidas al histórico
 - **Simplificación:** Reglas de la Casa y ejemplos de código optimizados
+
+## Recent Updates v1.1.21
+
+### 🔧 Fix: Unificación del Sistema de Toast Notifications
+- **PROBLEMA:** La aplicación usaba dos sistemas de toast simultáneamente causando conflictos
+- **SÍNTOMAS DETECTADOS:**
+  1. Mensajes duplicados o que no aparecían correctamente
+  2. Inconsistencia visual entre diferentes componentes
+  3. Conflicto entre Radix UI toast y Sonner library
+- **CAUSA RAÍZ:**
+  - CashCalculation.tsx usaba `@/hooks/use-toast` (implementación Radix UI custom)
+  - Otros componentes usaban `sonner` (librería externa)
+  - App.tsx renderizaba ambos proveedores de toast simultáneamente
+- **SOLUCIÓN IMPLEMENTADA:**
+  1. **Migración completa a Sonner:** CashCalculation.tsx ahora usa `import { toast } from "sonner"`
+  2. **Actualización de API:** Cambiado de `toast({ title, description })` a `toast.success()` / `toast.error()`
+  3. **Limpieza en App.tsx:** Removido `<Toaster />` de Radix UI, manteniendo solo `<Sonner />`
+- **ARCHIVOS MODIFICADOS:**
+  - `/src/components/CashCalculation.tsx` - 6 toast calls actualizadas
+  - `/src/App.tsx` - Removido componente Toaster duplicado
+- **RESULTADO:** Sistema unificado de notificaciones sin conflictos
+- **IMPACTO:** Mejor experiencia de usuario con notificaciones consistentes y confiables
 
 ## Recent Updates v1.1.20
 

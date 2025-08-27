@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { calculateCashTotal, calculateChange50, formatCurrency, generateDenominationSummary } from "@/utils/calculations";
 import { copyToClipboard } from "@/utils/clipboard"; // 🤖 [IA] - v1.1.09
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner"; // 🤖 [IA] - v1.1.15 - Migrated to Sonner for consistency
 import { CashCount, ElectronicPayments } from "@/types/cash";
 import { PhaseState } from "@/types/phases";
 import { getStoreById, getEmployeeById } from "@/data/paradise";
@@ -377,10 +377,8 @@ Firma Digital: ${dataHash}`;
   const generateWhatsAppReport = () => {
     try {
       if (!calculationData || !store || !cashier || !witness) {
-        toast({
-          title: "❌ Error",
-          description: "Faltan datos necesarios para generar el reporte",
-          variant: "destructive",
+        toast.error("❌ Error", {
+          description: "Faltan datos necesarios para generar el reporte"
         });
         return;
       }
@@ -389,15 +387,12 @@ Firma Digital: ${dataHash}`;
       const encodedReport = encodeURIComponent(`🏪 ${report}`);
       window.open(`https://wa.me/?text=${encodedReport}`, '_blank');
       
-      toast({
-        title: "✅ Reporte generado exitosamente",
-        description: "WhatsApp se abrirá con el reporte completo",
+      toast.success("✅ Reporte generado exitosamente", {
+        description: "WhatsApp se abrirá con el reporte completo"
       });
     } catch (error) {
-      toast({
-        title: "❌ Error al generar reporte",
-        description: error instanceof Error ? error.message : "Error desconocido",
-        variant: "destructive",
+      toast.error("❌ Error al generar reporte", {
+        description: error instanceof Error ? error.message : "Error desconocido"
       });
     }
   };
@@ -428,16 +423,13 @@ Firma Digital: ${dataHash}`;
         `);
         printWindow.document.close();
         
-        toast({
-          title: "📄 Reporte generado",
-          description: "Vista de impresión preparada",
+        toast.success("📄 Reporte generado", {
+          description: "Vista de impresión preparada"
         });
       }
     } catch (error) {
-      toast({
-        title: "❌ Error al generar reporte",
-        description: error instanceof Error ? error.message : "Error desconocido",
-        variant: "destructive",
+      toast.error("❌ Error al generar reporte", {
+        description: error instanceof Error ? error.message : "Error desconocido"
       });
     }
   };
@@ -449,23 +441,18 @@ Firma Digital: ${dataHash}`;
       const result = await copyToClipboard(report);
       
       if (result.success) {
-        toast({
-          title: "💾 Copiado al portapapeles",
-          description: "El reporte ha sido copiado exitosamente",
+        toast.success("💾 Copiado al portapapeles", {
+          description: "El reporte ha sido copiado exitosamente"
         });
       } else {
-        toast({
-          title: "❌ Error al copiar",
-          description: result.error || "No se pudo copiar al portapapeles. Intente de nuevo.",
-          variant: "destructive",
+        toast.error("❌ Error al copiar", {
+          description: result.error || "No se pudo copiar al portapapeles. Intente de nuevo."
         });
       }
     } catch (error) {
       // Error al generar el reporte
-      toast({
-        title: "❌ Error al generar reporte",
-        description: error instanceof Error ? error.message : "Error desconocido",
-        variant: "destructive",
+      toast.error("❌ Error al generar reporte", {
+        description: error instanceof Error ? error.message : "Error desconocido"
       });
     }
   };

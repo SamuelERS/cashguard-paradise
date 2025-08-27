@@ -148,27 +148,20 @@ const CashCounter = ({
         navigator.vibrate(50); // Vibración suave de 50ms
       }
       
-      // 🤖 [IA] - v1.0.47: Mensajes más cortos y claros
-      // Show special message when transitioning to electronic payments
+      // 🤖 [IA] - v1.2.7: Eliminados toasts de denominaciones individuales para reducir ruido visual
+      // Solo mostrar toast de transición a pagos electrónicos
       if (currentField === 'bill100') {
-        toast.success(`✓ $${value}`);
         // 🤖 [IA] - Migrado a timing unificado para notificaciones consistentes v1.0.22
         createTimeout(() => {
           toast.info('💳 Pagos electrónicos', {
             duration: 3000,
           });
         }, 'navigation', 'cash_counter_toast');
-      } else {
-        const isElectronic = ['credomatic', 'promerica', 'bankTransfer', 'paypal'].includes(currentField);
-        // 🤖 [IA] - v1.0.47: Mensajes simplificados
-        if (isElectronic) {
-          toast.success(`✓ $${value}`);
-        } else if (currentField === 'totalCash' || currentField === 'totalElectronic') {
-          toast.success(`✓ Total confirmado`);
-        } else {
-          toast.success(`✓ ${value}`);
-        }
+      } else if (currentField === 'totalCash' || currentField === 'totalElectronic') {
+        // Solo mantener toast para totales confirmados
+        toast.success(`✓ Total confirmado`);
       }
+      // 🤖 [IA] - Sin else: no más toasts para denominaciones individuales
     }
   };
 
