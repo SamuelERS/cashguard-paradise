@@ -148,20 +148,8 @@ const CashCounter = ({
         navigator.vibrate(50); // Vibración suave de 50ms
       }
       
-      // 🤖 [IA] - v1.2.7: Eliminados toasts de denominaciones individuales para reducir ruido visual
-      // Solo mostrar toast de transición a pagos electrónicos
-      if (currentField === 'bill100') {
-        // 🤖 [IA] - Migrado a timing unificado para notificaciones consistentes v1.0.22
-        createTimeout(() => {
-          toast.info('💳 Pagos electrónicos', {
-            duration: 3000,
-          });
-        }, 'navigation', 'cash_counter_toast');
-      } else if (currentField === 'totalCash' || currentField === 'totalElectronic') {
-        // Solo mantener toast para totales confirmados
-        toast.success(`✓ Total confirmado`);
-      }
-      // 🤖 [IA] - Sin else: no más toasts para denominaciones individuales
+      // 🤖 [IA] - v1.2.7: Eliminados todos los toasts de confirmación individual
+      // Solo mantener vibración háptica como feedback principal
     }
   };
 
@@ -193,8 +181,9 @@ const CashCounter = ({
     toast.success("✅ Fase 1 completada correctamente");
     
     // 🤖 [IA] - v1.0.84: Use local calculation for accurate messages
+    // 🤖 [IA] - v1.2.7: Toast de conteo matutino eliminado
     if (isMorningCount) {
-      toast.info("📊 Conteo matutino completado. Generando reporte.", { duration: 3000 });
+      // Transición directa sin notificación
     } else if (willSkipPhase2) {
       toast.info("💡 Total ≤ $50. Saltando a reporte final.", { duration: 3000 });
     } else {
