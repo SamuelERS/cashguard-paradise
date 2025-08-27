@@ -1,16 +1,20 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef, useEffect, useCallback } from "react"; // 🤖 [IA] - Agregar useCallback para memoización v1.0.23
 import { motion } from "framer-motion";
-import { Check, Lock, ArrowRight } from "lucide-react";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
+import { Check, ArrowRight, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+// 🤖 [IA] - Usar tipo inline en lugar de importar Denomination inexistente
+import { useFieldNavigation } from "@/hooks/useFieldNavigation";
+import { useInputValidation } from "@/hooks/useInputValidation"; // 🤖 [IA] - Hook de validación unificada
+import { useTimingConfig } from "@/hooks/useTimingConfig"; // 🤖 [IA] - BUG #6 Fix: Timing unificado
 
 interface GuidedDenominationItemProps {
   denomination: {
     name: string;
     value: number;
-  };
+  }; // 🤖 [IA] - Tipo inline para evitar importación inexistente
   fieldName: string;
   quantity: number;
   type: "coin" | "bill";
@@ -19,6 +23,7 @@ interface GuidedDenominationItemProps {
   isAccessible: boolean;
   onConfirm: (value: string) => void;
   onAttemptAccess?: () => void;
+  tabIndex?: number; // 🤖 [IA] - Índice para navegación con flechas del teclado
 }
 
 export const GuidedDenominationItem = ({
@@ -30,43 +35,157 @@ export const GuidedDenominationItem = ({
   isCompleted,
   isAccessible,
   onConfirm,
-  onAttemptAccess
+  onAttemptAccess,
+  tabIndex
 }: GuidedDenominationItemProps) => {
   const [inputValue, setInputValue] = useState(isCompleted ? quantity.toString() : "");
   const inputRef = useRef<HTMLInputElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const inputValueRef = useRef(inputValue); // 🤖 [IA] - Fix stale closure con useRef v1.0.23
+  const navigationTimeoutRef = useRef<ReturnType<typeof setTimeout>>(); // 🤖 [IA] - Ref para cancelar timeouts previos v1.0.23
   const total = quantity * denomination.value;
+  
+  // 🤖 [IA] - v1.1.16: Detectar si la app está en modo PWA standalone
+  const [isStandalone, setIsStandalone] = useState(false);
+  
+  useEffect(() => {
+    // Detectar PWA standalone mode
+    const checkStandalone = () => {
+      const standalone = window.matchMedia('(display-mode: standalone)').matches ||
+                        (window.navigator as any).standalone ||
+                        document.referrer.includes('android-app://');
+      setIsStandalone(standalone);
+    };
+    checkStandalone();
+  }, []);
+  
+  // 🤖 [IA] - Actualizar ref cuando cambia inputValue v1.0.23
+  inputValueRef.current = inputValue;
+
+  // 🤖 [IA] - Usar hook de navegación unificado en lugar de lógica manual
+  const { handleEnterNavigation } = useFieldNavigation([fieldName]);
+
+  const { validateInput, getPattern, getInputMode } = useInputValidation(); // 🤖 [IA] - Hook de validación
+  const { createTimeoutWithCleanup } = useTimingConfig(); // 🤖 [IA] - BUG #6 Fix: Evitar race conditions
+
+  const handleInputChange = (value: string) => {
+    if (isActive) {
+      // 🤖 [IA] - Usar validación unificada para números enteros (denominaciones)
+      const validation = validateInput(value, 'integer');
+      if (validation.isValid) {
+        setInputValue(validation.cleanValue);
+      }
+    }
+  };
+
+  // 🤖 [IA] - handleConfirm definido antes de uso en useEffect v1.0.23-fix
+  // 🤖 [IA] - Memoizar handleConfirm para evitar re-renders v1.0.23
+  const handleConfirm = useCallback(() => {
+    if (isActive && inputValue !== "") {
+      onConfirm(inputValue);
+      setInputValue("");
+      
+      // 🤖 [IA] - Cancelar timeout anterior si existe v1.0.23
+      if (navigationTimeoutRef.current) {
+        clearTimeout(navigationTimeoutRef.current);
+      }
+      
+      // 🤖 [IA] - v1.0.44: Fix navegación completa incluyendo bill100 → credomatic
+      navigationTimeoutRef.current = createTimeoutWithCleanup(() => {
+        // Orden completo de campos para navegación fluida
+        const fieldOrder = [
+          'penny', 'nickel', 'dime', 'quarter', 'dollarCoin',  // Monedas
+          'bill1', 'bill5', 'bill10', 'bill20', 'bill50', 'bill100',  // Billetes
+          'credomatic', 'promerica', 'bankTransfer', 'paypal'  // Pagos electrónicos
+        ];
+        
+        const currentIndex = fieldOrder.indexOf(fieldName);
+        const nextFieldName = currentIndex >= 0 && currentIndex < fieldOrder.length - 1 
+          ? fieldOrder[currentIndex + 1] 
+          : null;
+        
+        if (nextFieldName) {
+          const nextInput = document.querySelector(`[data-field="${nextFieldName}"]`) as HTMLInputElement;
+          if (nextInput) {
+            nextInput.focus();
+            nextInput.select();
+            return;
+          }
+        }
+        
+        // Fallback al selector genérico si no encuentra el campo específico
+        const nextActiveInput = document.querySelector('.input-field.active') as HTMLInputElement;
+        if (nextActiveInput) {
+          nextActiveInput.focus();
+          nextActiveInput.select();
+        }
+      }, 'confirmation', `confirm_${fieldName}`);
+    }
+  }, [isActive, inputValue, onConfirm, fieldName, createTimeoutWithCleanup]);
 
   // Auto-focus when field becomes active
   useEffect(() => {
     if (isActive && inputRef.current) {
-      const timer = setTimeout(() => {
+      // 🤖 [IA] - v1.1.16: Delay mayor para PWA standalone
+      const focusDelay = isStandalone ? 300 : 100;
+      
+      const cleanup = createTimeoutWithCleanup(() => {
         inputRef.current?.focus();
+        // En PWA, hacer click programático puede ayudar
+        if (isStandalone) {
+          inputRef.current?.click();
+        }
         inputRef.current?.select();
-      }, 100);
-      return () => clearTimeout(timer);
+      }, 'focus', `focus_${fieldName}`, focusDelay);
+      
+      return cleanup;
     }
-  }, [isActive]);
+  }, [isActive, fieldName, createTimeoutWithCleanup, isStandalone]);
 
-  const handleInputChange = (value: string) => {
-    if (isActive) {
-      setInputValue(value);
+  // 🤖 [IA] - Cleanup del timeout de navegación cuando se desmonta el componente v1.0.23
+  useEffect(() => {
+    return () => {
+      if (navigationTimeoutRef.current) {
+        clearTimeout(navigationTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  // 🤖 [IA] - Configurar touchend event para prevenir cierre de teclado móvil
+  useEffect(() => {
+    if (isActive && buttonRef.current) {
+      const button = buttonRef.current;
+      
+      // 🤖 [IA] - Usar ref para evitar stale closure v1.0.23-fix
+      const handleTouchEnd = (e: TouchEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // 🤖 [IA] - Simplificado: handleConfirm ya maneja todo v1.0.23-fix
+        handleConfirm();
+      };
+
+      button.addEventListener('touchend', handleTouchEnd, { passive: false });
+      
+      return () => {
+        button.removeEventListener('touchend', handleTouchEnd);
+      };
     }
-  };
+  }, [isActive, handleConfirm]); // 🤖 [IA] - Dependencias actualizadas v1.0.23
 
-  const handleConfirm = () => {
+  // 🤖 [IA] - Auto-confirmar al perder foco para navegación con flechas iOS
+  const handleBlur = useCallback(() => {
     if (isActive && inputValue !== "") {
-      onConfirm(inputValue);
-      setInputValue("");
-    }
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && isActive && inputValue !== "") {
-      e.preventDefault();
       handleConfirm();
-      // Auto-focus next field would happen naturally due to state change
     }
-  };
+  }, [isActive, inputValue, handleConfirm]); // 🤖 [IA] - Memoizado para consistencia v1.0.23
+
+  /* 🤖 [IA] - Usar hook de navegación unificado en lugar de lógica manual */
+  const handleKeyPress = handleEnterNavigation(fieldName, () => {
+    if (isActive && inputValue !== "") {
+      handleConfirm();
+    }
+  });
 
   const handleClick = () => {
     if (!isAccessible && onAttemptAccess) {
@@ -76,12 +195,22 @@ export const GuidedDenominationItem = ({
 
   return (
     <motion.div 
-      className={cn(
-        "glass-card space-y-3 p-5 transition-all duration-500",
-        isActive && "border-2 border-primary/40 shadow-lg shadow-primary/30",
-        isCompleted && "border-2 border-success/60 bg-success/5",
-        !isAccessible && "opacity-30 cursor-not-allowed"
-      )}
+      style={{
+        backgroundColor: isCompleted ? 'rgba(0, 186, 124, 0.05)' : 'rgba(36, 36, 36, 0.4)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        border: isActive ? '2px solid rgba(10, 132, 255, 0.4)' : 
+               isCompleted ? '2px solid rgba(0, 186, 124, 0.6)' : 
+               '1px solid rgba(255, 255, 255, 0.15)',
+        borderRadius: '16px',
+        padding: '20px',
+        boxShadow: isActive ? '0 8px 24px rgba(10, 132, 255, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)' :
+                   '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+        opacity: !isAccessible ? '0.3' : '1',
+        cursor: !isAccessible ? 'not-allowed' : 'pointer',
+        transition: 'all 0.5s'
+      }}
+      className="space-y-3"
       whileHover={isAccessible ? { scale: 1.01, y: -1 } : {}}
       transition={{ duration: 0.3, type: "spring", stiffness: 300 }}
       onClick={handleClick}
@@ -141,15 +270,40 @@ export const GuidedDenominationItem = ({
       <div className="flex gap-3">
         <Input
           ref={inputRef}
-          type="number"
+          type="tel" // 🤖 [IA] - v1.1.15: Cambiado de "text" a "tel" para mejor activación del teclado numérico
+          inputMode={getInputMode('integer')} // 🤖 [IA] - Teclado numérico optimizado para móvil
+          pattern={getPattern('integer')} // 🤖 [IA] - Patrón para validación y teclado iOS
           min="0"
           value={isCompleted ? quantity.toString() : inputValue}
           onChange={(e) => handleInputChange(e.target.value)}
           onKeyPress={handleKeyPress}
+          onBlur={handleBlur} // 🤖 [IA] - Auto-confirmar al navegar con flechas
+          // 🤖 [IA] - v1.1.16: Handlers adicionales para PWA standalone
+          onClick={(e) => {
+            if (isStandalone && isActive) {
+              e.currentTarget.focus();
+              e.currentTarget.select();
+            }
+          }}
+          onTouchStart={(e) => {
+            if (isStandalone && isActive) {
+              // Prevenir comportamiento por defecto y forzar focus
+              e.stopPropagation();
+              setTimeout(() => {
+                e.currentTarget.focus();
+              }, 50);
+            }
+          }}
+          autoCapitalize="off"  // Prevenir capitalización en iOS
+          autoCorrect="off"     // Desactivar autocorrección
+          autoComplete="off"    // Desactivar autocompletado
           placeholder={isActive ? "Ingrese cantidad..." : "0"}
           disabled={!isActive}
+          tabIndex={isActive ? tabIndex : -1} // 🤖 [IA] - Orden de navegación con flechas
+          data-field={fieldName} /* 🤖 [IA] - Usar fieldName para navegación precisa v1.0.23 */
           className={cn(
-            "input-field text-center text-lg font-semibold flex-1",
+            "input-field text-center text-lg font-semibold flex-1 h-12 md:h-10",
+            // 🤖 [IA] - Altura consistente con el botón para mejor alineación
             isActive && "active",
             isCompleted && "completed",
             !isAccessible && "blocked"
@@ -158,12 +312,15 @@ export const GuidedDenominationItem = ({
         
         {isActive && (
           <Button
+            ref={buttonRef}
             onClick={handleConfirm}
             disabled={!inputValue}
             size="sm"
-            className="btn-primary px-6 py-2 text-lg"
+            className="btn-primary px-6 py-2 text-lg h-12 min-w-[48px] md:h-10"
+            // 🤖 [IA] - v1.1.15: Removidos preventDefaults que bloqueaban el teclado móvil
+            // 🤖 [IA] - Botón más grande en móviles (48px) para mejor accesibilidad
           >
-            ✓
+            ⏎
           </Button>
         )}
       </div>

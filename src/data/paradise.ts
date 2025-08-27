@@ -4,16 +4,16 @@ export const STORES: Store[] = [
   {
     id: "los-heroes",
     name: "Los Héroes",
-    address: "Centro Comercial Los Heroes, Local #9 San Salvador",
+    address: "C.C. Los Heroes, Local #9 San Salvador",
     phone: "2260-5555",
-    schedule: "9:00 AM - 8:00 PM"
+    schedule: "09:00 AM - 08:00 PM"
   },
   {
     id: "plaza-merliot",
     name: "Plaza Merliot", 
-    address: "Calle al Volcán, Plaza Merliot Local 5-B",
+    address: "C.C. Plaza Merliot local #108 primer nivel",
     phone: "2278-9999",
-    schedule: "09:00 AM - 5:55 PM"
+    schedule: "09:00 AM - 05:55 PM"
   }
 ];
 

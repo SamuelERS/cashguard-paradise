@@ -1,0 +1,62 @@
+# 🤖 [IA] - Docker Compose con perfiles para desarrollo y producción
+version: '3.8'
+
+services:
+  # Servicio de desarrollo con hot-reload
+  cashguard-dev:
+    image: node:20-alpine
+    container_name: cashguard-paradise-dev
+    profiles: ["dev", "development"]
+    working_dir: /app
+    volumes:
+      # Montar código fuente para hot-reload
+      - .:/app
+      # Excluir node_modules del host
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    environment:
+      - NODE_ENV=development
+      - VITE_SUPABASE_URL=${VITE_SUPABASE_URL:-your_supabase_url_here}
+      - VITE_SUPABASE_ANON_KEY=${VITE_SUPABASE_ANON_KEY:-your_supabase_anon_key_here}
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    stdin_open: true
+    tty: true
+    networks:
+      - cashguard-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5173"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Servicio de producción con Nginx
+  cashguard-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - VITE_SUPABASE_URL=${VITE_SUPABASE_URL:-your_supabase_url_here}
+        - VITE_SUPABASE_ANON_KEY=${VITE_SUPABASE_ANON_KEY:-your_supabase_anon_key_here}
+    image: cashguard-paradise:latest
+    container_name: cashguard-paradise-prod
+    profiles: ["prod", "production"]
+    ports:
+      - "8080:80"
+    environment:
+      - NODE_ENV=production
+    networks:
+      - cashguard-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+networks:
+  cashguard-network:
+    driver: bridge
+    name: cashguard-network

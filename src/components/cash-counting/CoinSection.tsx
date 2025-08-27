@@ -1,3 +1,4 @@
+// 🤖 [IA] - v1.0.70: Glass Effect Premium aplicado a modo manual
 import { motion } from "framer-motion";
 import { DenominationItem } from "@/components/ui/DenominationItem";
 import { DENOMINATIONS, CashCount } from "@/types/cash";
@@ -14,25 +15,52 @@ export const CoinSection = ({ cashCount, onChange, readonly = false }: CoinSecti
     return sum + (quantity * denom.value);
   }, 0);
 
+  const completedCoins = Object.entries(DENOMINATIONS.COINS).filter(([key]) => {
+    const quantity = cashCount[key as keyof CashCount] || 0;
+    return quantity > 0;
+  }).length;
+
   return (
-    <div className="glass-card">
-      <div className="p-6">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <motion.div
-              className="coin-badge"
-              animate={{ rotate: readonly ? 0 : [0, 10, -10, 0] }}
-              transition={{ duration: 4, repeat: readonly ? 0 : Infinity }}
-            >
-              <span>¢</span>
-            </motion.div>
-            <h3 className="text-xl font-bold" style={{ color: 'var(--warning)' }}>Monedas</h3>
+    <div style={{
+      backgroundColor: 'rgba(36, 36, 36, 0.4)',
+      backdropFilter: 'blur(20px)',
+      WebkitBackdropFilter: 'blur(20px)',
+      border: '1px solid rgba(255, 255, 255, 0.15)',
+      borderRadius: '16px',
+      padding: '24px',
+      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+    }}>
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-warning via-warning/80 to-warning/60 flex items-center justify-center shadow-lg">
+            <span className="text-white font-bold text-lg">¢</span>
           </div>
-          <div className="text-right">
-            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Total</p>
-            <p className="coins-total text-lg font-bold">${coinTotal.toFixed(2)}</p>
+          <div>
+            <h3 className="text-xl font-bold" style={{
+              background: 'linear-gradient(135deg, #f4a52a 0%, #ffb84d 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text'
+            }}>Monedas</h3>
+            <p className="text-sm text-text-secondary">
+              {completedCoins} de {Object.keys(DENOMINATIONS.COINS).length} ingresadas
+            </p>
           </div>
         </div>
+        
+        <motion.div 
+          className="text-right"
+          key={coinTotal}
+          initial={{ scale: 0.9 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 0.2 }}
+        >
+          <div className="text-sm text-text-secondary">Total en Monedas</div>
+          <div className="text-2xl font-bold text-warning">
+            ${coinTotal.toFixed(2)}
+          </div>
+        </motion.div>
+      </div>
         
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
           {Object.entries(DENOMINATIONS.COINS).map(([key, denom]) => (
@@ -55,20 +83,13 @@ export const CoinSection = ({ cashCount, onChange, readonly = false }: CoinSecti
         
         {coinTotal > 0 && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="mt-4 p-3 rounded-lg"
-            style={{ 
-              background: 'rgba(255, 214, 10, 0.1)', 
-              border: '1px solid rgba(255, 214, 10, 0.3)' 
-            }}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-4 text-center bg-warning/10 text-warning px-4 py-2 rounded-lg"
           >
-            <p className="text-sm text-center" style={{ color: 'var(--warning)' }}>
-              🪙 {coinTotal.toFixed(2)} dólares en monedas contabilizados
-            </p>
+            💰 Total en monedas: ${coinTotal.toFixed(2)}
           </motion.div>
         )}
-      </div>
     </div>
   );
 };

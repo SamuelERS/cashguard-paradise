@@ -1,0 +1,7 @@
+#!/bin/sh
+# 🤖 [IA] - v1.2.4: Pre-commit hook - Validates code before commit
+. "$(dirname "$0")/_/husky.sh"
+
+# Run pre-commit checks in Docker
+echo "🔍 Running pre-commit checks..."
+./Scripts/pre-commit-checks.sh

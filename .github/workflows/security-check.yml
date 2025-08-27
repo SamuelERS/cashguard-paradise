@@ -1,0 +1,181 @@
+# 🤖 [IA] - v1.2.4: Security audit pipeline - Weekly security checks
+name: Security Audit
+
+on:
+  schedule:
+    # Runs every Sunday at 2 AM UTC
+    - cron: '0 2 * * 0'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  security-audit:
+    name: Weekly Security Audit
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      # ========================================
+      # NPM Audit
+      # ========================================
+      - name: NPM Security Audit
+        id: npm-audit
+        run: |
+          echo "🔍 Running NPM security audit..."
+          docker run --rm \
+            -v ${{ github.workspace }}:/app \
+            -w /app \
+            node:20-alpine \
+            sh -c "npm ci && npm audit --json > npm-audit-report.json || true"
+          
+          # Parse critical vulnerabilities
+          CRITICAL=$(docker run --rm \
+            -v ${{ github.workspace }}:/app \
+            -w /app \
+            node:20-alpine \
+            sh -c "cat npm-audit-report.json | grep -o '\"critical\":[0-9]*' | grep -o '[0-9]*' || echo '0'")
+          
+          echo "Critical vulnerabilities: $CRITICAL"
+          
+          if [ "$CRITICAL" -gt 0 ]; then
+            echo "::error::Found $CRITICAL critical vulnerabilities!"
+            exit 1
+          fi
+      
+      # ========================================
+      # Dependency Check
+      # ========================================
+      - name: OWASP Dependency Check
+        run: |
+          echo "🔍 Running OWASP dependency check..."
+          docker run --rm \
+            -v ${{ github.workspace }}:/src \
+            -v ${{ github.workspace }}/dependency-check-data:/usr/share/dependency-check/data \
+            owasp/dependency-check:latest \
+            --scan /src \
+            --project "CashGuard Paradise Security Audit" \
+            --format ALL \
+            --out /src/dependency-check-report \
+            --enableExperimental \
+            --nvdApiKey ${{ secrets.NVD_API_KEY || 'dummy-key' }}
+        continue-on-error: true
+      
+      # ========================================
+      # Secret Scanning
+      # ========================================
+      - name: Secret Detection with TruffleHog
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+          head: HEAD
+          extra_args: --debug --only-verified
+      
+      # ========================================
+      # Container Security Scan
+      # ========================================
+      - name: Build and scan Docker image
+        run: |
+          echo "🐳 Building Docker image for scanning..."
+          docker build -t cashguard-scan:${{ github.sha }} .
+          
+          echo "🔍 Scanning Docker image with Trivy..."
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            aquasec/trivy:latest \
+            image cashguard-scan:${{ github.sha }} \
+            --severity HIGH,CRITICAL \
+            --format table
+      
+      # ========================================
+      # License Check
+      # ========================================
+      - name: License Compliance Check
+        run: |
+          echo "📜 Checking license compliance..."
+          docker run --rm \
+            -v ${{ github.workspace }}:/app \
+            -w /app \
+            node:20-alpine \
+            sh -c "npm ci && npx license-checker --summary --excludePrivatePackages"
+      
+      # ========================================
+      # Security Headers Check (for production build)
+      # ========================================
+      - name: Security Headers Check
+        run: |
+          echo "🔒 Checking security headers configuration..."
+          if [ -f "infra/nginx.conf" ]; then
+            docker run --rm \
+              -v ${{ github.workspace }}/infra:/config \
+              node:20-alpine \
+              sh -c "grep -E 'X-Frame-Options|X-Content-Type-Options|X-XSS-Protection|Content-Security-Policy' /config/nginx.conf || echo 'Warning: Security headers not found'"
+          fi
+      
+      # ========================================
+      # Generate Security Report
+      # ========================================
+      - name: Generate Security Summary
+        if: always()
+        run: |
+          echo "📊 Security Audit Summary" > security-summary.md
+          echo "=========================" >> security-summary.md
+          echo "" >> security-summary.md
+          echo "Date: $(date)" >> security-summary.md
+          echo "Commit: ${{ github.sha }}" >> security-summary.md
+          echo "" >> security-summary.md
+          
+          if [ -f npm-audit-report.json ]; then
+            echo "## NPM Audit Results" >> security-summary.md
+            docker run --rm \
+              -v ${{ github.workspace }}:/app \
+              node:20-alpine \
+              sh -c "cat /app/npm-audit-report.json | grep -o '\"total\":[0-9]*' | grep -o '[0-9]*' | head -1" | \
+              xargs -I {} echo "Total vulnerabilities: {}" >> security-summary.md
+            echo "" >> security-summary.md
+          fi
+          
+          cat security-summary.md
+      
+      # ========================================
+      # Upload Reports
+      # ========================================
+      - name: Upload Security Reports
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: security-reports-${{ github.run_id }}
+          path: |
+            npm-audit-report.json
+            dependency-check-report/
+            security-summary.md
+      
+      # ========================================
+      # Create Issue if Critical Vulnerabilities
+      # ========================================
+      - name: Create Issue for Critical Vulnerabilities
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '🚨 Security Alert: Critical vulnerabilities detected',
+              body: `## Security Audit Failed
+              
+              Critical security vulnerabilities were detected in the weekly security audit.
+              
+              **Run ID:** ${{ github.run_id }}
+              **Date:** ${new Date().toISOString()}
+              
+              Please review the security reports and take immediate action.
+              
+              [View Full Report](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})`,
+              labels: ['security', 'critical', 'automated']
+            });
+            console.log(`Created issue #${issue.data.number}`);

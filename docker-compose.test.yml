@@ -1,0 +1,90 @@
+# 🤖 [IA] - v1.1.17: Docker Compose configuration for testing environment - SIMPLIFIED
+# No need for app container for unit tests, only for future E2E tests
+
+version: '3.8'
+
+services:
+  # Dedicated testing container - runs independently
+  cashguard-tests:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    container_name: cashguard-test-runner
+    environment:
+      - NODE_ENV=test
+      - CI=true
+    volumes:
+      # Mount source code read-only
+      - ./src:/app/src:ro
+      - ./vitest.config.ts:/app/vitest.config.ts:ro
+      # Mount test directories
+      - ./src/__tests__:/app/src/__tests__
+      - ./src/__mocks__:/app/src/__mocks__
+      # Coverage output
+      - test-results:/app/coverage
+    networks:
+      - test-network
+    command: npm run test
+
+  # Application container for E2E testing
+  # 🤖 [IA] - v1.1.17: App runs in dev mode for E2E tests
+  # Usando puerto 5174 para no interferir con desarrollo en 5173
+  cashguard-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: cashguard-app-e2e
+    ports:
+      - "5175:5175"
+    environment:
+      - NODE_ENV=test
+      - VITE_HOST=0.0.0.0
+      - VITE_PORT=5175
+    volumes:
+      - ./src:/app/src:ro
+      - ./public:/app/public:ro
+      - ./index.html:/app/index.html:ro
+      - ./vite.config.ts:/app/vite.config.ts:ro
+    networks:
+      - test-network
+    profiles:
+      - e2e
+    command: npm run dev -- --host 0.0.0.0 --port 5175
+
+  # E2E testing with Playwright
+  # 🤖 [IA] - v1.1.17: Configured to test against app container
+  cashguard-e2e:
+    build:
+      context: .
+      dockerfile: e2e/Dockerfile.e2e
+    container_name: cashguard-e2e-runner
+    volumes:
+      - ./e2e:/app
+      - ./playwright-report:/app/playwright-report
+      - playwright-cache:/ms-playwright
+    environment:
+      - APP_URL=http://cashguard-app:5175
+      - CI=true
+    networks:
+      - test-network
+    profiles:
+      - e2e  # Only runs when explicitly requested with --profile e2e
+    depends_on:
+      - cashguard-app
+    command: >
+      sh -c "
+        echo 'Waiting for app to be ready...' &&
+        sleep 10 &&
+        node_modules/.bin/playwright test
+      "
+
+networks:
+  test-network:
+    driver: bridge
+
+volumes:
+  test-results:
+    name: cashguard-test-results
+  playwright-cache:
+    name: playwright-browsers-cache

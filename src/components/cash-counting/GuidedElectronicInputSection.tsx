@@ -1,15 +1,14 @@
+// 🤖 [IA] - v1.0.26: Refactorizado para usar GuidedElectronicPaymentItem modular
 import { motion } from "framer-motion";
-import { CreditCard, Building, ArrowLeftRight, Wallet, Check, Lock, ArrowRight } from "lucide-react";
-import { ElectronicPayments } from "@/types/cash";
-import { GuidedDenominationItem } from "@/components/ui/GuidedDenominationItem";
-import { useState, useEffect, useRef } from "react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
+import { CreditCard, Building, ArrowLeftRight, Wallet } from "lucide-react";
+import { ElectronicPayments, CashCount } from "@/types/cash"; // 🤖 [IA] - v1.0.48: Agregado CashCount
+import { GuidedElectronicPaymentItem } from "@/components/ui/GuidedElectronicPaymentItem"; // 🤖 [IA] - v1.0.26: Nuevo componente modular
+import { GuidedFieldView } from "./GuidedFieldView";
+import { DENOMINATIONS } from "@/types/cash";
 
 interface GuidedElectronicInputSectionProps {
   electronicPayments: ElectronicPayments;
+  cashCount?: CashCount; // 🤖 [IA] - v1.0.48: Agregado para calcular totales completos
   isFieldActive: (fieldName: string) => boolean;
   isFieldCompleted: (fieldName: string) => boolean;
   isFieldAccessible: (fieldName: string) => boolean;
@@ -17,6 +16,7 @@ interface GuidedElectronicInputSectionProps {
   onAttemptAccess: () => void;
 }
 
+// 🤖 [IA] - v1.0.26: Definición de métodos de pago mantenida sin cambios
 const paymentMethods = [
   {
     key: 'credomatic',
@@ -48,65 +48,98 @@ const paymentMethods = [
   }
 ];
 
+// 🤖 [IA] - v1.0.26: Componente refactorizado para usar GuidedElectronicPaymentItem
 export const GuidedElectronicInputSection = ({
   electronicPayments,
+  cashCount = {} as CashCount, // 🤖 [IA] - v1.0.48: Valor por defecto
   isFieldActive,
   isFieldCompleted,
   isFieldAccessible,
   onFieldConfirm,
   onAttemptAccess
 }: GuidedElectronicInputSectionProps) => {
-  const [inputValues, setInputValues] = useState<Record<string, string>>({});
-  const inputRefs = useRef<Record<string, HTMLInputElement | null>>({});
-  
   const totalElectronic = Object.values(electronicPayments).reduce((sum, val) => sum + val, 0);
   const completedPayments = paymentMethods.filter(method => isFieldCompleted(method.key)).length;
 
-  // Auto-focus active input field
-  useEffect(() => {
-    const activeMethod = paymentMethods.find(method => isFieldActive(method.key));
-    if (activeMethod && inputRefs.current[activeMethod.key]) {
-      const timer = setTimeout(() => {
-        inputRefs.current[activeMethod.key]?.focus();
-        inputRefs.current[activeMethod.key]?.select();
-      }, 100);
-      return () => clearTimeout(timer);
-    }
-  }, [isFieldActive]);
+  // Encontrar el campo activo actual para vista guiada
+  const activeField = paymentMethods.find(method => isFieldActive(method.key));
+  
+  // 🤖 [IA] - v1.0.48: Construir lista COMPLETA de campos completados (monedas + billetes + electrónicos)
+  const completedFieldsList = [
+    // Monedas completadas
+    ...Object.entries(DENOMINATIONS.COINS)
+      .filter(([key]) => isFieldCompleted(key))
+      .map(([key, denomination]) => ({
+        name: denomination.name,
+        quantity: cashCount[key as keyof CashCount] as number || 0,
+        total: ((cashCount[key as keyof CashCount] as number) || 0) * denomination.value
+      })),
+    // Billetes completados
+    ...Object.entries(DENOMINATIONS.BILLS)
+      .filter(([key]) => isFieldCompleted(key))
+      .map(([key, denomination]) => ({
+        name: denomination.name,
+        quantity: cashCount[key as keyof CashCount] as number || 0,
+        total: ((cashCount[key as keyof CashCount] as number) || 0) * denomination.value
+      })),
+    // Pagos electrónicos completados
+    ...paymentMethods
+      .filter(method => isFieldCompleted(method.key))
+      .map(method => ({
+        name: method.name,
+        quantity: 1, // Los pagos electrónicos no tienen cantidad, solo monto
+        total: electronicPayments[method.key as keyof ElectronicPayments]
+      }))
+  ];
 
-  const handleInputChange = (key: string, value: string) => {
-    if (isFieldActive(key)) {
-      setInputValues(prev => ({
-        ...prev,
-        [key]: value
-      }));
-    }
-  };
+  // Calcular el paso actual
+  const electronicStepIndex = paymentMethods.findIndex(m => m.key === activeField?.key);
+  const coinCount = Object.keys(DENOMINATIONS.COINS).length;
+  const billCount = Object.keys(DENOMINATIONS.BILLS).length;
+  const currentStep = electronicStepIndex >= 0 ? coinCount + billCount + electronicStepIndex + 1 : 0;
 
-  const handleConfirm = (key: string) => {
-    const value = inputValues[key] || '0';
-    onFieldConfirm(value);
-    setInputValues(prev => ({
-      ...prev,
-      [key]: ''
-    }));
-  };
+  // 🤖 [IA] - v1.0.95: Unificación desktop/móvil - Mostrar vista guiada para ambas plataformas
+  if (activeField) {
+    return (
+      <GuidedFieldView
+        key="electronic-guided-view" // 🤖 [IA] - v1.1.16: Key fija para mantener el componente en el DOM
+        currentFieldName={activeField.key}
+        currentFieldLabel={activeField.name}
+        currentFieldValue={electronicPayments[activeField.key as keyof ElectronicPayments]}
+        currentFieldType="electronic"
+        isActive={isFieldActive(activeField.key)}
+        isCompleted={isFieldCompleted(activeField.key)}
+        onConfirm={onFieldConfirm}
+        currentStep={currentStep}
+        totalSteps={17} // Total de pasos en el conteo guiado
+        completedFields={completedFieldsList}
+      />
+    );
+  }
 
-  const handleKeyPress = (key: string, e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && isFieldActive(key)) {
-      handleConfirm(key);
-    }
-  };
-
+  // Vista desktop (grid tradicional)
   return (
-    <div className="glass-card p-6">
+    <div style={{
+      backgroundColor: 'rgba(36, 36, 36, 0.4)',
+      backdropFilter: 'blur(20px)',
+      WebkitBackdropFilter: 'blur(20px)',
+      border: '1px solid rgba(255, 255, 255, 0.15)',
+      borderRadius: '16px',
+      padding: '24px',
+      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+    }}>
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-accent-primary via-accent-primary/80 to-accent-secondary flex items-center justify-center shadow-lg">
             <CreditCard className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-accent-primary">Pagos Electrónicos</h3>
+            <h3 className="text-xl font-bold" style={{
+              background: 'linear-gradient(135deg, #0a84ff 0%, #5e5ce6 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text'
+            }}>Pagos Electrónicos</h3>
             <p className="text-sm text-text-secondary">
               {completedPayments} de {paymentMethods.length} completados
             </p>
@@ -127,118 +160,25 @@ export const GuidedElectronicInputSection = ({
         </motion.div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {paymentMethods.map((method) => {
-          const Icon = method.icon;
-          const isActive = isFieldActive(method.key);
-          const isCompleted = isFieldCompleted(method.key);
-          const isAccessible = isFieldAccessible(method.key);
-          const currentValue = electronicPayments[method.key as keyof ElectronicPayments];
-          const inputValue = inputValues[method.key] || '';
-
-          return (
-            <motion.div
+      {/* 🤖 [IA] - v1.0.26: Form simplificado, toda la lógica está en GuidedElectronicPaymentItem */}
+      <form onSubmit={(e) => e.preventDefault()}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {paymentMethods.map((method, index) => (
+            <GuidedElectronicPaymentItem
               key={method.key}
-              className={cn(
-                "p-4 rounded-lg border-2 transition-all duration-300",
-                isActive && "border-accent-primary bg-glass-bg shadow-lg shadow-accent-glow",
-                isCompleted && "border-success bg-success/10",
-                !isAccessible && "border-bg-tertiary bg-bg-secondary/50 opacity-60"
-              )}
-              whileHover={isAccessible ? { scale: 1.02 } : {}}
-              onClick={() => !isAccessible && onAttemptAccess()}
-            >
-              <div className="flex items-center gap-3 mb-3">
-                {/* Status Icon */}
-                <div className={cn(
-                  "w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0",
-                  isCompleted && "bg-success text-white",
-                  isActive && "bg-accent-primary text-white animate-pulse",
-                  !isAccessible && "bg-bg-tertiary text-text-muted"
-                )}>
-                  {isCompleted ? (
-                    <Check className="w-4 h-4" />
-                  ) : isActive ? (
-                    <ArrowRight className="w-4 h-4" />
-                  ) : (
-                    <Lock className="w-4 h-4" />
-                  )}
-                </div>
-
-                <Icon className={cn("w-6 h-6", method.color, !isAccessible && "text-text-muted")} />
-                <div className="flex-1">
-                  <Label className={cn(
-                    "text-sm font-medium",
-                    isActive && "text-accent-primary font-bold",
-                    isCompleted && "text-success",
-                    !isAccessible && "text-text-muted"
-                  )}>
-                    {method.name}
-                  </Label>
-                  {isActive && (
-                    <div className="text-xs bg-accent-primary text-white px-2 py-1 rounded-full inline-block mt-1">
-                      ACTIVO
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex gap-2">
-                <div className="relative flex-1">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted">$</span>
-                  <Input
-                    ref={(el) => {
-                      inputRefs.current[method.key] = el;
-                    }}
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    value={isCompleted ? currentValue.toString() : inputValue}
-                    onChange={(e) => handleInputChange(method.key, e.target.value)}
-                    onKeyPress={(e) => handleKeyPress(method.key, e)}
-                    placeholder={isActive ? "0.00" : "0.00"}
-                    disabled={!isActive}
-                    className={cn(
-                      "pl-8 text-center transition-all duration-200",
-                      isActive && "bg-glass-bg border-accent-primary focus:border-accent-primary focus:ring-2 focus:ring-accent-glow",
-                      isCompleted && "bg-success/10 border-success cursor-default",
-                      !isAccessible && "bg-bg-secondary border-bg-tertiary cursor-not-allowed",
-                      method.borderColor
-                    )}
-                  />
-                </div>
-                
-                {isActive && (
-                  <Button
-                    onClick={() => handleConfirm(method.key)}
-                    disabled={!inputValue}
-                    size="sm"
-                    className="bg-accent-primary hover:bg-accent-primary/90 text-white px-4"
-                  >
-                    ✓
-                  </Button>
-                )}
-              </div>
-
-              {isCompleted && currentValue > 0 && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="mt-3 text-xs text-center bg-success/20 text-success px-3 py-1 rounded-full"
-                >
-                  Confirmado: ${currentValue.toFixed(2)}
-                </motion.div>
-              )}
-
-              {!isAccessible && (
-                <div className="mt-3 text-xs text-center text-text-muted bg-bg-tertiary/50 px-3 py-1 rounded-full">
-                  Debe completar el campo actual antes de continuar
-                </div>
-              )}
-            </motion.div>
-          );
-        })}
-      </div>
+              paymentMethod={method}
+              value={electronicPayments[method.key as keyof ElectronicPayments]}
+              isActive={isFieldActive(method.key)}
+              isCompleted={isFieldCompleted(method.key)}
+              isAccessible={isFieldAccessible(method.key)}
+              onConfirm={onFieldConfirm}
+              onAttemptAccess={onAttemptAccess}
+              tabIndex={index + 12} // 🤖 [IA] - Offset +12 (después de 5 monedas + 6 billetes)
+              nextFieldName={index < paymentMethods.length - 1 ? paymentMethods[index + 1].key : undefined}
+            />
+          ))}
+        </div>
+      </form>
 
       {totalElectronic > 0 && (
         <motion.div

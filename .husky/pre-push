@@ -1,0 +1,15 @@
+#!/bin/sh
+# 🤖 [IA] - v1.2.4: Pre-push hook - Full validation before push
+. "$(dirname "$0")/_/husky.sh"
+
+echo "🚀 Running pre-push validation..."
+echo "This will run complete test suite to ensure code quality"
+
+# Run unit tests in Docker
+echo "Running unit tests..."
+./Scripts/docker-test-commands.sh test:unit || {
+    echo "❌ Unit tests failed! Push aborted."
+    exit 1
+}
+
+echo "✅ All pre-push checks passed! Pushing to remote..."

@@ -1,13 +1,13 @@
+// 🤖 [IA] - v1.1.14 - Simplificación de tabs y eliminación de redundancias en Fase 2
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+// 🤖 [IA] - Eliminado imports de componentes UI para usar estilos inline v1.0.74
 import { Phase2DeliverySection } from './Phase2DeliverySection';
 import { Phase2VerificationSection } from './Phase2VerificationSection';
 import { DeliveryCalculation } from '@/types/phases';
 import { formatCurrency } from '@/utils/calculations';
+import { useTimingConfig } from '@/hooks/useTimingConfig'; // 🤖 [IA] - Hook de timing unificado v1.0.22
 
 interface Phase2ManagerProps {
   deliveryCalculation: DeliveryCalculation;
@@ -25,26 +25,30 @@ export function Phase2Manager({
   const [verificationCompleted, setVerificationCompleted] = useState(false);
   const [deliveryProgress, setDeliveryProgress] = useState<Record<string, boolean>>({});
   const [verificationProgress, setVerificationProgress] = useState<Record<string, boolean>>({});
+  
+  const { createTimeoutWithCleanup } = useTimingConfig(); // 🤖 [IA] - Usar timing unificado v1.0.22
 
   // Auto-advance to verification when delivery is complete
   useEffect(() => {
     if (deliveryCompleted && currentSection === 'delivery') {
-      const timer = setTimeout(() => {
+      // 🤖 [IA] - Migrado a timing unificado para evitar race conditions v1.0.22
+      const cleanup = createTimeoutWithCleanup(() => {
         setCurrentSection('verification');
-      }, 2000);
-      return () => clearTimeout(timer);
+      }, 'transition', 'phase2_to_verification');
+      return cleanup;
     }
-  }, [deliveryCompleted, currentSection]);
+  }, [deliveryCompleted, currentSection, createTimeoutWithCleanup]);
 
   // Complete phase 2 when verification is done
   useEffect(() => {
     if (verificationCompleted) {
-      const timer = setTimeout(() => {
+      // 🤖 [IA] - Migrado a timing unificado para evitar race conditions v1.0.22
+      const cleanup = createTimeoutWithCleanup(() => {
         onPhase2Complete();
-      }, 2000);
-      return () => clearTimeout(timer);
+      }, 'transition', 'phase2_complete');
+      return cleanup;
     }
-  }, [verificationCompleted, onPhase2Complete]);
+  }, [verificationCompleted, onPhase2Complete, createTimeoutWithCleanup]);
 
   const handleDeliveryStepComplete = (stepKey: string) => {
     setDeliveryProgress(prev => ({
@@ -96,48 +100,66 @@ export function Phase2Manager({
   }
 
   return (
-    <div className="space-y-6">
+    // 🤖 [IA] - v1.0.97: Optimización responsive Fase 2 sin afectar móviles
+    <div className="space-y-4 max-w-md mx-auto sm:max-w-2xl lg:max-w-4xl">
       {/* Phase 2 Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center mb-8"
+        className="text-center mb-6"
       >
-        <h2 className="text-2xl font-bold text-primary mb-2">
+        <h2 className="text-xl sm:text-2xl font-bold mb-2" style={{ color: '#1d9bf0' }}>
           Fase 2: División y Verificación del Efectivo
         </h2>
-        <p className="text-muted-foreground">
+        <p style={{ color: '#8899a6' }}>
           Separar {formatCurrency(deliveryCalculation.amountToDeliver)} para gerencia, dejar $50.00 en caja
         </p>
       </motion.div>
 
-      {/* Section Navigation */}
-      <Card className="glass-card">
-        <CardContent className="pt-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Badge 
-                variant={currentSection === 'delivery' ? 'default' : 'outline'}
-                className={currentSection === 'delivery' ? 'bg-primary' : ''}
-              >
-                2A. Tomar para Entregar
-                {deliveryCompleted && ' ✓'}
-              </Badge>
-              <ArrowRight className="w-4 h-4 text-muted-foreground" />
-              <Badge 
-                variant={currentSection === 'verification' ? 'default' : 'outline'}
-                className={currentSection === 'verification' ? 'bg-success' : ''}
-              >
-                2B. Verificación
-                {verificationCompleted && ' ✓'}
-              </Badge>
-            </div>
-            <div className="text-sm text-muted-foreground">
-              Sección {currentSection === 'delivery' ? '2A' : '2B'} de 2
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Section Navigation - 🤖 [IA] - v1.1.14: Simplificado sin redundancias */}
+      <div className="p-3 rounded-lg" style={{
+        backgroundColor: 'rgba(36, 36, 36, 0.4)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        border: '1px solid rgba(255, 255, 255, 0.15)',
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+        borderRadius: '16px'
+      }}>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => currentSection !== 'delivery' && !verificationCompleted && setCurrentSection('delivery')}
+            className="flex-1 px-4 py-2 rounded-lg transition-all duration-300 font-medium flex items-center justify-center gap-2"
+            style={{
+              backgroundColor: currentSection === 'delivery' ? 'rgba(10, 132, 255, 0.2)' : 'transparent',
+              color: currentSection === 'delivery' ? '#1d9bf0' : '#8899a6',
+              border: currentSection === 'delivery' ? '2px solid #1d9bf0' : '2px solid rgba(255, 255, 255, 0.1)',
+              cursor: currentSection === 'delivery' ? 'default' : 'pointer',
+            }}
+          >
+            {deliveryCompleted && (
+              <span style={{ color: '#00ba7c' }}>✓</span>
+            )}
+            Entrega
+          </button>
+          <button
+            onClick={() => deliveryCompleted && currentSection !== 'verification' && setCurrentSection('verification')}
+            className="flex-1 px-4 py-2 rounded-lg transition-all duration-300 font-medium flex items-center justify-center gap-2"
+            style={{
+              backgroundColor: currentSection === 'verification' ? 'rgba(0, 186, 124, 0.2)' : 'transparent',
+              color: currentSection === 'verification' ? '#00ba7c' : deliveryCompleted ? '#8899a6' : '#657786',
+              border: currentSection === 'verification' ? '2px solid #00ba7c' : '2px solid rgba(255, 255, 255, 0.1)',
+              cursor: !deliveryCompleted ? 'not-allowed' : currentSection === 'verification' ? 'default' : 'pointer',
+              opacity: !deliveryCompleted ? 0.5 : 1,
+            }}
+            disabled={!deliveryCompleted}
+          >
+            {verificationCompleted && (
+              <span style={{ color: '#00ba7c' }}>✓</span>
+            )}
+            Verificar
+          </button>
+        </div>
+      </div>
 
       {/* Section Content */}
       <AnimatePresence mode="wait">
@@ -174,26 +196,57 @@ export function Phase2Manager({
         )}
       </AnimatePresence>
 
-      {/* Navigation Buttons */}
-      <div className="flex gap-3">
-        <Button
+      {/* Navigation Buttons - 🤖 [IA] - v1.0.97: Responsive desktop */}
+      {/* 🤖 [IA] - v1.2.5: Botones con texto responsivo y mejor alineación */}
+      <div className="flex gap-3 lg:max-w-lg lg:mx-auto">
+        <button
           onClick={onBack}
-          variant="outline"
-          className="flex-1 border-muted hover:bg-muted/50"
+          className="flex-1 h-11 px-3 sm:px-4 rounded-lg font-medium transition-all duration-300 text-xs sm:text-sm flex items-center justify-center whitespace-nowrap"
+          style={{
+            backgroundColor: 'rgba(36, 36, 36, 0.4)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
+            color: '#e1e8ed',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(36, 36, 36, 0.5)';
+            e.currentTarget.style.transform = 'translateY(-2px)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(36, 36, 36, 0.4)';
+            e.currentTarget.style.transform = 'translateY(0)';
+          }}
         >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Volver a Fase 1
-        </Button>
+          <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2 flex-shrink-0" />
+          <span>Volver</span>
+          <span className="hidden sm:inline ml-1">a Fase 1</span>
+        </button>
         
         {/* Manual section switch (only when delivery is complete) */}
         {deliveryCompleted && currentSection === 'delivery' && !verificationCompleted && (
-          <Button
+          <button
             onClick={() => setCurrentSection('verification')}
-            className="flex-1 bg-success hover:bg-success/90"
+            className="flex-1 h-11 px-3 sm:px-4 rounded-lg font-medium transition-all duration-300 text-xs sm:text-sm flex items-center justify-center whitespace-nowrap"
+            style={{
+              background: 'linear-gradient(135deg, #00ba7c 0%, #06d6a0 100%)',
+              border: '1px solid rgba(0, 186, 124, 0.4)',
+              color: '#ffffff',
+              boxShadow: '0 3px 12px rgba(0, 186, 124, 0.2)',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 186, 124, 0.3)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 3px 12px rgba(0, 186, 124, 0.2)';
+            }}
           >
-            Ir a Verificación
-            <ArrowRight className="w-4 h-4 ml-2" />
-          </Button>
+            <span>Verificar</span>
+            <span className="hidden sm:inline ml-1">Efectivo</span>
+            <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 ml-1.5 sm:ml-2 flex-shrink-0" />
+          </button>
         )}
       </div>
     </div>

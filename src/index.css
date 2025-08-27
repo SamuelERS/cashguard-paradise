@@ -131,6 +131,26 @@
   }
 }
 
+/* Prevent accidental zoom on mobile devices */
+@layer base {
+  /* 🤖 [IA] - v1.0.89 - Prevenir zoom accidental en móviles */
+  * {
+    touch-action: pan-x pan-y;
+  }
+
+  /* Prevent iOS auto-zoom on form inputs */
+  input, textarea, select {
+    font-size: 16px !important; /* iOS auto-zooms on inputs with font-size < 16px */
+    touch-action: manipulation; /* Allow tap and pan but not pinch-zoom */
+  }
+  
+  /* Ensure body and html don't allow zoom */
+  html, body {
+    touch-action: pan-x pan-y;
+    overflow-x: hidden;
+  }
+}
+
 /* iOS 26 Glass Morphism Components */
 @layer components {
   /* Ultra Refined Glass Card */
@@ -160,7 +180,7 @@
       transparent, 
       rgba(10, 132, 255, 0.4), 
       transparent);
-    animation: shine 8s ease-in-out infinite;
+    animation: shine 10s ease-in-out infinite;
   }
   
   .glass-card:hover {
@@ -174,6 +194,7 @@
   }
 
   /* Enhanced Glass Modal */
+  /* 🤖 [IA] - Modal responsive para prevenir scroll horizontal en móviles */
   .glass-modal {
     background: rgba(8, 8, 12, 0.3);
     backdrop-filter: blur(100px) saturate(140%);
@@ -183,6 +204,15 @@
     box-shadow: 
       0 20px 60px rgba(0, 0, 0, 0.95),
       0 0 0 1px rgba(255, 255, 255, 0.02) inset;
+  }
+  
+  /* 🤖 [IA] - Optimización de modal para móviles */
+  @media (max-width: 640px) {
+    .glass-modal {
+      backdrop-filter: blur(40px) saturate(120%);
+      -webkit-backdrop-filter: blur(40px) saturate(120%);
+      border-radius: 16px;
+    }
   }
 
   /* State-Aware Input Fields */
@@ -329,7 +359,7 @@
     box-shadow: 
       0 4px 20px rgba(0, 0, 0, 0.4),
       0 0 30px rgba(10, 132, 255, 0.15);
-    animation: float-bounce 3s ease-in-out infinite;
+    animation: float-bounce 4s ease-in-out infinite;
     position: relative;
     overflow: hidden;
   }
@@ -345,7 +375,7 @@
       transparent, 
       rgba(255, 255, 255, 0.1), 
       transparent);
-    animation: badge-shimmer 2s linear infinite;
+    animation: badge-shimmer 3s linear infinite;
   }
 
   /* Success Badge */
@@ -384,7 +414,9 @@
     justify-content: center;
     font-size: 14px;
     font-weight: 700;
-    color: #1a1a1a;
+    /* 🤖 [IA] - Mejorar contraste del símbolo de moneda sobre fondo dorado */
+    color: #5c3700;  /* Marrón oscuro para máximo contraste WCAG AA */
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3); /* Sombra sutil para legibilidad */
   }
 
   /* Bill Badges - iOS 26 Green Enhanced */
@@ -446,11 +478,64 @@
     box-shadow: 0 8px 25px var(--success-glow);
   }
 
+  /* Gradient Aqua - Paradise Theme */
+  .bg-gradient-aqua {
+    background: linear-gradient(135deg, #00D4FF 0%, #00A8E8 100%);
+    color: white;
+    transition: all 0.3s ease;
+    box-shadow: 
+      0 4px 12px rgba(0, 212, 255, 0.25),
+      inset 0 1px 2px rgba(255, 255, 255, 0.15);
+  }
+
+  .bg-gradient-aqua:hover:not(:disabled) {
+    background: linear-gradient(135deg, #00E5FF 0%, #00B8F0 100%);
+    box-shadow: 
+      0 6px 16px rgba(0, 212, 255, 0.35),
+      inset 0 1px 2px rgba(255, 255, 255, 0.2);
+  }
+
+  .bg-gradient-aqua:disabled {
+    background: linear-gradient(135deg, #7dc4d8 0%, #6aa8c0 100%);
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  /* Paradise Gradient Button - System-matched colors with combined hover effects */
+  .btn-gradient-aqua {
+    background: rgba(10, 132, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(10, 132, 255, 0.3);
+    padding: 1rem 2rem;
+    border-radius: 14px;
+    font-size: 16px;
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    cursor: pointer;
+  }
+
+  .btn-gradient-aqua:hover:not(:disabled) {
+    background: rgba(10, 132, 255, 0.2);
+    transform: translateY(-2px) scale(1.05);
+    border-color: rgba(10, 132, 255, 0.4);
+    box-shadow: 0 4px 15px var(--accent-glow);
+  }
+
+  .btn-gradient-aqua:active:not(:disabled) {
+    transform: translateY(-1px) scale(1.03);
+  }
+
+  .btn-gradient-aqua:disabled {
+    background: rgba(10, 132, 255, 0.05);
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+
   /* Secondary Button - Glass */
   .btn-secondary {
     background: rgba(10, 132, 255, 0.1);
     border: 1px solid rgba(10, 132, 255, 0.3);
-    color: var(--accent-light);
+    color: white;
     padding: 1rem 2rem;
     border-radius: 14px;
     font-size: 16px;
@@ -464,23 +549,89 @@
     box-shadow: 0 4px 15px var(--accent-glow);
   }
 
-  /* Protocol Rule Items - Remove hover effects to prevent interaction issues */
+  /* Protocol Rule Items - Smooth animations without conflicts */
   .protocol-rule {
-    transition: none !important;
-    transform: none !important;
+    transition: opacity 0.3s ease-in-out;
   }
 
   .protocol-rule:hover {
-    transform: none !important;
+    opacity: 1;
   }
 
-  /* Floating Particles */
+  /* 🤖 [IA] - Fix centrado modal protocolo sin afectar otros modales v1.0.2 */
+  .protocol-modal-content[data-state="open"] {
+    animation: fade-in 200ms ease-out, scale-in 200ms ease-out !important;
+  }
+  
+  .protocol-modal-content[data-state="closed"] {
+    animation: fade-out 200ms ease-in, scale-out 200ms ease-in !important;
+  }
+
+  /* 🤖 [IA] - Centrado perfecto para modal protocolo en todas las pantallas v1.0.2 */
+  .protocol-modal-content {
+    position: fixed !important;
+    left: 50% !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    margin: 0 !important;
+  }
+
+  /* 🤖 [IA] - v1.0.6 - Responsive específico para modal protocolo con márgenes consistentes */
+  @media (max-width: 640px) {
+    .protocol-modal-content {
+      width: 90vw !important;
+      max-width: 90vw !important;
+      max-height: 90vh !important;
+      top: 50% !important;
+      transform: translate(-50%, -50%) !important;
+    }
+  }
+
+  @media (min-width: 641px) and (max-width: 768px) {
+    .protocol-modal-content {
+      width: 85vw !important;
+      max-width: 500px !important;
+      max-height: 85vh !important;
+    }
+  }
+
+  @media (min-width: 769px) {
+    .protocol-modal-content {
+      width: auto !important;
+      max-width: 600px !important;
+      max-height: 80vh !important;
+    }
+  }
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes fade-out {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+
+  @keyframes scale-in {
+    from { transform: translate(-50%, -50%) scale(0.95); }
+    to { transform: translate(-50%, -50%) scale(1); }
+  }
+
+  @keyframes scale-out {
+    from { transform: translate(-50%, -50%) scale(1); }
+    to { transform: translate(-50%, -50%) scale(0.95); }
+  }
+
+  /* Floating Particles - Optimized */
   .particles-container {
     position: fixed;
     inset: 0;
     pointer-events: none;
     overflow: hidden;
     z-index: 1;
+    contain: layout style paint;
+    content-visibility: auto;
   }
 
   .particle {
@@ -488,11 +639,15 @@
     background: rgba(10, 132, 255, 0.1);
     border-radius: 50%;
     animation: particle-float linear infinite;
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    animation-play-state: var(--animation-play-state, running);
   }
 
   /* Total Amount Highlight - iOS Colors */
   .total-amount {
-    animation: pulse-glow 2s ease-in-out infinite;
+    animation: pulse-glow 3s ease-in-out infinite;
     font-size: 24px;
     font-weight: 700;
     color: var(--success);
@@ -532,6 +687,42 @@
       var(--shadow-glow);
   }
 
+  /* 🤖 [IA] - v1.1.16: Estilos específicos para PWA en modo standalone */
+  @media (display-mode: standalone) {
+    /* Mejorar la interacción con inputs en PWA */
+    input[type="tel"],
+    input[type="text"],
+    input[type="number"] {
+      -webkit-user-select: text !important;
+      user-select: text !important;
+      -webkit-touch-callout: default !important;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    /* Forzar el cursor y mejorar touch response */
+    input:focus {
+      -webkit-user-select: text !important;
+      user-select: text !important;
+      cursor: text !important;
+    }
+    
+    /* Prevenir zoom en focus de input */
+    input {
+      font-size: 16px !important; /* iOS no hace zoom si font-size >= 16px */
+    }
+  }
+
+  /* Mejora adicional para iOS PWA */
+  @supports (-webkit-touch-callout: none) {
+    @media (display-mode: standalone) {
+      input[type="tel"] {
+        -webkit-appearance: none;
+        appearance: none;
+        border-radius: 0;
+      }
+    }
+  }
+
   /* States */
   .disabled {
     opacity: 0.5;
@@ -557,7 +748,7 @@
       rgba(255, 255, 255, 0.2),
       transparent
     );
-    animation: shimmer 2s infinite;
+    animation: shimmer 4s infinite;
   }
 
   .success {
@@ -724,14 +915,37 @@
       left: 100%;
     }
   }
+
+  @keyframes grid-move {
+    0% { 
+      transform: translate3d(0, 0, 0); 
+    }
+    100% { 
+      transform: translate3d(50px, 50px, 0); 
+    }
+  }
   
   .animate-pulse-glow {
-    animation: pulse-glow 2s ease-in-out infinite;
+    animation: pulse-glow 3s ease-in-out infinite;
   }
 
-  /* Global smooth transition */
-  * {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Validation list styles for better accessibility */
+  .validation-list {
+    list-style: none;
+    padding-left: 0;
+  }
+  
+  .validation-list li {
+    position: relative;
+    padding-left: 1.25rem;
+  }
+  
+  .validation-list li::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: rgb(var(--destructive));
+    font-weight: bold;
   }
 
   /* GPU acceleration */
@@ -746,12 +960,19 @@
     @apply border-border;
   }
 
+  /* Prevent horizontal scroll on mobile */
+  html {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
   /* Typography - iOS 16 Style */
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', 'Roboto', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     @apply min-h-screen overflow-x-hidden;
+    max-width: 100vw;
     line-height: 1.6;
     
     /* Pure Black Background with iOS Gradients */
@@ -846,6 +1067,57 @@
   /* Disable heavy animations on mobile */
   .gradient-orb {
     display: none;
+  }
+}
+
+/* Smart animation pausing for elements out of view */
+.animate-pulse:not(.in-view),
+.animate-spin:not(.in-view) {
+  animation-play-state: paused;
+}
+
+/* Elements hidden by parent should pause */
+[hidden] *,
+[style*="display: none"] *,
+[style*="visibility: hidden"] * {
+  animation-play-state: paused !important;
+}
+
+/* Pause animations in background tabs (handled by usePageVisibility hook) */
+:root {
+  --animation-play-state: running;
+}
+
+/* Respect user's motion preferences for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .particle,
+  .gradient-orb,
+  .floating-orb {
+    animation: none !important;
+  }
+  
+  /* Keep essential feedback but make transitions instant */
+  .btn-primary:hover,
+  .btn-secondary:hover,
+  .btn-success:hover,
+  .btn-gradient-aqua:hover {
+    transition: none !important;
+    /* Allow subtle transform for hover feedback */
+    transform: translateY(-1px) !important;
+  }
+  
+  /* Disable complex transforms */
+  .btn-gradient-aqua:hover {
+    transform: translateY(-1px) !important; /* Simplified transform */
   }
 }
 

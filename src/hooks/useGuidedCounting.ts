@@ -1,5 +1,7 @@
+// 🤖 [IA] - v1.1.08: Fixed total confirmation button not advancing to completion
 import { useState, useCallback } from 'react';
 import { CashCount, ElectronicPayments, DENOMINATIONS } from '@/types/cash';
+import { OperationMode } from '@/types/operation-mode'; // 🤖 [IA] - v1.0.85
 
 export interface GuidedCountingState {
   currentStep: number;
@@ -9,7 +11,28 @@ export interface GuidedCountingState {
   fieldOrder: string[];
 }
 
-const FIELD_ORDER = [
+// 🤖 [IA] - v1.0.85: Separate field orders for morning count vs evening cut
+const MORNING_FIELD_ORDER = [
+  // Coins (1-5)
+  'penny',      // 1¢
+  'nickel',     // 5¢
+  'dime',       // 10¢
+  'quarter',    // 25¢
+  'dollarCoin', // $1 coin
+  
+  // Bills (6-11)
+  'bill1',      // $1
+  'bill5',      // $5
+  'bill10',     // $10
+  'bill20',     // $20
+  'bill50',     // $50
+  'bill100',    // $100
+  
+  // Total (12) - Only cash for morning count
+  'totalCash'
+];
+
+const EVENING_FIELD_ORDER = [
   // Coins (1-5)
   'penny',      // 1¢
   'nickel',     // 5¢
@@ -36,6 +59,9 @@ const FIELD_ORDER = [
   'totalElectronic'
 ];
 
+// 🤖 [IA] - v1.0.85: Keep original for backward compatibility
+const FIELD_ORDER = EVENING_FIELD_ORDER;
+
 const FIELD_LABELS = {
   penny: '1 centavo',
   nickel: '5 centavos',
@@ -56,20 +82,25 @@ const FIELD_LABELS = {
   totalElectronic: 'Electrónico Total'
 };
 
-export function useGuidedCounting() {
+export function useGuidedCounting(operationMode?: OperationMode) { // 🤖 [IA] - v1.0.85
+  // 🤖 [IA] - v1.0.85: Use appropriate field order based on operation mode
+  const fieldOrder = operationMode === OperationMode.CASH_COUNT 
+    ? MORNING_FIELD_ORDER 
+    : EVENING_FIELD_ORDER;
+  
   const [guidedState, setGuidedState] = useState<GuidedCountingState>({
     currentStep: 1,
-    totalSteps: FIELD_ORDER.length,
+    totalSteps: fieldOrder.length,
     completedSteps: new Set(),
     isCompleted: false,
-    fieldOrder: FIELD_ORDER
+    fieldOrder: fieldOrder
   });
 
   const [pendingValue, setPendingValue] = useState<string>('');
 
   const getCurrentField = useCallback(() => {
-    return FIELD_ORDER[guidedState.currentStep - 1];
-  }, [guidedState.currentStep]);
+    return fieldOrder[guidedState.currentStep - 1];
+  }, [guidedState.currentStep, fieldOrder]);
 
   const getCurrentFieldLabel = useCallback(() => {
     const field = getCurrentField();
@@ -98,50 +129,23 @@ export function useGuidedCounting() {
   ) => {
     const currentField = getCurrentField();
     
-    // Handle electronic totals calculation - these are auto-calculated
-    if (currentField === 'totalCash' && cashCount) {
-      // Auto-calculate and confirm total cash
-      const totalCash = Object.entries(DENOMINATIONS.COINS).reduce((sum, [key, denomination]) => {
-        const quantity = cashCount[key as keyof CashCount] as number;
-        return sum + (quantity * denomination.value);
-      }, 0) + Object.entries(DENOMINATIONS.BILLS).reduce((sum, [key, denomination]) => {
-        const quantity = cashCount[key as keyof CashCount] as number;
-        return sum + (quantity * denomination.value);
-      }, 0);
-      
-      // Auto-advance for calculated field
+    // 🤖 [IA] - v1.1.08: Fix para confirmar totales correctamente
+    if (currentField === 'totalCash' || currentField === 'totalElectronic') {
+      // Los totales se muestran en TotalsSummarySection y requieren confirmación
+      // El valor ya está calculado, solo avanzamos cuando el usuario confirma
       setGuidedState(prev => {
         const newCompletedSteps = new Set(prev.completedSteps);
         newCompletedSteps.add(prev.currentStep);
         
+        const isLastStep = prev.currentStep === prev.totalSteps;
         const nextStep = prev.currentStep + 1;
-        const isCompleted = nextStep > prev.totalSteps;
         
         return {
           ...prev,
-          currentStep: isCompleted ? prev.currentStep : nextStep,
+          // Si es el último paso, avanzar más allá del total para que getCurrentField devuelva null
+          currentStep: isLastStep ? prev.totalSteps + 1 : nextStep,
           completedSteps: newCompletedSteps,
-          isCompleted
-        };
-      });
-      return true;
-    } else if (currentField === 'totalElectronic' && electronicPayments) {
-      // Auto-calculate and confirm total electronic
-      const totalElectronic = Object.values(electronicPayments).reduce((sum, val) => sum + val, 0);
-      
-      // Auto-advance for calculated field
-      setGuidedState(prev => {
-        const newCompletedSteps = new Set(prev.completedSteps);
-        newCompletedSteps.add(prev.currentStep);
-        
-        const nextStep = prev.currentStep + 1;
-        const isCompleted = nextStep > prev.totalSteps;
-        
-        return {
-          ...prev,
-          currentStep: isCompleted ? prev.currentStep : nextStep,
-          completedSteps: newCompletedSteps,
-          isCompleted
+          isCompleted: isLastStep
         };
       });
       return true;
@@ -177,13 +181,13 @@ export function useGuidedCounting() {
   const resetGuidedCounting = useCallback(() => {
     setGuidedState({
       currentStep: 1,
-      totalSteps: FIELD_ORDER.length,
+      totalSteps: fieldOrder.length,
       completedSteps: new Set(),
       isCompleted: false,
-      fieldOrder: FIELD_ORDER
+      fieldOrder: fieldOrder
     });
     setPendingValue('');
-  }, []);
+  }, [fieldOrder]);
 
   const getProgressText = useCallback(() => {
     return `Paso ${guidedState.currentStep} de ${guidedState.totalSteps}`;

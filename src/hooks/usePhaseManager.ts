@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { PhaseState, Phase2State } from '@/types/phases';
 import { CashCount } from '@/types/cash';
 import { calculateCashValue, calculateDeliveryDistribution } from '@/utils/deliveryCalculation';
+import { OperationMode } from '@/types/operation-mode'; // 🤖 [IA] - v1.0.82
 
 const INITIAL_PHASE_STATE: PhaseState = {
   currentPhase: 1,
@@ -29,7 +30,7 @@ const INITIAL_PHASE2_STATE: Phase2State = {
   verificationProgress: {}
 };
 
-export function usePhaseManager() {
+export function usePhaseManager(operationMode?: OperationMode) { // 🤖 [IA] - v1.0.82
   const [phaseState, setPhaseState] = useState<PhaseState>(INITIAL_PHASE_STATE);
   const [phase2State, setPhase2State] = useState<Phase2State>(INITIAL_PHASE2_STATE);
   const [deliveryCalculation, setDeliveryCalculation] = useState<any>(null);
@@ -43,10 +44,15 @@ export function usePhaseManager() {
 
   const completePhase1 = useCallback((cashCount: CashCount) => {
     const totalCash = calculateCashValue(cashCount);
-    const shouldSkip = totalCash <= 50;
+    // 🤖 [IA] - v1.0.82: Morning count always skips Phase 2
+    const shouldSkip = (operationMode === OperationMode.CASH_COUNT) || (totalCash <= 50);
     
-    const calculation = calculateDeliveryDistribution(totalCash, cashCount);
-    setDeliveryCalculation(calculation);
+    // 🤖 [IA] - v1.0.83: Only calculate distribution if NOT skipping Phase 2
+    let calculation = null;
+    if (!shouldSkip) {
+      calculation = calculateDeliveryDistribution(totalCash, cashCount);
+      setDeliveryCalculation(calculation);
+    }
     
     setPhaseState(prev => ({
       ...prev,
@@ -56,14 +62,14 @@ export function usePhaseManager() {
       currentPhase: shouldSkip ? 3 : 2
     }));
 
-    if (!shouldSkip) {
+    if (!shouldSkip && calculation) {
       setPhase2State(prev => ({
         ...prev,
         toDeliver: calculation.denominationsToDeliver,
         toKeep: calculation.denominationsToKeep
       }));
     }
-  }, []);
+  }, [operationMode]); // 🤖 [IA] - v1.0.82: Added operationMode dependency
 
   const advancePhase2Section = useCallback(() => {
     setPhase2State(prev => {

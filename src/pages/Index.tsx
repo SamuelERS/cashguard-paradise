@@ -1,162 +1,103 @@
+// 🤖 [IA] - v1.1.16 - Fix teclado numérico en PWA standalone mode
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Fish, DollarSign, Shield, CheckCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { AnimatePresence } from "framer-motion";
 import CashCounter from "@/components/CashCounter";
-import ProtocolModal from "@/components/ProtocolModal";
-import { FloatingOrbs } from "@/components/FloatingOrbs";
-import { FloatingParticles } from "@/components/FloatingParticles";
+import InitialWizardModal from "@/components/InitialWizardModal";
+import { OperationSelector } from "@/components/operation-selector/OperationSelector";
+import { MorningCountWizard } from "@/components/morning-count/MorningCountWizard";
+import { useOperationMode } from "@/hooks/useOperationMode";
+import { OperationMode } from "@/types/operation-mode";
 
 const Index = () => {
-  const [showProtocol, setShowProtocol] = useState(true);
-  const [protocolAccepted, setProtocolAccepted] = useState(false);
+  // 🤖 [IA] - v1.0.81 - Hook para manejar el modo de operación
+  const { currentMode, selectMode, resetMode } = useOperationMode();
+  
+  // 🤖 [IA] - v1.0.3 - Estado para wizard y datos iniciales
+  const [showWizard, setShowWizard] = useState(false);
+  const [showMorningWizard, setShowMorningWizard] = useState(false);
   const [showCashCounter, setShowCashCounter] = useState(false);
+  const [initialData, setInitialData] = useState<{
+    selectedStore: string;
+    selectedCashier: string;
+    selectedWitness: string;
+    expectedSales: string;
+  } | null>(null);
 
-  const handleProtocolAccept = () => {
-    setProtocolAccepted(true);
-    setShowProtocol(false);
+  const handleWizardComplete = (data: {
+    selectedStore: string;
+    selectedCashier: string;
+    selectedWitness: string;
+    expectedSales: string;
+  }) => {
+    setInitialData(data);
+    setShowWizard(false);
+    setShowMorningWizard(false);
     setShowCashCounter(true);
   };
 
-  if (showCashCounter) {
-    return <CashCounter />;
+  const handleBackFromCounter = () => {
+    setShowCashCounter(false);
+    setInitialData(null);
+    resetMode(); // 🤖 [IA] - v1.0.81 - Resetear modo al volver
+  };
+
+  // 🤖 [IA] - v1.0.81 - Manejar selección de modo
+  const handleModeSelection = (mode: OperationMode) => {
+    selectMode(mode);
+    if (mode === OperationMode.CASH_CUT) {
+      setShowWizard(true);
+    } else {
+      setShowMorningWizard(true);
+    }
+  };
+
+  // 🤖 [IA] - v1.0.88 - Mostrar OperationSelector si no hay modo O si hay wizard abierto
+  if (!currentMode || showWizard || showMorningWizard) {
+    return (
+      <>
+        <OperationSelector onSelectMode={handleModeSelection} />
+        <AnimatePresence initial={false} mode="wait">
+          {showWizard && (
+            <InitialWizardModal
+              isOpen={showWizard}
+              onClose={() => {
+                setShowWizard(false);
+                resetMode(); // 🤖 [IA] - v1.0.88 - Resetear modo para volver a OperationSelector
+              }}
+              onComplete={handleWizardComplete}
+            />
+          )}
+          {showMorningWizard && (
+            <MorningCountWizard
+              isOpen={showMorningWizard}
+              onClose={() => {
+                setShowMorningWizard(false);
+                resetMode(); // 🤖 [IA] - v1.0.88 - Resetear modo para volver a OperationSelector
+              }}
+              onComplete={handleWizardComplete}
+            />
+          )}
+        </AnimatePresence>
+      </>
+    );
   }
 
-  return (
-    <div className="min-h-screen relative overflow-hidden">
-      <FloatingOrbs />
-      <FloatingParticles />
-      
-      <div className="relative z-10 container mx-auto px-4 py-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
-        >
-          <div className="flex items-center justify-center gap-3 mb-6">
-            <Fish className="w-12 h-12" style={{ color: 'var(--accent-primary)' }} />
-            <h1 className="text-4xl font-bold" style={{ color: 'var(--text-primary)' }}>
-              ACUARIOS PARADISE
-            </h1>
-          </div>
-          <h2 className="text-2xl font-semibold mb-2" style={{ color: 'var(--accent-primary)' }}>
-            Sistema de Control de Caja
-          </h2>
-          <p className="text-lg" style={{ color: 'var(--text-secondary)' }}>
-            Prevención de fraude mediante protocolos estrictos
-          </p>
-        </motion.div>
+  if (showCashCounter && initialData) {
+    return (
+      <CashCounter
+        operationMode={currentMode} // 🤖 [IA] - v1.0.81 - Pasar modo de operación
+        initialStore={initialData.selectedStore}
+        initialCashier={initialData.selectedCashier}
+        initialWitness={initialData.selectedWitness}
+        initialExpectedSales={initialData.expectedSales}
+        onBack={handleBackFromCounter}
+      />
+    );
+  }
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.1 }}
-          >
-            <div className="glass-card h-full">
-              <div className="text-center p-6">
-                <Shield className="w-12 h-12 mx-auto mb-4" style={{ color: 'var(--accent-primary)' }} />
-                <h3 className="text-xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Anti-Fraude</h3>
-                <ul className="space-y-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4" style={{ color: 'var(--success)' }} />
-                    Un solo conteo permitido
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4" style={{ color: 'var(--success)' }} />
-                    Validación cruzada obligatoria
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4" style={{ color: 'var(--success)' }} />
-                    Campos inmutables post-cálculo
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-          >
-            <div className="glass-card h-full">
-              <div className="text-center p-6">
-                <DollarSign className="w-12 h-12 mx-auto mb-4" style={{ color: 'var(--success)' }} />
-                <h3 className="text-xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Cálculo Automático</h3>
-                <ul className="space-y-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4" style={{ color: 'var(--success)' }} />
-                    Cambio objetivo de $50.00
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4" style={{ color: 'var(--success)' }} />
-                    Algoritmo inteligente
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4" style={{ color: 'var(--success)' }} />
-                    Alertas automáticas
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3 }}
-          >
-            <div className="glass-card h-full">
-              <div className="text-center p-6">
-                <Fish className="w-12 h-12 mx-auto mb-4" style={{ color: 'var(--accent-secondary)' }} />
-                <h3 className="text-xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>100% Offline</h3>
-                <ul className="space-y-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4" style={{ color: 'var(--success)' }} />
-                    Funciona sin internet
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4" style={{ color: 'var(--success)' }} />
-                    PWA instalable
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4" style={{ color: 'var(--success)' }} />
-                    Sincronización automática
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="text-center"
-        >
-          <button
-            onClick={() => setShowProtocol(true)}
-            className="btn-primary"
-          >
-            Iniciar Corte de Caja
-          </button>
-        </motion.div>
-      </div>
-
-      <AnimatePresence>
-        {showProtocol && (
-          <ProtocolModal
-            isOpen={showProtocol}
-            onClose={() => setShowProtocol(false)}
-            onAccept={handleProtocolAccept}
-          />
-        )}
-      </AnimatePresence>
-    </div>
-  );
+  // 🤖 [IA] - v1.0.88 - Landing page viejo eliminado, ahora solo retornamos null si llegamos aquí
+  // Esto no debería pasar, pero lo dejamos como fallback de seguridad
+  return null;
 };
 
 export default Index;

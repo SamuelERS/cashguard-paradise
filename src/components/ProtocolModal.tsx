@@ -1,9 +1,10 @@
+// 🤖 [IA] - ProtocolModal v1.0.2 - Fix centrado y padding consistente del modal
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Shield, AlertTriangle, CheckCircle, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -58,12 +59,19 @@ const ProtocolModal = ({ isOpen, onClose, onAccept }: ProtocolModalProps) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="glass-modal border-2 border-primary/30 max-w-2xl max-h-[80vh] overflow-y-auto">
-        <DialogHeader>
+      {/* 🤖 [IA] - Modal responsive con padding consistente y centrado mejorado v1.0.2 */}
+      <DialogContent className="protocol-modal-content glass-modal border-2 border-primary/30 w-[95vw] max-w-[95vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] sm:max-h-[85vh] overflow-y-auto overflow-x-hidden p-0 [&>button]:hidden">
+        <div className="p-4 sm:p-6">
+          <DialogHeader>
           <DialogTitle className="flex items-center gap-3 text-2xl text-primary">
             <Shield className="w-8 h-8" />
             Protocolo Anti-Fraude
           </DialogTitle>
+          {/* 🤖 [IA] - Descripción para accesibilidad WCAG */}
+          <DialogDescription className="text-muted-foreground mt-2">
+            Lee cuidadosamente las reglas del protocolo anti-fraude antes de continuar. 
+            El cumplimiento de estas normas es obligatorio para garantizar la integridad del proceso.
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">
@@ -86,9 +94,9 @@ const ProtocolModal = ({ isOpen, onClose, onAccept }: ProtocolModalProps) => {
             {protocolRules.map((rule, index) => (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.1 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: index * 0.1, duration: 0.3 }}
                 className={`protocol-rule flex items-start gap-3 p-3 rounded-lg ${
                   rule.critical 
                     ? "bg-destructive/5 border border-destructive/20" 
@@ -166,6 +174,7 @@ const ProtocolModal = ({ isOpen, onClose, onAccept }: ProtocolModalProps) => {
               Aceptar y Continuar
             </Button>
           </div>
+        </div>
         </div>
       </DialogContent>
     </Dialog>

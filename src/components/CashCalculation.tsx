@@ -1,12 +1,13 @@
+// 🤖 [IA] - v1.1.09 - Fix botón copiar con fallback robusto
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Calculator, AlertTriangle, CheckCircle, Share, Download, ArrowLeft, Copy, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+// 🤖 [IA] - v1.1.08: Removidos Card components para coherencia con glass morphism
+// 🤖 [IA] - v1.1.08: Alert components removidos para coherencia con glass morphism
 import { Badge } from "@/components/ui/badge";
-import { FloatingOrbs } from "@/components/FloatingOrbs";
 import { calculateCashTotal, calculateChange50, formatCurrency, generateDenominationSummary } from "@/utils/calculations";
+import { copyToClipboard } from "@/utils/clipboard"; // 🤖 [IA] - v1.1.09
 import { toast } from "@/hooks/use-toast";
 import { CashCount, ElectronicPayments } from "@/types/cash";
 import { PhaseState } from "@/types/phases";
@@ -148,10 +149,10 @@ const CashCalculation = ({
   // Generate display for remaining denominations when Phase 2 was skipped
   const generateRemainingDenominationsDisplay = (remainingCash: CashCount) => {
     const denominations = [
-      { key: 'penny', label: '1¢', value: 0.01 },
-      { key: 'nickel', label: '5¢', value: 0.05 },
-      { key: 'dime', label: '10¢', value: 0.10 },
-      { key: 'quarter', label: '25¢', value: 0.25 },
+      { key: 'penny', label: '1¢ centavo', value: 0.01 },
+      { key: 'nickel', label: '5¢ centavos', value: 0.05 },
+      { key: 'dime', label: '10¢ centavos', value: 0.10 },
+      { key: 'quarter', label: '25¢ centavos', value: 0.25 },
       { key: 'dollarCoin', label: '$1 moneda', value: 1.00 },
       { key: 'bill1', label: '$1', value: 1.00 },
       { key: 'bill5', label: '$5', value: 5.00 },
@@ -161,27 +162,49 @@ const CashCalculation = ({
       { key: 'bill100', label: '$100', value: 100.00 }
     ];
 
-    return denominations
+    const items = denominations
       .filter(d => remainingCash[d.key as keyof CashCount] > 0)
-      .map(d => (
-        <div key={d.key} className="flex justify-between text-xs bg-success/5 rounded px-2 py-1">
-          <span>{d.label}</span>
-          <span className="font-semibold">× {remainingCash[d.key as keyof CashCount]} = {formatCurrency(remainingCash[d.key as keyof CashCount] * d.value)}</span>
-        </div>
-      ));
+      .map(d => {
+        const quantity = remainingCash[d.key as keyof CashCount] || 0;
+        const subtotal = quantity * d.value;
+        return (
+          <div key={d.key} className="flex justify-between text-sm bg-success/5 rounded px-3 py-1.5">
+            <span className="font-medium">{d.label}</span>
+            <span className="font-semibold">
+              × {quantity} = {formatCurrency(subtotal)}
+            </span>
+          </div>
+        );
+      });
+
+    // 🤖 [IA] - v1.0.80: Agregar línea de total para mejor claridad
+    const total = calculateCashTotal(remainingCash);
+    
+    return (
+      <>
+        {items}
+        {items.length > 0 && (
+          <>
+            <div className="border-t border-success/30 my-2"></div>
+            <div className="flex justify-between text-sm font-bold text-success px-3">
+              <span>Total en caja:</span>
+              <span>{formatCurrency(total)}</span>
+            </div>
+          </>
+        )}
+      </>
+    );
   };
 
   // Generate display for remaining denominations after Phase 2 completion
   const generateRemainingDenominationsFromPhase2 = () => {
-    // This would use the verified denominations from Phase 2
-    // For now, we'll calculate what should remain ($50 worth)
-    const changeResult = calculateChange50(cashCount);
-    if (changeResult.possible && changeResult.change) {
+    // 🤖 [IA] - v1.0.80: Usar datos verificados de Phase 2 en lugar de recalcular
+    if (deliveryCalculation?.denominationsToKeep) {
       const denominations = [
-        { key: 'penny', label: '1¢', value: 0.01 },
-        { key: 'nickel', label: '5¢', value: 0.05 },
-        { key: 'dime', label: '10¢', value: 0.10 },
-        { key: 'quarter', label: '25¢', value: 0.25 },
+        { key: 'penny', label: '1¢ centavo', value: 0.01 },
+        { key: 'nickel', label: '5¢ centavos', value: 0.05 },
+        { key: 'dime', label: '10¢ centavos', value: 0.10 },
+        { key: 'quarter', label: '25¢ centavos', value: 0.25 },
         { key: 'dollarCoin', label: '$1 moneda', value: 1.00 },
         { key: 'bill1', label: '$1', value: 1.00 },
         { key: 'bill5', label: '$5', value: 5.00 },
@@ -191,16 +214,41 @@ const CashCalculation = ({
         { key: 'bill100', label: '$100', value: 100.00 }
       ];
 
-      return denominations
-        .filter(d => changeResult.change[d.key as keyof CashCount] > 0)
-        .map(d => (
-          <div key={d.key} className="flex justify-between text-xs bg-success/5 rounded px-2 py-1">
-            <span>{d.label}</span>
-            <span className="font-semibold">× {changeResult.change[d.key as keyof CashCount]} = {formatCurrency((changeResult.change[d.key as keyof CashCount] || 0) * d.value)}</span>
-          </div>
-        ));
+      const items = denominations
+        .filter(d => deliveryCalculation.denominationsToKeep[d.key as keyof CashCount] > 0)
+        .map(d => {
+          const quantity = deliveryCalculation.denominationsToKeep[d.key as keyof CashCount] || 0;
+          const subtotal = quantity * d.value;
+          return (
+            <div key={d.key} className="flex justify-between text-sm bg-success/5 rounded px-3 py-1.5">
+              <span className="font-medium">{d.label}</span>
+              <span className="font-semibold">
+                × {quantity} = {formatCurrency(subtotal)}
+              </span>
+            </div>
+          );
+        });
+
+      // 🤖 [IA] - Agregar línea de total al final
+      const total = calculateCashTotal(deliveryCalculation.denominationsToKeep);
+      
+      return (
+        <>
+          {items}
+          {items.length > 0 && (
+            <>
+              <div className="border-t border-success/30 my-2"></div>
+              <div className="flex justify-between text-sm font-bold text-success px-3">
+                <span>Total en caja:</span>
+                <span>{formatCurrency(total)}</span>
+              </div>
+            </>
+          )}
+        </>
+      );
     }
-    return <div className="text-xs text-warning">No se pudo calcular el cambio exacto</div>;
+    // Fallback si no hay datos de Phase 2
+    return generateCalculated50Display();
   };
 
   // Generate calculated $50 display as fallback
@@ -208,10 +256,10 @@ const CashCalculation = ({
     const changeResult = calculateChange50(cashCount);
     if (changeResult.possible && changeResult.change) {
       const denominations = [
-        { key: 'penny', label: '1¢', value: 0.01 },
-        { key: 'nickel', label: '5¢', value: 0.05 },
-        { key: 'dime', label: '10¢', value: 0.10 },
-        { key: 'quarter', label: '25¢', value: 0.25 },
+        { key: 'penny', label: '1¢ centavo', value: 0.01 },
+        { key: 'nickel', label: '5¢ centavos', value: 0.05 },
+        { key: 'dime', label: '10¢ centavos', value: 0.10 },
+        { key: 'quarter', label: '25¢ centavos', value: 0.25 },
         { key: 'dollarCoin', label: '$1 moneda', value: 1.00 },
         { key: 'bill1', label: '$1', value: 1.00 },
         { key: 'bill5', label: '$5', value: 5.00 },
@@ -221,14 +269,36 @@ const CashCalculation = ({
         { key: 'bill100', label: '$100', value: 100.00 }
       ];
 
-      return denominations
+      const items = denominations
         .filter(d => changeResult.change[d.key as keyof CashCount] > 0)
-        .map(d => (
-          <div key={d.key} className="flex justify-between text-xs bg-success/5 rounded px-2 py-1">
-            <span>{d.label}</span>
-            <span className="font-semibold">× {changeResult.change[d.key as keyof CashCount]} = {formatCurrency((changeResult.change[d.key as keyof CashCount] || 0) * d.value)}</span>
-          </div>
-        ));
+        .map(d => {
+          const quantity = changeResult.change[d.key as keyof CashCount] || 0;
+          const subtotal = quantity * d.value;
+          return (
+            <div key={d.key} className="flex justify-between text-sm bg-success/5 rounded px-3 py-1.5">
+              <span className="font-medium">{d.label}</span>
+              <span className="font-semibold">
+                × {quantity} = {formatCurrency(subtotal)}
+              </span>
+            </div>
+          );
+        });
+
+      // 🤖 [IA] - v1.0.80: Agregar línea de total para mejor claridad
+      return (
+        <>
+          {items}
+          {items.length > 0 && (
+            <>
+              <div className="border-t border-success/30 my-2"></div>
+              <div className="flex justify-between text-sm font-bold text-success px-3">
+                <span>Total en caja:</span>
+                <span>{formatCurrency(changeResult.total)}</span>
+              </div>
+            </>
+          )}
+        </>
+      );
     }
     return (
       <div className="text-center text-warning">
@@ -284,7 +354,7 @@ VERIFICACIÓN: ✓ EXITOSA`}
 
 FASE 3 - RESULTADOS FINALES
 -----------------------
-📊 TOTAL GENERAL: ${formatCurrency(calculationData.totalGeneral)}
+TOTAL GENERAL: ${formatCurrency(calculationData.totalGeneral)}
 🎯 Venta Esperada: ${formatCurrency(expectedSales)}
 ${calculationData.difference >= 0 ? '✅ Sobrante' : '⚠️ Faltante'}: ${formatCurrency(Math.abs(calculationData.difference))}
 
@@ -372,19 +442,29 @@ Firma Digital: ${dataHash}`;
     }
   };
 
-  const copyToClipboard = async () => {
+  // 🤖 [IA] - v1.1.09: Función mejorada con fallback robusto
+  const handleCopyToClipboard = async () => {
     try {
       const report = generateCompleteReport();
-      await navigator.clipboard.writeText(report);
+      const result = await copyToClipboard(report);
       
-      toast({
-        title: "💾 Copiado al portapapeles",
-        description: "El reporte completo ha sido copiado para respaldo",
-      });
+      if (result.success) {
+        toast({
+          title: "💾 Copiado al portapapeles",
+          description: "El reporte ha sido copiado exitosamente",
+        });
+      } else {
+        toast({
+          title: "❌ Error al copiar",
+          description: result.error || "No se pudo copiar al portapapeles. Intente de nuevo.",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
+      // Error al generar el reporte
       toast({
-        title: "❌ Error al copiar",
-        description: "No se pudo copiar al portapapeles",
+        title: "❌ Error al generar reporte",
+        description: error instanceof Error ? error.message : "Error desconocido",
         variant: "destructive",
       });
     }
@@ -403,7 +483,6 @@ Firma Digital: ${dataHash}`;
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      <FloatingOrbs />
       
       <div className="relative z-10 container mx-auto px-4 py-8 max-w-4xl">
         <motion.div
@@ -419,161 +498,228 @@ Firma Digital: ${dataHash}`;
             </Badge>
           </div>
 
-          {/* Alert for significant shortage */}
+          {/* Alert for significant shortage - 🤖 [IA] - v1.1.08: Glass morphism */}
           {calculationData.hasAlert && (
-            <Alert className="border-destructive bg-destructive/10">
-              <AlertTriangle className="h-4 w-4 text-destructive" />
-              <AlertDescription className="text-destructive font-medium">
-                🚨 ALERTA: Faltante significativo detectado (${Math.abs(calculationData.difference).toFixed(2)})
-                <br />Se enviará notificación automática al administrador.
-              </AlertDescription>
-            </Alert>
+            <div className="p-4 rounded-lg flex items-start gap-3" style={{
+              background: 'rgba(244, 33, 46, 0.1)',
+              border: '1px solid rgba(244, 33, 46, 0.3)'
+            }}>
+              <AlertTriangle className="w-5 h-5 mt-0.5" style={{ color: '#f4212e' }} />
+              <div>
+                <p className="font-medium" style={{ color: '#f4212e' }}>
+                  🚨 ALERTA: Faltante significativo detectado (${Math.abs(calculationData.difference).toFixed(2)})
+                </p>
+                <p className="text-sm mt-1" style={{ color: '#8899a6' }}>
+                  Se enviará notificación automática al administrador.
+                </p>
+              </div>
+            </div>
           )}
 
-          {/* Store and Personnel Info */}
-          <Card className="glass-card">
-            <CardHeader>
-              <CardTitle className="text-primary">Información del Corte</CardTitle>
-            </CardHeader>
-            <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Sucursal</p>
-                <p className="font-semibold">{store?.name}</p>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Cajero</p>
-                <p className="font-semibold">{cashier?.name}</p>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Testigo</p>
-                <p className="font-semibold">{witness?.name}</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Calculation Results */}
+          {/* Store and Personnel Info - 🤖 [IA] - v1.1.08: Glass morphism coherente */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card className="glass-card">
-              <CardHeader>
-                <CardTitle className="text-warning">Totales Calculados</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex justify-between">
-                  <span>Efectivo:</span>
-                  <span className="font-bold">{formatCurrency(calculationData.totalCash)}</span>
+            {/* Información de la sucursal y personal */}
+            <div style={{
+              background: 'rgba(36, 36, 36, 0.4)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              borderRadius: '16px',
+              padding: '24px'
+            }}>
+              <h3 className="text-xl font-bold mb-4" style={{ color: '#e1e8ed' }}>
+                Información del Corte
+              </h3>
+              
+              <div className="space-y-4">
+                <div>
+                  <p className="text-sm" style={{ color: '#8899a6' }}>Sucursal</p>
+                  <p className="text-lg font-semibold" style={{ color: '#e1e8ed' }}>
+                    {store?.name}
+                  </p>
                 </div>
-                <div className="flex justify-between">
-                  <span>Electrónico:</span>
-                  <span className="font-bold">{formatCurrency(calculationData.totalElectronic)}</span>
+                
+                <div className="p-3 rounded-lg" style={{
+                  background: 'rgba(10, 132, 255, 0.1)',
+                  border: '1px solid rgba(10, 132, 255, 0.3)'
+                }}>
+                  <p className="text-sm font-medium mb-1" style={{ color: '#0a84ff' }}>
+                    Cajero (Contador)
+                  </p>
+                  <p className="text-lg font-semibold" style={{ color: '#e1e8ed' }}>
+                    {cashier?.name}
+                  </p>
                 </div>
-                <div className="border-t pt-2">
-                  <div className="flex justify-between text-lg font-bold">
-                    <span>Total General:</span>
-                    <span className="text-primary">{formatCurrency(calculationData.totalGeneral)}</span>
-                  </div>
+                
+                <div className="p-3 rounded-lg" style={{
+                  background: 'rgba(94, 92, 230, 0.1)',
+                  border: '1px solid rgba(94, 92, 230, 0.3)'
+                }}>
+                  <p className="text-sm font-medium mb-1" style={{ color: '#5e5ce6' }}>
+                    Testigo (Verificador)
+                  </p>
+                  <p className="text-lg font-semibold" style={{ color: '#e1e8ed' }}>
+                    {witness?.name}
+                  </p>
                 </div>
-                <div className="flex justify-between">
-                  <span>Venta Esperada:</span>
-                  <span>{formatCurrency(expectedSales)}</span>
-                </div>
-                <div className={`flex justify-between text-lg font-bold ${
-                  calculationData.difference >= 0 ? 'text-success' : 'text-destructive'
-                }`}>
-                  <span>{calculationData.difference >= 0 ? 'Sobrante:' : 'Faltante:'}</span>
-                  <span>{formatCurrency(Math.abs(calculationData.difference))}</span>
-                </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
-            <Card className="glass-card border-success/20 bg-success/5">
-              <CardHeader>
-                <CardTitle className="text-success flex items-center gap-2">
-                  <span className="text-2xl">💰</span>
-                  Cambio para Mañana
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-success mb-2">
-                      $50.00
-                    </div>
-                    <p className="text-sm text-muted-foreground">Cambio calculado</p>
-                  </div>
-                  
-                  <div className="glass-card bg-success/10 border border-success/30 p-4">
-                    <p className="text-sm font-medium text-success mb-3 flex items-center gap-2">
-                      <span>📋</span> Detalle del cambio:
-                    </p>
-                    
-                    <div className="space-y-2">
-                      {/* Show exact denominations remaining in cash after Phase 2 */}
-                      {phaseState?.shouldSkipPhase2 ? (
-                        // If Phase 2 was skipped, show all original denominations  
-                        <div className="space-y-1">
-                          {generateRemainingDenominationsDisplay(cashCount)}
-                        </div>
-                      ) : (
-                        // If Phase 2 was completed, show what should remain ($50 worth)
-                        <div className="space-y-1">
-                          {deliveryCalculation?.remainingDenominations ? 
-                            generateRemainingDenominationsFromPhase2() :
-                            generateCalculated50Display()
-                          }
-                        </div>
-                      )}
-                    </div>
+            {/* Calculation Results - Totales */}
+            <div style={{
+              background: 'rgba(36, 36, 36, 0.4)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              borderRadius: '16px',
+              padding: '24px'
+            }}>
+              <h3 className="text-xl font-bold mb-4" style={{ color: '#e1e8ed' }}>
+                Totales Calculados
+              </h3>
+              <div className="space-y-4">
+                <div className="flex justify-between">
+                  <span style={{ color: '#8899a6' }}>Efectivo:</span>
+                  <span className="font-bold" style={{ color: '#e1e8ed' }}>
+                    {formatCurrency(calculationData.totalCash)}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span style={{ color: '#8899a6' }}>Electrónico:</span>
+                  <span className="font-bold" style={{ color: '#e1e8ed' }}>
+                    {formatCurrency(calculationData.totalElectronic)}
+                  </span>
+                </div>
+                <div className="border-t border-gray-700 pt-3">
+                  <div className="flex justify-between text-lg font-bold">
+                    <span style={{ color: '#8899a6' }}>Total General:</span>
+                    <span style={{ color: '#0a84ff' }}>
+                      {formatCurrency(calculationData.totalGeneral)}
+                    </span>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+                <div className="flex justify-between">
+                  <span style={{ color: '#8899a6' }}>Venta Esperada:</span>
+                  <span style={{ color: '#8899a6' }}>
+                    {formatCurrency(expectedSales)}
+                  </span>
+                </div>
+                <div className="flex justify-between text-lg font-bold">
+                  <span style={{ color: '#8899a6' }}>
+                    {calculationData.difference >= 0 ? 'Sobrante:' : 'Faltante:'}
+                  </span>
+                  <span style={{ 
+                    color: calculationData.difference >= 0 ? '#00ba7c' : '#f4212e'
+                  }}>
+                    {formatCurrency(Math.abs(calculationData.difference))}
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Success Confirmation */}
-          <Card className="glass-card border-success/30">
-            <CardContent className="text-center py-8">
-              <CheckCircle className="w-16 h-16 text-success mx-auto mb-4" />
-              <h3 className="text-xl font-bold text-success mb-2">
+          {/* Cambio para Mañana - 🤖 [IA] - v1.1.08: Glass morphism */}
+          <div style={{
+            background: 'rgba(36, 36, 36, 0.4)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
+            borderRadius: '16px',
+            padding: '24px'
+          }}>
+            <h3 className="text-xl font-bold mb-4" style={{ color: '#e1e8ed' }}>
+              Cambio para Mañana
+            </h3>
+            <div className="space-y-4">
+              <div className="text-center">
+                <div className="text-3xl font-bold mb-2" style={{ color: '#00ba7c' }}>
+                  $50.00
+                </div>
+                <p className="text-sm" style={{ color: '#8899a6' }}>Cambio calculado</p>
+              </div>
+              
+              <div className="p-4 rounded-lg" style={{
+                background: 'rgba(0, 186, 124, 0.1)',
+                border: '1px solid rgba(0, 186, 124, 0.3)'
+              }}>
+                <p className="text-sm font-medium mb-3" style={{ color: '#00ba7c' }}>
+                  Detalle del cambio:
+                </p>
+                
+                <div className="space-y-2">
+                  {/* Show exact denominations remaining in cash after Phase 2 */}
+                  {phaseState?.shouldSkipPhase2 ? (
+                    // If Phase 2 was skipped, show all original denominations  
+                    <div className="space-y-1">
+                      {generateRemainingDenominationsDisplay(cashCount)}
+                    </div>
+                  ) : (
+                    // If Phase 2 was completed, show what should remain ($50 worth)
+                    <div className="space-y-1">
+                      {deliveryCalculation?.denominationsToKeep ? 
+                        generateRemainingDenominationsFromPhase2() :
+                        generateCalculated50Display()
+                      }
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Success Confirmation - 🤖 [IA] - v1.1.08: Glass morphism */}
+          <div style={{
+            background: 'rgba(36, 36, 36, 0.4)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
+            borderRadius: '16px',
+            padding: '32px'
+          }}>
+            <div className="text-center">
+              <CheckCircle className="w-16 h-16 mx-auto mb-4" style={{ color: '#00ba7c' }} />
+              <h3 className="text-xl font-bold mb-2" style={{ color: '#00ba7c' }}>
                 Corte de Caja Completado
               </h3>
-              <p className="text-muted-foreground mb-6">
+              <p className="mb-6" style={{ color: '#8899a6' }}>
                 Los datos han sido calculados y están listos para generar el reporte.
                 Los campos están ahora bloqueados según el protocolo anti-fraude.
               </p>
               
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-4xl mx-auto">
+              {/* 🤖 [IA] - v1.1.01: Responsive buttons para desktop */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 lg:max-w-3xl mx-auto">
                 <Button
                   onClick={generateWhatsAppReport}
-                  className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold glass-card hover:scale-105 transform transition-all duration-300"
+                  className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold glass-card hover:scale-105 transform transition-all duration-300 text-xs sm:text-sm px-2 py-2"
                 >
                   <Share className="w-4 h-4 mr-2" />
-                  📱 Enviar por WhatsApp
+                  WhatsApp
                 </Button>
                 
                 <Button
                   onClick={generatePrintableReport}
                   variant="outline"
-                  className="border-primary/30 hover:bg-primary/10 glass-card hover:scale-105 transform transition-all duration-300"
+                  className="border-primary/30 hover:bg-primary/10 glass-card hover:scale-105 transform transition-all duration-300 text-xs sm:text-sm px-2 py-2"
                 >
                   <FileText className="w-4 h-4 mr-2" />
-                  📄 Generar Reporte
+                  Reporte
                 </Button>
                 
                 <Button
-                  onClick={copyToClipboard}
+                  onClick={handleCopyToClipboard}
                   variant="outline"
-                  className="border-warning/30 hover:bg-warning/10 glass-card hover:scale-105 transform transition-all duration-300"
+                  className="border-warning/30 hover:bg-warning/10 glass-card hover:scale-105 transform transition-all duration-300 text-xs sm:text-sm px-2 py-2"
                 >
                   <Copy className="w-4 h-4 mr-2" />
-                  💾 Copiar al Portapapeles
+                  Copiar
                 </Button>
                 
                 <Button
                   onClick={onComplete}
-                  className="bg-success hover:bg-success/90 text-success-foreground glass-card hover:scale-105 transform transition-all duration-300"
+                  className="bg-success hover:bg-success/90 text-success-foreground glass-card hover:scale-105 transform transition-all duration-300 text-xs sm:text-sm px-2 py-2"
                 >
                   <CheckCircle className="w-4 h-4 mr-2" />
-                  ✅ Finalizar Corte
+                  Finalizar
                 </Button>
               </div>
               
@@ -582,14 +728,15 @@ Firma Digital: ${dataHash}`;
                   onClick={onBack}
                   variant="ghost"
                   size="sm"
-                  className="text-muted-foreground hover:text-foreground"
+                  className="text-xs"
+                  style={{ color: '#8899a6' }}
                 >
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Volver a Fase Anterior
                 </Button>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </motion.div>
       </div>
     </div>

@@ -1,0 +1,280 @@
+# 🤖 [IA] - v1.2.4: Performance metrics pipeline - Monthly performance analysis
+name: Performance Analysis
+
+on:
+  schedule:
+    # Runs on the 1st of every month at 3 AM UTC
+    - cron: '0 3 1 * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  performance-analysis:
+    name: Monthly Performance Analysis
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      # ========================================
+      # Build Production Bundle
+      # ========================================
+      - name: Build Production Bundle
+        run: |
+          echo "🔨 Building production bundle..."
+          docker run --rm \
+            -v ${{ github.workspace }}:/app \
+            -w /app \
+            node:20-alpine \
+            sh -c "npm ci && npm run build"
+          
+          # Analyze bundle size
+          echo "📊 Bundle Size Analysis:"
+          echo "========================"
+          docker run --rm \
+            -v ${{ github.workspace }}:/app \
+            node:20-alpine \
+            sh -c "du -sh /app/dist/* | sort -hr"
+          
+          # Total size
+          TOTAL_SIZE=$(docker run --rm \
+            -v ${{ github.workspace }}:/app \
+            node:20-alpine \
+            sh -c "du -sh /app/dist | cut -f1")
+          echo "Total bundle size: $TOTAL_SIZE"
+          
+          # Check if bundle is too large (>5MB)
+          SIZE_MB=$(docker run --rm \
+            -v ${{ github.workspace }}:/app \
+            node:20-alpine \
+            sh -c "du -sm /app/dist | cut -f1")
+          
+          if [ "$SIZE_MB" -gt 5 ]; then
+            echo "::warning::Bundle size is larger than 5MB ($SIZE_MB MB)"
+          fi
+      
+      # ========================================
+      # Bundle Analysis
+      # ========================================
+      - name: Webpack Bundle Analysis
+        run: |
+          echo "📦 Analyzing bundle composition..."
+          docker run --rm \
+            -v ${{ github.workspace }}:/app \
+            -w /app \
+            node:20-alpine \
+            sh -c "npm ci && npx vite-bundle-visualizer --output /app/bundle-stats.html" || true
+      
+      # ========================================
+      # Start Production Server
+      # ========================================
+      - name: Start Production Server
+        run: |
+          echo "🚀 Starting production server..."
+          docker compose --profile prod up -d
+          sleep 15 # Wait for server to be fully ready
+      
+      # ========================================
+      # Lighthouse Performance Test
+      # ========================================
+      - name: Run Lighthouse CI
+        run: |
+          echo "🔦 Running Lighthouse performance audit..."
+          
+          # Create Lighthouse config
+          cat > lighthouserc.json <<EOF
+          {
+            "ci": {
+              "collect": {
+                "url": ["http://localhost:8080"],
+                "numberOfRuns": 3,
+                "settings": {
+                  "preset": "desktop",
+                  "throttling": {
+                    "cpuSlowdownMultiplier": 1
+                  }
+                }
+              },
+              "assert": {
+                "assertions": {
+                  "categories:performance": ["error", {"minScore": 0.75}],
+                  "categories:accessibility": ["error", {"minScore": 0.90}],
+                  "categories:best-practices": ["error", {"minScore": 0.90}],
+                  "categories:seo": ["error", {"minScore": 0.80}],
+                  "categories:pwa": ["warn", {"minScore": 0.70}],
+                  "first-contentful-paint": ["warn", {"maxNumericValue": 2000}],
+                  "largest-contentful-paint": ["warn", {"maxNumericValue": 3000}],
+                  "cumulative-layout-shift": ["warn", {"maxNumericValue": 0.1}],
+                  "total-blocking-time": ["warn", {"maxNumericValue": 300}]
+                }
+              },
+              "upload": {
+                "target": "temporary-public-storage"
+              }
+            }
+          }
+          EOF
+          
+          # Run Lighthouse in Docker
+          docker run --rm \
+            --network host \
+            -v ${{ github.workspace }}:/app \
+            -w /app \
+            patrickhulce/lhci-client:0.12.0 \
+            lhci autorun --config=/app/lighthouserc.json || true
+      
+      # ========================================
+      # Memory Usage Test
+      # ========================================
+      - name: Memory Usage Analysis
+        run: |
+          echo "🧠 Testing memory usage..."
+          
+          # Create a simple memory test script
+          cat > memory-test.js <<'EOF'
+          const puppeteer = require('puppeteer');
+          
+          (async () => {
+            const browser = await puppeteer.launch({
+              headless: true,
+              args: ['--no-sandbox', '--disable-setuid-sandbox']
+            });
+            
+            const page = await browser.newPage();
+            
+            // Initial memory
+            await page.goto('http://localhost:8080');
+            const initialMetrics = await page.metrics();
+            console.log('Initial memory:', Math.round(initialMetrics.JSHeapUsedSize / 1024 / 1024), 'MB');
+            
+            // Navigate through the app
+            for (let i = 0; i < 10; i++) {
+              await page.evaluate(() => {
+                // Simulate user interactions
+                document.body.click();
+              });
+              await page.waitForTimeout(1000);
+            }
+            
+            // Final memory
+            const finalMetrics = await page.metrics();
+            console.log('Final memory:', Math.round(finalMetrics.JSHeapUsedSize / 1024 / 1024), 'MB');
+            
+            const memoryIncrease = finalMetrics.JSHeapUsedSize - initialMetrics.JSHeapUsedSize;
+            console.log('Memory increase:', Math.round(memoryIncrease / 1024 / 1024), 'MB');
+            
+            if (memoryIncrease > 50 * 1024 * 1024) { // 50MB threshold
+              console.error('Warning: Potential memory leak detected!');
+              process.exit(1);
+            }
+            
+            await browser.close();
+          })();
+          EOF
+          
+          # Run memory test in Docker with Puppeteer
+          docker run --rm \
+            --network host \
+            -v ${{ github.workspace }}:/app \
+            -w /app \
+            buildkite/puppeteer:latest \
+            sh -c "npm install puppeteer && node memory-test.js" || true
+      
+      # ========================================
+      # Load Testing
+      # ========================================
+      - name: Basic Load Testing
+        run: |
+          echo "⚡ Running basic load test..."
+          
+          # Use Apache Bench for simple load testing
+          docker run --rm \
+            --network host \
+            httpd:2.4-alpine \
+            ab -n 100 -c 10 -t 30 http://localhost:8080/ || true
+      
+      # ========================================
+      # Stop Production Server
+      # ========================================
+      - name: Stop Production Server
+        if: always()
+        run: |
+          docker compose --profile prod down
+      
+      # ========================================
+      # Generate Performance Report
+      # ========================================
+      - name: Generate Performance Summary
+        if: always()
+        run: |
+          echo "📊 Performance Analysis Summary" > performance-summary.md
+          echo "===============================" >> performance-summary.md
+          echo "" >> performance-summary.md
+          echo "Date: $(date)" >> performance-summary.md
+          echo "Commit: ${{ github.sha }}" >> performance-summary.md
+          echo "" >> performance-summary.md
+          
+          echo "## Bundle Analysis" >> performance-summary.md
+          echo "Total Size: ${TOTAL_SIZE:-Unknown}" >> performance-summary.md
+          echo "" >> performance-summary.md
+          
+          if [ -d ".lighthouseci" ]; then
+            echo "## Lighthouse Results" >> performance-summary.md
+            echo "Results available in artifacts" >> performance-summary.md
+            echo "" >> performance-summary.md
+          fi
+          
+          cat performance-summary.md
+      
+      # ========================================
+      # Upload Reports
+      # ========================================
+      - name: Upload Performance Reports
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: performance-reports-${{ github.run_id }}
+          path: |
+            .lighthouseci/
+            bundle-stats.html
+            performance-summary.md
+            dist/
+      
+      # ========================================
+      # Comment on Latest PR (if applicable)
+      # ========================================
+      - name: Post Performance Metrics
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // Find the most recent PR
+            const { data: prs } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              sort: 'updated',
+              direction: 'desc',
+              per_page: 1
+            });
+            
+            if (prs.length > 0) {
+              const pr = prs[0];
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                body: `## 📊 Monthly Performance Report
+                
+                The monthly performance analysis has completed.
+                
+                **Bundle Size:** ${process.env.TOTAL_SIZE || 'Check artifacts'}
+                
+                [View Full Report](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+                
+                _This is an automated performance report._`
+              });
+            }

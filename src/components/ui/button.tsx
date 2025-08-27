@@ -16,7 +16,8 @@ const buttonVariants = cva(
         ghost: "glass-card hover:bg-primary/10 hover:text-primary text-foreground",
         link: "text-primary underline-offset-4 hover:underline",
         success: "btn-success",
-        glass: "glass-card hover:bg-primary/10 hover:border-primary/30 text-foreground"
+        glass: "glass-card hover:bg-primary/10 hover:border-primary/30 text-foreground",
+        ready: "border-none text-white transition-all duration-300 shadow-md"
       },
       size: {
         default: "h-12 px-6 py-3",

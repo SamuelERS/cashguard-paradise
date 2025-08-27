@@ -1,12 +1,10 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Building, ChevronRight, Check, Banknote, Target } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { Building, ChevronRight, Check, Banknote, Target, CheckCircle, Coins } from 'lucide-react';
+// 🤖 [IA] - Eliminado imports de componentes UI para usar estilos inline v1.0.74
 import { DeliveryCalculation } from '@/types/phases';
 import { formatCurrency, calculateCashTotal } from '@/utils/calculations';
+import { useTimingConfig } from '@/hooks/useTimingConfig'; // 🤖 [IA] - Hook de timing unificado v1.0.22
 
 interface Phase2VerificationSectionProps {
   deliveryCalculation: DeliveryCalculation;
@@ -24,6 +22,7 @@ export function Phase2VerificationSection({
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [inputValue, setInputValue] = useState('');
   
+  const { createTimeoutWithCleanup } = useTimingConfig(); // 🤖 [IA] - Usar timing unificado v1.0.22
   const { verificationSteps, denominationsToKeep } = deliveryCalculation;
   const currentStep = verificationSteps[currentStepIndex];
   const isLastStep = currentStepIndex === verificationSteps.length - 1;
@@ -42,12 +41,13 @@ export function Phase2VerificationSection({
   // Complete section when all steps are done
   useEffect(() => {
     if (allStepsCompleted && verificationSteps.length > 0) {
-      const timer = setTimeout(() => {
+      // 🤖 [IA] - Migrado a timing unificado para evitar race conditions v1.0.22
+      const cleanup = createTimeoutWithCleanup(() => {
         onSectionComplete();
-      }, 1000);
-      return () => clearTimeout(timer);
+      }, 'transition', 'verification_section_complete');
+      return cleanup;
     }
-  }, [allStepsCompleted, verificationSteps.length, onSectionComplete]);
+  }, [allStepsCompleted, verificationSteps.length, onSectionComplete, createTimeoutWithCleanup]);
 
   const handleConfirmStep = () => {
     if (!currentStep) return;
@@ -73,17 +73,21 @@ export function Phase2VerificationSection({
 
   if (verificationSteps.length === 0) {
     return (
-      <Card className="glass-card border-success/30">
-        <CardContent className="text-center py-8">
-          <Check className="w-16 h-16 text-success mx-auto mb-4" />
-          <h3 className="text-xl font-bold text-success mb-2">
-            Verificación Innecesaria
-          </h3>
-          <p className="text-muted-foreground">
-            No hay efectivo que verificar en caja.
-          </p>
-        </CardContent>
-      </Card>
+      <div className="rounded-lg text-center py-8" style={{
+        backgroundColor: 'rgba(36, 36, 36, 0.4)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        border: '1px solid rgba(0, 186, 124, 0.4)',
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+      }}>
+        <Check className="w-16 h-16 mx-auto mb-4" style={{ color: '#00ba7c' }} />
+        <h3 className="text-xl font-bold mb-2" style={{ color: '#00ba7c' }}>
+          Verificación Innecesaria
+        </h3>
+        <p style={{ color: '#8899a6' }}>
+          No hay efectivo que verificar en caja.
+        </p>
+      </div>
     );
   }
 
@@ -91,166 +95,337 @@ export function Phase2VerificationSection({
     <motion.div
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
-      className="space-y-6"
+      className="space-y-4 max-w-md mx-auto sm:max-w-2xl lg:max-w-3xl"
     >
-      {/* Header */}
-      <Card className="glass-card border-success/30">
-        <CardHeader>
+      {/* Header - Simplificado sin redundancias v1.0.77 */}
+      <motion.div 
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ type: "spring", stiffness: 260, damping: 20 }}
+        className="rounded-lg" 
+        style={{
+          backgroundColor: 'rgba(36, 36, 36, 0.4)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          border: '1px solid rgba(0, 186, 124, 0.4)',
+          boxShadow: '0 4px 12px rgba(0, 186, 124, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+          padding: '16px',
+          borderRadius: '16px'
+        }}
+      >
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <Building className="w-6 h-6 text-success" />
-            <CardTitle className="text-success">🏦 VERIFICACIÓN - Debe quedar en caja</CardTitle>
-          </div>
-          <div className="flex items-center justify-between">
-            <Badge variant="outline" className="border-success text-success">
-              Debe Quedar en Caja 👆
-            </Badge>
-            <div className="text-right">
-              <p className="text-sm text-muted-foreground">Objetivo en Caja</p>
-              <div className="flex items-center gap-2">
-                <Target className="w-4 h-4 text-success" />
-                <p className="text-xl font-bold text-success">
-                  {formatCurrency(50.00)} ✓
-                </p>
-              </div>
+            <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{
+              background: 'linear-gradient(135deg, #00ba7c 0%, #06d6a0 100%)'
+            }}>
+              <Building className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h3 className="text-base sm:text-lg font-bold" style={{ color: '#00ba7c' }}>
+                VERIFICACIÓN EN CAJA
+              </h3>
+              <p className="text-sm" style={{ color: '#8899a6' }}>
+                Confirmar lo que queda
+              </p>
             </div>
           </div>
-        </CardHeader>
-      </Card>
-
-      {/* Progress */}
-      <Card className="glass-card">
-        <CardContent className="pt-6">
-          <div className="flex items-center justify-between mb-4">
-            <span className="text-sm font-medium">Progreso de Verificación</span>
-            <span className="text-sm text-muted-foreground">
-              Paso {Math.min(currentStepIndex + 1, verificationSteps.length)} de {verificationSteps.length}
+          <div className="text-center sm:text-right">
+            <p className="text-2xl sm:text-3xl font-bold" style={{ color: '#00ba7c' }}>
+              {formatCurrency(50.00)}
+            </p>
+            <span className="inline-block px-2 py-0.5 rounded text-xs font-medium mt-1" style={{
+              backgroundColor: 'rgba(0, 186, 124, 0.15)',
+              border: '1px solid rgba(0, 186, 124, 0.3)',
+              color: '#00ba7c'
+            }}>
+              Objetivo en caja
             </span>
           </div>
-          <div className="w-full bg-muted rounded-full h-2">
+        </div>
+      </motion.div>
+
+      {/* Progress - Unificado con formato de Delivery */}
+      <div className="rounded-lg" style={{
+        backgroundColor: 'rgba(36, 36, 36, 0.4)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        border: '1px solid rgba(255, 255, 255, 0.15)',
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+        padding: '12px',
+        borderRadius: '16px'
+      }}>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium" style={{ color: '#e1e8ed' }}>Verificar:</span>
+            <span className="text-sm font-bold" style={{ color: '#00ba7c' }}>
+              {Math.min(currentStepIndex + 1, verificationSteps.length)}/{verificationSteps.length}
+            </span>
+          </div>
+          <div className="flex-1 mx-4 rounded-full h-2" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>
             <div 
-              className="bg-success h-2 rounded-full transition-all duration-500"
+              className="h-2 rounded-full transition-all duration-500"
               style={{ 
-                width: `${(Object.keys(completedSteps).length / verificationSteps.length) * 100}%` 
+                width: `${(Object.keys(completedSteps).length / verificationSteps.length) * 100}%`,
+                background: 'linear-gradient(90deg, #00ba7c 0%, #06d6a0 100%)'
               }}
             />
           </div>
-        </CardContent>
-      </Card>
+          <span className="text-sm font-bold" style={{ color: '#00ba7c' }}>
+            {formatCurrency(expectedTotal)}
+          </span>
+        </div>
+      </div>
 
-      {/* Current Step */}
-      {currentStep && !completedSteps[currentStep.key] && (
-        <Card className="glass-card border-success/50 shadow-lg">
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-4 mb-6">
-              <div className="w-12 h-12 rounded-full bg-success/20 flex items-center justify-center">
-                <Banknote className="w-6 h-6 text-success" />
-              </div>
+      {/* Current Step - Con detección dinámica y animaciones v1.0.77 */}
+      {currentStep && !completedSteps[currentStep.key] && (() => {
+        // 🤖 [IA] - Detección dinámica del tipo de denominación
+        const isCoins = ['penny', 'nickel', 'dime', 'quarter', 'dollarCoin'].includes(currentStep.key);
+        
+        return (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ type: "spring", stiffness: 260, damping: 20 }}
+            className="rounded-lg" 
+            style={{
+              backgroundColor: 'rgba(36, 36, 36, 0.4)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              border: '2px solid rgba(0, 186, 124, 0.5)',
+              boxShadow: '0 4px 12px rgba(0, 186, 124, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+              padding: '20px',
+              borderRadius: '16px'
+            }}
+          >
+            {/* Header simplificado con denominación mejorada */}
+            <div className="flex items-center gap-3 mb-4">
+              <motion.div 
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                className="w-10 h-10 rounded-xl flex items-center justify-center"
+                style={{
+                  background: isCoins 
+                    ? 'linear-gradient(135deg, #f4a52a 0%, #ffb84d 100%)' 
+                    : 'linear-gradient(135deg, #00ba7c 0%, #06d6a0 100%)'
+                }}
+              >
+                {isCoins ? (
+                  <Coins className="w-6 h-6 text-white" />
+                ) : (
+                  <Banknote className="w-6 h-6 text-white" />
+                )}
+              </motion.div>
+              
               <div className="flex-1">
-                <h3 className="text-lg font-bold text-success">
-                  {currentStep.label} × {currentStep.quantity}
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  Valor total: {formatCurrency(currentStep.quantity * currentStep.value)}
+                <motion.h3 
+                  initial={{ opacity: 0.8 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.5, repeat: Infinity, repeatType: "reverse" }}
+                  className="text-2xl font-bold" 
+                  style={{ 
+                    color: '#ffffff',
+                    textShadow: '0 1px 3px rgba(0, 0, 0, 0.3), 0 0 20px rgba(0, 186, 124, 0.3)'
+                  }}
+                >
+                  {currentStep.label}
+                </motion.h3>
+                <div className="text-xs mt-1" style={{ color: '#8899a6' }}>
+                  Valor unitario: {formatCurrency(currentStep.value)}
+                </div>
+              </div>
+            </div>
+
+            {/* Cantidad destacada con jerarquía balanceada */}
+            <div className="text-center mb-4">
+              <div className="inline-block px-5 py-2 rounded-xl" 
+                style={{
+                  backgroundColor: 'rgba(0, 186, 124, 0.08)',
+                  border: '1px solid rgba(0, 186, 124, 0.25)',
+                }}
+              >
+                <p className="text-2xl sm:text-3xl font-bold" style={{ color: '#00ba7c' }}>
+                  {currentStep.quantity}
+                </p>
+                <p className="text-xs mt-0.5" style={{ color: '#8899a6' }}>
+                  {isCoins ? 'moneda' : 'billete'}{currentStep.quantity !== 1 ? 's' : ''} debe quedar
                 </p>
               </div>
             </div>
 
-            <div className="space-y-4">
-              <div>
-                <label className="text-sm font-medium mb-2 block">
-                  Confirme la cantidad que quedó en caja:
-                </label>
-                <div className="flex gap-3">
-                  <Input
-                    type="number"
-                    min="0"
-                    max={currentStep.quantity}
-                    value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
-                    onKeyPress={handleKeyPress}
-                    placeholder={`Debe quedar ${currentStep.quantity}`}
-                    className="bg-input/50 border-success/30 focus:border-success"
-                    autoFocus
-                  />
-                  <Button
-                    onClick={handleConfirmStep}
-                    disabled={parseInt(inputValue) !== currentStep.quantity}
-                    className="bg-success hover:bg-success/90 min-w-[100px]"
-                  >
-                    Confirmar
-                    <ChevronRight className="w-4 h-4 ml-1" />
-                  </Button>
-                </div>
+            {/* Input de confirmación - Estilo coherente con Phase2DeliverySection */}
+            <div className="space-y-3">
+              
+              <div className="flex gap-2">
+                <input
+                  type="tel"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  autoComplete="off"
+                  min="0"
+                  max={currentStep.quantity}
+                  value={inputValue}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/[^0-9]/g, '');
+                    setInputValue(value);
+                  }}
+                  onKeyPress={handleKeyPress}
+                  placeholder={`Confirme: ${currentStep.quantity}`}
+                  className="input-field text-center text-xl font-semibold flex-1 h-12"
+                  style={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                    border: parseInt(inputValue) > 0 && parseInt(inputValue) !== currentStep.quantity 
+                      ? '2px solid rgba(244, 33, 46, 0.5)' 
+                      : '2px solid rgba(0, 186, 124, 0.4)',
+                    color: '#ffffff',
+                    outline: 'none',
+                    borderRadius: '8px',
+                    transition: 'all 0.3s',
+                    WebkitAppearance: 'none',
+                    MozAppearance: 'textfield'
+                  }}
+                  onFocus={(e) => {
+                    if (!(parseInt(inputValue) > 0 && parseInt(inputValue) !== currentStep.quantity)) {
+                      e.currentTarget.style.borderColor = 'rgba(0, 186, 124, 0.6)';
+                      e.currentTarget.style.boxShadow = '0 0 10px rgba(0, 186, 124, 0.2)';
+                    }
+                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
+                    setTimeout(() => {
+                      e.currentTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 100);
+                  }}
+                  onBlur={(e) => {
+                    if (!(parseInt(inputValue) > 0 && parseInt(inputValue) !== currentStep.quantity)) {
+                      e.currentTarget.style.borderColor = 'rgba(0, 186, 124, 0.4)';
+                    }
+                    e.currentTarget.style.boxShadow = 'none';
+                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                  }}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  autoFocus
+                />
+                
+                <button
+                  onClick={handleConfirmStep}
+                  disabled={parseInt(inputValue) !== currentStep.quantity}
+                  className="btn-primary px-6 py-2 text-lg h-12 min-w-[48px] font-bold"
+                  style={{
+                    background: parseInt(inputValue) === currentStep.quantity
+                      ? 'linear-gradient(135deg, #00ba7c 0%, #06d6a0 100%)'
+                      : 'rgba(36, 36, 36, 0.4)',
+                    border: '2px solid rgba(0, 186, 124, 0.4)',
+                    color: '#ffffff',
+                    cursor: parseInt(inputValue) !== currentStep.quantity ? 'not-allowed' : 'pointer',
+                    opacity: parseInt(inputValue) !== currentStep.quantity ? 0.5 : 1,
+                    borderRadius: '8px',
+                    transition: 'all 0.3s'
+                  }}
+                  onMouseDown={(e) => e.preventDefault()}
+                  onTouchStart={(e) => e.preventDefault()}
+                >
+                  ⏎
+                </button>
               </div>
               
+              {/* Mensaje de error mejorado */}
               {parseInt(inputValue) > 0 && parseInt(inputValue) !== currentStep.quantity && (
-                <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-3">
-                  <p className="text-destructive text-sm">
-                    ⚠️ Deben quedar exactamente {currentStep.quantity} {currentStep.label} en caja
+                <motion.div 
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="rounded-lg p-4 text-center" 
+                  style={{
+                    backgroundColor: 'rgba(244, 33, 46, 0.15)',
+                    border: '2px solid rgba(244, 33, 46, 0.4)',
+                    borderRadius: '8px'
+                  }}
+                >
+                  <p className="font-semibold" style={{ color: '#f4212e', fontSize: '16px' }}>
+                    ⚠️ Cantidad incorrecta
                   </p>
-                </div>
+                  <p className="text-sm mt-1" style={{ color: '#f4212e' }}>
+                    Deben quedar exactamente {currentStep.quantity} {currentStep.quantity === 1 ? 'unidad' : 'unidades'}
+                  </p>
+                </motion.div>
               )}
             </div>
-          </CardContent>
-        </Card>
-      )}
+          </motion.div>
+        );
+      })()}
 
-      {/* Completed Steps Summary */}
+      {/* Completed Steps Summary - Padding coherente v1.0.77 */}
       {Object.keys(completedSteps).length > 0 && (
-        <Card className="glass-card">
-          <CardHeader>
-            <CardTitle className="text-success text-sm">
-              ✓ Denominaciones Verificadas
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-              {verificationSteps.map((step) => (
-                <div
-                  key={step.key}
-                  className={`flex items-center gap-2 p-2 rounded-lg text-sm ${
-                    completedSteps[step.key]
-                      ? 'bg-success/10 text-success'
-                      : 'bg-muted/50 text-muted-foreground'
-                  }`}
-                >
-                  {completedSteps[step.key] ? (
-                    <Check className="w-4 h-4" />
-                  ) : (
-                    <div className="w-4 h-4 rounded-full border-2 border-muted-foreground/30" />
-                  )}
-                  <span>{step.label} × {step.quantity}</span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+        <div className="rounded-lg" style={{
+          backgroundColor: 'rgba(36, 36, 36, 0.4)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          border: '1px solid rgba(255, 255, 255, 0.15)',
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+          padding: '24px',
+          borderRadius: '16px'
+        }}>
+          <h4 className="text-sm font-medium mb-4" style={{ color: '#00ba7c' }}>
+            ✓ Denominaciones Verificadas
+          </h4>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+            {verificationSteps.map((step) => (
+              <div
+                key={step.key}
+                className="flex items-center gap-2 p-2 rounded-lg text-sm transition-all duration-300"
+                style={{
+                  backgroundColor: completedSteps[step.key]
+                    ? 'rgba(0, 186, 124, 0.1)'
+                    : 'rgba(255, 255, 255, 0.05)',
+                  border: completedSteps[step.key]
+                    ? '1px solid rgba(0, 186, 124, 0.3)'
+                    : '1px solid rgba(255, 255, 255, 0.1)',
+                  color: completedSteps[step.key] ? '#00ba7c' : '#8899a6'
+                }}
+              >
+                {completedSteps[step.key] ? (
+                  <Check className="w-4 h-4" />
+                ) : (
+                  <div className="w-4 h-4 rounded-full" style={{
+                    border: '2px solid rgba(255, 255, 255, 0.3)'
+                  }} />
+                )}
+                <span>{step.label} × {step.quantity}</span>
+              </div>
+            ))}
+          </div>
+        </div>
       )}
 
       {/* Final Validation */}
       {allStepsCompleted && (
-        <Card className="glass-card border-success/30">
-          <CardContent className="text-center py-8">
-            <Check className="w-16 h-16 text-success mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-success mb-2">
-              Verificación Exitosa
-            </h3>
-            <p className="text-muted-foreground mb-4">
-              Has confirmado que quedan exactamente {formatCurrency(expectedTotal)} en caja.
-            </p>
-            <div className="bg-success/10 border border-success/30 rounded-lg p-4 mb-4">
-              <div className="flex items-center justify-center gap-2">
-                <Target className="w-5 h-5 text-success" />
-                <span className="text-success font-bold">
-                  OBJETIVO CUMPLIDO: {formatCurrency(50.00)} ✓
-                </span>
-              </div>
+        <div className="rounded-lg text-center py-8" style={{
+          backgroundColor: 'rgba(36, 36, 36, 0.4)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          border: '1px solid rgba(0, 186, 124, 0.4)',
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+        }}>
+          <Check className="w-16 h-16 mx-auto mb-4" style={{ color: '#00ba7c' }} />
+          <h3 className="text-xl font-bold mb-2" style={{ color: '#00ba7c' }}>
+            Verificación Exitosa
+          </h3>
+          <p className="mb-4" style={{ color: '#8899a6' }}>
+            Has confirmado que quedan exactamente {formatCurrency(expectedTotal)} en caja.
+          </p>
+          <div className="rounded-lg p-4 mb-4 mx-auto max-w-md" style={{
+            backgroundColor: 'rgba(0, 186, 124, 0.1)',
+            border: '1px solid rgba(0, 186, 124, 0.3)',
+          }}>
+            <div className="flex items-center justify-center gap-2">
+              <Target className="w-5 h-5" style={{ color: '#00ba7c' }} />
+              <span className="font-bold" style={{ color: '#00ba7c' }}>
+                OBJETIVO CUMPLIDO: {formatCurrency(50.00)} ✓
+              </span>
             </div>
-            <p className="text-sm font-medium text-primary">
-              Procediendo a generar reporte final...
-            </p>
-          </CardContent>
-        </Card>
+          </div>
+          <p className="text-sm font-medium" style={{ color: '#1d9bf0' }}>
+            Procediendo a generar reporte final...
+          </p>
+        </div>
       )}
     </motion.div>
   );

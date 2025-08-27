@@ -1,6 +1,6 @@
+// 🤖 [IA] - v1.0.70: Glass Effect Premium aplicado a modo manual
 import { motion } from "framer-motion";
-import { CreditCard, Smartphone, Building, Wallet } from "lucide-react";
-import { GlassCard } from "@/components/ui/GlassCard";
+import { CreditCard, Building, ArrowLeftRight, Wallet } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { ElectronicPayments } from "@/types/cash";
@@ -13,39 +13,61 @@ interface ElectronicSectionProps {
 }
 
 const paymentMethods = [
-  { key: 'credomatic', name: 'Credomatic', icon: CreditCard, color: 'text-blue-500' },
-  { key: 'promerica', name: 'Promerica', icon: CreditCard, color: 'text-purple-500' },
-  { key: 'bankTransfer', name: 'Transferencia', icon: Building, color: 'text-green-500' },
-  { key: 'paypal', name: 'PayPal', icon: Wallet, color: 'text-blue-600' },
+  { key: 'credomatic', name: 'Credomatic', icon: CreditCard, color: 'text-blue-400' },
+  { key: 'promerica', name: 'Promerica', icon: Building, color: 'text-green-500' },
+  { key: 'bankTransfer', name: 'Transferencia Bancaria', icon: ArrowLeftRight, color: 'text-accent-light' },
+  { key: 'paypal', name: 'PayPal', icon: Wallet, color: 'text-indigo-400' },
 ];
 
 export const ElectronicSection = ({ electronicPayments, onChange, readonly = false }: ElectronicSectionProps) => {
   const totalElectronic = Object.values(electronicPayments).reduce((sum, val) => sum + val, 0);
+  
+  const completedPayments = paymentMethods.filter(method => {
+    const value = electronicPayments[method.key as keyof ElectronicPayments] || 0;
+    return value > 0;
+  }).length;
 
   return (
-    <GlassCard hover={!readonly}>
-      <div className="p-6">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <motion.div
-              className="relative"
-              animate={{ rotate: readonly ? 0 : [0, 5, -5, 0] }}
-              transition={{ duration: 4, repeat: readonly ? 0 : Infinity }}
-            >
-              <CreditCard className="w-8 h-8 text-secondary" />
-              <motion.div
-                className="absolute -top-1 -right-1 w-3 h-3 bg-secondary rounded-full"
-                animate={{ scale: readonly ? 1 : [1, 1.2, 1] }}
-                transition={{ duration: 2, repeat: readonly ? 0 : Infinity }}
-              />
-            </motion.div>
-            <h3 className="text-xl font-bold text-secondary">Pagos Electrónicos</h3>
+    <div style={{
+      backgroundColor: 'rgba(36, 36, 36, 0.4)',
+      backdropFilter: 'blur(20px)',
+      WebkitBackdropFilter: 'blur(20px)',
+      border: '1px solid rgba(255, 255, 255, 0.15)',
+      borderRadius: '16px',
+      padding: '24px',
+      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+    }}>
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-accent-primary via-accent-primary/80 to-accent-secondary flex items-center justify-center shadow-lg">
+            <CreditCard className="w-6 h-6 text-white" />
           </div>
-          <div className="text-right">
-            <p className="text-sm text-muted-foreground">Total</p>
-            <p className="text-lg font-bold text-secondary">${totalElectronic.toFixed(2)}</p>
+          <div>
+            <h3 className="text-xl font-bold" style={{
+              background: 'linear-gradient(135deg, #0a84ff 0%, #5e5ce6 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text'
+            }}>Pagos Electrónicos</h3>
+            <p className="text-sm text-text-secondary">
+              {completedPayments} de {paymentMethods.length} completados
+            </p>
           </div>
         </div>
+        
+        <motion.div 
+          className="text-right"
+          key={totalElectronic}
+          initial={{ scale: 0.9 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 0.2 }}
+        >
+          <div className="text-sm text-text-secondary">Total Electrónico</div>
+          <div className="text-2xl font-bold text-accent-primary">
+            ${totalElectronic.toFixed(2)}
+          </div>
+        </motion.div>
+      </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {paymentMethods.map((method, index) => {
@@ -100,16 +122,13 @@ export const ElectronicSection = ({ electronicPayments, onChange, readonly = fal
         
         {totalElectronic > 0 && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="mt-4 p-3 bg-secondary/10 border border-secondary/30 rounded-lg"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-4 text-center bg-accent-primary/10 text-accent-primary px-4 py-2 rounded-lg"
           >
-            <p className="text-sm text-secondary/80 text-center">
-              💳 {totalElectronic.toFixed(2)} dólares en pagos electrónicos contabilizados
-            </p>
+            💳 Total en pagos electrónicos: ${totalElectronic.toFixed(2)}
           </motion.div>
         )}
-      </div>
-    </GlassCard>
+    </div>
   );
 };

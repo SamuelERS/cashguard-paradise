@@ -1,0 +1,56 @@
+# 🤖 [IA] - Archivos y directorios excluidos del contexto Docker
+
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build output
+dist/
+build/
+.vite/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Version control
+.git/
+.gitignore
+.gitattributes
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+*.bak
+.DS_Store
+Thumbs.db
+
+# Package manager files
+bun.lockb
+yarn.lock
+
+# Documentation (opcional, depende si quieres incluirla en la imagen)
+*.md
+LICENSE
+
+# Testing
+coverage/
+.nyc_output/
+
+# Temporary files
+*.log
+*.tmp
+temp/
+tmp/
+
+# Docker files (evita incluir estos en el contexto)
+Dockerfile*
+docker-compose*.yml
+.dockerignore
