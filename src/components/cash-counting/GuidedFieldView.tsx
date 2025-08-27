@@ -427,15 +427,6 @@ export function GuidedFieldView({
             </div>
           </div>
         )}
-
-        {/* Instrucciones adicionales */}
-        <Card className="glass-card bg-muted/20">
-          <CardContent className="py-3">
-            <p className="text-xs text-center text-muted-foreground">
-              💡 Complete cada campo en orden. No podrá retroceder ni modificar valores confirmados.
-            </p>
-          </CardContent>
-        </Card>
       </motion.div>
     </AnimatePresence>
   );

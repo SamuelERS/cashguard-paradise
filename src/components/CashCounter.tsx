@@ -13,6 +13,7 @@ import { GuidedCoinSection } from "@/components/cash-counting/GuidedCoinSection"
 import { GuidedBillSection } from "@/components/cash-counting/GuidedBillSection";
 import { GuidedElectronicInputSection } from "@/components/cash-counting/GuidedElectronicInputSection";
 import { TotalsSummarySection } from "@/components/cash-counting/TotalsSummarySection"; // 🤖 [IA] - v1.0.28
+import { GuidedInstructionsModal } from "@/components/cash-counting/GuidedInstructionsModal"; // 🤖 [IA] - v1.2.8
 import { Phase2Manager } from "@/components/phases/Phase2Manager";
 import { FloatingParticles } from "@/components/FloatingParticles"; // 🤖 [IA] - v1.0.64
 import { MorningVerification } from "@/components/morning-count/MorningVerification"; // 🤖 [IA] - v1.0.84
@@ -64,6 +65,10 @@ const CashCounter = ({
   
   // 🤖 [IA] - v1.0.3 - Iniciar directamente si hay datos del wizard
   const hasInitialData = initialStore && initialCashier && initialWitness && initialExpectedSales;
+  
+  // 🤖 [IA] - v1.2.8: Estado para el modal de instrucciones
+  const [showInstructionsModal, setShowInstructionsModal] = useState(false);
+  const [instructionsAcknowledged, setInstructionsAcknowledged] = useState(false);
   
   // 🤖 [IA] - v1.0.46: Detectar si es dispositivo móvil
   const isMobile = useIsMobile();
@@ -119,11 +124,35 @@ const CashCounter = ({
   const availableEmployees = selectedStore ? getEmployeesByStore(selectedStore) : [];
 
   // 🤖 [IA] - v1.0.3 - Auto-iniciar Fase 1 si viene del wizard
+  // 🤖 [IA] - v1.2.8 - Mostrar modal de instrucciones antes de iniciar
   useEffect(() => {
     if (hasInitialData && !phaseState.phase1Completed) {
-      startPhase1();
+      // Verificar si ya se mostraron las instrucciones en esta sesión
+      const sessionKey = sessionStorage.getItem('guided-instructions-session');
+      const currentSession = sessionStorage.getItem('current-counting-session');
+      
+      if (!sessionKey || sessionKey !== currentSession) {
+        // Primera vez en esta sesión, mostrar modal
+        setShowInstructionsModal(true);
+        sessionStorage.setItem('current-counting-session', `session-${Date.now()}`);
+      } else {
+        // Ya vio las instrucciones, iniciar directamente
+        startPhase1();
+        setInstructionsAcknowledged(true);
+      }
     }
   }, [hasInitialData]);
+  
+  // 🤖 [IA] - v1.2.8 - Handler para cuando se confirman las instrucciones
+  const handleInstructionsConfirm = () => {
+    setShowInstructionsModal(false);
+    setInstructionsAcknowledged(true);
+    startPhase1();
+    const currentSession = sessionStorage.getItem('current-counting-session');
+    if (currentSession) {
+      sessionStorage.setItem('guided-instructions-session', currentSession);
+    }
+  };
 
   // 🤖 [IA] - v1.2.7 - Auto-confirmar totalCash en conteo matutino
   useEffect(() => {
@@ -786,6 +815,13 @@ const CashCounter = ({
         {phaseState.currentPhase === 1 && phaseState.phase1Completed && renderPhase1()}
         {phaseState.currentPhase === 2 && renderPhase2()}
       </div>
+      
+      {/* 🤖 [IA] - v1.2.8 - Modal de instrucciones único para eliminar redundancia */}
+      <GuidedInstructionsModal
+        isOpen={showInstructionsModal}
+        onConfirm={handleInstructionsConfirm}
+        isMorningCount={isMorningCount}
+      />
     </div>
   );
 };

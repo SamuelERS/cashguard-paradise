@@ -172,11 +172,6 @@ export const GuidedProgressIndicator = ({
           )}
           <div>
             <p className="text-text-primary font-medium">{instructionText}</p>
-            {!isCompleted && (
-              <p className="text-text-muted text-sm mt-1">
-                Complete cada campo en orden. No podrá retroceder ni modificar valores confirmados.
-              </p>
-            )}
           </div>
         </div>
       </div>
