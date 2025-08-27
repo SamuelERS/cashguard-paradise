@@ -637,7 +637,7 @@ const CashCounter = ({
             </h2>
           </div>
           <p className="text-base" style={{ color: '#8899a6' }}>
-            Complete cada denominación en orden secuencial (17 pasos)
+            Complete cada denominación en orden secuencial
           </p>
         </div>
 
