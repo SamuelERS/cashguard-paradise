@@ -176,29 +176,31 @@ export function Phase2Manager({
   return (
     // 🤖 [IA] - v1.0.97: Optimización responsive Fase 2 sin afectar móviles
     <div className="space-y-4 max-w-md mx-auto sm:max-w-2xl lg:max-w-4xl">
-      {/* Phase 2 Header */}
-      <motion.div
+      {/* Section Navigation con header integrado - 🤖 [IA] - v1.1.27: Header movido dentro del card */}
+      <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center mb-6"
+        className="p-4 rounded-lg" 
+        style={{
+          backgroundColor: 'rgba(36, 36, 36, 0.4)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          border: '1px solid rgba(255, 255, 255, 0.15)',
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+          borderRadius: '16px'
+        }}
       >
-        <h2 className="text-xl sm:text-2xl font-bold mb-2" style={{ color: '#1d9bf0' }}>
-          Fase 2: División y Verificación del Efectivo
-        </h2>
-        <p style={{ color: '#8899a6' }}>
-          Separar el efectivo que entregarás a gerencia
-        </p>
-      </motion.div>
-
-      {/* Section Navigation - 🤖 [IA] - v1.1.14: Simplificado sin redundancias */}
-      <div className="p-3 rounded-lg" style={{
-        backgroundColor: 'rgba(36, 36, 36, 0.4)',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
-        border: '1px solid rgba(255, 255, 255, 0.15)',
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-        borderRadius: '16px'
-      }}>
+        {/* Header integrado */}
+        <div className="text-center mb-4">
+          <h2 className="text-xl sm:text-2xl font-bold mb-2" style={{ color: '#1d9bf0' }}>
+            Fase 2: División y Verificación del Efectivo
+          </h2>
+          <p style={{ color: '#8899a6' }}>
+            Separar el efectivo que entregarás a gerencia
+          </p>
+        </div>
+        
+        {/* Botones de navegación */}
         <div className="flex items-center gap-2">
           <button
             onClick={() => currentSection !== 'delivery' && !verificationCompleted && setCurrentSection('delivery')}
@@ -233,7 +235,7 @@ export function Phase2Manager({
             Verificar
           </button>
         </div>
-      </div>
+      </motion.div>
 
       {/* Section Content */}
       <AnimatePresence mode="wait">
