@@ -702,8 +702,8 @@ const CashCounter = ({
               />
             )}
             
-            {/* 🤖 [IA] - v1.2.7: TotalsSummarySection solo visible después de Fase 1 (anti-fraude) */}
-            {phaseState.currentPhase > 1 && (currentField === 'totalCash' || (!isMorningCount && currentField === 'totalElectronic')) && (
+            {/* 🤖 [IA] - v1.2.7-fix: TotalsSummarySection visible DURANTE Fase 1 para confirmar totales */}
+            {phaseState.currentPhase === 1 && (currentField === 'totalCash' || (!isMorningCount && currentField === 'totalElectronic')) && (
               <TotalsSummarySection
                 totalCash={Object.entries({...cashCount}).reduce((sum, [key, val]) => {
                   if (typeof val === 'number' && !['credomatic', 'promerica', 'bankTransfer', 'paypal'].includes(key)) {
