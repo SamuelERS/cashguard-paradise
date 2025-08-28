@@ -329,19 +329,19 @@ export function Phase2Manager({
       </AlertDialogContent>
     </AlertDialog>
 
-    {/* 🤖 [IA] - v1.2.10: Modal de instrucciones con checklist para preparación */}
+    {/* 🤖 [IA] - v1.2.10: Modal de instrucciones con checklist para preparación - Colores de corte nocturno */}
     <AlertDialog open={showInstructionsModal} onOpenChange={setShowInstructionsModal}>
       <AlertDialogContent style={{
         backgroundColor: 'rgba(36, 36, 36, 0.95)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
-        border: '1px solid rgba(244, 165, 42, 0.3)',
+        border: '1px solid rgba(10, 132, 255, 0.3)',
         borderRadius: '16px',
         boxShadow: '0 4px 24px rgba(0, 0, 0, 0.8)',
         maxWidth: '500px'
       }}>
         <AlertDialogHeader>
-          <AlertDialogTitle style={{ color: '#f4a52a', fontSize: '1.25rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <AlertDialogTitle style={{ color: '#1d9bf0', fontSize: '1.25rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <AlertCircle className="w-6 h-6" />
             📋 Preparación para Entrega a Gerencia
           </AlertDialogTitle>
@@ -350,15 +350,15 @@ export function Phase2Manager({
         <div style={{ padding: '16px 0' }}>
           {/* Mensaje principal destacado */}
           <div style={{
-            backgroundColor: 'rgba(244, 165, 42, 0.1)',
-            border: '2px solid rgba(244, 165, 42, 0.4)',
+            backgroundColor: 'rgba(10, 132, 255, 0.1)',
+            border: '2px solid rgba(10, 132, 255, 0.4)',
             borderRadius: '12px',
             padding: '16px',
             marginBottom: '20px',
             textAlign: 'center'
           }}>
             <p style={{ 
-              color: '#ffb84d', 
+              color: '#5e5ce6', 
               fontSize: '1.1rem', 
               fontWeight: '700',
               marginBottom: '8px'
@@ -370,7 +370,7 @@ export function Phase2Manager({
               fontSize: '1rem', 
               fontWeight: '600' 
             }}>
-              Este dinero es para <span style={{ color: '#f4a52a', textDecoration: 'underline' }}>ENTREGAR A GERENCIA</span>
+              Este dinero es para <span style={{ color: '#f4212e', textDecoration: 'underline' }}>ENTREGAR A GERENCIA</span>
             </p>
             <p style={{ 
               color: '#e1e8ed', 
@@ -409,7 +409,7 @@ export function Phase2Manager({
                     borderColor: checkedItems.bolsa ? '#00ba7c' : 'rgba(255, 255, 255, 0.3)'
                   }}
                 />
-                <Package className="w-5 h-5" style={{ color: '#f4a52a' }} />
+                <Package className="w-5 h-5" style={{ color: '#0a84ff' }} />
                 <span style={{ flex: 1 }}>Tengo la <strong>bolsa de depósito</strong> lista</span>
               </label>
 
@@ -434,7 +434,7 @@ export function Phase2Manager({
                     borderColor: checkedItems.tirro ? '#00ba7c' : 'rgba(255, 255, 255, 0.3)'
                   }}
                 />
-                <ScrollText className="w-5 h-5" style={{ color: '#f4a52a' }} />
+                <ScrollText className="w-5 h-5" style={{ color: '#0a84ff' }} />
                 <span style={{ flex: 1 }}>Tengo <strong>tirro/cinta adhesiva</strong> para rotular</span>
               </label>
 
@@ -459,7 +459,7 @@ export function Phase2Manager({
                     borderColor: checkedItems.espacio ? '#00ba7c' : 'rgba(255, 255, 255, 0.3)'
                   }}
                 />
-                <Grid3x3 className="w-5 h-5" style={{ color: '#f4a52a' }} />
+                <Grid3x3 className="w-5 h-5" style={{ color: '#0a84ff' }} />
                 <span style={{ flex: 1 }}>Tengo <strong>espacio limpio</strong> para separar denominaciones</span>
               </label>
 
@@ -484,7 +484,7 @@ export function Phase2Manager({
                     borderColor: checkedItems.entendido ? '#00ba7c' : 'rgba(255, 255, 255, 0.3)'
                   }}
                 />
-                <AlertCircle className="w-5 h-5" style={{ color: '#f4a52a' }} />
+                <AlertCircle className="w-5 h-5" style={{ color: '#0a84ff' }} />
                 <span style={{ flex: 1 }}>
                   <strong>Entiendo</strong> que este dinero es para entregar a gerencia
                 </span>
@@ -499,7 +499,7 @@ export function Phase2Manager({
             disabled={!allItemsChecked}
             style={{
               background: allItemsChecked 
-                ? 'linear-gradient(135deg, #00ba7c 0%, #06d6a0 100%)' 
+                ? 'linear-gradient(135deg, #0a84ff 0%, #5e5ce6 100%)' 
                 : 'rgba(255, 255, 255, 0.1)',
               color: 'white',
               border: allItemsChecked 
@@ -510,7 +510,20 @@ export function Phase2Manager({
               cursor: allItemsChecked ? 'pointer' : 'not-allowed',
               opacity: allItemsChecked ? 1 : 0.5,
               transition: 'all 0.3s ease',
-              padding: '12px 24px'
+              padding: '12px 24px',
+              boxShadow: allItemsChecked ? '0 4px 12px rgba(10, 132, 255, 0.3)' : 'none'
+            }}
+            onMouseEnter={(e) => {
+              if (allItemsChecked) {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 6px 20px rgba(10, 132, 255, 0.4)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (allItemsChecked) {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(10, 132, 255, 0.3)';
+              }
             }}
           >
             {allItemsChecked ? '✓ Todo listo, continuar' : 'Marque todos los items para continuar'}

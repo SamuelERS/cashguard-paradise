@@ -216,6 +216,28 @@ Flujo de 5 pasos optimizado:
 - **Archivado:** Versiones v1.0.66-v1.0.79 movidas al histórico
 - **Simplificación:** Reglas de la Casa y ejemplos de código optimizados
 
+## Recent Updates v1.1.22
+
+### 🎨 Corrección de Paleta de Colores en Phase2Manager
+- **PROBLEMA:** Modal de instrucciones usando colores del conteo matutino en Fase 2 del corte nocturno
+- **SÍNTOMAS DETECTADOS:**
+  1. Modal usando colores naranja/amarillo (`#f4a52a`, `#ffb84d`)
+  2. Fase 2 pertenece al corte nocturno que debe usar azules/púrpuras
+  3. Inconsistencia visual con el modo de operación
+- **SOLUCIÓN IMPLEMENTADA:**
+  1. **Colores actualizados en modal de instrucciones:**
+     - Borde: `rgba(244, 165, 42, 0.3)` → `rgba(10, 132, 255, 0.3)` (azul)
+     - Título: `#f4a52a` → `#1d9bf0` (azul)
+     - Caja de alerta: Fondo y borde cambiados a tonos azules
+     - Texto warning: `#ffb84d` → `#5e5ce6` (púrpura)
+  2. **Iconos del checklist:** Todos cambiados de `#f4a52a` → `#0a84ff` (azul)
+  3. **Botón continuar:**
+     - Gradiente: `#f4a52a → #ffb84d` → `#0a84ff → #5e5ce6` (azul a púrpura)
+     - Sombras actualizadas a tonos azules
+- **ARCHIVOS MODIFICADOS:** `/src/components/phases/Phase2Manager.tsx`
+- **RESULTADO:** Coherencia visual completa con el modo de operación nocturno
+- **IMPACTO:** Identidad visual clara entre operaciones matutinas y nocturnas
+
 ## Recent Updates v1.1.21
 
 ### 🔧 Fix: Unificación del Sistema de Toast Notifications
