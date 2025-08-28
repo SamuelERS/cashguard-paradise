@@ -289,48 +289,10 @@ export function Phase2DeliverySection({
         );
       })()}
 
-      {/* Completed Steps Summary - Padding coherente v1.0.79 */}
-      {Object.keys(completedSteps).length > 0 && (
-        <div className="rounded-lg" style={{
-          backgroundColor: 'rgba(36, 36, 36, 0.4)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          border: '1px solid rgba(255, 255, 255, 0.15)',
-          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-          padding: '20px',  // 🤖 [IA] - v1.2.5: Padding ajustado para Android
-          borderRadius: '16px'
-        }}>
-          <h4 className="text-sm font-medium mb-4" style={{ color: '#00ba7c' }}>
-            ✓ Denominaciones Confirmadas
-          </h4>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {deliverySteps.map((step) => (
-              <div
-                key={step.key}
-                className="flex items-center gap-2 p-2 rounded-lg text-sm transition-all duration-300"
-                style={{
-                  backgroundColor: completedSteps[step.key]
-                    ? 'rgba(0, 186, 124, 0.1)'
-                    : 'rgba(255, 255, 255, 0.05)',
-                  border: completedSteps[step.key]
-                    ? '1px solid rgba(0, 186, 124, 0.3)'
-                    : '1px solid rgba(255, 255, 255, 0.1)',
-                  color: completedSteps[step.key] ? '#00ba7c' : '#8899a6'
-                }}
-              >
-                {completedSteps[step.key] ? (
-                  <Check className="w-4 h-4" />
-                ) : (
-                  <div className="w-4 h-4 rounded-full" style={{
-                    border: '2px solid rgba(255, 255, 255, 0.3)'
-                  }} />
-                )}
-                <span>{step.label} × {step.quantity}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      {/* 🤖 [IA] - v1.2.9: Lista de denominaciones confirmadas ELIMINADA
+          Sistema anti-fraude: No mostrar qué se ha confirmado para evitar
+          cálculos mentales y manipulación de cantidades por parte del cajero.
+          El cajero debe concentrarse solo en la denominación actual. */}
 
       {/* Section Complete - Con padding coherente v1.0.79 */}
       {allStepsCompleted && (
