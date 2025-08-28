@@ -123,6 +123,57 @@ const CashCounter = ({
   const { createTimeout, createTimeoutWithCleanup } = useTimingConfig(); // 🤖 [IA] - Usar timing unificado v1.0.22
   const availableEmployees = selectedStore ? getEmployeesByStore(selectedStore) : [];
 
+  // 🤖 [IA] - v1.2.9 - Component-specific PWA scroll prevention
+  useEffect(() => {
+    // Solo aplicar en PWA mode
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+      // Guardar estilos originales
+      const originalStyles = {
+        position: document.body.style.position,
+        width: document.body.style.width,
+        height: document.body.style.height,
+        overflow: document.body.style.overflow,
+        overscrollBehavior: document.body.style.overscrollBehavior,
+        webkitOverflowScrolling: document.body.style.webkitOverflowScrolling,
+        touchAction: document.body.style.touchAction
+      };
+
+      // Aplicar estilos para prevenir scroll
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+      document.body.style.height = '100%';
+      document.body.style.overflow = 'hidden';
+      document.body.style.overscrollBehavior = 'none';
+      document.body.style.webkitOverflowScrolling = 'touch';
+      document.body.style.touchAction = 'none';
+
+      // Prevenir touchmove
+      const handleTouchMove = (e: TouchEvent) => {
+        // Solo prevenir si el target no es un elemento scrollable dentro del modal
+        const target = e.target as HTMLElement;
+        const scrollableContainer = target.closest('.overflow-y-auto');
+        if (!scrollableContainer) {
+          e.preventDefault();
+        }
+      };
+
+      document.addEventListener('touchmove', handleTouchMove, { passive: false });
+
+      // Cleanup: restaurar estilos originales y remover event listener
+      return () => {
+        document.body.style.position = originalStyles.position;
+        document.body.style.width = originalStyles.width;
+        document.body.style.height = originalStyles.height;
+        document.body.style.overflow = originalStyles.overflow;
+        document.body.style.overscrollBehavior = originalStyles.overscrollBehavior;
+        document.body.style.webkitOverflowScrolling = originalStyles.webkitOverflowScrolling;
+        document.body.style.touchAction = originalStyles.touchAction;
+
+        document.removeEventListener('touchmove', handleTouchMove);
+      };
+    }
+  }, []); // Solo ejecutar una vez al montar el componente
+
   // 🤖 [IA] - v1.0.3 - Auto-iniciar Fase 1 si viene del wizard
   // 🤖 [IA] - v1.2.8 - Mostrar modal de instrucciones antes de iniciar
   useEffect(() => {
@@ -628,21 +679,40 @@ const CashCounter = ({
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="space-y-4 max-w-md mx-auto sm:max-w-2xl lg:max-w-4xl"
+        className="space-y-2 max-w-md mx-auto sm:max-w-2xl lg:max-w-4xl"
       >
-        {/* 🤖 [IA] - v1.0.64 - Container principal con glass effect */}
+        {/* 🤖 [IA] - v1.0.64 - Container principal con glass effect - Fixed height */}
         <div className="space-y-4" style={{ 
           backgroundColor: 'rgba(36, 36, 36, 0.4)',
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
           border: '1px solid rgba(255, 255, 255, 0.15)',
-          padding: '28px',
+          padding: '16px',
           borderRadius: '16px',
-          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+          height: '85vh',
+          maxHeight: '900px',
+          minHeight: '600px',
+          display: 'flex',
+          flexDirection: 'column',
+          position: 'relative'
         }}>
-          {/* 🤖 [IA] - v1.0.64 - Header con glass effect premium */}
-          <div className="text-center mb-6">
-            <div className="flex items-center justify-center gap-3 mb-4">
+          {/* 🤖 [IA] - v1.0.64 - Header con glass effect premium - Fixed position */}
+          <div className="text-center" style={{
+            position: 'sticky',
+            top: 0,
+            zIndex: 10,
+            backgroundColor: 'rgba(36, 36, 36, 0.95)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            padding: '12px 12px 0 12px',
+            marginBottom: '1rem',
+            marginLeft: '-16px',
+            marginRight: '-16px',
+            marginTop: '-16px',
+            borderRadius: '16px 16px 0 0'
+          }}>
+            <div className="flex items-center justify-center gap-3 mb-2">
               <IconComponent className="w-10 h-10" style={{
                 background: primaryGradient,
                 WebkitBackgroundClip: 'text',
@@ -653,23 +723,25 @@ const CashCounter = ({
                 Fase 1: Conteo Inicial Obligatorio
               </h2>
             </div>
-            <p className="text-base" style={{ color: '#8899a6' }}>
+            <p className="text-base pb-3" style={{ color: '#8899a6' }}>
               Complete cada denominación en orden secuencial
             </p>
           </div>
 
-          {/* Guided Progress Indicator */}
-          <GuidedProgressIndicator
-            currentStep={guidedState.currentStep}
-            totalSteps={guidedState.totalSteps}
-            currentFieldLabel={currentField}
-            instructionText={instructionText}
-            isCompleted={guidedState.isCompleted}
-            isMorningCount={isMorningCount}
-          />
+          {/* Scrollable content container */}
+          <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', paddingRight: '8px' }}>
+            {/* Guided Progress Indicator */}
+            <GuidedProgressIndicator
+              currentStep={guidedState.currentStep}
+              totalSteps={guidedState.totalSteps}
+              currentFieldLabel={currentField}
+              instructionText={instructionText}
+              isCompleted={guidedState.isCompleted}
+              isMorningCount={isMorningCount}
+            />
 
-          {/* 🤖 [IA] - v1.0.95: Vista guiada unificada - Solo mostrar sección activa en todas las plataformas */}
-          <div className="space-y-4">
+            {/* 🤖 [IA] - v1.0.95: Vista guiada unificada - Solo mostrar sección activa en todas las plataformas */}
+            <div className="space-y-4">
             {/* Coins Section - Solo si hay algún campo de moneda activo */}
             {FIELD_ORDER.slice(0, 5).some(field => isFieldActive(field)) && (
               <GuidedCoinSection
@@ -714,10 +786,11 @@ const CashCounter = ({
                 El cajero no debe saber cuánto dinero va sumando hasta completar TODO el proceso.
                 Esto previene ajustes mentales y manipulación de últimas denominaciones.
             */}
+            </div>
           </div>
 
-          {/* Botones de navegación - 🤖 [IA] - v1.2.5: Texto responsivo y mejor alineación */}
-          <div className="flex gap-3 lg:max-w-lg lg:mx-auto mt-6">
+          {/* Botones de navegación - 🤖 [IA] - v1.2.5: Texto responsivo y mejor alineación - Always visible */}
+          <div className="flex gap-3 lg:max-w-lg lg:mx-auto mt-auto pt-3" style={{ flexShrink: 0 }}>
             <Button
               onClick={handleBackToStart}
               variant="outline"
@@ -800,10 +873,11 @@ const CashCounter = ({
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <div className="fixed inset-0 overflow-hidden flex items-center justify-center"
+         style={{ touchAction: 'none', overscrollBehavior: 'none', WebkitOverflowScrolling: 'touch' }}>
       <FloatingParticles />
       
-      <div className="relative z-10 container mx-auto px-4 py-8 max-w-4xl">
+      <div className="relative z-10 container mx-auto px-4 py-2 max-w-4xl">
         {/* 🤖 [IA] - v1.0.3 - Saltar selección si viene del wizard */}
         {phaseState.currentPhase === 1 && !phaseState.phase1Completed && !hasInitialData && renderStoreSelection()}
         {phaseState.currentPhase === 1 && phaseState.phase1Completed && renderPhase1()}

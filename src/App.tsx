@@ -24,6 +24,16 @@ const App = () => {
           duration={2500}
           closeButton
           expand={false}
+          style={{ 
+            position: 'fixed',
+            pointerEvents: 'none',
+            zIndex: 9999
+          }}
+          toastOptions={{
+            style: {
+              pointerEvents: 'auto'
+            }
+          }}
         />
         {/* 🤖 [IA] - Configurar future flags para React Router v7 */}
         <BrowserRouter future={{ 
