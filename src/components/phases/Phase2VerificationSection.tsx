@@ -1,3 +1,5 @@
+// 🤖 [IA] - v1.2.11 - Sistema anti-fraude: indicadores visuales sin montos
+// 🤖 [IA] - v1.1.14 - Simplificación visual y eliminación de redundancias
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Building, ChevronRight, Check, Banknote, Target, CheckCircle, Coins } from 'lucide-react';
@@ -56,6 +58,11 @@ export function Phase2VerificationSection({
     if (inputNum === currentStep.quantity) {
       onStepComplete(currentStep.key);
       setInputValue('');
+      
+      // 🤖 [IA] - v1.2.11: Vibración haptica si está disponible
+      if ('vibrate' in navigator) {
+        navigator.vibrate(50);
+      }
       
       // Move to next step
       if (!isLastStep) {
@@ -130,49 +137,64 @@ export function Phase2VerificationSection({
             </div>
           </div>
           <div className="text-center sm:text-right">
-            <p className="text-2xl sm:text-3xl font-bold" style={{ color: '#00ba7c' }}>
-              {formatCurrency(50.00)}
-            </p>
-            <span className="inline-block px-2 py-0.5 rounded text-xs font-medium mt-1" style={{
+            <span className="inline-block px-3 py-1.5 rounded-lg text-sm font-bold" style={{
               backgroundColor: 'rgba(0, 186, 124, 0.15)',
-              border: '1px solid rgba(0, 186, 124, 0.3)',
+              border: '2px solid rgba(0, 186, 124, 0.4)',
               color: '#00ba7c'
             }}>
-              Objetivo en caja
+              🎯 Objetivo: Cambio completo
             </span>
           </div>
         </div>
       </motion.div>
 
-      {/* Progress - Unificado con formato de Delivery */}
+      {/* Progress - 🤖 [IA] - v1.2.11: Indicador de unidades sin montos */}
       <div className="rounded-lg" style={{
         backgroundColor: 'rgba(36, 36, 36, 0.4)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
-        border: '1px solid rgba(255, 255, 255, 0.15)',
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-        padding: '12px',
-        borderRadius: '16px'
+        border: '1px solid rgba(0, 186, 124, 0.25)',
+        boxShadow: '0 4px 12px rgba(0, 186, 124, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+        padding: '16px',
+        borderRadius: '16px',
+        background: 'linear-gradient(135deg, rgba(0, 186, 124, 0.05) 0%, rgba(36, 36, 36, 0.4) 100%)'
       }}>
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium" style={{ color: '#e1e8ed' }}>Verificar:</span>
-            <span className="text-sm font-bold" style={{ color: '#00ba7c' }}>
-              {Math.min(currentStepIndex + 1, verificationSteps.length)}/{verificationSteps.length}
-            </span>
+          <div className="flex items-center gap-3">
+            {/* Badge QUEDA EN CAJA */}
+            <div style={{
+              padding: '4px 10px',
+              borderRadius: '20px',
+              background: 'linear-gradient(135deg, rgba(0, 186, 124, 0.2) 0%, rgba(0, 186, 124, 0.1) 100%)',
+              border: '1px solid rgba(0, 186, 124, 0.4)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px'
+            }}>
+              <span style={{ fontSize: '12px' }}>💼</span>
+              <span className="text-xs font-bold uppercase" style={{ color: '#00ba7c', letterSpacing: '0.5px' }}>
+                Queda en Caja
+              </span>
+            </div>
+            {/* Contador de unidades */}
+            <div className="flex items-center gap-2">
+              <span className="text-sm" style={{ color: '#8899a6' }}>Verificado:</span>
+              <span className="text-base font-bold" style={{ color: '#ffffff' }}>
+                ✅ {Object.keys(completedSteps).length}/{verificationSteps.length}
+              </span>
+            </div>
           </div>
-          <div className="flex-1 mx-4 rounded-full h-2" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>
+          <div className="flex-1 mx-3 rounded-full h-2.5" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>
             <div 
-              className="h-2 rounded-full transition-all duration-500"
+              className="h-2.5 rounded-full transition-all duration-500"
               style={{ 
                 width: `${(Object.keys(completedSteps).length / verificationSteps.length) * 100}%`,
-                background: 'linear-gradient(90deg, #00ba7c 0%, #06d6a0 100%)'
+                background: 'linear-gradient(90deg, #00ba7c 0%, #06d6a0 100%)',
+                boxShadow: '0 0 8px rgba(0, 186, 124, 0.4)'
               }}
             />
           </div>
-          <span className="text-sm font-bold" style={{ color: '#00ba7c' }}>
-            {formatCurrency(expectedTotal)}
-          </span>
+          {/* 🤖 [IA] - v1.2.11: Sin mostrar montos hasta el final */}
         </div>
       </div>
 

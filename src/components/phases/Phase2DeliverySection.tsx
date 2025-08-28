@@ -1,3 +1,4 @@
+// 🤖 [IA] - v1.2.11 - Sistema anti-fraude: indicadores visuales sin montos
 // 🤖 [IA] - v1.2.5 - Mejoras de visibilidad y espaciado en Android
 // 🤖 [IA] - v1.1.14 - Reorganización de flujo vertical y eliminación de redundancias
 import { useState, useEffect } from 'react';
@@ -57,6 +58,13 @@ export function Phase2DeliverySection({
       onStepComplete(currentStep.key);
       setInputValue('');
       
+      // 🤖 [IA] - v1.2.11: Feedback táctil al confirmar
+      
+      // Vibración haptica si está disponible
+      if ('vibrate' in navigator) {
+        navigator.vibrate(50);
+      }
+      
       // Move to next step
       if (!isLastStep) {
         const nextIndex = currentStepIndex + 1;
@@ -99,34 +107,57 @@ export function Phase2DeliverySection({
       animate={{ opacity: 1, x: 0 }}
       className="space-y-4 lg:max-w-3xl lg:mx-auto"
     >
-      {/* Progress - 🤖 [IA] - v1.2.5: Mejorada visibilidad en Android */}
+      {/* Progress - 🤖 [IA] - v1.2.11: Indicador de unidades sin montos (anti-fraude) */}
       <div className="rounded-lg" style={{
         backgroundColor: 'rgba(36, 36, 36, 0.4)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
-        border: '1px solid rgba(255, 255, 255, 0.15)',
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+        border: '1px solid rgba(244, 33, 46, 0.25)',
+        boxShadow: '0 4px 12px rgba(244, 33, 46, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
         padding: '16px',
-        borderRadius: '16px'
+        borderRadius: '16px',
+        background: 'linear-gradient(135deg, rgba(244, 33, 46, 0.05) 0%, rgba(36, 36, 36, 0.4) 100%)'
       }}>
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="text-base font-medium" style={{ color: '#e1e8ed' }}>Entrega:</span>
-            <span className="text-base font-bold" style={{ color: '#1d9bf0' }}>
-              {Math.min(currentStepIndex + 1, deliverySteps.length)}/{deliverySteps.length}
-            </span>
+          <div className="flex items-center gap-3">
+            {/* Badge PARA GERENCIA */}
+            <div style={{
+              padding: '4px 10px',
+              borderRadius: '20px',
+              background: 'linear-gradient(135deg, rgba(244, 33, 46, 0.2) 0%, rgba(244, 33, 46, 0.1) 100%)',
+              border: '1px solid rgba(244, 33, 46, 0.4)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px'
+            }}>
+              <span style={{ fontSize: '12px' }}>🏢</span>
+              <span className="text-xs font-bold uppercase" style={{ color: '#f4212e', letterSpacing: '0.5px' }}>
+                Para Gerencia
+              </span>
+            </div>
+            {/* Contador de unidades */}
+            <div className="flex items-center gap-2">
+              <span className="text-sm" style={{ color: '#8899a6' }}>Unidades:</span>
+              <span className="text-base font-bold" style={{ color: '#ffffff' }}>
+                📦 {Object.keys(completedSteps).length}/{deliverySteps.length}
+              </span>
+            </div>
           </div>
           <div className="flex-1 mx-3 rounded-full h-2.5" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>
             <div 
               className="h-2.5 rounded-full transition-all duration-500"
               style={{ 
                 width: `${(Object.keys(completedSteps).length / deliverySteps.length) * 100}%`,
-                background: 'linear-gradient(90deg, #0a84ff 0%, #5e5ce6 100%)',
+                background: `linear-gradient(90deg, 
+                  ${Object.keys(completedSteps).length === 0 ? '#f4212e' : 
+                    Object.keys(completedSteps).length < deliverySteps.length / 2 ? '#f4a52a' : 
+                    Object.keys(completedSteps).length < deliverySteps.length ? '#ffb84d' : 
+                    '#00ba7c'} 0%, 
+                  ${Object.keys(completedSteps).length === deliverySteps.length ? '#06d6a0' : '#5e5ce6'} 100%)`,
                 boxShadow: '0 0 8px rgba(10, 132, 255, 0.4)'
               }}
             />
           </div>
-          {/* 🤖 [IA] - v1.2.9: Monto oculto - Sistema ciego anti-fraude */}
         </div>
       </div>
 
@@ -150,7 +181,7 @@ export function Phase2DeliverySection({
               borderRadius: '16px'
             }}
           >
-            {/* Header simplificado con denominación mejorada */}
+            {/* Header con feedback visual mejorado - 🤖 [IA] - v1.2.11 */}
             <div className="flex items-center gap-3 mb-3">
               <motion.div 
                 initial={{ scale: 0 }}
