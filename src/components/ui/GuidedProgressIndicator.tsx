@@ -59,7 +59,7 @@ export const GuidedProgressIndicator = ({
                 📝 CONTEO GUIADO
               </h3>
               <p className="text-xs text-text-secondary">
-                {isCompleted ? '✓ Conteo completado' : `Paso ${currentStep} de ${totalSteps}`}
+                {isCompleted ? '✓ Conteo completado' : `Paso ${currentStep} de ${totalSteps === 17 ? 15 : totalSteps}`}
               </p>
             </div>
           </div>

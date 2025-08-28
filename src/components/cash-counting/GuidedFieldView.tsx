@@ -279,39 +279,30 @@ export function GuidedFieldView({
                 {/* 🤖 [IA] - v1.2.7: Valor unitario ocultado para sistema anti-fraude */}
               </div>
               
-              {/* Badge de progreso con indicador de sección */}
-              <div className="flex flex-col items-end gap-1">
-                <div className="px-2.5 py-1 rounded-full text-xs font-medium" style={{
-                  // 🤖 [IA] - v1.1.18: Badge de sección con tono más oscuro para contraste
-                  backgroundColor: currentFieldType === 'coin' ? 
-                    (isMorningCount ? 'rgba(230, 126, 34, 0.15)' : 'rgba(244, 165, 42, 0.15)') :
-                    currentFieldType === 'bill' ? 'rgba(0, 186, 124, 0.15)' :
-                    borderColorLight,
-                  border: currentFieldType === 'coin' ? 
-                    (isMorningCount ? '1px solid rgba(230, 126, 34, 0.4)' : '1px solid rgba(244, 165, 42, 0.3)') :
-                    currentFieldType === 'bill' ? '1px solid rgba(0, 186, 124, 0.3)' :
-                    `1px solid ${borderColor}`,
-                  color: currentFieldType === 'coin' ? 
-                    (isMorningCount ? darkAccent : '#f4a52a') :
-                    currentFieldType === 'bill' ? '#00ba7c' :
-                    primaryColor
-                }}>
+              {/* Badge de sección mejorado con íconos y mayor prominencia */}
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-black/40 rounded-lg" style={{
+                // 🤖 [IA] - v1.2.9: Badge único más prominente sin indicador redundante
+                backgroundColor: currentFieldType === 'coin' ? 
+                  (isMorningCount ? 'rgba(230, 126, 34, 0.2)' : 'rgba(244, 165, 42, 0.2)') :
+                  currentFieldType === 'bill' ? 'rgba(0, 186, 124, 0.2)' :
+                  'rgba(10, 132, 255, 0.15)',
+                border: currentFieldType === 'coin' ? 
+                  (isMorningCount ? '1px solid rgba(230, 126, 34, 0.5)' : '1px solid rgba(244, 165, 42, 0.4)') :
+                  currentFieldType === 'bill' ? '1px solid rgba(0, 186, 124, 0.4)' :
+                  `1px solid ${borderColor}`,
+                color: currentFieldType === 'coin' ? 
+                  (isMorningCount ? darkAccent : '#f4a52a') :
+                  currentFieldType === 'bill' ? '#00ba7c' :
+                  primaryColor
+              }}>
+                {currentFieldType === 'coin' ? <Coins className="h-4 w-4" /> :
+                 currentFieldType === 'bill' ? <Banknote className="h-4 w-4" /> :
+                 <CreditCard className="h-4 w-4" />}
+                <span className="text-sm font-semibold">
                   {currentFieldType === 'coin' ? 'Monedas' :
                    currentFieldType === 'bill' ? 'Billetes' :
-                   'Electrónicos'}
-                </div>
-                <div className="px-2.5 py-1 rounded-full" style={{
-                  // 🤖 [IA] - v1.1.18: Badge de progreso con amarillo dorado distintivo
-                  backgroundColor: isMorningCount ? 'rgba(255, 217, 61, 0.15)' : borderColorLight,
-                  border: isMorningCount ? `1px solid ${accentColor}` : `1px solid ${borderColor}`,
-                  transition: 'all 0.3s ease'
-                }}>
-                  <span className="text-xs font-semibold" style={{ 
-                    color: isMorningCount ? darkAccent : primaryColor 
-                  }}>
-                    {currentStep}/{totalSteps}
-                  </span>
-                </div>
+                   'Pagos Electrónicos'}
+                </span>
               </div>
             </div>
 
@@ -416,7 +407,7 @@ export function GuidedFieldView({
           // Determinar campos de la sección actual usando los nombres correctos que vienen en completedFields
           const coinFields = ['1¢ centavo', '5¢ centavos', '10¢ centavos', '25¢ centavos', '$1 moneda'];
           const billFields = ['$1', '$5', '$10', '$20', '$50', '$100'];
-          const electronicFields = ['Credomatic', 'Promerica', 'Transferencia Bancaria', 'PayPal', 'Total Electrónico'];
+          const electronicFields = ['Credomatic', 'Promerica', 'Transferencia Bancaria', 'PayPal'];
           
           let sectionFields: string[] = [];
           let sectionName = '';
