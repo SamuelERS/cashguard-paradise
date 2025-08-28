@@ -154,16 +154,18 @@ const CashCounter = ({
     }
   };
 
-  // 🤖 [IA] - v1.2.7 - Auto-confirmar totalCash en conteo matutino
+  // 🤖 [IA] - v1.2.8 - Sistema Ciego Anti-Fraude: Auto-confirmar todos los totales sin mostrar valores
   useEffect(() => {
-    if (currentField === 'totalCash' && isMorningCount && phaseState.currentPhase === 1) {
-      // Auto-confirmar después de un pequeño delay para que el usuario vea el campo
+    // Auto-confirmar totalCash y totalElectronic para mantener sistema ciego
+    if ((currentField === 'totalCash' || currentField === 'totalElectronic') && 
+        phaseState.currentPhase === 1) {
+      // Delay mínimo solo para transición visual suave
       const timer = setTimeout(() => {
         handleGuidedFieldConfirm('0');
-      }, 500);
+      }, 300); // Reducido para flujo más rápido
       return () => clearTimeout(timer);
     }
-  }, [currentField, isMorningCount, phaseState.currentPhase]);
+  }, [currentField, phaseState.currentPhase]);
 
   const handleCashCountChange = (denomination: string, value: string) => {
     const numValue = parseInt(value) || 0;
@@ -174,11 +176,11 @@ const CashCounter = ({
   };
 
   const handleGuidedFieldConfirm = (value: string) => {
-    // 🤖 [IA] - v1.2.7: Auto-confirmar totalCash en conteo matutino (sistema anti-fraude)
-    if (currentField === 'totalCash' && isMorningCount) {
-      // Auto-avanzar sin mostrar valor total
+    // 🤖 [IA] - v1.2.8: Sistema Ciego Anti-Fraude - No mostrar totales durante conteo
+    if (currentField === 'totalCash' || currentField === 'totalElectronic') {
+      // Auto-avanzar sin mostrar valores para evitar manipulación
       const success = confirmCurrentField(
-        '0', // Valor dummy, no se usa para totalCash
+        '0', // Valor dummy - el sistema calcula internamente
         handleCashCountChange,
         handleElectronicChange,
         electronicPayments,
@@ -186,10 +188,15 @@ const CashCounter = ({
       );
       
       if (success) {
-        // Completar Fase 1 automáticamente después de confirmar totalCash
-        setTimeout(() => {
-          handleCompletePhase1();
-        }, 100); // Pequeño delay para que el usuario vea la transición
+        // Si es el último campo del corte nocturno, completar Fase 1
+        const isLastField = (!isMorningCount && currentField === 'totalElectronic') ||
+                           (isMorningCount && currentField === 'totalCash');
+        
+        if (isLastField) {
+          setTimeout(() => {
+            handleCompletePhase1();
+          }, 100);
+        }
       }
       return;
     }
@@ -702,24 +709,11 @@ const CashCounter = ({
               />
             )}
             
-            {/* 🤖 [IA] - v1.2.7-fix: TotalsSummarySection visible DURANTE Fase 1 para confirmar totales */}
-            {phaseState.currentPhase === 1 && (currentField === 'totalCash' || (!isMorningCount && currentField === 'totalElectronic')) && (
-              <TotalsSummarySection
-                totalCash={Object.entries({...cashCount}).reduce((sum, [key, val]) => {
-                  if (typeof val === 'number' && !['credomatic', 'promerica', 'bankTransfer', 'paypal'].includes(key)) {
-                    const denomination = [...Object.entries(DENOMINATIONS.COINS), ...Object.entries(DENOMINATIONS.BILLS)]
-                      .find(([k]) => k === key)?.[1];
-                    return sum + (val * (denomination?.value || 0));
-                  }
-                  return sum;
-                }, 0)}
-                totalElectronic={Object.values(electronicPayments).reduce((sum, val) => sum + val, 0)}
-                currentField={currentField === 'totalCash' || (!isMorningCount && currentField === 'totalElectronic') ? currentField : null}
-                onConfirmTotal={() => handleGuidedFieldConfirm('0')}
-                isFieldCompleted={isFieldCompleted}
-                isMorningCount={isMorningCount}
-              />
-            )}
+            {/* 🤖 [IA] - v1.2.8: TotalsSummarySection ELIMINADO - Sistema Ciego Anti-Fraude
+                Los totales NUNCA se muestran durante el conteo para evitar manipulación.
+                El cajero no debe saber cuánto dinero va sumando hasta completar TODO el proceso.
+                Esto previene ajustes mentales y manipulación de últimas denominaciones.
+            */}
           </div>
 
         </div>

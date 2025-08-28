@@ -1,10 +1,10 @@
-# CLAUDE.md v1.1.15
+# CLAUDE.md v1.2.8
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview
 
-CashGuard Paradise v1.1.15 is a cash management system for "Acuarios Paradise" retail stores, built with React, TypeScript, Vite, and shadcn/ui. The application now implements **dual operation modes**: morning cash count (inicio de turno) and evening cash cut (fin de turno), with multi-phase protocols and anti-fraud measures.
+CashGuard Paradise v1.2.8 is a cash management system for "Acuarios Paradise" retail stores, built with React, TypeScript, Vite, and shadcn/ui. The application now implements **dual operation modes**: morning cash count (inicio de turno) and evening cash cut (fin de turno), with multi-phase protocols and anti-fraud measures.
 
 ### 🧪 Testing Status - 100% Docker Containerized
 - **SECTOR 1 ✅**: Testing framework foundation (10 smoke tests) - Ejecutándose en Docker
@@ -122,6 +122,23 @@ Flujo de 5 pasos optimizado:
 ## 📝 Recent Updates
 
 *Para historial completo v1.0.2 - v1.0.79, ver [CHANGELOG-HISTORICO.md](/Documentos%20MarkDown/CHANGELOG-HISTORICO.md)*
+
+### v1.2.8 - Sistema Ciego Anti-Fraude Completo
+- **PROBLEMA CRÍTICO:** El sistema mostraba totales durante el conteo permitiendo manipulación
+- **RIESGO DETECTADO:** Cajeros podían:
+  1. Calcular mentalmente y ajustar últimas denominaciones
+  2. Ocultar faltantes/sobrantes sin reportar
+  3. Pre-cuadrar cuentas para evitar discrepancias
+- **SOLUCIÓN IMPLEMENTADA - SISTEMA 100% CIEGO:**
+  1. **Auto-confirmación de totales:** Sin mostrar valores en pasos 16-17
+  2. **Eliminación de TotalsSummarySection:** Nunca se muestra durante conteo
+  3. **Flujo unificado:** Misma lógica anti-fraude para conteo matutino y corte nocturno
+  4. **Transición automática:** De paso 15 (paypal) directo a completar Fase 1
+- **ARCHIVOS MODIFICADOS:**
+  - `src/components/CashCounter.tsx` - useEffect y handleGuidedFieldConfirm expandidos
+  - TotalsSummarySection comentado completamente durante Fase 1
+- **RESULTADO:** Cajeros cuentan unidades sin saber totales hasta el reporte final
+- **IMPACTO:** Eliminación completa de oportunidades de manipulación
 
 ### v1.2.6 - Android Responsive Optimization - Preventing Overflow Issues
 - **PROBLEMA:** Múltiples elementos fuera de pantalla en dispositivos Android pequeños
