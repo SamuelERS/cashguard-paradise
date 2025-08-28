@@ -93,24 +93,34 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
             boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
           }}>
             {/* Header del paso */}
-            <div className="flex items-center gap-3 p-4 rounded-lg" style={{
+            <div className="flex items-center rounded-lg" style={{
+              gap: `clamp(8px, ${12 * viewportScale}px, 12px)`,
+              padding: `clamp(14px, ${16 * viewportScale}px, 16px)`,
               backgroundColor: 'rgba(36, 36, 36, 0.4)',
               backdropFilter: 'blur(20px)',
               WebkitBackdropFilter: 'blur(20px)',
               border: '1px solid rgba(255, 255, 255, 0.15)',
               boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
             }}>
-              <MapPin className="w-8 h-8 flex-shrink-0" style={{
+              <MapPin className="flex-shrink-0" style={{
+                width: `clamp(28px, 7vw, 32px)`,
+                height: `clamp(28px, 7vw, 32px)`,
                 background: 'linear-gradient(135deg, #f4a52a 0%, #ffb84d 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text'
               }} />
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-lg sm:text-xl" style={{ color: '#e1e8ed' }}>
+                <h3 className="font-semibold" style={{ 
+                  fontSize: `clamp(1rem, 4vw, 1.25rem)`,
+                  color: '#e1e8ed' 
+                }}>
                   Seleccione la Sucursal
                 </h3>
-                <p className="text-sm mt-1" style={{ color: '#8899a6' }}>
+                <p className="mt-1" style={{ 
+                  fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
+                  color: '#8899a6' 
+                }}>
                   Donde se realizará el conteo matutino
                 </p>
               </div>
@@ -119,8 +129,10 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
             {/* Selector de sucursal */}
             <Select value={selectedStore} onValueChange={setSelectedStore}>
               <SelectTrigger 
-                className="h-12 text-base focus:ring-orange-500/50 focus:ring-offset-0"
+                className="focus:ring-orange-500/50 focus:ring-offset-0"
                 style={{
+                  height: `clamp(40px, 10vw, 48px)`,
+                  fontSize: `clamp(0.875rem, 3.5vw, 1rem)`,
                   backgroundColor: 'rgba(255, 255, 255, 0.05)',
                   border: '1px solid rgba(255, 255, 255, 0.3)'
                 }}
@@ -153,12 +165,19 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
                   background: 'rgba(36, 36, 36, 0.4)',
                   border: '1px solid rgba(0, 186, 124, 0.4)',
                   borderRadius: '12px',
-                  padding: '12px'
+                  padding: `clamp(10px, ${12 * viewportScale}px, 12px)`
                 }}
               >
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5" style={{ color: '#00ba7c' }} />
-                  <span className="text-sm" style={{ color: '#e1e8ed' }}>
+                <div className="flex items-center" style={{ gap: `clamp(6px, ${8 * viewportScale}px, 8px)` }}>
+                  <CheckCircle style={{ 
+                    width: `clamp(16px, 4vw, 20px)`,
+                    height: `clamp(16px, 4vw, 20px)`,
+                    color: '#00ba7c' 
+                  }} />
+                  <span style={{ 
+                    fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
+                    color: '#e1e8ed' 
+                  }}>
                     Sucursal seleccionada correctamente
                   </span>
                 </div>
@@ -179,24 +198,34 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
             boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
           }}>
             {/* Header del paso */}
-            <div className="flex items-center gap-3 p-4 rounded-lg" style={{
+            <div className="flex items-center rounded-lg" style={{
+              gap: `clamp(8px, ${12 * viewportScale}px, 12px)`,
+              padding: `clamp(14px, ${16 * viewportScale}px, 16px)`,
               backgroundColor: 'rgba(36, 36, 36, 0.4)',
               backdropFilter: 'blur(20px)',
               WebkitBackdropFilter: 'blur(20px)',
               border: '1px solid rgba(255, 255, 255, 0.15)',
               boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
             }}>
-              <Users className="w-8 h-8 flex-shrink-0" style={{
+              <Users className="flex-shrink-0" style={{
+                width: `clamp(28px, 7vw, 32px)`,
+                height: `clamp(28px, 7vw, 32px)`,
                 background: 'linear-gradient(135deg, #f4a52a 0%, #ffb84d 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text'
               }} />
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-lg sm:text-xl" style={{ color: '#e1e8ed' }}>
+                <h3 className="font-semibold" style={{ 
+                  fontSize: `clamp(1rem, 4vw, 1.25rem)`,
+                  color: '#e1e8ed' 
+                }}>
                   Cajero Entrante
                 </h3>
-                <p className="text-sm mt-1" style={{ color: '#8899a6' }}>
+                <p className="mt-1" style={{ 
+                  fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
+                  color: '#8899a6' 
+                }}>
                   Quien realizará el conteo del cambio
                 </p>
               </div>
@@ -205,8 +234,10 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
             {/* Selector de cajero entrante */}
             <Select value={selectedCashierIn} onValueChange={setSelectedCashierIn}>
               <SelectTrigger 
-                className="h-12 text-base focus:ring-orange-500/50 focus:ring-offset-0"
+                className="focus:ring-orange-500/50 focus:ring-offset-0"
                 style={{
+                  height: `clamp(40px, 10vw, 48px)`,
+                  fontSize: `clamp(0.875rem, 3.5vw, 1rem)`,
                   backgroundColor: 'rgba(255, 255, 255, 0.05)',
                   border: '1px solid rgba(255, 255, 255, 0.3)'
                 }}
@@ -239,12 +270,19 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
                   background: 'rgba(36, 36, 36, 0.4)',
                   border: '1px solid rgba(0, 186, 124, 0.4)',
                   borderRadius: '12px',
-                  padding: '12px'
+                  padding: `clamp(10px, ${12 * viewportScale}px, 12px)`
                 }}
               >
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5" style={{ color: '#00ba7c' }} />
-                  <span className="text-sm" style={{ color: '#e1e8ed' }}>
+                <div className="flex items-center" style={{ gap: `clamp(6px, ${8 * viewportScale}px, 8px)` }}>
+                  <CheckCircle style={{ 
+                    width: `clamp(16px, 4vw, 20px)`,
+                    height: `clamp(16px, 4vw, 20px)`,
+                    color: '#00ba7c' 
+                  }} />
+                  <span style={{ 
+                    fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
+                    color: '#e1e8ed' 
+                  }}>
                     Cajero entrante seleccionado
                   </span>
                 </div>
@@ -265,24 +303,34 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
             boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
           }}>
             {/* Header del paso */}
-            <div className="flex items-center gap-3 p-4 rounded-lg" style={{
+            <div className="flex items-center rounded-lg" style={{
+              gap: `clamp(8px, ${12 * viewportScale}px, 12px)`,
+              padding: `clamp(14px, ${16 * viewportScale}px, 16px)`,
               backgroundColor: 'rgba(36, 36, 36, 0.4)',
               backdropFilter: 'blur(20px)',
               WebkitBackdropFilter: 'blur(20px)',
               border: '1px solid rgba(255, 255, 255, 0.15)',
               boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
             }}>
-              <Users className="w-8 h-8 flex-shrink-0" style={{
+              <Users className="flex-shrink-0" style={{
+                width: `clamp(28px, 7vw, 32px)`,
+                height: `clamp(28px, 7vw, 32px)`,
                 background: 'linear-gradient(135deg, #ffb84d 0%, #f4a52a 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text'
               }} />
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-lg sm:text-xl" style={{ color: '#e1e8ed' }}>
+                <h3 className="font-semibold" style={{ 
+                  fontSize: `clamp(1rem, 4vw, 1.25rem)`,
+                  color: '#e1e8ed' 
+                }}>
                   Cajero Saliente
                 </h3>
-                <p className="text-sm mt-1" style={{ color: '#8899a6' }}>
+                <p className="mt-1" style={{ 
+                  fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
+                  color: '#8899a6' 
+                }}>
                   Quien verificará el cambio del turno anterior
                 </p>
               </div>
@@ -291,8 +339,10 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
             {/* Selector de cajero saliente */}
             <Select value={selectedCashierOut} onValueChange={setSelectedCashierOut}>
               <SelectTrigger 
-                className="h-12 text-base focus:ring-orange-500/50 focus:ring-offset-0"
+                className="focus:ring-orange-500/50 focus:ring-offset-0"
                 style={{
+                  height: `clamp(40px, 10vw, 48px)`,
+                  fontSize: `clamp(0.875rem, 3.5vw, 1rem)`,
                   backgroundColor: 'rgba(255, 255, 255, 0.05)',
                   border: '1px solid rgba(255, 255, 255, 0.3)'
                 }}
@@ -329,21 +379,35 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
                     ? '1px solid rgba(0, 186, 124, 0.4)' 
                     : '1px solid rgba(244, 33, 46, 0.4)',
                   borderRadius: '12px',
-                  padding: '12px'
+                  padding: `clamp(10px, ${12 * viewportScale}px, 12px)`
                 }}
               >
-                <div className="flex items-center gap-2">
+                <div className="flex items-center" style={{ gap: `clamp(6px, ${8 * viewportScale}px, 8px)` }}>
                   {showValidation ? (
                     <>
-                      <CheckCircle className="w-5 h-5" style={{ color: '#00ba7c' }} />
-                      <span className="text-sm" style={{ color: '#e1e8ed' }}>
+                      <CheckCircle style={{ 
+                    width: `clamp(16px, 4vw, 20px)`,
+                    height: `clamp(16px, 4vw, 20px)`,
+                    color: '#00ba7c' 
+                  }} />
+                      <span style={{ 
+                    fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
+                    color: '#e1e8ed' 
+                  }}>
                         Cajeros diferentes confirmados
                       </span>
                     </>
                   ) : (
                     <>
-                      <X className="w-5 h-5" style={{ color: '#f4212e' }} />
-                      <span className="text-sm" style={{ color: '#f4212e' }}>
+                      <X style={{ 
+                        width: `clamp(16px, 4vw, 20px)`,
+                        height: `clamp(16px, 4vw, 20px)`,
+                        color: '#f4212e' 
+                      }} />
+                      <span style={{ 
+                        fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
+                        color: '#f4212e' 
+                      }}>
                         El cajero saliente debe ser diferente al entrante
                       </span>
                     </>
@@ -366,8 +430,11 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
       }
     }}>
       <DialogContent 
-        className="w-[95vw] max-w-[95vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] sm:max-h-[85vh] overflow-y-auto overflow-x-hidden p-0 mx-auto [&>button]:hidden"
+        className="overflow-y-auto overflow-x-hidden p-0 mx-auto [&>button]:hidden"
         style={{
+          width: '95vw',
+          maxWidth: isMobileDevice ? '95vw' : `clamp(448px, 60vw, 576px)`,
+          maxHeight: isMobileDevice ? '90vh' : '85vh',
           backgroundColor: 'rgba(25, 25, 25, 0.65)',
           backdropFilter: 'blur(40px) saturate(180%)',
           WebkitBackdropFilter: 'blur(40px) saturate(180%)',
@@ -375,14 +442,15 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
           boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05)'
         }}
       >
-        <div className="p-4 sm:p-6">
+        <div style={{ padding: `clamp(16px, ${24 * viewportScale}px, 24px)` }}>
           {/* Header del modal */}
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
+          <div className="flex items-center justify-between" style={{ marginBottom: `clamp(20px, ${24 * viewportScale}px, 24px)` }}>
+            <div className="flex items-center" style={{ gap: `clamp(8px, ${12 * viewportScale}px, 12px)` }}>
               <Badge 
                 variant="outline" 
-                className="px-3 py-1"
                 style={{
+                  padding: `${Math.round(4 * viewportScale)}px ${Math.round(12 * viewportScale)}px`,
+                  fontSize: `clamp(0.625rem, 2.5vw, 0.75rem)`,
                   background: 'rgba(244, 165, 42, 0.1)',
                   border: '1px solid rgba(244, 165, 42, 0.3)',
                   color: '#ffb84d'
@@ -390,8 +458,15 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
               >
                 Paso {currentStep} de 3
               </Badge>
-              <Sunrise className="w-6 h-6" style={{ color: '#f4a52a' }} />
-              <h2 className="text-xl font-bold" style={{ color: '#e1e8ed' }}>
+              <Sunrise style={{ 
+                width: `clamp(20px, 5vw, 24px)`, 
+                height: `clamp(20px, 5vw, 24px)`,
+                color: '#f4a52a' 
+              }} />
+              <h2 className="font-bold" style={{ 
+                fontSize: `clamp(1.125rem, 4.5vw, 1.25rem)`,
+                color: '#e1e8ed' 
+              }}>
                 Conteo de Caja Matutino
               </h2>
             </div>
@@ -401,12 +476,18 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
               onClick={onClose}
               className="rounded-full"
             >
-              <X className="h-5 w-5" />
+              <X style={{ 
+                width: `clamp(18px, 4.5vw, 20px)`, 
+                height: `clamp(18px, 4.5vw, 20px)` 
+              }} />
             </Button>
           </div>
 
           {/* Progress bar */}
-          <div className="relative h-2 bg-gray-800 rounded-full mb-6 overflow-hidden">
+          <div className="relative bg-gray-800 rounded-full overflow-hidden" style={{ 
+            height: `clamp(6px, 2vw, 8px)`,
+            marginBottom: `clamp(20px, ${24 * viewportScale}px, 24px)` 
+          }}>
             <motion.div
               className="absolute left-0 top-0 h-full rounded-full"
               style={{ background: 'linear-gradient(90deg, #f4a52a, #ffb84d)' }}
@@ -430,12 +511,12 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
           </AnimatePresence>
 
           {/* Botones de navegación */}
-          <div className="flex items-center justify-between mt-8">
+          <div className="flex items-center justify-between" style={{ marginTop: `clamp(28px, ${32 * viewportScale}px, 32px)` }}>
             <Button
               variant="outline"
               onClick={handlePrevious}
               disabled={currentStep === 1}
-              className="min-w-[100px]"
+              style={{ minWidth: `clamp(80px, ${100 * viewportScale}px, 100px)` }}
             >
               Anterior
             </Button>
@@ -444,7 +525,7 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
               <Button
                 onClick={handleNext}
                 disabled={!canGoNext()}
-                className="min-w-[100px]"
+                style={{ minWidth: `clamp(80px, ${100 * viewportScale}px, 100px)` }}
                 variant={canGoNext() ? 'default' : 'outline'}
                 style={canGoNext() ? {
                   background: 'linear-gradient(135deg, #f4a52a 0%, #ffb84d 100%)'
@@ -456,7 +537,7 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
               <Button
                 onClick={handleComplete}
                 disabled={!canGoNext()}
-                className="min-w-[100px]"
+                style={{ minWidth: `clamp(80px, ${100 * viewportScale}px, 100px)` }}
                 variant={canGoNext() ? 'default' : 'outline'}
                 style={canGoNext() ? {
                   background: 'linear-gradient(135deg, #f4a52a 0%, #ffb84d 100%)'
