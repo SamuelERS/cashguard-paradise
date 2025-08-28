@@ -1,8 +1,9 @@
 // 🤖 [IA] - v1.0.92 - Wizard con Frosted Glass Premium balanceado
+// 🤖 [IA] - v1.2.12 - Corrección de accesibilidad con DialogTitle y DialogDescription
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, MapPin, Users, CheckCircle, Sunrise } from 'lucide-react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
@@ -83,7 +84,10 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
     switch (currentStep) {
       case 1:
         return (
-          <div className="space-y-6" style={{
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: `clamp(20px, ${24 * viewportScale}px, 24px)`,
             backgroundColor: 'rgba(36, 36, 36, 0.4)',
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
@@ -111,17 +115,19 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
                 backgroundClip: 'text'
               }} />
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold" style={{ 
+                <h3 style={{ 
+                  fontWeight: 600,
                   fontSize: `clamp(1rem, 4vw, 1.25rem)`,
                   color: '#e1e8ed' 
                 }}>
                   Seleccione la Sucursal
                 </h3>
-                <p className="mt-1" style={{ 
+                <p style={{
+                  marginTop: `clamp(2px, ${4 * viewportScale}px, 4px)`, 
                   fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
                   color: '#8899a6' 
                 }}>
-                  Donde se realizará el conteo matutino
+                  Donde se realizará el conteo
                 </p>
               </div>
             </div>
@@ -188,7 +194,10 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
 
       case 2:
         return (
-          <div className="space-y-6" style={{
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: `clamp(20px, ${24 * viewportScale}px, 24px)`,
             backgroundColor: 'rgba(36, 36, 36, 0.4)',
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
@@ -216,13 +225,15 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
                 backgroundClip: 'text'
               }} />
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold" style={{ 
+                <h3 style={{ 
+                  fontWeight: 600,
                   fontSize: `clamp(1rem, 4vw, 1.25rem)`,
                   color: '#e1e8ed' 
                 }}>
                   Cajero Entrante
                 </h3>
-                <p className="mt-1" style={{ 
+                <p style={{
+                  marginTop: `clamp(2px, ${4 * viewportScale}px, 4px)`, 
                   fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
                   color: '#8899a6' 
                 }}>
@@ -293,7 +304,10 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
 
       case 3:
         return (
-          <div className="space-y-6" style={{
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: `clamp(20px, ${24 * viewportScale}px, 24px)`,
             backgroundColor: 'rgba(36, 36, 36, 0.4)',
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
@@ -321,13 +335,15 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
                 backgroundClip: 'text'
               }} />
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold" style={{ 
+                <h3 style={{ 
+                  fontWeight: 600,
                   fontSize: `clamp(1rem, 4vw, 1.25rem)`,
                   color: '#e1e8ed' 
                 }}>
                   Cajero Saliente
                 </h3>
-                <p className="mt-1" style={{ 
+                <p style={{
+                  marginTop: `clamp(2px, ${4 * viewportScale}px, 4px)`, 
                   fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
                   color: '#8899a6' 
                 }}>
@@ -442,6 +458,14 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
           boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05)'
         }}
       >
+        {/* 🤖 [IA] - v1.2.12 - DialogTitle y DialogDescription para accesibilidad */}
+        <DialogTitle className="sr-only">
+          Conteo de Caja Matutino - Paso {currentStep} de 3
+        </DialogTitle>
+        <DialogDescription className="sr-only">
+          Complete los pasos para realizar el conteo matutino del cambio de caja. Este proceso verificará el fondo inicial de $50 para el inicio del turno.
+        </DialogDescription>
+        
         <div style={{ padding: `clamp(16px, ${24 * viewportScale}px, 24px)` }}>
           {/* Header del modal */}
           <div className="flex items-center justify-between" style={{ marginBottom: `clamp(20px, ${24 * viewportScale}px, 24px)` }}>
@@ -449,7 +473,7 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
               <Badge 
                 variant="outline" 
                 style={{
-                  padding: `${Math.round(4 * viewportScale)}px ${Math.round(12 * viewportScale)}px`,
+                  padding: `clamp(3px, ${4 * viewportScale}px, 4px) clamp(10px, ${12 * viewportScale}px, 12px)`,
                   fontSize: `clamp(0.625rem, 2.5vw, 0.75rem)`,
                   background: 'rgba(244, 165, 42, 0.1)',
                   border: '1px solid rgba(244, 165, 42, 0.3)',
@@ -463,11 +487,12 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
                 height: `clamp(20px, 5vw, 24px)`,
                 color: '#f4a52a' 
               }} />
-              <h2 className="font-bold" style={{ 
+              <h2 style={{ 
+                fontWeight: 700,
                 fontSize: `clamp(1.125rem, 4.5vw, 1.25rem)`,
                 color: '#e1e8ed' 
               }}>
-                Conteo de Caja Matutino
+                Conteo de Caja
               </h2>
             </div>
             <Button
@@ -484,7 +509,8 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
           </div>
 
           {/* Progress bar */}
-          <div className="relative bg-gray-800 rounded-full overflow-hidden" style={{ 
+          <div className="relative rounded-full overflow-hidden" style={{
+            backgroundColor: 'rgb(31, 41, 55)', 
             height: `clamp(6px, 2vw, 8px)`,
             marginBottom: `clamp(20px, ${24 * viewportScale}px, 24px)` 
           }}>
@@ -525,11 +551,11 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
               <Button
                 onClick={handleNext}
                 disabled={!canGoNext()}
-                style={{ minWidth: `clamp(80px, ${100 * viewportScale}px, 100px)` }}
                 variant={canGoNext() ? 'default' : 'outline'}
-                style={canGoNext() ? {
-                  background: 'linear-gradient(135deg, #f4a52a 0%, #ffb84d 100%)'
-                } : {}}
+                style={{ 
+                  minWidth: `clamp(80px, ${100 * viewportScale}px, 100px)`,
+                  ...(canGoNext() ? { background: 'linear-gradient(135deg, #f4a52a 0%, #ffb84d 100%)' } : {})
+                }}
               >
                 Siguiente
               </Button>
@@ -537,11 +563,11 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
               <Button
                 onClick={handleComplete}
                 disabled={!canGoNext()}
-                style={{ minWidth: `clamp(80px, ${100 * viewportScale}px, 100px)` }}
                 variant={canGoNext() ? 'default' : 'outline'}
-                style={canGoNext() ? {
-                  background: 'linear-gradient(135deg, #f4a52a 0%, #ffb84d 100%)'
-                } : {}}
+                style={{ 
+                  minWidth: `clamp(80px, ${100 * viewportScale}px, 100px)`,
+                  ...(canGoNext() ? { background: 'linear-gradient(135deg, #f4a52a 0%, #ffb84d 100%)' } : {})
+                }}
               >
                 Completar
               </Button>
