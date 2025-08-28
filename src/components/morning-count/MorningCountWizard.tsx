@@ -16,7 +16,7 @@ interface MorningCountWizardProps {
   onComplete: (data: {
     selectedStore: string;
     selectedCashier: string; // Cajero entrante (quien cuenta)
-    selectedWitness: string; // Cajero saliente (quien verifica)
+    selectedWitness: string; // Testigo (quien valida el conteo)
     expectedSales: string;
   }) => void;
 }
@@ -25,7 +25,7 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedStore, setSelectedStore] = useState('');
   const [selectedCashierIn, setSelectedCashierIn] = useState(''); // Cajero entrante
-  const [selectedCashierOut, setSelectedCashierOut] = useState(''); // Cajero saliente
+  const [selectedCashierOut, setSelectedCashierOut] = useState(''); // Testigo
   const [showValidation, setShowValidation] = useState(false);
   
   const { createTimeoutWithCleanup } = useTimingConfig();
@@ -230,14 +230,14 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
                   fontSize: `clamp(1rem, 4vw, 1.25rem)`,
                   color: '#e1e8ed' 
                 }}>
-                  Cajero Entrante
+                  Cajero del Día
                 </h3>
                 <p style={{
                   marginTop: `clamp(2px, ${4 * viewportScale}px, 4px)`, 
                   fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
                   color: '#8899a6' 
                 }}>
-                  Quien realizará el conteo del cambio
+                  Seleccione cajero del día
                 </p>
               </div>
             </div>
@@ -253,7 +253,7 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
                   border: '1px solid rgba(255, 255, 255, 0.3)'
                 }}
               >
-                <SelectValue placeholder="Seleccione el cajero que entra" />
+                <SelectValue placeholder="Seleccione cajero" />
               </SelectTrigger>
               <SelectContent style={{
                 backgroundColor: 'rgba(36, 36, 36, 0.95)',
@@ -294,7 +294,7 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
                     fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
                     color: '#e1e8ed' 
                   }}>
-                    Cajero entrante seleccionado
+                    Cajero seleccionado
                   </span>
                 </div>
               </motion.div>
@@ -340,19 +340,19 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
                   fontSize: `clamp(1rem, 4vw, 1.25rem)`,
                   color: '#e1e8ed' 
                 }}>
-                  Cajero Saliente
+                  Seleccione Testigo
                 </h3>
                 <p style={{
                   marginTop: `clamp(2px, ${4 * viewportScale}px, 4px)`, 
                   fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
                   color: '#8899a6' 
                 }}>
-                  Quien verificará el cambio del turno anterior
+                  ¿Quién validará el conteo?
                 </p>
               </div>
             </div>
 
-            {/* Selector de cajero saliente */}
+            {/* Selector de testigo */}
             <Select value={selectedCashierOut} onValueChange={setSelectedCashierOut}>
               <SelectTrigger 
                 className="focus:ring-orange-500/50 focus:ring-offset-0"
@@ -363,7 +363,7 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
                   border: '1px solid rgba(255, 255, 255, 0.3)'
                 }}
               >
-                <SelectValue placeholder="Seleccione el cajero que sale" />
+                <SelectValue placeholder="Seleccione testigo" />
               </SelectTrigger>
               <SelectContent style={{
                 backgroundColor: 'rgba(36, 36, 36, 0.95)',
@@ -410,7 +410,7 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
                     fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
                     color: '#e1e8ed' 
                   }}>
-                        Cajeros diferentes confirmados
+                        Testigo confirmado
                       </span>
                     </>
                   ) : (
@@ -424,7 +424,7 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
                         fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
                         color: '#f4212e' 
                       }}>
-                        El cajero saliente debe ser diferente al entrante
+                        El testigo debe ser diferente al cajero
                       </span>
                     </>
                   )}
@@ -471,13 +471,13 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
           <div className="flex items-center justify-between" style={{ marginBottom: `clamp(16px, ${20 * viewportScale}px, 20px)` }}>
             <div className="flex items-center" style={{ gap: `clamp(8px, ${10 * viewportScale}px, 10px)` }}>
               <Sunrise style={{ 
-                width: `clamp(20px, 5vw, 24px)`, 
-                height: `clamp(20px, 5vw, 24px)`,
+                width: `clamp(24px, 6vw, 28px)`, 
+                height: `clamp(24px, 6vw, 28px)`,
                 color: '#f4a52a' 
               }} />
               <h2 style={{ 
                 fontWeight: 700,
-                fontSize: `clamp(1.125rem, 4.5vw, 1.25rem)`,
+                fontSize: `clamp(1.25rem, 5vw, 1.5rem)`,
                 color: '#e1e8ed' 
               }}>
                 Conteo de Caja
@@ -485,9 +485,9 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
             </div>
             <Button
               variant="ghost"
-              size="icon"
+              size="sm"
               onClick={onClose}
-              className="rounded-full"
+              className="rounded-full h-9 w-9"
             >
               <X style={{ 
                 width: `clamp(18px, 4.5vw, 20px)`, 
@@ -542,9 +542,10 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
           <div className="flex items-center justify-between" style={{ marginTop: `clamp(28px, ${32 * viewportScale}px, 32px)` }}>
             <Button
               variant="outline"
+              size="sm"
+              className="h-9 px-4"
               onClick={handlePrevious}
               disabled={currentStep === 1}
-              style={{ minWidth: `clamp(80px, ${100 * viewportScale}px, 100px)` }}
             >
               Anterior
             </Button>
@@ -554,10 +555,9 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
                 onClick={handleNext}
                 disabled={!canGoNext()}
                 variant={canGoNext() ? 'default' : 'outline'}
-                style={{ 
-                  minWidth: `clamp(80px, ${100 * viewportScale}px, 100px)`,
-                  ...(canGoNext() ? { background: 'linear-gradient(135deg, #f4a52a 0%, #ffb84d 100%)' } : {})
-                }}
+                size="sm"
+                className="h-9 px-4"
+                style={canGoNext() ? { background: 'linear-gradient(135deg, #f4a52a 0%, #ffb84d 100%)' } : {}}
               >
                 Siguiente
               </Button>
@@ -566,10 +566,9 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
                 onClick={handleComplete}
                 disabled={!canGoNext()}
                 variant={canGoNext() ? 'default' : 'outline'}
-                style={{ 
-                  minWidth: `clamp(80px, ${100 * viewportScale}px, 100px)`,
-                  ...(canGoNext() ? { background: 'linear-gradient(135deg, #f4a52a 0%, #ffb84d 100%)' } : {})
-                }}
+                size="sm"
+                className="h-9 px-4"
+                style={canGoNext() ? { background: 'linear-gradient(135deg, #f4a52a 0%, #ffb84d 100%)' } : {}}
               >
                 Completar
               </Button>
