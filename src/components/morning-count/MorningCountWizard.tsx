@@ -467,21 +467,9 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
         </DialogDescription>
         
         <div style={{ padding: `clamp(16px, ${24 * viewportScale}px, 24px)` }}>
-          {/* Header del modal */}
-          <div className="flex items-center justify-between" style={{ marginBottom: `clamp(20px, ${24 * viewportScale}px, 24px)` }}>
-            <div className="flex items-center" style={{ gap: `clamp(8px, ${12 * viewportScale}px, 12px)` }}>
-              <Badge 
-                variant="outline" 
-                style={{
-                  padding: `clamp(3px, ${4 * viewportScale}px, 4px) clamp(10px, ${12 * viewportScale}px, 12px)`,
-                  fontSize: `clamp(0.625rem, 2.5vw, 0.75rem)`,
-                  background: 'rgba(244, 165, 42, 0.1)',
-                  border: '1px solid rgba(244, 165, 42, 0.3)',
-                  color: '#ffb84d'
-                }}
-              >
-                Paso {currentStep} de 3
-              </Badge>
+          {/* Header del modal simplificado - 🤖 [IA] - v1.2.13 */}
+          <div className="flex items-center justify-between" style={{ marginBottom: `clamp(16px, ${20 * viewportScale}px, 20px)` }}>
+            <div className="flex items-center" style={{ gap: `clamp(8px, ${10 * viewportScale}px, 10px)` }}>
               <Sunrise style={{ 
                 width: `clamp(20px, 5vw, 24px)`, 
                 height: `clamp(20px, 5vw, 24px)`,
@@ -508,19 +496,33 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
             </Button>
           </div>
 
-          {/* Progress bar */}
-          <div className="relative rounded-full overflow-hidden" style={{
-            backgroundColor: 'rgb(31, 41, 55)', 
-            height: `clamp(6px, 2vw, 8px)`,
-            marginBottom: `clamp(20px, ${24 * viewportScale}px, 24px)` 
-          }}>
-            <motion.div
-              className="absolute left-0 top-0 h-full rounded-full"
-              style={{ background: 'linear-gradient(90deg, #f4a52a, #ffb84d)' }}
-              initial={{ width: '33%' }}
-              animate={{ width: `${(currentStep / 3) * 100}%` }}
-              transition={{ duration: 0.3, ease: 'easeInOut' }}
-            />
+          {/* Progress bar con indicador de paso - 🤖 [IA] - v1.2.13 */}
+          <div style={{ marginBottom: `clamp(20px, ${24 * viewportScale}px, 24px)` }}>
+            {/* Texto del paso sobre la barra */}
+            <div className="flex justify-between items-center" style={{ 
+              marginBottom: `clamp(4px, 1vw, 6px)` 
+            }}>
+              <span style={{
+                fontSize: `clamp(0.625rem, 2.5vw, 0.75rem)`,
+                color: '#8899a6'
+              }}>
+                Paso {currentStep} de 3
+              </span>
+            </div>
+            
+            {/* Barra de progreso visual */}
+            <div className="relative rounded-full overflow-hidden" style={{
+              backgroundColor: 'rgb(31, 41, 55)', 
+              height: `clamp(6px, 2vw, 8px)`
+            }}>
+              <motion.div
+                className="absolute left-0 top-0 h-full rounded-full"
+                style={{ background: 'linear-gradient(90deg, #f4a52a, #ffb84d)' }}
+                initial={{ width: '33%' }}
+                animate={{ width: `${(currentStep / 3) * 100}%` }}
+                transition={{ duration: 0.3, ease: 'easeInOut' }}
+              />
+            </div>
           </div>
 
           {/* Contenido del paso actual */}
