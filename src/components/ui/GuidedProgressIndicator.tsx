@@ -28,7 +28,7 @@ export const GuidedProgressIndicator = ({
   const gradientEnd = isMorningCount ? '#ffb84d' : '#5e5ce6';
   const accentColor = isMorningCount ? '#f4a52a' : '#0a84ff';
 
-  // Vista móvil más compacta
+  // Vista móvil más compacta y responsive
   if (isMobile) {
     return (
       <div style={{
@@ -38,34 +38,36 @@ export const GuidedProgressIndicator = ({
         border: '1px solid rgba(255, 255, 255, 0.15)',
         borderLeft: `4px solid ${borderColor}`,
         borderRadius: '16px',
-        padding: '16px',
-        marginBottom: '16px',
+        padding: `clamp(12px, 3vw, 16px)`,
+        marginBottom: `clamp(12px, 3vw, 16px)`,
         boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
       }}>
-        {/* Header compacto para móvil */}
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{
+        {/* Header compacto para móvil - responsive */}
+        <div className="flex items-center justify-between" style={{ marginBottom: `clamp(10px, 2.5vw, 12px)` }}>
+          <div className="flex items-center" style={{ gap: `clamp(6px, 1.5vw, 8px)` }}>
+            <div className="rounded-full flex items-center justify-center" style={{
+              width: `clamp(28px, 7vw, 32px)`,
+              height: `clamp(28px, 7vw, 32px)`,
               background: `linear-gradient(135deg, ${gradientStart} 0%, ${gradientEnd} 100%)`
             }}>
               {isCompleted ? (
-                <Check className="w-4 h-4 text-white" />
+                <Check style={{ width: `clamp(14px, 3.5vw, 16px)`, height: `clamp(14px, 3.5vw, 16px)` }} className="text-white" />
               ) : (
-                <span className="text-white font-bold text-xs">{currentStep}</span>
+                <span className="text-white font-bold" style={{ fontSize: `clamp(0.625rem, 2.5vw, 0.75rem)` }}>{currentStep}</span>
               )}
             </div>
             <div>
-              <h3 className="text-base font-bold text-text-primary">
+              <h3 className="font-bold text-text-primary" style={{ fontSize: `clamp(0.875rem, 3.5vw, 1rem)` }}>
                 📝 CONTEO GUIADO
               </h3>
-              <p className="text-xs text-text-secondary">
+              <p className="text-text-secondary" style={{ fontSize: `clamp(0.625rem, 2.5vw, 0.75rem)` }}>
                 {isCompleted ? '✓ Conteo completado' : `Paso ${currentStep} de ${totalSteps === 17 ? 15 : totalSteps}`}
               </p>
             </div>
           </div>
           
           <div className="text-right">
-            <div className="text-2xl font-bold" style={{ color: accentColor }}>
+            <div className="font-bold" style={{ fontSize: `clamp(1.25rem, 5vw, 1.5rem)`, color: accentColor }}>
               {Math.round(progressPercentage)}%
             </div>
           </div>
@@ -84,22 +86,36 @@ export const GuidedProgressIndicator = ({
           </div>
         </div>
 
-        {/* Instrucción actual más destacada */}
-        <div className="bg-glass-bg rounded-lg p-3 border border-glass-border">
-          <div className="flex items-center gap-2">
+        {/* Instrucción actual más destacada - responsive */}
+        <div className="bg-glass-bg rounded-lg border border-glass-border" style={{ padding: `clamp(10px, 2.5vw, 12px)` }}>
+          <div className="flex items-center" style={{ gap: `clamp(6px, 1.5vw, 8px)` }}>
             {isCompleted ? (
-              <Check className="w-4 h-4 text-success flex-shrink-0" />
+              <Check className="text-success flex-shrink-0" style={{
+                width: `clamp(14px, 3.5vw, 16px)`,
+                height: `clamp(14px, 3.5vw, 16px)`
+              }} />
             ) : (
-              <ArrowRight className="w-4 h-4 flex-shrink-0" style={{ color: accentColor }} />
+              <ArrowRight className="flex-shrink-0" style={{ 
+                width: `clamp(14px, 3.5vw, 16px)`,
+                height: `clamp(14px, 3.5vw, 16px)`,
+                color: accentColor 
+              }} />
             )}
-            <p className="text-text-primary font-medium text-sm">{instructionText}</p>
+            <p className="text-text-primary font-medium" style={{ fontSize: `clamp(0.75rem, 3vw, 0.875rem)` }}>{instructionText}</p>
           </div>
         </div>
 
-        {/* Warning compacto */}
+        {/* Warning compacto - responsive */}
         {!isCompleted && (
-          <div className="mt-2 flex items-center gap-1 text-warning text-xs">
-            <AlertTriangle className="w-3 h-3" />
+          <div className="flex items-center text-warning" style={{ 
+            marginTop: `clamp(6px, 1.5vw, 8px)`,
+            gap: `clamp(4px, 1vw, 6px)`,
+            fontSize: `clamp(0.625rem, 2.5vw, 0.75rem)`
+          }}>
+            <AlertTriangle style={{
+              width: `clamp(12px, 3vw, 14px)`,
+              height: `clamp(12px, 3vw, 14px)`
+            }} />
             <span>No podrá retroceder</span>
           </div>
         )}

@@ -229,6 +229,28 @@ Flujo de 5 pasos optimizado:
 - **RESULTADO:** Interfaz más limpia con mejor agrupación visual
 - **IMPACTO:** Reducción de elementos visuales, mejor coherencia de UI
 
+## Recent Updates v1.2.11
+
+### 📐 Sistema de Escala Proporcional Responsive
+- **PROBLEMA:** App desarrollada en iPhone 16 Pro Max (430px) se veía desproporcionada en Samsung A50 (360px)
+- **SÍNTOMAS:** Elementos muy grandes, texto gigante, mal uso del espacio en pantallas pequeñas
+- **SOLUCIÓN IMPLEMENTADA - ESCALA PROPORCIONAL:**
+  1. **Detección de viewport:** `viewportScale = Math.min(window.innerWidth / 430, 1)`
+  2. **CSS clamp() para límites:** `clamp(min, ideal, max)` en todos los tamaños
+  3. **Viewport units (vw):** Para escala proporcional automática
+  4. **Sin scroll interno en móviles:** `overflowY: 'visible'` elimina doble scroll
+- **CAMBIOS ESPECÍFICOS:**
+  - Padding: `clamp(12px, ${16 * viewportScale}px, 16px)`
+  - Texto: `clamp(14px, ${16 * viewportScale}px, 16px)`
+  - Header: `clamp(1.25rem, 5vw, 1.5rem)`
+  - Iconos: `clamp(32px, 8vw, 40px)`
+  - Progress indicator: Todos los elementos con clamp() y vw
+- **ARCHIVOS MODIFICADOS:** 
+  - `/src/components/CashCounter.tsx` (líneas 690-759)
+  - `/src/components/ui/GuidedProgressIndicator.tsx` (líneas 31-120)
+- **RESULTADO:** Interface proporcional en cualquier dispositivo, sin elementos gigantes
+- **IMPACTO:** Experiencia consistente desde 320px hasta tablets, sin media queries hardcodeadas
+
 ## Recent Updates v1.2.10
 
 ### 📱 Simplificación del Header para Móviles

@@ -687,65 +687,76 @@ const CashCounter = ({
         }))
     ];
 
+    // 🤖 [IA] - v1.2.11 - Detección de viewport y escala proporcional
+    const isMobileDevice = typeof window !== 'undefined' && window.innerWidth < 768;
+    const viewportScale = typeof window !== 'undefined' ? Math.min(window.innerWidth / 430, 1) : 1; // 430px = iPhone 16 Pro Max base
+
     return (
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="space-y-2 max-w-md mx-auto sm:max-w-2xl lg:max-w-4xl"
       >
-        {/* 🤖 [IA] - v1.2.9 - Container principal con glass effect - Altura automática */}
+        {/* 🤖 [IA] - v1.2.11 - Container principal responsive con clamp() y viewport units */}
         <div className="space-y-4" style={{ 
           backgroundColor: 'rgba(36, 36, 36, 0.4)',
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
           border: '1px solid rgba(255, 255, 255, 0.15)',
-          padding: '16px',
+          padding: `clamp(12px, ${16 * viewportScale}px, 16px)`,
           borderRadius: '16px',
           boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-          minHeight: '400px',
-          maxHeight: '85vh',
+          minHeight: `clamp(300px, 60vh, 400px)`,
+          maxHeight: '90vh',
           display: 'flex',
           flexDirection: 'column',
-          position: 'relative'
+          position: 'relative',
+          fontSize: `clamp(14px, ${16 * viewportScale}px, 16px)`
         }}>
-          {/* 🤖 [IA] - v1.2.10 - Header simplificado para móviles - Sin subtítulo y padding reducido */}
+          {/* 🤖 [IA] - v1.2.11 - Header responsive con viewport units y clamp() */}
           <div className="text-center" style={{
             position: 'relative',
             backgroundColor: 'rgba(36, 36, 36, 0.95)',
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
-            padding: '8px 8px 8px 8px',
-            marginBottom: '0.5rem',
-            marginLeft: '-16px',
-            marginRight: '-16px',
-            marginTop: '-16px',
+            padding: `clamp(6px, 1.5vw, 12px)`,
+            marginBottom: `clamp(0.25rem, 1vw, 0.5rem)`,
+            marginLeft: `-${Math.max(12, 16 * viewportScale)}px`,
+            marginRight: `-${Math.max(12, 16 * viewportScale)}px`,
+            marginTop: `-${Math.max(12, 16 * viewportScale)}px`,
             borderRadius: '16px 16px 0 0'
           }}>
-            <div className="flex items-center justify-center gap-3">
-              <IconComponent className="w-10 h-10" style={{
+            <div className="flex items-center justify-center" style={{ gap: `clamp(8px, 2vw, 12px)` }}>
+              <IconComponent style={{
+                width: `clamp(32px, 8vw, 40px)`,
+                height: `clamp(32px, 8vw, 40px)`,
                 background: primaryGradient,
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text'
               }} />
-              <h2 className="text-2xl font-bold" style={{ color: '#e1e8ed' }}>
+              <h2 style={{ 
+                fontSize: `clamp(1.25rem, 5vw, 1.5rem)`,
+                fontWeight: 'bold',
+                color: '#e1e8ed' 
+              }}>
                 Fase 1: Conteo Inicial
               </h2>
             </div>
           </div>
 
-          {/* Scrollable content container - 🤖 [IA] - v1.2.9: Ajustado para mejor espaciado */}
+          {/* Scrollable content container - 🤖 [IA] - v1.2.11: Responsive sin scroll en móviles */}
           <div style={{ 
             flex: '1 1 auto', 
-            minHeight: '200px',
-            maxHeight: 'calc(85vh - 200px)',
-            overflowY: 'auto', 
+            minHeight: isMobileDevice ? '0' : `clamp(150px, 30vh, 200px)`,
+            maxHeight: isMobileDevice ? 'none' : 'calc(90vh - 120px)',
+            overflowY: isMobileDevice ? 'visible' : 'auto', 
             overflowX: 'hidden', 
-            paddingRight: '8px',
-            marginBottom: '24px' 
+            paddingRight: isMobileDevice ? '0' : '8px',
+            marginBottom: `clamp(8px, 2vw, 24px)` 
           }}>
-            {/* Guided Progress Indicator - 🤖 [IA] - v1.2.9: Con espaciado superior */}
-            <div style={{ paddingTop: '16px' }}>
+            {/* Guided Progress Indicator - 🤖 [IA] - v1.2.11: Espaciado responsive */}
+            <div style={{ paddingTop: `clamp(8px, 2vw, 16px)` }}>
               <GuidedProgressIndicator
                 currentStep={guidedState.currentStep}
                 totalSteps={guidedState.totalSteps}
