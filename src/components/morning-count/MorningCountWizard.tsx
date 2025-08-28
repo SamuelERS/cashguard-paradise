@@ -74,6 +74,10 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
       });
     }
   };
+  
+  // 🤖 [IA] - v1.2.11 - Detección de viewport y escala proporcional
+  const viewportScale = typeof window !== 'undefined' ? Math.min(window.innerWidth / 430, 1) : 1;
+  const isMobileDevice = typeof window !== 'undefined' && window.innerWidth < 768;
 
   const renderStepContent = () => {
     switch (currentStep) {
@@ -84,7 +88,7 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
             border: '1px solid rgba(255, 255, 255, 0.15)',
-            padding: '28px',
+            padding: `clamp(20px, ${28 * viewportScale}px, 28px)`,
             borderRadius: '16px',
             boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
           }}>
@@ -170,7 +174,7 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
             border: '1px solid rgba(255, 255, 255, 0.15)',
-            padding: '28px',
+            padding: `clamp(20px, ${28 * viewportScale}px, 28px)`,
             borderRadius: '16px',
             boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
           }}>
@@ -256,7 +260,7 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
             border: '1px solid rgba(255, 255, 255, 0.15)',
-            padding: '28px',
+            padding: `clamp(20px, ${28 * viewportScale}px, 28px)`,
             borderRadius: '16px',
             boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
           }}>

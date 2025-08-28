@@ -11,6 +11,10 @@ interface OperationSelectorProps {
 export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
   const cashCount = OPERATION_MODES[OperationMode.CASH_COUNT];
   const cashCut = OPERATION_MODES[OperationMode.CASH_CUT];
+  
+  // 🤖 [IA] - v1.2.11 - Detección de viewport y escala proporcional
+  const viewportScale = typeof window !== 'undefined' ? Math.min(window.innerWidth / 430, 1) : 1;
+  const isMobileDevice = typeof window !== 'undefined' && window.innerWidth < 768;
 
   return (
     <div className="min-h-screen relative overflow-hidden">
@@ -25,7 +29,11 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
           transition={{ delay: 0.1 }}
           src="/logo-paradise.png"
           alt="Acuarios Paradise"
-          className="h-12 md:h-16 lg:h-20 w-auto opacity-90"
+          style={{
+            height: `clamp(40px, 10vw, 80px)`,
+            width: 'auto',
+            opacity: 0.9
+          }}
         />
         <motion.img 
           initial={{ opacity: 0, x: 20 }}
@@ -33,7 +41,12 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
           transition={{ delay: 0.1 }}
           src="/productos-acuarios.png"
           alt="Productos Paradise"
-          className="h-12 md:h-16 lg:h-20 w-auto opacity-80 rounded-lg"
+          style={{
+            height: `clamp(40px, 10vw, 80px)`,
+            width: 'auto',
+            opacity: 0.8,
+            borderRadius: '8px'
+          }}
         />
       </div>
       
@@ -46,19 +59,26 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
         >
           <div className="flex items-center justify-center gap-3 mb-4">
             <Calculator 
-              className="w-12 h-12" 
               style={{
+                width: `clamp(40px, 10vw, 48px)`,
+                height: `clamp(40px, 10vw, 48px)`,
                 background: 'linear-gradient(135deg, #0a84ff 0%, #5e5ce6 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text'
               }} 
             />
-            <h1 className="text-3xl font-bold" style={{ color: '#e1e8ed' }}>
+            <h1 className="font-bold" style={{
+              fontSize: `clamp(1.5rem, 6vw, 1.875rem)`,
+              color: '#e1e8ed'
+            }}>
               Seleccione el Tipo de Operación
             </h1>
           </div>
-          <p className="text-lg" style={{ color: '#8899a6' }}>
+          <p style={{
+            fontSize: `clamp(0.875rem, 3.5vw, 1.125rem)`,
+            color: '#8899a6'
+          }}>
             Elija el proceso que desea realizar según el momento del día
           </p>
         </motion.div>
@@ -79,7 +99,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
               WebkitBackdropFilter: 'blur(20px)',
               border: '1px solid rgba(255, 255, 255, 0.15)',
               borderRadius: '16px',
-              padding: '32px',
+              padding: `clamp(20px, ${32 * viewportScale}px, 32px)`,
               // 🤖 [IA] - v1.1.06: Eliminada transición CSS duplicada - Framer Motion maneja todo
               boxShadow: '0 4px 24px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
             }}
@@ -87,8 +107,9 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
             {/* Ícono y badge */}
             <div className="flex items-start justify-between mb-6">
               <Sunrise 
-                className="w-16 h-16"
                 style={{
+                  width: `clamp(48px, 12vw, 64px)`,
+                  height: `clamp(48px, 12vw, 64px)`,
                   background: 'linear-gradient(135deg, #f4a52a 0%, #ffb84d 100%)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
@@ -96,8 +117,10 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
                 }}
               />
               <span 
-                className="px-3 py-1 rounded-full text-xs font-semibold"
+                className="rounded-full font-semibold"
                 style={{
+                  padding: `${Math.round(4 * viewportScale)}px ${Math.round(12 * viewportScale)}px`,
+                  fontSize: `clamp(0.625rem, 2.5vw, 0.75rem)`,
                   background: 'rgba(244, 165, 42, 0.2)',
                   border: '1px solid rgba(244, 165, 42, 0.4)',
                   color: '#ffb84d'
@@ -108,30 +131,57 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
             </div>
 
             {/* Título y descripción */}
-            <h3 className="text-2xl font-bold mb-3" style={{ color: '#e1e8ed' }}>
+            <h3 className="font-bold mb-3" style={{
+              fontSize: `clamp(1.25rem, 5vw, 1.5rem)`,
+              color: '#e1e8ed'
+            }}>
               {cashCount.title}
             </h3>
-            <p className="text-sm mb-6" style={{ color: '#8899a6' }}>
+            <p className="mb-6" style={{
+              fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
+              color: '#8899a6'
+            }}>
               {cashCount.description}
             </p>
 
             {/* Características */}
-            <div className="space-y-2 mb-6">
-              <div className="flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#f4a52a' }} />
-                <span className="text-sm" style={{ color: '#8899a6' }}>
+            <div className="mb-6" style={{ display: 'flex', flexDirection: 'column', gap: `clamp(6px, 1.5vw, 8px)` }}>
+              <div className="flex items-center" style={{ gap: `clamp(6px, 1.5vw, 8px)` }}>
+                <div className="rounded-full" style={{
+                  width: `clamp(5px, 1.5vw, 6px)`,
+                  height: `clamp(5px, 1.5vw, 6px)`,
+                  background: '#f4a52a'
+                }} />
+                <span style={{
+                  fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
+                  color: '#8899a6'
+                }}>
                   Verificación de cambio inicial ($50)
                 </span>
               </div>
-              <div className="flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#f4a52a' }} />
-                <span className="text-sm" style={{ color: '#8899a6' }}>
+              <div className="flex items-center" style={{ gap: `clamp(6px, 1.5vw, 8px)` }}>
+                <div className="rounded-full" style={{
+                  width: `clamp(5px, 1.5vw, 6px)`,
+                  height: `clamp(5px, 1.5vw, 6px)`,
+                  background: '#f4a52a'
+                }} />
+                <span style={{
+                  fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
+                  color: '#8899a6'
+                }}>
                   Proceso simplificado de 2 fases
                 </span>
               </div>
-              <div className="flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#f4a52a' }} />
-                <span className="text-sm" style={{ color: '#8899a6' }}>
+              <div className="flex items-center" style={{ gap: `clamp(6px, 1.5vw, 8px)` }}>
+                <div className="rounded-full" style={{
+                  width: `clamp(5px, 1.5vw, 6px)`,
+                  height: `clamp(5px, 1.5vw, 6px)`,
+                  background: '#f4a52a'
+                }} />
+                <span style={{
+                  fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
+                  color: '#8899a6'
+                }}>
                   Ideal para cambio de turno matutino
                 </span>
               </div>
@@ -139,7 +189,10 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
 
             {/* Botón de acción */}
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium" style={{ color: '#f4a52a' }}>
+              <span className="font-medium" style={{
+                fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
+                color: '#f4a52a'
+              }}>
                 Comenzar
               </span>
               <ArrowRight 
@@ -163,7 +216,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
               WebkitBackdropFilter: 'blur(20px)',
               border: '1px solid rgba(255, 255, 255, 0.15)',
               borderRadius: '16px',
-              padding: '32px',
+              padding: `clamp(20px, ${32 * viewportScale}px, 32px)`,
               // 🤖 [IA] - v1.1.06: Eliminada transición CSS duplicada - Framer Motion maneja todo
               boxShadow: '0 4px 24px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
             }}
@@ -171,8 +224,9 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
             {/* Ícono y badge */}
             <div className="flex items-start justify-between mb-6">
               <Moon 
-                className="w-16 h-16"
                 style={{
+                  width: `clamp(48px, 12vw, 64px)`,
+                  height: `clamp(48px, 12vw, 64px)`,
                   background: 'linear-gradient(135deg, #0a84ff 0%, #5e5ce6 100%)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
@@ -180,8 +234,10 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
                 }}
               />
               <span 
-                className="px-3 py-1 rounded-full text-xs font-semibold"
+                className="rounded-full font-semibold"
                 style={{
+                  padding: `${Math.round(4 * viewportScale)}px ${Math.round(12 * viewportScale)}px`,
+                  fontSize: `clamp(0.625rem, 2.5vw, 0.75rem)`,
                   background: 'rgba(10, 132, 255, 0.2)',
                   border: '1px solid rgba(10, 132, 255, 0.4)',
                   color: '#0a84ff'
@@ -192,30 +248,57 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
             </div>
 
             {/* Título y descripción */}
-            <h3 className="text-2xl font-bold mb-3" style={{ color: '#e1e8ed' }}>
+            <h3 className="font-bold mb-3" style={{
+              fontSize: `clamp(1.25rem, 5vw, 1.5rem)`,
+              color: '#e1e8ed'
+            }}>
               {cashCut.title}
             </h3>
-            <p className="text-sm mb-6" style={{ color: '#8899a6' }}>
+            <p className="mb-6" style={{
+              fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
+              color: '#8899a6'
+            }}>
               {cashCut.description}
             </p>
 
             {/* Características */}
-            <div className="space-y-2 mb-6">
-              <div className="flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#0a84ff' }} />
-                <span className="text-sm" style={{ color: '#8899a6' }}>
+            <div className="mb-6" style={{ display: 'flex', flexDirection: 'column', gap: `clamp(6px, 1.5vw, 8px)` }}>
+              <div className="flex items-center" style={{ gap: `clamp(6px, 1.5vw, 8px)` }}>
+                <div className="rounded-full" style={{
+                  width: `clamp(5px, 1.5vw, 6px)`,
+                  height: `clamp(5px, 1.5vw, 6px)`,
+                  background: '#0a84ff'
+                }} />
+                <span style={{
+                  fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
+                  color: '#8899a6'
+                }}>
                   Comparación con venta esperada SICAR
                 </span>
               </div>
-              <div className="flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#0a84ff' }} />
-                <span className="text-sm" style={{ color: '#8899a6' }}>
+              <div className="flex items-center" style={{ gap: `clamp(6px, 1.5vw, 8px)` }}>
+                <div className="rounded-full" style={{
+                  width: `clamp(5px, 1.5vw, 6px)`,
+                  height: `clamp(5px, 1.5vw, 6px)`,
+                  background: '#0a84ff'
+                }} />
+                <span style={{
+                  fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
+                  color: '#8899a6'
+                }}>
                   Proceso completo de 3 fases
                 </span>
               </div>
-              <div className="flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#0a84ff' }} />
-                <span className="text-sm" style={{ color: '#8899a6' }}>
+              <div className="flex items-center" style={{ gap: `clamp(6px, 1.5vw, 8px)` }}>
+                <div className="rounded-full" style={{
+                  width: `clamp(5px, 1.5vw, 6px)`,
+                  height: `clamp(5px, 1.5vw, 6px)`,
+                  background: '#0a84ff'
+                }} />
+                <span style={{
+                  fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
+                  color: '#8899a6'
+                }}>
                   Entrega de efectivo y reporte final
                 </span>
               </div>
@@ -223,7 +306,10 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
 
             {/* Botón de acción */}
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium" style={{ color: '#0a84ff' }}>
+              <span className="font-medium" style={{
+                fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
+                color: '#0a84ff'
+              }}>
                 Comenzar
               </span>
               <ArrowRight 
@@ -251,15 +337,16 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
-          className="mt-12 px-6 py-4 max-w-2xl mx-auto rounded-xl"
+          className="mt-12 max-w-2xl mx-auto rounded-xl"
           style={{ 
+            padding: `clamp(16px, ${24 * viewportScale}px, 24px)`,
             backgroundColor: 'rgba(36, 36, 36, 0.4)',
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
             border: '1px solid rgba(255, 255, 255, 0.15)',
             borderLeft: '3px solid #0a84ff',
             color: '#8899a6',
-            fontSize: '14px',
+            fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
             boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
           }}
         >
@@ -267,7 +354,10 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
             "Este sistema protege tu trabajo diario y garantiza transparencia en cada operación. 
             Confiamos en ti, y juntos cuidamos los recursos de Paradise."
           </span>
-          <span className="block mt-2 text-sm" style={{ color: '#657786' }}>
+          <span className="block mt-2" style={{ 
+            fontSize: `clamp(0.625rem, 2.5vw, 0.75rem)`,
+            color: '#657786' 
+          }}>
             - Equipo de Acuarios Paradise
           </span>
         </motion.div>

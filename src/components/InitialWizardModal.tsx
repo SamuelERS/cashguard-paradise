@@ -84,6 +84,10 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
   const availableEmployees = wizardData.selectedStore 
     ? getEmployeesByStore(wizardData.selectedStore) 
     : [];
+  
+  // 🤖 [IA] - v1.2.11 - Detección de viewport y escala proporcional
+  const viewportScale = typeof window !== 'undefined' ? Math.min(window.innerWidth / 430, 1) : 1;
+  const isMobileDevice = typeof window !== 'undefined' && window.innerWidth < 768;
 
   // 🤖 [IA] - v1.0.39 - Simplificación de reglas del protocolo
   const protocolRules = [
@@ -148,7 +152,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
           <div className="space-y-6" style={{ 
             backgroundColor: 'rgba(36, 36, 36, 0.4)',
             border: '1px solid rgba(255, 255, 255, 0.15)',
-            padding: '28px',
+            padding: `clamp(20px, ${28 * viewportScale}px, 28px)`,
             borderRadius: '16px',
             boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
           }}>
@@ -160,8 +164,10 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                 transition={{ duration: 0.4, ease: "easeOut" }}
                 className="relative"
               >
-                {/* 🤖 [IA] - v1.0.59: Gradiente premium aplicado */}
-                <Shield className="w-20 h-20" style={{
+                {/* 🤖 [IA] - v1.2.11: Gradiente premium + escala responsive */}
+                <Shield style={{
+                  width: `clamp(60px, 15vw, 80px)`,
+                  height: `clamp(60px, 15vw, 80px)`,
                   background: 'linear-gradient(135deg, #0a84ff 0%, #5e5ce6 100%)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
@@ -183,14 +189,20 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                 <AlertTriangle className="w-5 h-5" style={{ color: '#f4a52a' }} />
                 <h3 className="font-semibold" style={{ color: '#f4a52a' }}>IMPORTANTE</h3>
               </div>
-              <p className="text-sm" style={{ color: '#e1e8ed' }}>
+              <p style={{
+                fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
+                color: '#e1e8ed'
+              }}>
                 Este sistema protege el efectivo y tu trabajo. Todos los movimientos 
                 quedan registrados para tu seguridad y la de la empresa.
               </p>
             </div>
 
             <div className="space-y-4">
-              <h3 className="font-semibold text-lg" style={{ color: '#e1e8ed' }}>
+              <h3 className="font-semibold" style={{
+                fontSize: `clamp(1rem, 4vw, 1.125rem)`,
+                color: '#e1e8ed'
+              }}>
                 Reglas obligatorias del protocolo:
               </h3>
               
@@ -216,12 +228,17 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                   aria-label={`Regla ${index + 1}: ${rule.text}`}
                 >
                   <div className="flex-shrink-0">{rule.icon}</div>
-                  <span className="text-sm sm:text-base flex-1 leading-relaxed" style={{ color: '#e1e8ed' }}>{rule.text}</span>
+                  <span className="flex-1 leading-relaxed" style={{
+                    fontSize: `clamp(0.75rem, 3vw, 1rem)`,
+                    color: '#e1e8ed'
+                  }}>{rule.text}</span>
                   {/* 🤖 [IA] - v1.0.30 - Badge diferenciado: CRÍTICO o ALERTA */}
                   {(rule.critical || rule.isAlert) && (
                     <span 
-                      className="text-xs sm:text-sm font-semibold px-2 sm:px-3 py-1 rounded-md"
+                      className="font-semibold rounded-md"
                       style={{
+                        padding: `${Math.round(4 * viewportScale)}px ${Math.round(12 * viewportScale)}px`,
+                        fontSize: `clamp(0.625rem, 2.5vw, 0.875rem)`,
                         backgroundColor: rule.isAlert ? 'rgba(244, 165, 42, 0.1)' : 'rgba(244, 33, 46, 0.1)',
                         color: rule.isAlert ? '#f4a52a' : '#f4212e',
                         border: rule.isAlert ? '1px solid rgba(244, 165, 42, 0.4)' : '1px solid rgba(244, 33, 46, 0.4)',
@@ -825,14 +842,16 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
           boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05)'
         }}
       >
-        <div className="p-4 sm:p-6">
+        <div style={{ padding: `clamp(16px, ${24 * viewportScale}px, 24px)` }}>
           <DialogHeader>
             <div className="mb-2">
               <span className="text-sm text-muted-foreground">
                 Paso {currentStep} de {totalSteps}
               </span>
             </div>
-            <DialogTitle className="text-xl sm:text-2xl text-primary mb-2">
+            <DialogTitle className="text-primary mb-2" style={{
+              fontSize: `clamp(1.125rem, 5vw, 1.5rem)`
+            }}>
               {getStepTitle()}
             </DialogTitle>
             <DialogDescription className="text-muted-foreground">

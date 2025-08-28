@@ -1,10 +1,10 @@
-# CLAUDE.md v1.2.8
+# CLAUDE.md v1.2.11
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview
 
-CashGuard Paradise v1.2.8 is a cash management system for "Acuarios Paradise" retail stores, built with React, TypeScript, Vite, and shadcn/ui. The application now implements **dual operation modes**: morning cash count (inicio de turno) and evening cash cut (fin de turno), with multi-phase protocols and anti-fraud measures.
+CashGuard Paradise v1.2.11 is a cash management system for "Acuarios Paradise" retail stores, built with React, TypeScript, Vite, and shadcn/ui. The application now implements **dual operation modes**: morning cash count (inicio de turno) and evening cash cut (fin de turno), with multi-phase protocols and anti-fraud measures.
 
 ### 🧪 Testing Status - 100% Docker Containerized
 - **SECTOR 1 ✅**: Testing framework foundation (10 smoke tests) - Ejecutándose en Docker
@@ -229,9 +229,9 @@ Flujo de 5 pasos optimizado:
 - **RESULTADO:** Interfaz más limpia con mejor agrupación visual
 - **IMPACTO:** Reducción de elementos visuales, mejor coherencia de UI
 
-## Recent Updates v1.2.11
+## Recent Updates v1.2.11 - Sistema de Escala Proporcional Completo
 
-### 📐 Sistema de Escala Proporcional Responsive
+### 📐 Sistema de Escala Proporcional Responsive - Implementación Global
 - **PROBLEMA:** App desarrollada en iPhone 16 Pro Max (430px) se veía desproporcionada en Samsung A50 (360px)
 - **SÍNTOMAS:** Elementos muy grandes, texto gigante, mal uso del espacio en pantallas pequeñas
 - **SOLUCIÓN IMPLEMENTADA - ESCALA PROPORCIONAL:**
@@ -241,15 +241,20 @@ Flujo de 5 pasos optimizado:
   4. **Sin scroll interno en móviles:** `overflowY: 'visible'` elimina doble scroll
 - **CAMBIOS ESPECÍFICOS:**
   - Padding: `clamp(12px, ${16 * viewportScale}px, 16px)`
-  - Texto: `clamp(14px, ${16 * viewportScale}px, 16px)`
-  - Header: `clamp(1.25rem, 5vw, 1.5rem)`
-  - Iconos: `clamp(32px, 8vw, 40px)`
-  - Progress indicator: Todos los elementos con clamp() y vw
-- **ARCHIVOS MODIFICADOS:** 
+  - Texto normal: `clamp(0.875rem, 3.5vw, 1rem)`
+  - Headers: `clamp(1.25rem, 5vw, 1.5rem)`
+  - Iconos grandes: `clamp(48px, 12vw, 64px)`
+  - Iconos medianos: `clamp(32px, 8vw, 40px)`
+  - Espaciados: `gap: clamp(6px, 1.5vw, 8px)`
+- **ARCHIVOS MODIFICADOS - FASE 1 (CashCounter):** 
   - `/src/components/CashCounter.tsx` (líneas 690-759)
   - `/src/components/ui/GuidedProgressIndicator.tsx` (líneas 31-120)
-- **RESULTADO:** Interface proporcional en cualquier dispositivo, sin elementos gigantes
-- **IMPACTO:** Experiencia consistente desde 320px hasta tablets, sin media queries hardcodeadas
+- **ARCHIVOS MODIFICADOS - PANTALLA INICIAL:**
+  - `/src/components/operation-selector/OperationSelector.tsx` - Selector de modo completo
+  - `/src/components/InitialWizardModal.tsx` - Wizard inicial con escala
+  - `/src/components/morning-count/MorningCountWizard.tsx` - Wizard matutino
+- **RESULTADO:** Interface proporcional en cualquier dispositivo (320px-768px)
+- **IMPACTO:** Experiencia consistente sin elementos gigantes, mejor uso del espacio vertical
 
 ## Recent Updates v1.2.10
 
