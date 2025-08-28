@@ -72,14 +72,14 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
               fontSize: `clamp(1.5rem, 6vw, 1.875rem)`,
               color: '#e1e8ed'
             }}>
-              Seleccione el Tipo de Operación
+              Seleccione Operación
             </h1>
           </div>
           <p style={{
             fontSize: `clamp(0.875rem, 3.5vw, 1.125rem)`,
             color: '#8899a6'
           }}>
-            Elija el proceso que desea realizar según el momento del día
+            Seleccione el Proceso según momento del día
           </p>
         </motion.div>
 
