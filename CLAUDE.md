@@ -216,6 +216,51 @@ Flujo de 5 pasos optimizado:
 - **Archivado:** Versiones v1.0.66-v1.0.79 movidas al histórico
 - **Simplificación:** Reglas de la Casa y ejemplos de código optimizados
 
+## Recent Updates v1.1.24
+
+### ⏱️ Activación Secuencial de Checkboxes - Uno cada 2 segundos
+- **PROBLEMA:** Timer grupal no evitaba que personal marcara todo rápidamente sin leer
+- **ANÁLISIS:** Si todos los checkboxes se activan juntos, simplemente esperan y marcan todo
+- **SOLUCIÓN IMPLEMENTADA - ACTIVACIÓN PROGRESIVA:**
+  1. **Timing secuencial:**
+     - 2s: Se activa "bolsa de depósito"
+     - 4s: Se activa "tirro/cinta adhesiva"
+     - 6s: Se activa "espacio limpio"
+     - 8s: Se activa "entiendo que es para gerencia"
+  2. **Estados individuales:** 
+     - `enabledItems`: Control individual por checkbox
+     - Cada item muestra "(disponible en Xs)" cuando está deshabilitado
+  3. **Feedback visual mejorado:**
+     - Items deshabilitados: Opacidad 0.4
+     - Item recién activado: Animación pulse para llamar atención
+     - Borde azul cuando está activo pero no marcado
+  4. **Mensaje dinámico:**
+     - "⏱️ Preparando checklist..." (primeros 2s)
+     - "📋 Lea cada item conforme se activa" (después)
+- **ARCHIVOS MODIFICADOS:** `/src/components/phases/Phase2Manager.tsx`
+- **RESULTADO:** Imposible marcar todo de golpe, fuerza lectura secuencial
+- **IMPACTO:** 8 segundos totales garantizan comprensión completa, errores reducidos drásticamente
+
+## Recent Updates v1.1.23
+
+### ⏱️ Timer de Seguridad en Checklist de Phase2Manager
+- **PROBLEMA:** Personal realizando tareas muy rápido sin leer instrucciones importantes
+- **RIESGO:** Descuidos y errores en el manejo de dinero por prisa
+- **SOLUCIÓN IMPLEMENTADA:**
+  1. **Timer de 2 segundos:** Cuenta regresiva visible antes de habilitar checkboxes
+  2. **Mensaje dinámico:** 
+     - Durante countdown: "⏱️ Por favor lea las instrucciones... (2s)"
+     - Al finalizar: "✓ Ahora puede marcar los items"
+  3. **Checkboxes deshabilitados:** 
+     - `disabled={!checklistEnabled}` en todos los checkboxes
+     - Opacidad 0.6 y cursor not-allowed mientras están deshabilitados
+  4. **Estados agregados:**
+     - `timeRemaining`: Contador de segundos restantes
+     - `checklistEnabled`: Flag para habilitar interacción
+- **ARCHIVOS MODIFICADOS:** `/src/components/phases/Phase2Manager.tsx`
+- **RESULTADO:** Personal obligado a tomarse 2 segundos para leer antes de proceder
+- **IMPACTO:** Reducción de errores por prisa, mejor calidad en el proceso
+
 ## Recent Updates v1.1.22
 
 ### 🎨 Corrección de Paleta de Colores en Phase2Manager

@@ -45,6 +45,12 @@ export function Phase2Manager({
     espacio: false,
     entendido: false
   }); // 🤖 [IA] - v1.2.10: Estado del checklist
+  const [enabledItems, setEnabledItems] = useState({
+    bolsa: false,
+    tirro: false,
+    espacio: false,
+    entendido: false
+  }); // 🤖 [IA] - v1.1.24: Estados individuales para activación secuencial
   
   const { createTimeoutWithCleanup } = useTimingConfig(); // 🤖 [IA] - Usar timing unificado v1.0.22
 
@@ -58,6 +64,20 @@ export function Phase2Manager({
 
   // 🤖 [IA] - v1.2.10: Verificar si todos los items están marcados
   const allItemsChecked = Object.values(checkedItems).every(checked => checked);
+
+  // 🤖 [IA] - v1.1.24: Activación secuencial de checkboxes - uno cada 2 segundos
+  useEffect(() => {
+    if (showInstructionsModal) {
+      const timers = [
+        setTimeout(() => setEnabledItems(prev => ({...prev, bolsa: true})), 2000),
+        setTimeout(() => setEnabledItems(prev => ({...prev, tirro: true})), 4000),
+        setTimeout(() => setEnabledItems(prev => ({...prev, espacio: true})), 6000),
+        setTimeout(() => setEnabledItems(prev => ({...prev, entendido: true})), 8000)
+      ];
+      
+      return () => timers.forEach(timer => clearTimeout(timer));
+    }
+  }, [showInstructionsModal]);
 
   // Auto-advance to verification when delivery is complete
   useEffect(() => {
@@ -387,6 +407,28 @@ export function Phase2Manager({
               Antes de continuar, confirme que tiene todo listo:
             </p>
             
+            {/* 🤖 [IA] - v1.1.24: Mensaje de activación secuencial */}
+            <div style={{
+              backgroundColor: !enabledItems.bolsa ? 'rgba(10, 132, 255, 0.1)' : 'rgba(0, 186, 124, 0.1)',
+              border: !enabledItems.bolsa ? '1px solid rgba(10, 132, 255, 0.3)' : '1px solid rgba(0, 186, 124, 0.3)',
+              borderRadius: '8px',
+              padding: '12px',
+              marginBottom: '16px',
+              textAlign: 'center'
+            }}>
+              <p style={{ 
+                color: !enabledItems.bolsa ? '#1d9bf0' : '#00ba7c',
+                fontSize: '0.95rem',
+                fontWeight: '500',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px'
+              }}>
+                {!enabledItems.bolsa ? '⏱️ Preparando checklist...' : '📋 Lea cada item conforme se activa'}
+              </p>
+            </div>
+            
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {/* Item 1: Bolsa */}
               <label 
@@ -396,21 +438,28 @@ export function Phase2Manager({
                   gap: '12px',
                   padding: '12px',
                   backgroundColor: checkedItems.bolsa ? 'rgba(0, 186, 124, 0.1)' : 'rgba(255, 255, 255, 0.05)',
-                  border: checkedItems.bolsa ? '1px solid rgba(0, 186, 124, 0.3)' : '1px solid rgba(255, 255, 255, 0.1)',
+                  border: checkedItems.bolsa ? '1px solid rgba(0, 186, 124, 0.3)' : enabledItems.bolsa ? '1px solid rgba(10, 132, 255, 0.2)' : '1px solid rgba(255, 255, 255, 0.1)',
                   borderRadius: '8px',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease'
+                  cursor: enabledItems.bolsa ? 'pointer' : 'not-allowed',
+                  opacity: enabledItems.bolsa ? 1 : 0.4,
+                  transition: 'all 0.3s ease',
+                  animation: enabledItems.bolsa && !checkedItems.bolsa ? 'pulse 1s ease-in-out' : 'none'
                 }}
               >
                 <Checkbox
                   checked={checkedItems.bolsa}
-                  onCheckedChange={() => handleCheckChange('bolsa')}
+                  onCheckedChange={() => enabledItems.bolsa && handleCheckChange('bolsa')}
+                  disabled={!enabledItems.bolsa}
                   style={{
-                    borderColor: checkedItems.bolsa ? '#00ba7c' : 'rgba(255, 255, 255, 0.3)'
+                    borderColor: checkedItems.bolsa ? '#00ba7c' : 'rgba(255, 255, 255, 0.3)',
+                    cursor: enabledItems.bolsa ? 'pointer' : 'not-allowed'
                   }}
                 />
                 <Package className="w-5 h-5" style={{ color: '#0a84ff' }} />
-                <span style={{ flex: 1 }}>Tengo la <strong>bolsa de depósito</strong> lista</span>
+                <span style={{ flex: 1 }}>
+                  Tengo la <strong>bolsa de depósito</strong> lista
+                  {!enabledItems.bolsa && <span style={{ color: '#8899a6', fontSize: '0.85rem', marginLeft: '8px' }}>(disponible en 2s)</span>}
+                </span>
               </label>
 
               {/* Item 2: Tirro */}
@@ -421,21 +470,28 @@ export function Phase2Manager({
                   gap: '12px',
                   padding: '12px',
                   backgroundColor: checkedItems.tirro ? 'rgba(0, 186, 124, 0.1)' : 'rgba(255, 255, 255, 0.05)',
-                  border: checkedItems.tirro ? '1px solid rgba(0, 186, 124, 0.3)' : '1px solid rgba(255, 255, 255, 0.1)',
+                  border: checkedItems.tirro ? '1px solid rgba(0, 186, 124, 0.3)' : enabledItems.tirro ? '1px solid rgba(10, 132, 255, 0.2)' : '1px solid rgba(255, 255, 255, 0.1)',
                   borderRadius: '8px',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease'
+                  cursor: enabledItems.tirro ? 'pointer' : 'not-allowed',
+                  opacity: enabledItems.tirro ? 1 : 0.4,
+                  transition: 'all 0.3s ease',
+                  animation: enabledItems.tirro && !checkedItems.tirro && enabledItems.bolsa ? 'pulse 1s ease-in-out' : 'none'
                 }}
               >
                 <Checkbox
                   checked={checkedItems.tirro}
-                  onCheckedChange={() => handleCheckChange('tirro')}
+                  onCheckedChange={() => enabledItems.tirro && handleCheckChange('tirro')}
+                  disabled={!enabledItems.tirro}
                   style={{
-                    borderColor: checkedItems.tirro ? '#00ba7c' : 'rgba(255, 255, 255, 0.3)'
+                    borderColor: checkedItems.tirro ? '#00ba7c' : 'rgba(255, 255, 255, 0.3)',
+                    cursor: enabledItems.tirro ? 'pointer' : 'not-allowed'
                   }}
                 />
                 <ScrollText className="w-5 h-5" style={{ color: '#0a84ff' }} />
-                <span style={{ flex: 1 }}>Tengo <strong>tirro/cinta adhesiva</strong> para rotular</span>
+                <span style={{ flex: 1 }}>
+                  Tengo <strong>tirro/cinta adhesiva</strong> para rotular
+                  {!enabledItems.tirro && <span style={{ color: '#8899a6', fontSize: '0.85rem', marginLeft: '8px' }}>(disponible en 4s)</span>}
+                </span>
               </label>
 
               {/* Item 3: Espacio */}
@@ -446,21 +502,28 @@ export function Phase2Manager({
                   gap: '12px',
                   padding: '12px',
                   backgroundColor: checkedItems.espacio ? 'rgba(0, 186, 124, 0.1)' : 'rgba(255, 255, 255, 0.05)',
-                  border: checkedItems.espacio ? '1px solid rgba(0, 186, 124, 0.3)' : '1px solid rgba(255, 255, 255, 0.1)',
+                  border: checkedItems.espacio ? '1px solid rgba(0, 186, 124, 0.3)' : enabledItems.espacio ? '1px solid rgba(10, 132, 255, 0.2)' : '1px solid rgba(255, 255, 255, 0.1)',
                   borderRadius: '8px',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease'
+                  cursor: enabledItems.espacio ? 'pointer' : 'not-allowed',
+                  opacity: enabledItems.espacio ? 1 : 0.4,
+                  transition: 'all 0.3s ease',
+                  animation: enabledItems.espacio && !checkedItems.espacio && enabledItems.tirro ? 'pulse 1s ease-in-out' : 'none'
                 }}
               >
                 <Checkbox
                   checked={checkedItems.espacio}
-                  onCheckedChange={() => handleCheckChange('espacio')}
+                  onCheckedChange={() => enabledItems.espacio && handleCheckChange('espacio')}
+                  disabled={!enabledItems.espacio}
                   style={{
-                    borderColor: checkedItems.espacio ? '#00ba7c' : 'rgba(255, 255, 255, 0.3)'
+                    borderColor: checkedItems.espacio ? '#00ba7c' : 'rgba(255, 255, 255, 0.3)',
+                    cursor: enabledItems.espacio ? 'pointer' : 'not-allowed'
                   }}
                 />
                 <Grid3x3 className="w-5 h-5" style={{ color: '#0a84ff' }} />
-                <span style={{ flex: 1 }}>Tengo <strong>espacio limpio</strong> para separar denominaciones</span>
+                <span style={{ flex: 1 }}>
+                  Tengo <strong>espacio limpio</strong> para separar denominaciones
+                  {!enabledItems.espacio && <span style={{ color: '#8899a6', fontSize: '0.85rem', marginLeft: '8px' }}>(disponible en 6s)</span>}
+                </span>
               </label>
 
               {/* Item 4: Entendido */}
@@ -471,22 +534,27 @@ export function Phase2Manager({
                   gap: '12px',
                   padding: '12px',
                   backgroundColor: checkedItems.entendido ? 'rgba(0, 186, 124, 0.1)' : 'rgba(255, 255, 255, 0.05)',
-                  border: checkedItems.entendido ? '1px solid rgba(0, 186, 124, 0.3)' : '1px solid rgba(255, 255, 255, 0.1)',
+                  border: checkedItems.entendido ? '1px solid rgba(0, 186, 124, 0.3)' : enabledItems.entendido ? '1px solid rgba(10, 132, 255, 0.2)' : '1px solid rgba(255, 255, 255, 0.1)',
                   borderRadius: '8px',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease'
+                  cursor: enabledItems.entendido ? 'pointer' : 'not-allowed',
+                  opacity: enabledItems.entendido ? 1 : 0.4,
+                  transition: 'all 0.3s ease',
+                  animation: enabledItems.entendido && !checkedItems.entendido && enabledItems.espacio ? 'pulse 1s ease-in-out' : 'none'
                 }}
               >
                 <Checkbox
                   checked={checkedItems.entendido}
-                  onCheckedChange={() => handleCheckChange('entendido')}
+                  onCheckedChange={() => enabledItems.entendido && handleCheckChange('entendido')}
+                  disabled={!enabledItems.entendido}
                   style={{
-                    borderColor: checkedItems.entendido ? '#00ba7c' : 'rgba(255, 255, 255, 0.3)'
+                    borderColor: checkedItems.entendido ? '#00ba7c' : 'rgba(255, 255, 255, 0.3)',
+                    cursor: enabledItems.entendido ? 'pointer' : 'not-allowed'
                   }}
                 />
                 <AlertCircle className="w-5 h-5" style={{ color: '#0a84ff' }} />
                 <span style={{ flex: 1 }}>
                   <strong>Entiendo</strong> que este dinero es para entregar a gerencia
+                  {!enabledItems.entendido && <span style={{ color: '#8899a6', fontSize: '0.85rem', marginLeft: '8px' }}>(disponible en 8s)</span>}
                 </span>
               </label>
             </div>
