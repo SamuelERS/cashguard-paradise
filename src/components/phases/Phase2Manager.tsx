@@ -1,7 +1,7 @@
 // 🤖 [IA] - v1.1.14 - Simplificación de tabs y eliminación de redundancias en Fase 2
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Package, ScrollText, Grid3x3, AlertCircle } from 'lucide-react';
 // 🤖 [IA] - v1.2.10: Agregado AlertDialog para confirmación de salida
 import {
   AlertDialog,
@@ -19,6 +19,7 @@ import { Phase2VerificationSection } from './Phase2VerificationSection';
 import { DeliveryCalculation } from '@/types/phases';
 import { formatCurrency } from '@/utils/calculations';
 import { useTimingConfig } from '@/hooks/useTimingConfig'; // 🤖 [IA] - Hook de timing unificado v1.0.22
+import { Checkbox } from '@/components/ui/checkbox'; // 🤖 [IA] - v1.2.10: Checkbox para checklist
 
 interface Phase2ManagerProps {
   deliveryCalculation: DeliveryCalculation;
@@ -37,8 +38,26 @@ export function Phase2Manager({
   const [deliveryProgress, setDeliveryProgress] = useState<Record<string, boolean>>({});
   const [verificationProgress, setVerificationProgress] = useState<Record<string, boolean>>({});
   const [showExitConfirmation, setShowExitConfirmation] = useState(false); // 🤖 [IA] - v1.2.10: Estado para modal de confirmación
+  const [showInstructionsModal, setShowInstructionsModal] = useState(true); // 🤖 [IA] - v1.2.10: Modal de instrucciones
+  const [checkedItems, setCheckedItems] = useState({
+    bolsa: false,
+    tirro: false,
+    espacio: false,
+    entendido: false
+  }); // 🤖 [IA] - v1.2.10: Estado del checklist
   
   const { createTimeoutWithCleanup } = useTimingConfig(); // 🤖 [IA] - Usar timing unificado v1.0.22
+
+  // 🤖 [IA] - v1.2.10: Manejar cambios en checklist
+  const handleCheckChange = (item: keyof typeof checkedItems) => {
+    setCheckedItems(prev => ({
+      ...prev,
+      [item]: !prev[item]
+    }));
+  };
+
+  // 🤖 [IA] - v1.2.10: Verificar si todos los items están marcados
+  const allItemsChecked = Object.values(checkedItems).every(checked => checked);
 
   // Auto-advance to verification when delivery is complete
   useEffect(() => {
@@ -305,6 +324,196 @@ export function Phase2Manager({
             }}
           >
             Sí, volver al inicio
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+
+    {/* 🤖 [IA] - v1.2.10: Modal de instrucciones con checklist para preparación */}
+    <AlertDialog open={showInstructionsModal} onOpenChange={setShowInstructionsModal}>
+      <AlertDialogContent style={{
+        backgroundColor: 'rgba(36, 36, 36, 0.95)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        border: '1px solid rgba(244, 165, 42, 0.3)',
+        borderRadius: '16px',
+        boxShadow: '0 4px 24px rgba(0, 0, 0, 0.8)',
+        maxWidth: '500px'
+      }}>
+        <AlertDialogHeader>
+          <AlertDialogTitle style={{ color: '#f4a52a', fontSize: '1.25rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <AlertCircle className="w-6 h-6" />
+            📋 Preparación para Entrega a Gerencia
+          </AlertDialogTitle>
+        </AlertDialogHeader>
+        
+        <div style={{ padding: '16px 0' }}>
+          {/* Mensaje principal destacado */}
+          <div style={{
+            backgroundColor: 'rgba(244, 165, 42, 0.1)',
+            border: '2px solid rgba(244, 165, 42, 0.4)',
+            borderRadius: '12px',
+            padding: '16px',
+            marginBottom: '20px',
+            textAlign: 'center'
+          }}>
+            <p style={{ 
+              color: '#ffb84d', 
+              fontSize: '1.1rem', 
+              fontWeight: '700',
+              marginBottom: '8px'
+            }}>
+              ⚠️ IMPORTANTE
+            </p>
+            <p style={{ 
+              color: '#ffffff', 
+              fontSize: '1rem', 
+              fontWeight: '600' 
+            }}>
+              Este dinero es para <span style={{ color: '#f4a52a', textDecoration: 'underline' }}>ENTREGAR A GERENCIA</span>
+            </p>
+            <p style={{ 
+              color: '#e1e8ed', 
+              fontSize: '0.9rem', 
+              marginTop: '8px' 
+            }}>
+              NO es para dejar en caja
+            </p>
+          </div>
+
+          {/* Checklist de preparación */}
+          <div style={{ color: '#e1e8ed' }}>
+            <p style={{ marginBottom: '12px', fontSize: '0.95rem' }}>
+              Antes de continuar, confirme que tiene todo listo:
+            </p>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {/* Item 1: Bolsa */}
+              <label 
+                style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '12px',
+                  padding: '12px',
+                  backgroundColor: checkedItems.bolsa ? 'rgba(0, 186, 124, 0.1)' : 'rgba(255, 255, 255, 0.05)',
+                  border: checkedItems.bolsa ? '1px solid rgba(0, 186, 124, 0.3)' : '1px solid rgba(255, 255, 255, 0.1)',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease'
+                }}
+              >
+                <Checkbox
+                  checked={checkedItems.bolsa}
+                  onCheckedChange={() => handleCheckChange('bolsa')}
+                  style={{
+                    borderColor: checkedItems.bolsa ? '#00ba7c' : 'rgba(255, 255, 255, 0.3)'
+                  }}
+                />
+                <Package className="w-5 h-5" style={{ color: '#f4a52a' }} />
+                <span style={{ flex: 1 }}>Tengo la <strong>bolsa de depósito</strong> lista</span>
+              </label>
+
+              {/* Item 2: Tirro */}
+              <label 
+                style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '12px',
+                  padding: '12px',
+                  backgroundColor: checkedItems.tirro ? 'rgba(0, 186, 124, 0.1)' : 'rgba(255, 255, 255, 0.05)',
+                  border: checkedItems.tirro ? '1px solid rgba(0, 186, 124, 0.3)' : '1px solid rgba(255, 255, 255, 0.1)',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease'
+                }}
+              >
+                <Checkbox
+                  checked={checkedItems.tirro}
+                  onCheckedChange={() => handleCheckChange('tirro')}
+                  style={{
+                    borderColor: checkedItems.tirro ? '#00ba7c' : 'rgba(255, 255, 255, 0.3)'
+                  }}
+                />
+                <ScrollText className="w-5 h-5" style={{ color: '#f4a52a' }} />
+                <span style={{ flex: 1 }}>Tengo <strong>tirro/cinta adhesiva</strong> para rotular</span>
+              </label>
+
+              {/* Item 3: Espacio */}
+              <label 
+                style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '12px',
+                  padding: '12px',
+                  backgroundColor: checkedItems.espacio ? 'rgba(0, 186, 124, 0.1)' : 'rgba(255, 255, 255, 0.05)',
+                  border: checkedItems.espacio ? '1px solid rgba(0, 186, 124, 0.3)' : '1px solid rgba(255, 255, 255, 0.1)',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease'
+                }}
+              >
+                <Checkbox
+                  checked={checkedItems.espacio}
+                  onCheckedChange={() => handleCheckChange('espacio')}
+                  style={{
+                    borderColor: checkedItems.espacio ? '#00ba7c' : 'rgba(255, 255, 255, 0.3)'
+                  }}
+                />
+                <Grid3x3 className="w-5 h-5" style={{ color: '#f4a52a' }} />
+                <span style={{ flex: 1 }}>Tengo <strong>espacio limpio</strong> para separar denominaciones</span>
+              </label>
+
+              {/* Item 4: Entendido */}
+              <label 
+                style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '12px',
+                  padding: '12px',
+                  backgroundColor: checkedItems.entendido ? 'rgba(0, 186, 124, 0.1)' : 'rgba(255, 255, 255, 0.05)',
+                  border: checkedItems.entendido ? '1px solid rgba(0, 186, 124, 0.3)' : '1px solid rgba(255, 255, 255, 0.1)',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease'
+                }}
+              >
+                <Checkbox
+                  checked={checkedItems.entendido}
+                  onCheckedChange={() => handleCheckChange('entendido')}
+                  style={{
+                    borderColor: checkedItems.entendido ? '#00ba7c' : 'rgba(255, 255, 255, 0.3)'
+                  }}
+                />
+                <AlertCircle className="w-5 h-5" style={{ color: '#f4a52a' }} />
+                <span style={{ flex: 1 }}>
+                  <strong>Entiendo</strong> que este dinero es para entregar a gerencia
+                </span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <AlertDialogFooter>
+          <AlertDialogAction 
+            onClick={() => setShowInstructionsModal(false)}
+            disabled={!allItemsChecked}
+            style={{
+              background: allItemsChecked 
+                ? 'linear-gradient(135deg, #00ba7c 0%, #06d6a0 100%)' 
+                : 'rgba(255, 255, 255, 0.1)',
+              color: 'white',
+              border: allItemsChecked 
+                ? 'none' 
+                : '1px solid rgba(255, 255, 255, 0.2)',
+              borderRadius: '10px',
+              fontWeight: '600',
+              cursor: allItemsChecked ? 'pointer' : 'not-allowed',
+              opacity: allItemsChecked ? 1 : 0.5,
+              transition: 'all 0.3s ease',
+              padding: '12px 24px'
+            }}
+          >
+            {allItemsChecked ? '✓ Todo listo, continuar' : 'Marque todos los items para continuar'}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
