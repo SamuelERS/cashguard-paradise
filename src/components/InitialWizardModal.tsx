@@ -650,41 +650,94 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               <Label htmlFor="expected-sales" className="text-base font-medium" style={{ color: '#e1e8ed' }}>
                 Monto ($)
               </Label>
-              <div className="relative" style={{ 
-                backgroundColor: 'rgba(36, 36, 36, 0.4)',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)',
-                border: '1px solid rgba(255, 255, 255, 0.15)',
-                borderRadius: '8px',
-                padding: '4px',
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)'
-              }}>
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-lg" style={{ color: '#00ba7c' }}>
-                  $
-                </span>
-                <Input
-                  id="expected-sales"
-                  type="text" // 🤖 [IA] - v1.0.45: Cambiado a text para soporte de decimales en móvil
-                  inputMode={getInputMode('currency')} // 🤖 [IA] - v1.0.45: Teclado decimal en móvil
-                  pattern={getPattern('currency')} // 🤖 [IA] - v1.0.45: Patrón para decimales
-                  step="0.01"
-                  min="0"
-                  value={wizardData.expectedSales}
-                  onChange={(e) => {
-                    // 🤖 [IA] - v1.0.45: Validación de entrada decimal
-                    const validation = validateInput(e.target.value, 'currency');
-                    if (validation.isValid) {
-                      updateWizardData({ expectedSales: validation.cleanValue });
+              {/* 🤖 [IA] - v1.2.9: Contenedor flex para input y botón confirmar */}
+              <div className="flex flex-col sm:flex-row gap-2">
+                <div className="relative flex-1" style={{ 
+                  backgroundColor: 'rgba(36, 36, 36, 0.4)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  borderRadius: '8px',
+                  padding: '4px',
+                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)'
+                }}>
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-lg" style={{ color: '#00ba7c' }}>
+                    $
+                  </span>
+                  <Input
+                    id="expected-sales"
+                    type="text" // 🤖 [IA] - v1.0.45: Cambiado a text para soporte de decimales en móvil
+                    inputMode={getInputMode('currency')} // 🤖 [IA] - v1.0.45: Teclado decimal en móvil
+                    pattern={getPattern('currency')} // 🤖 [IA] - v1.0.45: Patrón para decimales
+                    step="0.01"
+                    min="0"
+                    value={wizardData.expectedSales}
+                    onChange={(e) => {
+                      // 🤖 [IA] - v1.0.45: Validación de entrada decimal
+                      const validation = validateInput(e.target.value, 'currency');
+                      if (validation.isValid) {
+                        updateWizardData({ expectedSales: validation.cleanValue });
+                      }
+                    }}
+                    placeholder="0.00"
+                    className="pl-10 h-10 sm:h-12 text-base sm:text-lg font-semibold"
+                    style={{ 
+                      backgroundColor: 'transparent',
+                      border: 'none',
+                      color: '#e1e8ed'
+                    }}
+                  />
+                </div>
+                {/* Botón Confirmar al lado del input */}
+                <Button
+                  onClick={handleComplete}
+                  disabled={!isCompleted}
+                  variant={isCompleted ? "ready" : "outline"}
+                  size="sm"
+                  className="h-10 sm:h-12 px-6 transition-all duration-300 font-medium whitespace-nowrap"
+                  style={isCompleted ? {
+                    background: 'linear-gradient(135deg, #00ba7c 0%, #008060 100%)',
+                    color: '#ffffff',
+                    border: 'none',
+                    boxShadow: '0 3px 12px rgba(0, 186, 124, 0.2)',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    borderRadius: '8px'
+                  } : {
+                    backgroundColor: '#242424',
+                    border: '1px solid #33333350',
+                    color: '#4a5568',
+                    cursor: 'not-allowed',
+                    fontSize: '14px',
+                    borderRadius: '8px'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (isCompleted) {
+                      e.currentTarget.style.transform = 'translateY(-2px)';
+                      e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 186, 124, 0.3)';
                     }
                   }}
-                  placeholder="0.00"
-                  className="pl-10 h-10 sm:h-12 text-base sm:text-lg font-semibold"
-                  style={{ 
-                    backgroundColor: 'transparent',
-                    border: 'none',
-                    color: '#e1e8ed'
+                  onMouseLeave={(e) => {
+                    if (isCompleted) {
+                      e.currentTarget.style.transform = 'translateY(0)';
+                      e.currentTarget.style.boxShadow = '0 3px 12px rgba(0, 186, 124, 0.2)';
+                    }
                   }}
-                />
+                  onMouseDown={(e) => {
+                    if (isCompleted) {
+                      e.currentTarget.style.transform = 'scale(0.98)';
+                    }
+                  }}
+                  onMouseUp={(e) => {
+                    if (isCompleted) {
+                      e.currentTarget.style.transform = 'translateY(-2px)';
+                    }
+                  }}
+                  aria-label="Confirmar venta esperada"
+                >
+                  <CheckCircle className="w-4 h-4 mr-1.5" />
+                  <span>Confirmar</span>
+                </Button>
               </div>
               {wizardData.expectedSales && parseFloat(wizardData.expectedSales) <= 0 && (
                 <p className="text-xs" style={{ color: '#f4212e' }}>
@@ -915,7 +968,8 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                 </Button>
               )}
               
-              {currentStep < totalSteps ? (
+              {/* 🤖 [IA] - v1.2.9: No mostrar botón confirmar en step 5 (ya está junto al input) */}
+              {currentStep < totalSteps && (
                 <Button
                   onClick={handleNext}
                   disabled={!canGoNext}
@@ -965,48 +1019,6 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                 >
                   <span className="mr-1.5">Siguiente</span>
                   <ArrowRight className="w-4 h-4" />
-                </Button>
-              ) : (
-                <Button
-                  onClick={handleComplete}
-                  disabled={!isCompleted}
-                  variant={isCompleted ? "ready" : "outline"}
-                  size="sm"
-                  className="h-9 px-4 transition-all duration-300 font-medium"
-                  style={isCompleted ? {
-                    background: 'linear-gradient(135deg, #00ba7c 0%, #008060 100%)',
-                    color: '#ffffff',
-                    border: 'none',
-                    boxShadow: '0 3px 12px rgba(0, 186, 124, 0.2)',
-                    fontSize: '14px',
-                    fontWeight: '600',
-                    borderRadius: '10px'
-                  } : {
-                    backgroundColor: '#242424',
-                    border: '1px solid #33333350',
-                    color: '#4a5568',
-                    cursor: 'not-allowed',
-                    fontSize: '14px',
-                    borderRadius: '10px'
-                  }}
-                  onMouseEnter={(e) => {
-                    if (isCompleted) {
-                      e.currentTarget.style.transform = 'translateY(-2px)';
-                      e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 186, 124, 0.3)';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (isCompleted) {
-                      e.currentTarget.style.transform = 'translateY(0)';
-                      e.currentTarget.style.boxShadow = '0 3px 12px rgba(0, 186, 124, 0.2)';
-                    }
-                  }}
-                  aria-label="Completar e iniciar conteo de caja"
-                  aria-describedby={!isCompleted ? "validation-feedback" : undefined}
-                >
-                  <CheckCircle className="w-4 h-4" />
-                  <span className="hidden sm:inline ml-1.5">Completar</span>
-                  <span className="sm:hidden">✓</span>
                 </Button>
               )}
             </div>
