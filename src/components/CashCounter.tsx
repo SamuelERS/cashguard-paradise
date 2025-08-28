@@ -630,24 +630,6 @@ const CashCounter = ({
         animate={{ opacity: 1, y: 0 }}
         className="space-y-4 max-w-md mx-auto sm:max-w-2xl lg:max-w-4xl"
       >
-        {/* 🤖 [IA] - v1.0.64 - Header con glass effect premium */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <IconComponent className="w-10 h-10" style={{
-              background: primaryGradient,
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text'
-            }} />
-            <h2 className="text-2xl font-bold" style={{ color: '#e1e8ed' }}>
-              Fase 1: Conteo Inicial Obligatorio
-            </h2>
-          </div>
-          <p className="text-base" style={{ color: '#8899a6' }}>
-            Complete cada denominación en orden secuencial
-          </p>
-        </div>
-
         {/* 🤖 [IA] - v1.0.64 - Container principal con glass effect */}
         <div className="space-y-4" style={{ 
           backgroundColor: 'rgba(36, 36, 36, 0.4)',
@@ -658,6 +640,24 @@ const CashCounter = ({
           borderRadius: '16px',
           boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
         }}>
+          {/* 🤖 [IA] - v1.0.64 - Header con glass effect premium */}
+          <div className="text-center mb-6">
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <IconComponent className="w-10 h-10" style={{
+                background: primaryGradient,
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text'
+              }} />
+              <h2 className="text-2xl font-bold" style={{ color: '#e1e8ed' }}>
+                Fase 1: Conteo Inicial Obligatorio
+              </h2>
+            </div>
+            <p className="text-base" style={{ color: '#8899a6' }}>
+              Complete cada denominación en orden secuencial
+            </p>
+          </div>
+
           {/* Guided Progress Indicator */}
           <GuidedProgressIndicator
             currentStep={guidedState.currentStep}
@@ -716,44 +716,44 @@ const CashCounter = ({
             */}
           </div>
 
-        </div>
+          {/* Botones de navegación - 🤖 [IA] - v1.2.5: Texto responsivo y mejor alineación */}
+          <div className="flex gap-3 lg:max-w-lg lg:mx-auto mt-6">
+            <Button
+              onClick={handleBackToStart}
+              variant="outline"
+              className="flex-1 h-11 text-xs sm:text-sm px-3 sm:px-4 flex items-center justify-center whitespace-nowrap"
+              style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                color: '#e1e8ed'
+              }}
+            >
+              <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2 flex-shrink-0" />
+              <span>Volver</span>
+              <span className="hidden sm:inline ml-1">a Inicio</span>
+            </Button>
+            <Button
+              onClick={handleCompletePhase1}
+              className="flex-1 h-11 text-xs sm:text-sm px-3 sm:px-4 flex items-center justify-center whitespace-nowrap"
+              variant={guidedState.isCompleted ? "ready" : "outline"}
+              disabled={!guidedState.isCompleted}
+              style={guidedState.isCompleted ? {
+                // 🤖 [IA] - v1.1.09: Color coherente según modo de operación
+                background: primaryGradient,
+                border: 'none',
+                color: 'white'
+              } : {
+                backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                color: '#8899a6'
+              }}
+            >
+              <IconComponent className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2 flex-shrink-0" />
+              <span>Completar</span>
+              <span className="hidden sm:inline ml-1">Fase 1</span>
+            </Button>
+          </div>
 
-        {/* Botones de navegación - 🤖 [IA] - v1.2.5: Texto responsivo y mejor alineación */}
-        <div className="flex gap-3 lg:max-w-lg lg:mx-auto">
-          <Button
-            onClick={handleBackToStart}
-            variant="outline"
-            className="flex-1 h-11 text-xs sm:text-sm px-3 sm:px-4 flex items-center justify-center whitespace-nowrap"
-            style={{
-              backgroundColor: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.3)',
-              color: '#e1e8ed'
-            }}
-          >
-            <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2 flex-shrink-0" />
-            <span>Volver</span>
-            <span className="hidden sm:inline ml-1">a Inicio</span>
-          </Button>
-          <Button
-            onClick={handleCompletePhase1}
-            className="flex-1 h-11 text-xs sm:text-sm px-3 sm:px-4 flex items-center justify-center whitespace-nowrap"
-            variant={guidedState.isCompleted ? "ready" : "outline"}
-            disabled={!guidedState.isCompleted}
-            style={guidedState.isCompleted ? {
-              // 🤖 [IA] - v1.1.09: Color coherente según modo de operación
-              background: primaryGradient,
-              border: 'none',
-              color: 'white'
-            } : {
-              backgroundColor: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.3)',
-              color: '#8899a6'
-            }}
-          >
-            <IconComponent className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2 flex-shrink-0" />
-            <span>Completar</span>
-            <span className="hidden sm:inline ml-1">Fase 1</span>
-          </Button>
         </div>
     </motion.div>
   );
