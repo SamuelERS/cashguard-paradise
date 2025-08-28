@@ -216,6 +216,33 @@ Flujo de 5 pasos optimizado:
 - **Archivado:** Versiones v1.0.66-v1.0.79 movidas al histórico
 - **Simplificación:** Reglas de la Casa y ejemplos de código optimizados
 
+## Recent Updates v1.1.25
+
+### ⏱️ Activación Condicional Basada en Interacción del Usuario
+- **PROBLEMA:** Activación automática permitía ignorar instrucciones (mirar celular y esperar)
+- **ANÁLISIS:** Sin interacción obligatoria, no hay garantía de atención
+- **SOLUCIÓN IMPLEMENTADA - ACTIVACIÓN POR INTERACCIÓN:**
+  1. **Flujo condicional:**
+     - Solo el primer checkbox se activa después de 2s iniciales
+     - Al marcar un checkbox, espera 2s y activa el siguiente
+     - Si NO marca, el proceso se DETIENE (no avanza)
+  2. **Secuencia de activación:**
+     - Inicio: Todo deshabilitado
+     - 2s: Se activa "bolsa de depósito"
+     - Usuario marca bolsa → 2s → activa "tirro"
+     - Usuario marca tirro → 2s → activa "espacio"
+     - Usuario marca espacio → 2s → activa "entendido"
+  3. **Mensajes contextuales:**
+     - "(activando...)" cuando está en proceso
+     - "(marque el anterior)" cuando está esperando interacción
+  4. **Engagement obligatorio:**
+     - No pueden ignorar y esperar
+     - Deben estar presentes y atentos
+     - Cada marca confirma lectura del punto
+- **ARCHIVOS MODIFICADOS:** `/src/components/phases/Phase2Manager.tsx`
+- **RESULTADO:** Personal DEBE interactuar, no pueden hacer otras cosas mientras esperan
+- **IMPACTO:** Atención garantizada, proceso robusto contra distracciones
+
 ## Recent Updates v1.1.24
 
 ### ⏱️ Activación Secuencial de Checkboxes - Uno cada 2 segundos

@@ -65,19 +65,42 @@ export function Phase2Manager({
   // 🤖 [IA] - v1.2.10: Verificar si todos los items están marcados
   const allItemsChecked = Object.values(checkedItems).every(checked => checked);
 
-  // 🤖 [IA] - v1.1.24: Activación secuencial de checkboxes - uno cada 2 segundos
+  // 🤖 [IA] - v1.1.25: Activación inicial - solo el primer checkbox después de 2s
   useEffect(() => {
     if (showInstructionsModal) {
-      const timers = [
-        setTimeout(() => setEnabledItems(prev => ({...prev, bolsa: true})), 2000),
-        setTimeout(() => setEnabledItems(prev => ({...prev, tirro: true})), 4000),
-        setTimeout(() => setEnabledItems(prev => ({...prev, espacio: true})), 6000),
-        setTimeout(() => setEnabledItems(prev => ({...prev, entendido: true})), 8000)
-      ];
-      
-      return () => timers.forEach(timer => clearTimeout(timer));
+      const timer = setTimeout(() => {
+        setEnabledItems(prev => ({...prev, bolsa: true}));
+      }, 2000);
+      return () => clearTimeout(timer);
     }
   }, [showInstructionsModal]);
+
+  // 🤖 [IA] - v1.1.25: Activación progresiva basada en interacción del usuario
+  useEffect(() => {
+    // Activar tirro después de marcar bolsa
+    if (checkedItems.bolsa && !enabledItems.tirro) {
+      const timer = setTimeout(() => {
+        setEnabledItems(prev => ({...prev, tirro: true}));
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+    
+    // Activar espacio después de marcar tirro
+    if (checkedItems.tirro && checkedItems.bolsa && !enabledItems.espacio) {
+      const timer = setTimeout(() => {
+        setEnabledItems(prev => ({...prev, espacio: true}));
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+    
+    // Activar entendido después de marcar espacio
+    if (checkedItems.espacio && checkedItems.tirro && checkedItems.bolsa && !enabledItems.entendido) {
+      const timer = setTimeout(() => {
+        setEnabledItems(prev => ({...prev, entendido: true}));
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [checkedItems, enabledItems]);
 
   // Auto-advance to verification when delivery is complete
   useEffect(() => {
@@ -458,7 +481,7 @@ export function Phase2Manager({
                 <Package className="w-5 h-5" style={{ color: '#0a84ff' }} />
                 <span style={{ flex: 1 }}>
                   Tengo la <strong>bolsa de depósito</strong> lista
-                  {!enabledItems.bolsa && <span style={{ color: '#8899a6', fontSize: '0.85rem', marginLeft: '8px' }}>(disponible en 2s)</span>}
+                  {!enabledItems.bolsa && <span style={{ color: '#8899a6', fontSize: '0.85rem', marginLeft: '8px' }}>(activando...)</span>}
                 </span>
               </label>
 
@@ -490,7 +513,11 @@ export function Phase2Manager({
                 <ScrollText className="w-5 h-5" style={{ color: '#0a84ff' }} />
                 <span style={{ flex: 1 }}>
                   Tengo <strong>tirro/cinta adhesiva</strong> para rotular
-                  {!enabledItems.tirro && <span style={{ color: '#8899a6', fontSize: '0.85rem', marginLeft: '8px' }}>(disponible en 4s)</span>}
+                  {!enabledItems.tirro && (
+                    <span style={{ color: '#8899a6', fontSize: '0.85rem', marginLeft: '8px' }}>
+                      {checkedItems.bolsa ? '(activando...)' : '(marque el anterior)'}
+                    </span>
+                  )}
                 </span>
               </label>
 
@@ -522,7 +549,11 @@ export function Phase2Manager({
                 <Grid3x3 className="w-5 h-5" style={{ color: '#0a84ff' }} />
                 <span style={{ flex: 1 }}>
                   Tengo <strong>espacio limpio</strong> para separar denominaciones
-                  {!enabledItems.espacio && <span style={{ color: '#8899a6', fontSize: '0.85rem', marginLeft: '8px' }}>(disponible en 6s)</span>}
+                  {!enabledItems.espacio && (
+                    <span style={{ color: '#8899a6', fontSize: '0.85rem', marginLeft: '8px' }}>
+                      {checkedItems.tirro ? '(activando...)' : '(marque el anterior)'}
+                    </span>
+                  )}
                 </span>
               </label>
 
@@ -554,7 +585,11 @@ export function Phase2Manager({
                 <AlertCircle className="w-5 h-5" style={{ color: '#0a84ff' }} />
                 <span style={{ flex: 1 }}>
                   <strong>Entiendo</strong> que este dinero es para entregar a gerencia
-                  {!enabledItems.entendido && <span style={{ color: '#8899a6', fontSize: '0.85rem', marginLeft: '8px' }}>(disponible en 8s)</span>}
+                  {!enabledItems.entendido && (
+                    <span style={{ color: '#8899a6', fontSize: '0.85rem', marginLeft: '8px' }}>
+                      {checkedItems.espacio ? '(activando...)' : '(marque el anterior)'}
+                    </span>
+                  )}
                 </span>
               </label>
             </div>
