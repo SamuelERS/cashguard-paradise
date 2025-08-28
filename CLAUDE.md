@@ -216,6 +216,24 @@ Flujo de 5 pasos optimizado:
 - **Archivado:** Versiones v1.0.66-v1.0.79 movidas al histórico
 - **Simplificación:** Reglas de la Casa y ejemplos de código optimizados
 
+## Recent Updates v1.1.26
+
+### 🎨 Mejoras Visuales del Modal de Instrucciones - Borde Rojo y Espaciado
+- **PROBLEMA:** Modal tocaba los bordes de la pantalla en móviles, borde azul no coincidía con énfasis rojo
+- **ANÁLISIS:** Faltaba margin y el color azul no tenía coherencia con "ENTREGAR A GERENCIA" en rojo
+- **SOLUCIÓN IMPLEMENTADA:**
+  1. **Espaciado en móviles:**
+     - Agregado `margin: '16px'` al modal
+     - `maxWidth: 'calc(100vw - 32px)'` para respetar márgenes
+     - `maxHeight: 'calc(100vh - 32px)'` para altura también
+  2. **Borde y glow rojo:**
+     - Borde cambiado de azul `rgba(10, 132, 255, 0.3)` a rojo `rgba(244, 33, 46, 0.3)`
+     - Agregado efecto glow: `0 0 20px rgba(244, 33, 46, 0.2)`
+     - Coherencia visual con texto "ENTREGAR A GERENCIA" (#f4212e)
+- **ARCHIVOS MODIFICADOS:** `/src/components/phases/Phase2Manager.tsx`
+- **RESULTADO:** Modal con espacio alrededor en móviles y borde rojo consistente
+- **IMPACTO:** Mejor visualización en pantallas pequeñas, coherencia visual mejorada
+
 ## Recent Updates v1.1.25
 
 ### ⏱️ Activación Condicional Basada en Interacción del Usuario

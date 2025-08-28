@@ -378,10 +378,17 @@ export function Phase2Manager({
         backgroundColor: 'rgba(36, 36, 36, 0.95)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
-        border: '1px solid rgba(10, 132, 255, 0.3)',
+        border: '1px solid rgba(244, 33, 46, 0.3)',
         borderRadius: '16px',
-        boxShadow: '0 4px 24px rgba(0, 0, 0, 0.8)',
-        maxWidth: '500px'
+        boxShadow: '0 4px 24px rgba(0, 0, 0, 0.8), 0 0 20px rgba(244, 33, 46, 0.2)',
+        width: 'calc(100% - 2rem)',
+        maxWidth: '500px',
+        maxHeight: 'calc(100vh - 2rem)',
+        position: 'fixed',
+        left: '1rem',
+        right: '1rem',
+        top: '50%',
+        transform: 'translateY(-50%)'
       }}>
         <AlertDialogHeader>
           <AlertDialogTitle style={{ color: '#1d9bf0', fontSize: '1.25rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
