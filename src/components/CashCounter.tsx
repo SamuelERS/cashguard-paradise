@@ -708,22 +708,20 @@ const CashCounter = ({
           flexDirection: 'column',
           position: 'relative'
         }}>
-          {/* 🤖 [IA] - v1.0.64 - Header con glass effect premium - Fixed position */}
+          {/* 🤖 [IA] - v1.2.10 - Header simplificado para móviles - Sin subtítulo y padding reducido */}
           <div className="text-center" style={{
-            position: 'sticky',
-            top: 0,
-            zIndex: 10,
+            position: 'relative',
             backgroundColor: 'rgba(36, 36, 36, 0.95)',
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
-            padding: '12px 12px 0 12px',
-            marginBottom: '1rem',
+            padding: '8px 8px 8px 8px',
+            marginBottom: '0.5rem',
             marginLeft: '-16px',
             marginRight: '-16px',
             marginTop: '-16px',
             borderRadius: '16px 16px 0 0'
           }}>
-            <div className="flex items-center justify-center gap-3 mb-2">
+            <div className="flex items-center justify-center gap-3">
               <IconComponent className="w-10 h-10" style={{
                 background: primaryGradient,
                 WebkitBackgroundClip: 'text',
@@ -731,12 +729,9 @@ const CashCounter = ({
                 backgroundClip: 'text'
               }} />
               <h2 className="text-2xl font-bold" style={{ color: '#e1e8ed' }}>
-                Fase 1: Conteo Inicial Obligatorio
+                Fase 1: Conteo Inicial
               </h2>
             </div>
-            <p className="text-base pb-3" style={{ color: '#8899a6' }}>
-              Complete cada denominación en orden secuencial
-            </p>
           </div>
 
           {/* Scrollable content container - 🤖 [IA] - v1.2.9: Ajustado para mejor espaciado */}

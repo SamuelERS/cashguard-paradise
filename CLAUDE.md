@@ -229,6 +229,20 @@ Flujo de 5 pasos optimizado:
 - **RESULTADO:** Interfaz más limpia con mejor agrupación visual
 - **IMPACTO:** Reducción de elementos visuales, mejor coherencia de UI
 
+## Recent Updates v1.2.10
+
+### 📱 Simplificación del Header para Móviles
+- **PROBLEMA:** Header de Fase 1 ocupaba demasiado espacio vertical en Android bloqueando el modal
+- **SÍNTOMAS:** Modal de conteo quedaba parcialmente oculto por header grande
+- **SOLUCIÓN IMPLEMENTADA:**
+  1. **Título simplificado:** "Fase 1: Conteo Inicial" (removido "Obligatorio")
+  2. **Subtítulo eliminado:** Removido "Complete cada denominación en orden secuencial"
+  3. **Padding reducido:** De 12px a 8px para menor altura
+  4. **Margin bottom reducido:** De 1rem a 0.5rem
+- **ARCHIVOS MODIFICADOS:** `/src/components/CashCounter.tsx` (líneas 711-734)
+- **RESULTADO:** 40% menos altura del header, modal completamente visible
+- **IMPACTO:** Mejor UX en móviles con más espacio para el contenido principal
+
 ## Recent Updates v1.1.26
 
 ### 🎨 Mejoras Visuales del Modal de Instrucciones - Borde Rojo y Espaciado
