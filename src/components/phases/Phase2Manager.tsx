@@ -112,7 +112,7 @@ export function Phase2Manager({
           Fase 2: División y Verificación del Efectivo
         </h2>
         <p style={{ color: '#8899a6' }}>
-          Separar {formatCurrency(deliveryCalculation.amountToDeliver)} para gerencia, dejar $50.00 en caja
+          Separar el efectivo que entregarás a gerencia
         </p>
       </motion.div>
 

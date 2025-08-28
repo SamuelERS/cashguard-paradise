@@ -126,12 +126,7 @@ export function Phase2DeliverySection({
               }}
             />
           </div>
-          <span className="text-base font-bold" style={{ 
-            color: '#1d9bf0',
-            textShadow: '0 0 8px rgba(29, 155, 240, 0.3)'
-          }}>
-            {formatCurrency(amountToDeliver)}
-          </span>
+          {/* 🤖 [IA] - v1.2.9: Monto oculto - Sistema ciego anti-fraude */}
         </div>
       </div>
 
