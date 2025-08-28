@@ -7,6 +7,16 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"; // 🤖 [IA] - v1.2.9: Diálogo de confirmación
 import CashCalculation from "@/components/CashCalculation";
 import { GuidedProgressIndicator } from "@/components/ui/GuidedProgressIndicator";
 import { GuidedCoinSection } from "@/components/cash-counting/GuidedCoinSection";
@@ -62,6 +72,7 @@ const CashCounter = ({
   const [selectedCashier, setSelectedCashier] = useState(initialCashier);
   const [selectedWitness, setSelectedWitness] = useState(initialWitness);
   const [expectedSales, setExpectedSales] = useState(initialExpectedSales);
+  const [showExitConfirmation, setShowExitConfirmation] = useState(false); // 🤖 [IA] - v1.2.9: Estado para diálogo de confirmación
   
   // 🤖 [IA] - v1.0.3 - Iniciar directamente si hay datos del wizard
   const hasInitialData = initialStore && initialCashier && initialWitness && initialExpectedSales;
@@ -335,8 +346,9 @@ const CashCounter = ({
     if (onBack) onBack();
   };
 
-  // 🤖 [IA] - v1.0.86: Fix para botón "Volver a Inicio" que trababa el sistema
+  // 🤖 [IA] - v1.2.9: Función mejorada con reset del diálogo de confirmación
   const handleBackToStart = () => {
+    setShowExitConfirmation(false); // Cerrar el diálogo
     resetGuidedCounting();
     resetAllPhases();
     if (onBack) onBack();
@@ -681,7 +693,7 @@ const CashCounter = ({
         animate={{ opacity: 1, y: 0 }}
         className="space-y-2 max-w-md mx-auto sm:max-w-2xl lg:max-w-4xl"
       >
-        {/* 🤖 [IA] - v1.0.64 - Container principal con glass effect - Fixed height */}
+        {/* 🤖 [IA] - v1.2.9 - Container principal con glass effect - Altura automática */}
         <div className="space-y-4" style={{ 
           backgroundColor: 'rgba(36, 36, 36, 0.4)',
           backdropFilter: 'blur(20px)',
@@ -690,9 +702,8 @@ const CashCounter = ({
           padding: '16px',
           borderRadius: '16px',
           boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-          height: '85vh',
-          maxHeight: '900px',
-          minHeight: '600px',
+          minHeight: '400px',
+          maxHeight: '85vh',
           display: 'flex',
           flexDirection: 'column',
           position: 'relative'
@@ -728,17 +739,27 @@ const CashCounter = ({
             </p>
           </div>
 
-          {/* Scrollable content container */}
-          <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', paddingRight: '8px' }}>
-            {/* Guided Progress Indicator */}
-            <GuidedProgressIndicator
-              currentStep={guidedState.currentStep}
-              totalSteps={guidedState.totalSteps}
-              currentFieldLabel={currentField}
-              instructionText={instructionText}
-              isCompleted={guidedState.isCompleted}
-              isMorningCount={isMorningCount}
-            />
+          {/* Scrollable content container - 🤖 [IA] - v1.2.9: Ajustado para mejor espaciado */}
+          <div style={{ 
+            flex: '1 1 auto', 
+            minHeight: '200px',
+            maxHeight: 'calc(85vh - 200px)',
+            overflowY: 'auto', 
+            overflowX: 'hidden', 
+            paddingRight: '8px',
+            marginBottom: '24px' 
+          }}>
+            {/* Guided Progress Indicator - 🤖 [IA] - v1.2.9: Con espaciado superior */}
+            <div style={{ paddingTop: '16px' }}>
+              <GuidedProgressIndicator
+                currentStep={guidedState.currentStep}
+                totalSteps={guidedState.totalSteps}
+                currentFieldLabel={currentField}
+                instructionText={instructionText}
+                isCompleted={guidedState.isCompleted}
+                isMorningCount={isMorningCount}
+              />
+            </div>
 
             {/* 🤖 [IA] - v1.0.95: Vista guiada unificada - Solo mostrar sección activa en todas las plataformas */}
             <div className="space-y-4">
@@ -789,12 +810,16 @@ const CashCounter = ({
             </div>
           </div>
 
-          {/* Botones de navegación - 🤖 [IA] - v1.2.5: Texto responsivo y mejor alineación - Always visible */}
-          <div className="flex gap-3 lg:max-w-lg lg:mx-auto mt-auto pt-3" style={{ flexShrink: 0 }}>
+          {/* Botones de navegación - 🤖 [IA] - v1.2.9: Botón con confirmación y espaciado mejorado */}
+          <div className="flex justify-center lg:max-w-lg lg:mx-auto" style={{ 
+            flexShrink: 0,
+            paddingTop: '16px',
+            marginTop: 'auto'
+          }}>
             <Button
-              onClick={handleBackToStart}
+              onClick={() => setShowExitConfirmation(true)}
               variant="outline"
-              className="flex-1 h-11 text-xs sm:text-sm px-3 sm:px-4 flex items-center justify-center whitespace-nowrap"
+              className="w-full max-w-xs h-11 text-xs sm:text-sm px-3 sm:px-4 flex items-center justify-center whitespace-nowrap"
               style={{
                 backgroundColor: 'rgba(255, 255, 255, 0.05)',
                 border: '1px solid rgba(255, 255, 255, 0.3)',
@@ -805,27 +830,58 @@ const CashCounter = ({
               <span>Volver</span>
               <span className="hidden sm:inline ml-1">a Inicio</span>
             </Button>
-            <Button
-              onClick={handleCompletePhase1}
-              className="flex-1 h-11 text-xs sm:text-sm px-3 sm:px-4 flex items-center justify-center whitespace-nowrap"
-              variant={guidedState.isCompleted ? "ready" : "outline"}
-              disabled={!guidedState.isCompleted}
-              style={guidedState.isCompleted ? {
-                // 🤖 [IA] - v1.1.09: Color coherente según modo de operación
-                background: primaryGradient,
-                border: 'none',
-                color: 'white'
-              } : {
-                backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                border: '1px solid rgba(255, 255, 255, 0.3)',
-                color: '#8899a6'
-              }}
-            >
-              <IconComponent className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2 flex-shrink-0" />
-              <span>Completar</span>
-              <span className="hidden sm:inline ml-1">Fase 1</span>
-            </Button>
           </div>
+
+          {/* 🤖 [IA] - v1.2.9: Diálogo de confirmación para prevenir pérdida accidental de datos */}
+          <AlertDialog open={showExitConfirmation} onOpenChange={setShowExitConfirmation}>
+            <AlertDialogContent style={{
+              backgroundColor: 'rgba(36, 36, 36, 0.95)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              borderRadius: '16px',
+              boxShadow: '0 4px 24px rgba(0, 0, 0, 0.8)'
+            }}>
+              <AlertDialogHeader>
+                <AlertDialogTitle style={{ color: '#f4212e', fontSize: '1.25rem' }}>
+                  ⚠️ ¿Confirmar salida?
+                </AlertDialogTitle>
+                <AlertDialogDescription style={{ color: '#e1e8ed', fontSize: '0.95rem', lineHeight: '1.5' }}>
+                  Se perderá todo el progreso del conteo actual. 
+                  <br />
+                  <span style={{ color: '#f4a52a', fontWeight: '500' }}>
+                    Esta acción no se puede deshacer.
+                  </span>
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel 
+                  style={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                    border: '1px solid rgba(255, 255, 255, 0.3)',
+                    color: '#e1e8ed',
+                    borderRadius: '10px'
+                  }}
+                  className="hover:bg-white/10"
+                >
+                  Cancelar
+                </AlertDialogCancel>
+                <AlertDialogAction 
+                  onClick={handleBackToStart}
+                  style={{
+                    background: 'linear-gradient(135deg, #f4212e 0%, #ff4444 100%)',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '10px',
+                    fontWeight: '600'
+                  }}
+                  className="hover:opacity-90"
+                >
+                  Sí, volver al inicio
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
 
         </div>
     </motion.div>

@@ -411,22 +411,66 @@ export function GuidedFieldView({
             </div>
         </div>
 
-        {/* 🤖 [IA] - v1.2.7: Barra de progreso pura sin valores monetarios (sistema anti-fraude) */}
-        {completedFields.length > 0 && (
-          <div className="px-3 mb-3">
-            <div className="h-1 bg-black/40 rounded-full overflow-hidden">
-              <div 
-                className="h-full rounded-full transition-all duration-300"
-                style={{ 
-                  width: `${(completedFields.length / totalSteps) * 100}%`,
-                  background: isMorningCount 
-                    ? 'linear-gradient(90deg, #f4a52a, #ffb84d)'
-                    : 'linear-gradient(90deg, #0a84ff, #5e5ce6)'
-                }}
-              />
-            </div>
-          </div>
-        )}
+        {/* 🤖 [IA] - v1.2.9: Barra de progreso segmentada por sección actual (monedas/billetes/electrónicos) */}
+        {(() => {
+          // Determinar campos de la sección actual usando los nombres correctos que vienen en completedFields
+          const coinFields = ['1¢ centavo', '5¢ centavos', '10¢ centavos', '25¢ centavos', '$1 moneda'];
+          const billFields = ['$1', '$5', '$10', '$20', '$50', '$100'];
+          const electronicFields = ['Credomatic', 'Promerica', 'Transferencia Bancaria', 'PayPal', 'Total Electrónico'];
+          
+          let sectionFields: string[] = [];
+          let sectionName = '';
+          let sectionIcon = null;
+          
+          if (currentFieldType === 'coin') {
+            sectionFields = coinFields;
+            sectionName = 'Monedas';
+            sectionIcon = <Coins className="h-3 w-3" />;
+          } else if (currentFieldType === 'bill') {
+            sectionFields = billFields;
+            sectionName = 'Billetes';
+            sectionIcon = <Banknote className="h-3 w-3" />;
+          } else if (currentFieldType === 'electronic') {
+            sectionFields = electronicFields;
+            sectionName = 'Pagos Electrónicos';
+            sectionIcon = <CreditCard className="h-3 w-3" />;
+          }
+          
+          // Calcular progreso de la sección actual
+          const completedInSection = completedFields.filter(field => 
+            sectionFields.includes(field.name)
+          ).length;
+          const totalInSection = sectionFields.length;
+          const sectionProgress = totalInSection > 0 ? (completedInSection / totalInSection) * 100 : 0;
+          
+          // Solo mostrar si hay una sección válida
+          if (sectionFields.length > 0) {
+            return (
+              <div className="px-3 my-4">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="flex items-center gap-1 text-xs" style={{ color: isMorningCount ? '#f4a52a' : '#0a84ff' }}>
+                    {sectionIcon}
+                    <span className="font-medium">{sectionName}:</span>
+                    <span className="text-gray-400">{completedInSection} de {totalInSection}</span>
+                  </span>
+                </div>
+                <div className="h-1 bg-black/40 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full rounded-full transition-all duration-300"
+                    style={{ 
+                      width: `${sectionProgress}%`,
+                      background: isMorningCount 
+                        ? 'linear-gradient(90deg, #f4a52a, #ffb84d)'
+                        : 'linear-gradient(90deg, #0a84ff, #5e5ce6)'
+                    }}
+                  />
+                </div>
+              </div>
+            );
+          }
+          
+          return null;
+        })()}
       </motion.div>
     </AnimatePresence>
   );
