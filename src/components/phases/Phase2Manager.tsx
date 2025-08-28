@@ -2,6 +2,17 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
+// 🤖 [IA] - v1.2.10: Agregado AlertDialog para confirmación de salida
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 // 🤖 [IA] - Eliminado imports de componentes UI para usar estilos inline v1.0.74
 import { Phase2DeliverySection } from './Phase2DeliverySection';
 import { Phase2VerificationSection } from './Phase2VerificationSection';
@@ -25,6 +36,7 @@ export function Phase2Manager({
   const [verificationCompleted, setVerificationCompleted] = useState(false);
   const [deliveryProgress, setDeliveryProgress] = useState<Record<string, boolean>>({});
   const [verificationProgress, setVerificationProgress] = useState<Record<string, boolean>>({});
+  const [showExitConfirmation, setShowExitConfirmation] = useState(false); // 🤖 [IA] - v1.2.10: Estado para modal de confirmación
   
   const { createTimeoutWithCleanup } = useTimingConfig(); // 🤖 [IA] - Usar timing unificado v1.0.22
 
@@ -200,7 +212,7 @@ export function Phase2Manager({
       {/* 🤖 [IA] - v1.2.5: Botones con texto responsivo y mejor alineación */}
       <div className="flex gap-3 lg:max-w-lg lg:mx-auto">
         <button
-          onClick={onBack}
+          onClick={() => setShowExitConfirmation(true)}
           className="flex-1 h-11 px-3 sm:px-4 rounded-lg font-medium transition-all duration-300 text-xs sm:text-sm flex items-center justify-center whitespace-nowrap"
           style={{
             backgroundColor: 'rgba(36, 36, 36, 0.4)',
@@ -219,8 +231,7 @@ export function Phase2Manager({
           }}
         >
           <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2 flex-shrink-0" />
-          <span>Volver</span>
-          <span className="hidden sm:inline ml-1">a Fase 1</span>
+          <span>Volver al inicio</span>
         </button>
         
         {/* Manual section switch (only when delivery is complete) */}
@@ -249,6 +260,55 @@ export function Phase2Manager({
           </button>
         )}
       </div>
+      
+      {/* 🤖 [IA] - v1.2.10: Diálogo de confirmación para prevenir pérdida accidental de datos */}
+      <AlertDialog open={showExitConfirmation} onOpenChange={setShowExitConfirmation}>
+      <AlertDialogContent style={{
+        backgroundColor: 'rgba(36, 36, 36, 0.95)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        border: '1px solid rgba(255, 255, 255, 0.15)',
+        borderRadius: '16px',
+        boxShadow: '0 4px 24px rgba(0, 0, 0, 0.8)'
+      }}>
+        <AlertDialogHeader>
+          <AlertDialogTitle style={{ color: '#f4212e', fontSize: '1.25rem' }}>
+            ⚠️ ¿Confirmar salida?
+          </AlertDialogTitle>
+          <AlertDialogDescription style={{ color: '#e1e8ed', fontSize: '0.95rem', lineHeight: '1.5' }}>
+            Se perderá todo el progreso del conteo actual. 
+            <br />
+            <span style={{ color: '#f4a52a', fontWeight: '500' }}>
+              Esta acción no se puede deshacer.
+            </span>
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel 
+            style={{
+              backgroundColor: 'rgba(255, 255, 255, 0.05)',
+              border: '1px solid rgba(255, 255, 255, 0.3)',
+              color: '#e1e8ed',
+              borderRadius: '10px'
+            }}
+          >
+            Cancelar
+          </AlertDialogCancel>
+          <AlertDialogAction 
+            onClick={onBack}
+            style={{
+              background: 'linear-gradient(135deg, #f4212e 0%, #ff4444 100%)',
+              color: 'white',
+              border: 'none',
+              borderRadius: '10px',
+              fontWeight: '600'
+            }}
+          >
+            Sí, volver al inicio
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
     </div>
   );
 }
