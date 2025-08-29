@@ -176,14 +176,6 @@ export const GuidedProgressIndicator = ({
           </div>
         </div>
       </div>
-
-      {/* Warning */}
-      {!isCompleted && (
-        <div className="mt-3 flex items-center gap-2 text-warning text-sm">
-          <AlertTriangle className="w-4 h-4" />
-          <span>Si abandona la página, deberá reiniciar el conteo desde el principio</span>
-        </div>
-      )}
     </div>
   );
 };
