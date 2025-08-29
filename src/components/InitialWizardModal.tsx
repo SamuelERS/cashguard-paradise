@@ -499,7 +499,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                   color: '#8899a6',
                   fontSize: 'clamp(0.75rem,3vw,0.875rem)',
                   marginTop: 'clamp(0.125rem,0.5vw,0.25rem)'
-                }}>Seleccione responsable de corte</p>
+                }}>¿Quién Cobró este día?</p>
               </div>
             </div>
 
@@ -631,7 +631,9 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                   color: '#8899a6',
                   fontSize: 'clamp(0.75rem, 3vw, 0.875rem)',
                   marginTop: 'clamp(0.125rem, 0.5vw, 0.25rem)'
-                }}>Seleccione el testigo verificador del corte</p>
+                }}>
+                  Selecciona quien Ayudara
+                </p>
               </div>
             </div>
 
