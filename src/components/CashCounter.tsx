@@ -935,24 +935,26 @@ const CashCounter = ({
   }
 
   return (
-    <div className="fixed inset-0 overflow-hidden flex items-center justify-center"
-         style={{ touchAction: 'none', overscrollBehavior: 'none', WebkitOverflowScrolling: 'touch' }}>
-      <FloatingParticles />
-      
-      <div className="relative z-10 container mx-auto px-4 py-2 max-w-4xl">
-        {/* 🤖 [IA] - v1.0.3 - Saltar selección si viene del wizard */}
-        {phaseState.currentPhase === 1 && !phaseState.phase1Completed && !hasInitialData && renderStoreSelection()}
-        {phaseState.currentPhase === 1 && phaseState.phase1Completed && renderPhase1()}
-        {phaseState.currentPhase === 2 && renderPhase2()}
+    <>
+      <div className="fixed inset-0 overflow-hidden flex items-center justify-center"
+           style={{ touchAction: 'none', overscrollBehavior: 'none', WebkitOverflowScrolling: 'touch' }}>
+        <FloatingParticles />
+        
+        <div className="relative z-10 container mx-auto px-4 py-2 max-w-4xl">
+          {/* 🤖 [IA] - v1.0.3 - Saltar selección si viene del wizard */}
+          {phaseState.currentPhase === 1 && !phaseState.phase1Completed && !hasInitialData && renderStoreSelection()}
+          {phaseState.currentPhase === 1 && phaseState.phase1Completed && renderPhase1()}
+          {phaseState.currentPhase === 2 && renderPhase2()}
+        </div>
       </div>
       
-      {/* 🤖 [IA] - v1.2.8 - Modal de instrucciones único para eliminar redundancia */}
+      {/* 🤖 [IA] - v1.2.12 - Modal fuera del contenedor principal para evitar conflictos aria-hidden */}
       <GuidedInstructionsModal
         isOpen={showInstructionsModal}
         onConfirm={handleInstructionsConfirm}
         isMorningCount={isMorningCount}
       />
-    </div>
+    </>
   );
 };
 
