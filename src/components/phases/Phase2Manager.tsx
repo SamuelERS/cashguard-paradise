@@ -378,56 +378,70 @@ export function Phase2Manager({
     <AlertDialog open={showInstructionsModal} onOpenChange={setShowInstructionsModal}>
       <AlertDialogContent style={{
         backgroundColor: 'rgba(36, 36, 36, 0.95)',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
+        backdropFilter: `blur(clamp(12px, 4vw, 20px))`,
+        WebkitBackdropFilter: `blur(clamp(12px, 4vw, 20px))`,
         border: '1px solid rgba(244, 33, 46, 0.3)',
-        borderRadius: '16px',
+        borderRadius: `clamp(8px, 3vw, 16px)`,
         boxShadow: '0 4px 24px rgba(0, 0, 0, 0.8), 0 0 20px rgba(244, 33, 46, 0.2)',
-        width: 'calc(100% - 2rem)',
-        maxWidth: '500px',
-        maxHeight: 'calc(100vh - 2rem)',
+        width: `clamp(calc(100% - 1rem), 90vw, 500px)`,
+        maxWidth: `clamp(300px, 90vw, 500px)`,
+        maxHeight: `clamp(400px, 85vh, 90vh)`,
         position: 'fixed',
-        left: '1rem',
-        right: '1rem',
+        left: `clamp(0.5rem, 5vw, 1rem)`,
+        right: `clamp(0.5rem, 5vw, 1rem)`,
         top: '50%',
-        transform: 'translateY(-50%)'
+        transform: 'translateY(-50%)',
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column'
       }}>
-        <AlertDialogHeader>
-          <AlertDialogTitle style={{ color: '#1d9bf0', fontSize: '1.25rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <AlertCircle className="w-6 h-6" />
+        <AlertDialogHeader style={{ flexShrink: 0 }}>
+          <AlertDialogTitle style={{ 
+            color: '#1d9bf0', 
+            fontSize: `clamp(1rem, 4vw, 1.25rem)`, 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: `clamp(0.375rem, 1.5vw, 0.5rem)` 
+          }}>
+            <AlertCircle className="w-[clamp(1rem,4vw,1.5rem)] h-[clamp(1rem,4vw,1.5rem)]" />
             📋 Preparación para Entrega a Gerencia
           </AlertDialogTitle>
         </AlertDialogHeader>
         
-        <div style={{ padding: '16px 0' }}>
+        <div style={{ 
+          padding: `clamp(0.75rem, 3vw, 1rem) 0`,
+          overflow: 'auto',
+          flex: 1,
+          minHeight: 0
+        }}>
           {/* Mensaje principal destacado */}
           <div style={{
             backgroundColor: 'rgba(10, 132, 255, 0.1)',
             border: '2px solid rgba(10, 132, 255, 0.4)',
-            borderRadius: '12px',
-            padding: '16px',
-            marginBottom: '20px',
+            borderRadius: `clamp(6px, 2.5vw, 12px)`,
+            padding: `clamp(0.75rem, 3vw, 1rem)`,
+            marginBottom: `clamp(1rem, 4vw, 1.25rem)`,
             textAlign: 'center'
           }}>
             <p style={{ 
               color: '#5e5ce6', 
-              fontSize: '1.1rem', 
+              fontSize: `clamp(0.875rem, 3.5vw, 1.1rem)`, 
               fontWeight: '700',
-              marginBottom: '8px'
+              marginBottom: `clamp(0.375rem, 1.5vw, 0.5rem)`
             }}>
               ⚠️ IMPORTANTE
             </p>
             <p style={{ 
               color: '#ffffff', 
-              fontSize: '1rem', 
+              fontSize: `clamp(0.875rem, 3.5vw, 1rem)`, 
               fontWeight: '600' 
             }}>
               Este dinero es para <span style={{ color: '#f4212e', textDecoration: 'underline' }}>ENTREGAR A GERENCIA</span>
             </p>
             <p style={{ 
               color: '#e1e8ed', 
-              fontSize: '0.9rem', 
-              marginTop: '8px' 
+              fontSize: `clamp(0.75rem, 3vw, 0.9rem)`, 
+              marginTop: `clamp(0.375rem, 1.5vw, 0.5rem)` 
             }}>
               NO es para dejar en caja
             </p>
@@ -435,7 +449,10 @@ export function Phase2Manager({
 
           {/* Checklist de preparación */}
           <div style={{ color: '#e1e8ed' }}>
-            <p style={{ marginBottom: '12px', fontSize: '0.95rem' }}>
+            <p style={{ 
+              marginBottom: `clamp(0.5rem, 2vw, 0.75rem)`, 
+              fontSize: `clamp(0.8rem, 3.2vw, 0.95rem)` 
+            }}>
               Antes de continuar, confirme que tiene todo listo:
             </p>
             
@@ -443,35 +460,39 @@ export function Phase2Manager({
             <div style={{
               backgroundColor: !enabledItems.bolsa ? 'rgba(10, 132, 255, 0.1)' : 'rgba(0, 186, 124, 0.1)',
               border: !enabledItems.bolsa ? '1px solid rgba(10, 132, 255, 0.3)' : '1px solid rgba(0, 186, 124, 0.3)',
-              borderRadius: '8px',
-              padding: '12px',
-              marginBottom: '16px',
+              borderRadius: `clamp(4px, 2vw, 8px)`,
+              padding: `clamp(0.5rem, 2vw, 0.75rem)`,
+              marginBottom: `clamp(0.75rem, 3vw, 1rem)`,
               textAlign: 'center'
             }}>
               <p style={{ 
                 color: !enabledItems.bolsa ? '#1d9bf0' : '#00ba7c',
-                fontSize: '0.95rem',
+                fontSize: `clamp(0.8rem, 3.2vw, 0.95rem)`,
                 fontWeight: '500',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: '8px'
+                gap: `clamp(0.375rem, 1.5vw, 0.5rem)`
               }}>
                 {!enabledItems.bolsa ? '⏱️ Preparando checklist...' : '📋 Lea cada item conforme se activa'}
               </p>
             </div>
             
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div style={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              gap: `clamp(0.5rem, 2vw, 0.75rem)` 
+            }}>
               {/* Item 1: Bolsa */}
               <label 
                 style={{ 
                   display: 'flex', 
                   alignItems: 'center', 
-                  gap: '12px',
-                  padding: '12px',
+                  gap: `clamp(0.5rem, 2vw, 0.75rem)`,
+                  padding: `clamp(0.5rem, 2vw, 0.75rem)`,
                   backgroundColor: checkedItems.bolsa ? 'rgba(0, 186, 124, 0.1)' : 'rgba(255, 255, 255, 0.05)',
                   border: checkedItems.bolsa ? '1px solid rgba(0, 186, 124, 0.3)' : enabledItems.bolsa ? '1px solid rgba(10, 132, 255, 0.2)' : '1px solid rgba(255, 255, 255, 0.1)',
-                  borderRadius: '8px',
+                  borderRadius: `clamp(4px, 2vw, 8px)`,
                   cursor: enabledItems.bolsa ? 'pointer' : 'not-allowed',
                   opacity: enabledItems.bolsa ? 1 : 0.4,
                   transition: 'all 0.3s ease',
@@ -487,10 +508,13 @@ export function Phase2Manager({
                     cursor: enabledItems.bolsa ? 'pointer' : 'not-allowed'
                   }}
                 />
-                <Package className="w-5 h-5" style={{ color: '#0a84ff' }} />
-                <span style={{ flex: 1 }}>
+                <Package className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)]" style={{ color: '#0a84ff' }} />
+                <span style={{ 
+                  flex: 1,
+                  fontSize: `clamp(0.8rem, 3.2vw, 0.9rem)`
+                }}>
                   Tengo la <strong>bolsa de depósito</strong> lista
-                  {!enabledItems.bolsa && <span style={{ color: '#8899a6', fontSize: '0.85rem', marginLeft: '8px' }}>(activando...)</span>}
+                  {!enabledItems.bolsa && <span style={{ color: '#8899a6', fontSize: `clamp(0.7rem, 2.8vw, 0.85rem)`, marginLeft: `clamp(0.375rem, 1.5vw, 0.5rem)` }}>(activando...)</span>}
                 </span>
               </label>
 
@@ -499,11 +523,11 @@ export function Phase2Manager({
                 style={{ 
                   display: 'flex', 
                   alignItems: 'center', 
-                  gap: '12px',
-                  padding: '12px',
+                  gap: `clamp(0.5rem, 2vw, 0.75rem)`,
+                  padding: `clamp(0.5rem, 2vw, 0.75rem)`,
                   backgroundColor: checkedItems.tirro ? 'rgba(0, 186, 124, 0.1)' : 'rgba(255, 255, 255, 0.05)',
                   border: checkedItems.tirro ? '1px solid rgba(0, 186, 124, 0.3)' : enabledItems.tirro ? '1px solid rgba(10, 132, 255, 0.2)' : '1px solid rgba(255, 255, 255, 0.1)',
-                  borderRadius: '8px',
+                  borderRadius: `clamp(4px, 2vw, 8px)`,
                   cursor: enabledItems.tirro ? 'pointer' : 'not-allowed',
                   opacity: enabledItems.tirro ? 1 : 0.4,
                   transition: 'all 0.3s ease',
@@ -519,11 +543,14 @@ export function Phase2Manager({
                     cursor: enabledItems.tirro ? 'pointer' : 'not-allowed'
                   }}
                 />
-                <ScrollText className="w-5 h-5" style={{ color: '#0a84ff' }} />
-                <span style={{ flex: 1 }}>
+                <ScrollText className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)]" style={{ color: '#0a84ff' }} />
+                <span style={{ 
+                  flex: 1,
+                  fontSize: `clamp(0.8rem, 3.2vw, 0.9rem)`
+                }}>
                   Tengo <strong>tirro/cinta adhesiva</strong> para rotular
                   {!enabledItems.tirro && (
-                    <span style={{ color: '#8899a6', fontSize: '0.85rem', marginLeft: '8px' }}>
+                    <span style={{ color: '#8899a6', fontSize: `clamp(0.7rem, 2.8vw, 0.85rem)`, marginLeft: `clamp(0.375rem, 1.5vw, 0.5rem)` }}>
                       {checkedItems.bolsa ? '(activando...)' : '(marque el anterior)'}
                     </span>
                   )}
@@ -535,11 +562,11 @@ export function Phase2Manager({
                 style={{ 
                   display: 'flex', 
                   alignItems: 'center', 
-                  gap: '12px',
-                  padding: '12px',
+                  gap: `clamp(0.5rem, 2vw, 0.75rem)`,
+                  padding: `clamp(0.5rem, 2vw, 0.75rem)`,
                   backgroundColor: checkedItems.espacio ? 'rgba(0, 186, 124, 0.1)' : 'rgba(255, 255, 255, 0.05)',
                   border: checkedItems.espacio ? '1px solid rgba(0, 186, 124, 0.3)' : enabledItems.espacio ? '1px solid rgba(10, 132, 255, 0.2)' : '1px solid rgba(255, 255, 255, 0.1)',
-                  borderRadius: '8px',
+                  borderRadius: `clamp(4px, 2vw, 8px)`,
                   cursor: enabledItems.espacio ? 'pointer' : 'not-allowed',
                   opacity: enabledItems.espacio ? 1 : 0.4,
                   transition: 'all 0.3s ease',
@@ -555,11 +582,14 @@ export function Phase2Manager({
                     cursor: enabledItems.espacio ? 'pointer' : 'not-allowed'
                   }}
                 />
-                <Grid3x3 className="w-5 h-5" style={{ color: '#0a84ff' }} />
-                <span style={{ flex: 1 }}>
+                <Grid3x3 className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)]" style={{ color: '#0a84ff' }} />
+                <span style={{ 
+                  flex: 1,
+                  fontSize: `clamp(0.8rem, 3.2vw, 0.9rem)`
+                }}>
                   Tengo <strong>espacio limpio</strong> para separar denominaciones
                   {!enabledItems.espacio && (
-                    <span style={{ color: '#8899a6', fontSize: '0.85rem', marginLeft: '8px' }}>
+                    <span style={{ color: '#8899a6', fontSize: `clamp(0.7rem, 2.8vw, 0.85rem)`, marginLeft: `clamp(0.375rem, 1.5vw, 0.5rem)` }}>
                       {checkedItems.tirro ? '(activando...)' : '(marque el anterior)'}
                     </span>
                   )}
@@ -571,11 +601,11 @@ export function Phase2Manager({
                 style={{ 
                   display: 'flex', 
                   alignItems: 'center', 
-                  gap: '12px',
-                  padding: '12px',
+                  gap: `clamp(0.5rem, 2vw, 0.75rem)`,
+                  padding: `clamp(0.5rem, 2vw, 0.75rem)`,
                   backgroundColor: checkedItems.entendido ? 'rgba(0, 186, 124, 0.1)' : 'rgba(255, 255, 255, 0.05)',
                   border: checkedItems.entendido ? '1px solid rgba(0, 186, 124, 0.3)' : enabledItems.entendido ? '1px solid rgba(10, 132, 255, 0.2)' : '1px solid rgba(255, 255, 255, 0.1)',
-                  borderRadius: '8px',
+                  borderRadius: `clamp(4px, 2vw, 8px)`,
                   cursor: enabledItems.entendido ? 'pointer' : 'not-allowed',
                   opacity: enabledItems.entendido ? 1 : 0.4,
                   transition: 'all 0.3s ease',
@@ -591,11 +621,14 @@ export function Phase2Manager({
                     cursor: enabledItems.entendido ? 'pointer' : 'not-allowed'
                   }}
                 />
-                <AlertCircle className="w-5 h-5" style={{ color: '#0a84ff' }} />
-                <span style={{ flex: 1 }}>
+                <AlertCircle className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)]" style={{ color: '#0a84ff' }} />
+                <span style={{ 
+                  flex: 1,
+                  fontSize: `clamp(0.8rem, 3.2vw, 0.9rem)`
+                }}>
                   <strong>Entiendo</strong> que este dinero es para entregar a gerencia
                   {!enabledItems.entendido && (
-                    <span style={{ color: '#8899a6', fontSize: '0.85rem', marginLeft: '8px' }}>
+                    <span style={{ color: '#8899a6', fontSize: `clamp(0.7rem, 2.8vw, 0.85rem)`, marginLeft: `clamp(0.375rem, 1.5vw, 0.5rem)` }}>
                       {checkedItems.espacio ? '(activando...)' : '(marque el anterior)'}
                     </span>
                   )}
@@ -605,7 +638,7 @@ export function Phase2Manager({
           </div>
         </div>
 
-        <AlertDialogFooter>
+        <AlertDialogFooter style={{ flexShrink: 0, paddingTop: `clamp(0.5rem, 2vw, 0.75rem)` }}>
           <AlertDialogAction 
             onClick={() => setShowInstructionsModal(false)}
             disabled={!allItemsChecked}
@@ -617,12 +650,13 @@ export function Phase2Manager({
               border: allItemsChecked 
                 ? 'none' 
                 : '1px solid rgba(255, 255, 255, 0.2)',
-              borderRadius: '10px',
+              borderRadius: `clamp(5px, 2vw, 10px)`,
               fontWeight: '600',
               cursor: allItemsChecked ? 'pointer' : 'not-allowed',
               opacity: allItemsChecked ? 1 : 0.5,
               transition: 'all 0.3s ease',
-              padding: '12px 24px',
+              padding: `clamp(0.5rem, 2vw, 0.75rem) clamp(1rem, 4vw, 1.5rem)`,
+              fontSize: `clamp(0.8rem, 3.2vw, 0.9rem)`,
               boxShadow: allItemsChecked ? '0 4px 12px rgba(10, 132, 255, 0.3)' : 'none'
             }}
             onMouseEnter={(e) => {
