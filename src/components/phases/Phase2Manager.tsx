@@ -175,27 +175,27 @@ export function Phase2Manager({
 
   return (
     // 🤖 [IA] - v1.0.97: Optimización responsive Fase 2 sin afectar móviles
-    <div className="space-y-4 max-w-md mx-auto sm:max-w-2xl lg:max-w-4xl">
+    <div className="space-y-[clamp(0.75rem,3vw,1rem)] max-w-md mx-auto sm:max-w-2xl lg:max-w-4xl">
       {/* Section Navigation con header integrado - 🤖 [IA] - v1.1.27: Header movido dentro del card */}
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="p-4 rounded-lg" 
+        className="p-[clamp(0.75rem,3vw,1rem)] rounded-[clamp(0.5rem,2vw,0.75rem)]" 
         style={{
           backgroundColor: 'rgba(36, 36, 36, 0.4)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
+          backdropFilter: `blur(clamp(12px, 4vw, 20px))`,
+          WebkitBackdropFilter: `blur(clamp(12px, 4vw, 20px))`,
           border: '1px solid rgba(255, 255, 255, 0.15)',
           boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-          borderRadius: '16px'
+          borderRadius: `clamp(8px, 3vw, 16px)`
         }}
       >
         {/* Header integrado */}
-        <div className="text-center mb-4">
-          <h2 className="text-xl sm:text-2xl font-bold mb-2" style={{ color: '#1d9bf0' }}>
+        <div className="text-center mb-[clamp(0.75rem,3vw,1rem)]">
+          <h2 className="text-[clamp(1rem,4.5vw,1.5rem)] font-bold mb-2" style={{ color: '#1d9bf0' }}>
             Fase 2: División y Verificación del Efectivo
           </h2>
-          <p style={{ color: '#8899a6' }}>
+          <p className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#8899a6' }}>
             Separar el efectivo que entregarás a gerencia
           </p>
         </div>
@@ -204,7 +204,7 @@ export function Phase2Manager({
         <div className="flex items-center gap-2">
           <button
             onClick={() => currentSection !== 'delivery' && !verificationCompleted && setCurrentSection('delivery')}
-            className="flex-1 px-4 py-2 rounded-lg transition-all duration-300 font-medium flex items-center justify-center gap-2"
+            className="flex-1 px-[clamp(0.75rem,3vw,1rem)] py-[clamp(0.375rem,1.5vw,0.5rem)] rounded-[clamp(0.375rem,1.5vw,0.5rem)] transition-all duration-300 font-medium flex items-center justify-center gap-2 text-[clamp(0.875rem,3.5vw,1rem)]"
             style={{
               backgroundColor: currentSection === 'delivery' ? 'rgba(10, 132, 255, 0.2)' : 'transparent',
               color: currentSection === 'delivery' ? '#1d9bf0' : '#8899a6',
@@ -219,7 +219,7 @@ export function Phase2Manager({
           </button>
           <button
             onClick={() => deliveryCompleted && currentSection !== 'verification' && setCurrentSection('verification')}
-            className="flex-1 px-4 py-2 rounded-lg transition-all duration-300 font-medium flex items-center justify-center gap-2"
+            className="flex-1 px-[clamp(0.75rem,3vw,1rem)] py-[clamp(0.375rem,1.5vw,0.5rem)] rounded-[clamp(0.375rem,1.5vw,0.5rem)] transition-all duration-300 font-medium flex items-center justify-center gap-2 text-[clamp(0.875rem,3.5vw,1rem)]"
             style={{
               backgroundColor: currentSection === 'verification' ? 'rgba(0, 186, 124, 0.2)' : 'transparent',
               color: currentSection === 'verification' ? '#00ba7c' : deliveryCompleted ? '#8899a6' : '#657786',
@@ -274,14 +274,14 @@ export function Phase2Manager({
 
       {/* Navigation Buttons - 🤖 [IA] - v1.0.97: Responsive desktop */}
       {/* 🤖 [IA] - v1.2.5: Botones con texto responsivo y mejor alineación */}
-      <div className="flex gap-3 lg:max-w-lg lg:mx-auto">
+      <div className="flex gap-[clamp(0.5rem,2vw,0.75rem)] lg:max-w-lg lg:mx-auto">
         <button
           onClick={() => setShowExitConfirmation(true)}
-          className="flex-1 h-11 px-3 sm:px-4 rounded-lg font-medium transition-all duration-300 text-xs sm:text-sm flex items-center justify-center whitespace-nowrap"
+          className="flex-1 h-[clamp(2.5rem,8vw,2.75rem)] px-[clamp(0.5rem,2vw,0.75rem)] rounded-[clamp(0.375rem,1.5vw,0.5rem)] font-medium transition-all duration-300 text-[clamp(0.75rem,3vw,0.875rem)] flex items-center justify-center whitespace-nowrap"
           style={{
             backgroundColor: 'rgba(36, 36, 36, 0.4)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
+            backdropFilter: `blur(clamp(12px, 4vw, 20px))`,
+            WebkitBackdropFilter: `blur(clamp(12px, 4vw, 20px))`,
             border: '1px solid rgba(255, 255, 255, 0.15)',
             color: '#e1e8ed',
           }}
@@ -294,7 +294,7 @@ export function Phase2Manager({
             e.currentTarget.style.transform = 'translateY(0)';
           }}
         >
-          <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2 flex-shrink-0" />
+          <ArrowLeft className="w-[clamp(0.875rem,3.5vw,1rem)] h-[clamp(0.875rem,3.5vw,1rem)] mr-[clamp(0.25rem,1vw,0.375rem)] flex-shrink-0" />
           <span>Volver al inicio</span>
         </button>
         
@@ -302,7 +302,7 @@ export function Phase2Manager({
         {deliveryCompleted && currentSection === 'delivery' && !verificationCompleted && (
           <button
             onClick={() => setCurrentSection('verification')}
-            className="flex-1 h-11 px-3 sm:px-4 rounded-lg font-medium transition-all duration-300 text-xs sm:text-sm flex items-center justify-center whitespace-nowrap"
+            className="flex-1 h-[clamp(2.5rem,8vw,2.75rem)] px-[clamp(0.5rem,2vw,0.75rem)] rounded-[clamp(0.375rem,1.5vw,0.5rem)] font-medium transition-all duration-300 text-[clamp(0.75rem,3vw,0.875rem)] flex items-center justify-center whitespace-nowrap"
             style={{
               background: 'linear-gradient(135deg, #00ba7c 0%, #06d6a0 100%)',
               border: '1px solid rgba(0, 186, 124, 0.4)',
@@ -320,7 +320,7 @@ export function Phase2Manager({
           >
             <span>Verificar</span>
             <span className="hidden sm:inline ml-1">Efectivo</span>
-            <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 ml-1.5 sm:ml-2 flex-shrink-0" />
+            <ArrowRight className="w-[clamp(0.875rem,3.5vw,1rem)] h-[clamp(0.875rem,3.5vw,1rem)] ml-[clamp(0.25rem,1vw,0.375rem)] flex-shrink-0" />
           </button>
         )}
       </div>
