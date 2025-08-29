@@ -149,11 +149,10 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
     switch (currentStep) {
       case 1: // Protocolo Anti-Fraude
         return (
-          <div className="space-y-6" style={{ 
+          <div className="space-y-5 p-5 sm:p-7" style={{ 
             backgroundColor: 'rgba(36, 36, 36, 0.4)',
             border: '1px solid rgba(255, 255, 255, 0.15)',
-            padding: `clamp(20px, ${28 * viewportScale}px, 28px)`,
-            borderRadius: '16px',
+            borderRadius: 'clamp(0.75rem, 3vw, 1rem)',
             boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
           }}>
             {/* Header con Icono de Escudo */}
@@ -186,24 +185,21 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.1)'
             }}>
               <div className="flex items-center gap-2 mb-2">
-                <AlertTriangle className="w-5 h-5" style={{ color: '#f4a52a' }} />
-                <h3 className="font-semibold" style={{ color: '#f4a52a' }}>IMPORTANTE</h3>
+                <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: '#f4a52a' }} />
+                <h3 className="font-semibold text-sm sm:text-base" style={{ color: '#f4a52a' }}>IMPORTANTE</h3>
               </div>
-              <p style={{
-                fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
+              <p className="text-xs sm:text-sm" style={{
                 color: '#e1e8ed'
               }}>
-                Este sistema protege el efectivo y tu trabajo. Todos los movimientos 
-                quedan registrados para tu seguridad y la de la empresa.
+                Sistema de protección de efectivo. Todo queda registrado.
               </p>
             </div>
 
-            <div className="space-y-4">
-              <h3 className="font-semibold" style={{
-                fontSize: `clamp(1rem, 4vw, 1.125rem)`,
+            <div className="space-y-3">
+              <h3 className="font-semibold text-base sm:text-lg" style={{
                 color: '#e1e8ed'
               }}>
-                Reglas obligatorias del protocolo:
+                Protocolo obligatorio:
               </h3>
               
               {protocolRules.map((rule, index) => (
@@ -228,17 +224,14 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                   aria-label={`Regla ${index + 1}: ${rule.text}`}
                 >
                   <div className="flex-shrink-0">{rule.icon}</div>
-                  <span className="flex-1 leading-relaxed" style={{
-                    fontSize: `clamp(0.75rem, 3vw, 1rem)`,
+                  <span className="flex-1 leading-relaxed text-xs sm:text-sm" style={{
                     color: '#e1e8ed'
                   }}>{rule.text}</span>
                   {/* 🤖 [IA] - v1.0.30 - Badge diferenciado: CRÍTICO o ALERTA */}
                   {(rule.critical || rule.isAlert) && (
                     <span 
-                      className="font-semibold rounded-md"
+                      className="font-semibold rounded-md text-xs sm:text-sm px-2 sm:px-3 py-1"
                       style={{
-                        padding: `${Math.round(4 * viewportScale)}px ${Math.round(12 * viewportScale)}px`,
-                        fontSize: `clamp(0.625rem, 2.5vw, 0.875rem)`,
                         backgroundColor: rule.isAlert ? 'rgba(244, 165, 42, 0.1)' : 'rgba(244, 33, 46, 0.1)',
                         color: rule.isAlert ? '#f4a52a' : '#f4212e',
                         border: rule.isAlert ? '1px solid rgba(244, 165, 42, 0.4)' : '1px solid rgba(244, 33, 46, 0.4)',
@@ -255,7 +248,8 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
             </div>
 
             {/* 🤖 [IA] - v1.0.59 - Checkbox con glass effect */}
-            <div className="space-y-4 pt-4" style={{ borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
+            {/* 🤖 [IA] - v1.2.12 - Responsividad mejorada y textos concisos */}
+            <div className="space-y-3 pt-4" style={{ borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
               <motion.div 
                 className="flex items-start space-x-3 p-3 rounded-lg"
                 style={{ 
@@ -292,7 +286,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                   id="rules-description"
                   style={{ color: '#e1e8ed' }}
                 >
-                  Acepto cumplir las reglas del Protocolo de Seguridad de Caja
+                  Acepto el protocolo de seguridad
                 </Label>
               </motion.div>
             </div>
