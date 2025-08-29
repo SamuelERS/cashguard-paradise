@@ -137,7 +137,7 @@ export function useWizardNavigation() {
       case 4:
         return 'Selección de Testigo';
       case 5:
-        return 'Venta Esperada del Sistema según SICAR';
+        return 'Venta Esperada Segun SICAR';
       default:
         return '';
     }

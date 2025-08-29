@@ -789,7 +789,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                   fontSize: 'clamp(0.75rem, 3vw, 0.875rem)',
                   marginTop: 'clamp(0.125rem, 0.5vw, 0.25rem)'
                 }}>
-                  Monto esperado del sistema SICAR
+                  Ingresa Total Vendido
                 </p>
               </div>
             </div>
