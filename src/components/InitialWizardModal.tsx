@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -287,7 +287,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               ))}
             </div>
 
-            {/* 🤖 [IA] - v1.0.59 - Checkbox con glass effect */}
+            {/* 🤖 [IA] - v1.0.59: Checkbox con glass effect */}
             {/* 🤖 [IA] - v1.2.12 - Responsividad mejorada y textos concisos */}
             <div style={{ 
               borderTop: '1px solid rgba(255, 255, 255, 0.1)',
@@ -1036,19 +1036,10 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
             }}>
               {getStepTitle()}
             </DialogTitle>
-            <DialogDescription className="text-muted-foreground">
-              {getStepDescription()}
-            </DialogDescription>
           </DialogHeader>
 
           {/* Progress Bar Section */}
           <div className="mt-3 mb-4 sm:mt-4 sm:mb-6">
-            <div className="flex justify-start mb-1">
-              <span className="text-xs">
-                <span className="text-primary font-medium">Progreso:</span>
-                <span className="text-gray-400"> {progressValue}% completado</span>
-              </span>
-            </div>
             <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
               <motion.div
                 className="h-full bg-gradient-to-r from-primary to-secondary rounded-full"
@@ -1056,6 +1047,12 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                 animate={{ width: `${progressValue}%` }}
                 transition={{ duration: 0.5, ease: "easeOut", delay: 0.2 }}
               />
+            </div>
+            <div className="flex justify-center mt-1">
+              <span className="text-xs">
+                <span className="text-primary font-medium">Progreso:</span>
+                <span className="text-gray-400"> {progressValue}% completado</span>
+              </span>
             </div>
           </div>
 
