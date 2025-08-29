@@ -1014,8 +1014,8 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
         <div style={{ padding: `clamp(16px, ${24 * viewportScale}px, 24px)` }}>
           <DialogHeader>
             <div className="mb-2">
-              <span className="text-sm text-muted-foreground">
-                Paso {currentStep} de {totalSteps}
+              <span className="text-xs text-muted-foreground">
+                <span className="text-primary font-medium">Paso:</span> <span className="text-gray-400">{currentStep} de {totalSteps}</span>
               </span>
             </div>
             <DialogTitle className="text-primary mb-2" style={{
@@ -1028,8 +1028,14 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
             </DialogDescription>
           </DialogHeader>
 
-          {/* Progress Bar */}
+          {/* Progress Bar Section */}
           <div className="mt-3 mb-4 sm:mt-4 sm:mb-6">
+            <div className="flex justify-start mb-1">
+              <span className="text-xs">
+                <span className="text-primary font-medium">Paso:</span>
+                <span className="text-gray-400"> {currentStep} de {totalSteps} completados</span>
+              </span>
+            </div>
             <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
               <motion.div
                 className="h-full bg-gradient-to-r from-primary to-secondary rounded-full"
