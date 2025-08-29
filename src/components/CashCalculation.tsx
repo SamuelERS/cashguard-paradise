@@ -461,8 +461,8 @@ Firma Digital: ${dataHash}`;
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <Calculator className="w-12 h-12 text-primary mx-auto mb-4 animate-spin" />
-          <p className="text-muted-foreground">Calculando totales...</p>
+          <Calculator className="w-[clamp(2.5rem,8vw,3.5rem)] h-[clamp(2.5rem,8vw,3.5rem)] text-primary mx-auto mb-4 animate-spin" />
+          <p className="text-muted-foreground text-[clamp(0.875rem,3.5vw,1rem)]">Calculando totales...</p>
         </div>
       </div>
     );
@@ -471,32 +471,32 @@ Firma Digital: ${dataHash}`;
   return (
     <div className="min-h-screen relative overflow-y-auto" data-scrollable="true">
       
-      <div className="relative z-10 container mx-auto px-4 py-8 max-w-4xl">
+      <div className="relative z-10 container mx-auto px-[clamp(1rem,4vw,1.5rem)] py-[clamp(1.5rem,6vw,2rem)] max-w-4xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="space-y-6"
+          className="space-y-[clamp(1rem,4vw,1.5rem)]"
         >
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-primary mb-2">Cálculo Completado</h2>
-            <p className="text-muted-foreground">Resultados del corte de caja</p>
-            <Badge variant="outline" className="mt-2 border-primary text-primary">
+          <div className="text-center mb-[clamp(1.5rem,6vw,2rem)]">
+            <h2 className="text-[clamp(1.25rem,5vw,1.75rem)] font-bold text-primary mb-2">Cálculo Completado</h2>
+            <p className="text-muted-foreground text-[clamp(0.875rem,3.5vw,1rem)]">Resultados del corte de caja</p>
+            <Badge variant="outline" className="mt-2 border-primary text-primary text-[clamp(0.75rem,3vw,0.875rem)]">
               {calculationData.timestamp}
             </Badge>
           </div>
 
           {/* Alert for significant shortage - 🤖 [IA] - v1.1.08: Glass morphism */}
           {calculationData.hasAlert && (
-            <div className="p-4 rounded-lg flex items-start gap-3" style={{
+            <div className="p-[clamp(0.75rem,3vw,1rem)] rounded-[clamp(0.5rem,2vw,0.75rem)] flex items-start gap-3" style={{
               background: 'rgba(244, 33, 46, 0.1)',
               border: '1px solid rgba(244, 33, 46, 0.3)'
             }}>
-              <AlertTriangle className="w-5 h-5 mt-0.5" style={{ color: '#f4212e' }} />
+              <AlertTriangle className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)] mt-0.5" style={{ color: '#f4212e' }} />
               <div>
-                <p className="font-medium" style={{ color: '#f4212e' }}>
+                <p className="font-medium text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#f4212e' }}>
                   🚨 ALERTA: Faltante significativo detectado (${Math.abs(calculationData.difference).toFixed(2)})
                 </p>
-                <p className="text-sm mt-1" style={{ color: '#8899a6' }}>
+                <p className="text-[clamp(0.75rem,3vw,0.875rem)] mt-1" style={{ color: '#8899a6' }}>
                   Se enviará notificación automática al administrador.
                 </p>
               </div>
@@ -504,48 +504,48 @@ Firma Digital: ${dataHash}`;
           )}
 
           {/* Store and Personnel Info - 🤖 [IA] - v1.1.08: Glass morphism coherente */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-[clamp(1rem,4vw,1.5rem)]">
             {/* Información de la sucursal y personal */}
             <div style={{
               background: 'rgba(36, 36, 36, 0.4)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
+              backdropFilter: `blur(clamp(12px, 4vw, 20px))`,
+              WebkitBackdropFilter: `blur(clamp(12px, 4vw, 20px))`,
               border: '1px solid rgba(255, 255, 255, 0.15)',
-              borderRadius: '16px',
-              padding: '24px'
+              borderRadius: `clamp(8px, 3vw, 16px)`,
+              padding: `clamp(1rem, 5vw, 1.5rem)`
             }}>
-              <h3 className="text-xl font-bold mb-4" style={{ color: '#e1e8ed' }}>
+              <h3 className="text-[clamp(1rem,4.5vw,1.25rem)] font-bold mb-[clamp(0.75rem,3vw,1rem)]" style={{ color: '#e1e8ed' }}>
                 Información del Corte
               </h3>
               
-              <div className="space-y-4">
+              <div className="space-y-[clamp(0.75rem,3vw,1rem)]">
                 <div>
-                  <p className="text-sm" style={{ color: '#8899a6' }}>Sucursal</p>
-                  <p className="text-lg font-semibold" style={{ color: '#e1e8ed' }}>
+                  <p className="text-[clamp(0.75rem,3vw,0.875rem)]" style={{ color: '#8899a6' }}>Sucursal</p>
+                  <p className="text-[clamp(1rem,4vw,1.125rem)] font-semibold" style={{ color: '#e1e8ed' }}>
                     {store?.name}
                   </p>
                 </div>
                 
-                <div className="p-3 rounded-lg" style={{
+                <div className="p-[clamp(0.5rem,2.5vw,0.75rem)] rounded-[clamp(0.375rem,1.5vw,0.5rem)]" style={{
                   background: 'rgba(10, 132, 255, 0.1)',
                   border: '1px solid rgba(10, 132, 255, 0.3)'
                 }}>
-                  <p className="text-sm font-medium mb-1" style={{ color: '#0a84ff' }}>
+                  <p className="text-[clamp(0.75rem,3vw,0.875rem)] font-medium mb-1" style={{ color: '#0a84ff' }}>
                     Cajero (Contador)
                   </p>
-                  <p className="text-lg font-semibold" style={{ color: '#e1e8ed' }}>
+                  <p className="text-[clamp(1rem,4vw,1.125rem)] font-semibold" style={{ color: '#e1e8ed' }}>
                     {cashier?.name}
                   </p>
                 </div>
                 
-                <div className="p-3 rounded-lg" style={{
+                <div className="p-[clamp(0.5rem,2.5vw,0.75rem)] rounded-[clamp(0.375rem,1.5vw,0.5rem)]" style={{
                   background: 'rgba(94, 92, 230, 0.1)',
                   border: '1px solid rgba(94, 92, 230, 0.3)'
                 }}>
-                  <p className="text-sm font-medium mb-1" style={{ color: '#5e5ce6' }}>
+                  <p className="text-[clamp(0.75rem,3vw,0.875rem)] font-medium mb-1" style={{ color: '#5e5ce6' }}>
                     Testigo (Verificador)
                   </p>
-                  <p className="text-lg font-semibold" style={{ color: '#e1e8ed' }}>
+                  <p className="text-[clamp(1rem,4vw,1.125rem)] font-semibold" style={{ color: '#e1e8ed' }}>
                     {witness?.name}
                   </p>
                 </div>
@@ -555,30 +555,30 @@ Firma Digital: ${dataHash}`;
             {/* Calculation Results - Totales */}
             <div style={{
               background: 'rgba(36, 36, 36, 0.4)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
+              backdropFilter: `blur(clamp(12px, 4vw, 20px))`,
+              WebkitBackdropFilter: `blur(clamp(12px, 4vw, 20px))`,
               border: '1px solid rgba(255, 255, 255, 0.15)',
-              borderRadius: '16px',
-              padding: '24px'
+              borderRadius: `clamp(8px, 3vw, 16px)`,
+              padding: `clamp(1rem, 5vw, 1.5rem)`
             }}>
-              <h3 className="text-xl font-bold mb-4" style={{ color: '#e1e8ed' }}>
+              <h3 className="text-[clamp(1rem,4.5vw,1.25rem)] font-bold mb-[clamp(0.75rem,3vw,1rem)]" style={{ color: '#e1e8ed' }}>
                 Totales Calculados
               </h3>
-              <div className="space-y-4">
+              <div className="space-y-[clamp(0.75rem,3vw,1rem)]">
                 <div className="flex justify-between">
-                  <span style={{ color: '#8899a6' }}>Efectivo:</span>
-                  <span className="font-bold" style={{ color: '#e1e8ed' }}>
+                  <span className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#8899a6' }}>Efectivo:</span>
+                  <span className="font-bold text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#e1e8ed' }}>
                     {formatCurrency(calculationData.totalCash)}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span style={{ color: '#8899a6' }}>Electrónico:</span>
-                  <span className="font-bold" style={{ color: '#e1e8ed' }}>
+                  <span className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#8899a6' }}>Electrónico:</span>
+                  <span className="font-bold text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#e1e8ed' }}>
                     {formatCurrency(calculationData.totalElectronic)}
                   </span>
                 </div>
                 <div className="border-t border-gray-700 pt-3">
-                  <div className="flex justify-between text-lg font-bold">
+                  <div className="flex justify-between text-[clamp(1rem,4vw,1.125rem)] font-bold">
                     <span style={{ color: '#8899a6' }}>Total General:</span>
                     <span style={{ color: '#0a84ff' }}>
                       {formatCurrency(calculationData.totalGeneral)}
@@ -586,12 +586,12 @@ Firma Digital: ${dataHash}`;
                   </div>
                 </div>
                 <div className="flex justify-between">
-                  <span style={{ color: '#8899a6' }}>Venta Esperada:</span>
-                  <span style={{ color: '#8899a6' }}>
+                  <span className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#8899a6' }}>Venta Esperada:</span>
+                  <span className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#8899a6' }}>
                     {formatCurrency(expectedSales)}
                   </span>
                 </div>
-                <div className="flex justify-between text-lg font-bold">
+                <div className="flex justify-between text-[clamp(1rem,4vw,1.125rem)] font-bold">
                   <span style={{ color: '#8899a6' }}>
                     {calculationData.difference >= 0 ? 'Sobrante:' : 'Faltante:'}
                   </span>
@@ -608,28 +608,28 @@ Firma Digital: ${dataHash}`;
           {/* Cambio para Mañana - 🤖 [IA] - v1.1.08: Glass morphism */}
           <div style={{
             background: 'rgba(36, 36, 36, 0.4)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
+            backdropFilter: `blur(clamp(12px, 4vw, 20px))`,
+            WebkitBackdropFilter: `blur(clamp(12px, 4vw, 20px))`,
             border: '1px solid rgba(255, 255, 255, 0.15)',
-            borderRadius: '16px',
-            padding: '24px'
+            borderRadius: `clamp(8px, 3vw, 16px)`,
+            padding: `clamp(1rem, 5vw, 1.5rem)`
           }}>
-            <h3 className="text-xl font-bold mb-4" style={{ color: '#e1e8ed' }}>
+            <h3 className="text-[clamp(1rem,4.5vw,1.25rem)] font-bold mb-[clamp(0.75rem,3vw,1rem)]" style={{ color: '#e1e8ed' }}>
               Cambio para Mañana
             </h3>
-            <div className="space-y-4">
+            <div className="space-y-[clamp(0.75rem,3vw,1rem)]">
               <div className="text-center">
-                <div className="text-3xl font-bold mb-2" style={{ color: '#00ba7c' }}>
+                <div className="text-[clamp(1.5rem,7vw,2rem)] font-bold mb-2" style={{ color: '#00ba7c' }}>
                   $50.00
                 </div>
-                <p className="text-sm" style={{ color: '#8899a6' }}>Cambio calculado</p>
+                <p className="text-[clamp(0.75rem,3vw,0.875rem)]" style={{ color: '#8899a6' }}>Cambio calculado</p>
               </div>
               
-              <div className="p-4 rounded-lg" style={{
+              <div className="p-[clamp(0.75rem,3vw,1rem)] rounded-[clamp(0.5rem,2vw,0.75rem)]" style={{
                 background: 'rgba(0, 186, 124, 0.1)',
                 border: '1px solid rgba(0, 186, 124, 0.3)'
               }}>
-                <p className="text-sm font-medium mb-3" style={{ color: '#00ba7c' }}>
+                <p className="text-[clamp(0.75rem,3vw,0.875rem)] font-medium mb-3" style={{ color: '#00ba7c' }}>
                   Detalle del cambio:
                 </p>
                 
@@ -657,60 +657,60 @@ Firma Digital: ${dataHash}`;
           {/* Success Confirmation - 🤖 [IA] - v1.1.08: Glass morphism */}
           <div style={{
             background: 'rgba(36, 36, 36, 0.4)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
+            backdropFilter: `blur(clamp(12px, 4vw, 20px))`,
+            WebkitBackdropFilter: `blur(clamp(12px, 4vw, 20px))`,
             border: '1px solid rgba(255, 255, 255, 0.15)',
-            borderRadius: '16px',
-            padding: '32px'
+            borderRadius: `clamp(8px, 3vw, 16px)`,
+            padding: `clamp(1.5rem, 6vw, 2rem)`
           }}>
             <div className="text-center">
-              <CheckCircle className="w-16 h-16 mx-auto mb-4" style={{ color: '#00ba7c' }} />
-              <h3 className="text-xl font-bold mb-2" style={{ color: '#00ba7c' }}>
+              <CheckCircle className="w-[clamp(3rem,12vw,4rem)] h-[clamp(3rem,12vw,4rem)] mx-auto mb-[clamp(0.75rem,3vw,1rem)]" style={{ color: '#00ba7c' }} />
+              <h3 className="text-[clamp(1rem,4.5vw,1.25rem)] font-bold mb-2" style={{ color: '#00ba7c' }}>
                 Corte de Caja Completado
               </h3>
-              <p className="mb-6" style={{ color: '#8899a6' }}>
+              <p className="mb-[clamp(1rem,4vw,1.5rem)] text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#8899a6' }}>
                 Los datos han sido calculados y están listos para generar el reporte.
                 Los campos están ahora bloqueados según el protocolo anti-fraude.
               </p>
               
               {/* 🤖 [IA] - v1.1.01: Responsive buttons para desktop */}
               {/* 🤖 [IA] - v1.2.8: Removido botón Reporte, grid ajustado a 3 columnas */}
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 lg:max-w-3xl mx-auto">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[clamp(0.5rem,2vw,0.75rem)] lg:max-w-3xl mx-auto">
                 <Button
                   onClick={generateWhatsAppReport}
-                  className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold glass-card hover:scale-105 transform transition-all duration-300 text-xs sm:text-sm px-2 py-2"
+                  className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold glass-card hover:scale-105 transform transition-all duration-300 text-[clamp(0.75rem,3vw,0.875rem)] px-[clamp(0.5rem,2vw,0.75rem)] py-[clamp(0.5rem,2vw,0.75rem)]"
                 >
-                  <Share className="w-4 h-4 mr-2" />
+                  <Share className="w-[clamp(0.875rem,3.5vw,1rem)] h-[clamp(0.875rem,3.5vw,1rem)] mr-2" />
                   WhatsApp
                 </Button>
                 
                 <Button
                   onClick={handleCopyToClipboard}
                   variant="outline"
-                  className="border-warning/30 hover:bg-warning/10 glass-card hover:scale-105 transform transition-all duration-300 text-xs sm:text-sm px-2 py-2"
+                  className="border-warning/30 hover:bg-warning/10 glass-card hover:scale-105 transform transition-all duration-300 text-[clamp(0.75rem,3vw,0.875rem)] px-[clamp(0.5rem,2vw,0.75rem)] py-[clamp(0.5rem,2vw,0.75rem)]"
                 >
-                  <Copy className="w-4 h-4 mr-2" />
+                  <Copy className="w-[clamp(0.875rem,3.5vw,1rem)] h-[clamp(0.875rem,3.5vw,1rem)] mr-2" />
                   Copiar
                 </Button>
                 
                 <Button
                   onClick={onComplete}
-                  className="bg-success hover:bg-success/90 text-success-foreground glass-card hover:scale-105 transform transition-all duration-300 text-xs sm:text-sm px-2 py-2 md:col-span-1 col-span-2"
+                  className="bg-success hover:bg-success/90 text-success-foreground glass-card hover:scale-105 transform transition-all duration-300 text-[clamp(0.75rem,3vw,0.875rem)] px-[clamp(0.5rem,2vw,0.75rem)] py-[clamp(0.5rem,2vw,0.75rem)] sm:col-span-2 lg:col-span-1"
                 >
-                  <CheckCircle className="w-4 h-4 mr-2" />
+                  <CheckCircle className="w-[clamp(0.875rem,3.5vw,1rem)] h-[clamp(0.875rem,3.5vw,1rem)] mr-2" />
                   Finalizar
                 </Button>
               </div>
               
-              <div className="mt-4 text-center">
+              <div className="mt-[clamp(0.75rem,3vw,1rem)] text-center">
                 <Button
                   onClick={onBack}
                   variant="ghost"
                   size="sm"
-                  className="text-xs"
+                  className="text-[clamp(0.75rem,3vw,0.875rem)]"
                   style={{ color: '#8899a6' }}
                 >
-                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  <ArrowLeft className="w-[clamp(0.875rem,3.5vw,1rem)] h-[clamp(0.875rem,3.5vw,1rem)] mr-2" />
                   Volver a Fase Anterior
                 </Button>
               </div>
