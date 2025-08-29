@@ -27,11 +27,11 @@ export function GuidedInstructionsModal({
     return 1;
   }, []);
   
-  // 🤖 [IA] - Colores dinámicos según el modo
-  const primaryColor = isMorningCount ? '#f4a52a' : '#0a84ff';
-  const secondaryColor = isMorningCount ? '#ffb84d' : '#5e5ce6';
+  // 🤖 [IA] - Colores dinámicos según el modo - v1.2.12 tonos mate
+  const primaryColor = isMorningCount ? '#c78a2c' : '#0a84ff';
+  const secondaryColor = isMorningCount ? '#daa250' : '#5e5ce6';
   const gradientBg = isMorningCount 
-    ? 'linear-gradient(135deg, #f4a52a 0%, #ffb84d 100%)'
+    ? 'linear-gradient(135deg, #c78a2c 0%, #daa250 100%)'
     : 'linear-gradient(135deg, #0a84ff 0%, #5e5ce6 100%)';
   
   const handleConfirm = () => {
@@ -71,7 +71,7 @@ export function GuidedInstructionsModal({
   return (
     <Dialog open={isOpen} onOpenChange={() => {}}>
       <DialogContent 
-        className="w-[95vw] max-w-[95vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] sm:max-h-[85vh] overflow-y-auto border-0 p-0"
+        className="w-[95vw] max-w-[95vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] sm:max-h-[85vh] overflow-y-auto border-0 p-0 [&>button]:hidden"
         style={{
           backgroundColor: 'rgba(36, 36, 36, 0.95)',
           backdropFilter: 'blur(20px)',
