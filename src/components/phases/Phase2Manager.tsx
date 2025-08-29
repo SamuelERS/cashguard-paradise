@@ -191,8 +191,8 @@ export function Phase2Manager({
         }}
       >
         {/* Header integrado */}
-        <div className="text-center mb-[clamp(0.75rem,3vw,1rem)]">
-          <h2 className="text-[clamp(1rem,4.5vw,1.5rem)] font-bold mb-2" style={{ color: '#1d9bf0' }}>
+        <div className="text-center mb-[clamp(0.375rem,1.5vw,0.5rem)]">
+          <h2 className="text-[clamp(1rem,4.5vw,1.5rem)] font-bold" style={{ color: '#1d9bf0' }}>
             Fase 2: División y Verificación del Efectivo
           </h2>
           <p className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#8899a6' }}>
@@ -201,10 +201,10 @@ export function Phase2Manager({
         </div>
         
         {/* Botones de navegación */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-[clamp(0.375rem,1.5vw,0.5rem)]">
           <button
             onClick={() => currentSection !== 'delivery' && !verificationCompleted && setCurrentSection('delivery')}
-            className="flex-1 px-[clamp(0.75rem,3vw,1rem)] py-[clamp(0.375rem,1.5vw,0.5rem)] rounded-[clamp(0.375rem,1.5vw,0.5rem)] transition-all duration-300 font-medium flex items-center justify-center gap-2 text-[clamp(0.875rem,3.5vw,1rem)]"
+            className="flex-1 px-[clamp(0.75rem,3vw,1rem)] py-[clamp(0.375rem,1.5vw,0.5rem)] rounded-[clamp(0.375rem,1.5vw,0.5rem)] transition-all duration-300 font-medium flex items-center justify-center gap-[clamp(0.375rem,1.5vw,0.5rem)] text-[clamp(0.875rem,3.5vw,1rem)]"
             style={{
               backgroundColor: currentSection === 'delivery' ? 'rgba(10, 132, 255, 0.2)' : 'transparent',
               color: currentSection === 'delivery' ? '#1d9bf0' : '#8899a6',
@@ -219,7 +219,7 @@ export function Phase2Manager({
           </button>
           <button
             onClick={() => deliveryCompleted && currentSection !== 'verification' && setCurrentSection('verification')}
-            className="flex-1 px-[clamp(0.75rem,3vw,1rem)] py-[clamp(0.375rem,1.5vw,0.5rem)] rounded-[clamp(0.375rem,1.5vw,0.5rem)] transition-all duration-300 font-medium flex items-center justify-center gap-2 text-[clamp(0.875rem,3.5vw,1rem)]"
+            className="flex-1 px-[clamp(0.75rem,3vw,1rem)] py-[clamp(0.375rem,1.5vw,0.5rem)] rounded-[clamp(0.375rem,1.5vw,0.5rem)] transition-all duration-300 font-medium flex items-center justify-center gap-[clamp(0.375rem,1.5vw,0.5rem)] text-[clamp(0.875rem,3.5vw,1rem)]"
             style={{
               backgroundColor: currentSection === 'verification' ? 'rgba(0, 186, 124, 0.2)' : 'transparent',
               color: currentSection === 'verification' ? '#00ba7c' : deliveryCompleted ? '#8899a6' : '#657786',

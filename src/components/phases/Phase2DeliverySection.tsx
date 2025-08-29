@@ -91,7 +91,7 @@ export function Phase2DeliverySection({
         borderRadius: `clamp(8px, 3vw, 16px)`
       }}>
         <Check className="w-[clamp(2.5rem,10vw,3rem)] h-[clamp(2.5rem,10vw,3rem)] mx-auto mb-[clamp(0.75rem,3vw,1rem)]" style={{ color: '#00ba7c' }} />
-        <h3 className="text-[clamp(1rem,4.5vw,1.25rem)] font-bold mb-2" style={{ color: '#00ba7c' }}>
+        <h3 className="text-[clamp(1rem,4.5vw,1.25rem)] font-bold mb-[clamp(0.375rem,1.5vw,0.5rem)]" style={{ color: '#00ba7c' }}>
           No hay entrega necesaria
         </h3>
         <p className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#8899a6' }}>
@@ -327,7 +327,7 @@ export function Phase2DeliverySection({
           borderRadius: `clamp(8px, 3vw, 16px)`
         }}>
           <Check className="w-[clamp(2.5rem,10vw,3rem)] h-[clamp(2.5rem,10vw,3rem)] mx-auto mb-[clamp(0.75rem,3vw,1rem)]" style={{ color: '#00ba7c' }} />
-          <h3 className="text-[clamp(1rem,4.5vw,1.25rem)] font-bold mb-2" style={{ color: '#00ba7c' }}>
+          <h3 className="text-[clamp(1rem,4.5vw,1.25rem)] font-bold mb-[clamp(0.375rem,1.5vw,0.5rem)]" style={{ color: '#00ba7c' }}>
             Entrega Completada
           </h3>
           <p className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#8899a6' }}>
