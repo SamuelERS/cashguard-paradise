@@ -278,7 +278,7 @@ export function Phase2VerificationSection({
             {/* Input de confirmación - Estilo coherente con Phase2DeliverySection */}
             <div className="space-y-[clamp(0.5rem,2vw,0.75rem)]">
               
-              <div className="flex gap-[clamp(0.375rem,1.5vw,0.5rem)]">
+              <div className="flex gap-[clamp(0.375rem,1.5vw,0.5rem)] items-center">
                 <input
                   type="tel"
                   inputMode="numeric"
@@ -293,7 +293,7 @@ export function Phase2VerificationSection({
                   }}
                   onKeyPress={handleKeyPress}
                   placeholder={`Confirme: ${currentStep.quantity}`}
-                  className="input-field text-center text-[clamp(1rem,4.5vw,1.25rem)] font-semibold flex-1 h-[clamp(2.5rem,10vw,3rem)]"
+                  className="input-field text-center text-[clamp(1rem,4.5vw,1.25rem)] font-semibold h-[clamp(2.5rem,10vw,3rem)] w-[clamp(200px,60vw,280px)]"
                   style={{
                     backgroundColor: 'rgba(255, 255, 255, 0.1)',
                     border: parseInt(inputValue) > 0 && parseInt(inputValue) !== currentStep.quantity 
@@ -330,7 +330,7 @@ export function Phase2VerificationSection({
                 <button
                   onClick={handleConfirmStep}
                   disabled={parseInt(inputValue) !== currentStep.quantity}
-                  className="btn-primary px-[clamp(1rem,4vw,1.5rem)] py-[clamp(0.375rem,1.5vw,0.5rem)] text-[clamp(1rem,4.5vw,1.25rem)] h-[clamp(2.5rem,10vw,3rem)] min-w-[clamp(2.5rem,10vw,3rem)] font-bold"
+                  className="btn-primary px-[clamp(0.375rem,1.5vw,0.5rem)] py-[clamp(0.25rem,1vw,0.375rem)] text-[clamp(0.875rem,3.5vw,1rem)] h-[clamp(2.5rem,10vw,3rem)] w-[clamp(2.5rem,10vw,3rem)] font-bold flex items-center justify-center shrink-0"
                   style={{
                     background: parseInt(inputValue) === currentStep.quantity
                       ? 'linear-gradient(135deg, #00ba7c 0%, #06d6a0 100%)'
@@ -340,7 +340,10 @@ export function Phase2VerificationSection({
                     cursor: parseInt(inputValue) !== currentStep.quantity ? 'not-allowed' : 'pointer',
                     opacity: parseInt(inputValue) !== currentStep.quantity ? 0.5 : 1,
                     borderRadius: `clamp(8px, 3vw, 16px)`,
-                    transition: 'all 0.3s'
+                    transition: 'all 0.3s',
+                    boxShadow: parseInt(inputValue) === currentStep.quantity 
+                      ? '0 2px 8px rgba(0, 186, 124, 0.3)' 
+                      : 'none'
                   }}
                   onMouseDown={(e) => e.preventDefault()}
                   onTouchStart={(e) => e.preventDefault()}

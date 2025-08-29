@@ -193,10 +193,10 @@ export function Phase2Manager({
         {/* Header integrado */}
         <div className="text-center mb-[clamp(0.375rem,1.5vw,0.5rem)]">
           <h2 className="text-[clamp(1rem,4.5vw,1.5rem)] font-bold" style={{ color: '#1d9bf0' }}>
-            Fase 2: División y Verificación del Efectivo
+            Fase 2: División de Efectivo
           </h2>
           <p className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#8899a6' }}>
-            Separar el efectivo que entregarás a gerencia
+            Separa lo que va a gerencia
           </p>
         </div>
         
