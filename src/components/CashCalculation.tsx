@@ -1,7 +1,7 @@
 // 🤖 [IA] - v1.1.09 - Fix botón copiar con fallback robusto
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Calculator, AlertTriangle, CheckCircle, Share, Download, ArrowLeft, Copy, FileText } from "lucide-react";
+import { Calculator, AlertTriangle, CheckCircle, Share, Download, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 // 🤖 [IA] - v1.1.08: Removidos Card components para coherencia con glass morphism
 // 🤖 [IA] - v1.1.08: Alert components removidos para coherencia con glass morphism
@@ -699,19 +699,6 @@ Firma Digital: ${dataHash}`;
                 >
                   <CheckCircle className="w-[clamp(0.875rem,3.5vw,1rem)] h-[clamp(0.875rem,3.5vw,1rem)] mr-2" />
                   Finalizar
-                </Button>
-              </div>
-              
-              <div className="mt-[clamp(0.75rem,3vw,1rem)] text-center">
-                <Button
-                  onClick={onBack}
-                  variant="ghost"
-                  size="sm"
-                  className="text-[clamp(0.75rem,3vw,0.875rem)]"
-                  style={{ color: '#8899a6' }}
-                >
-                  <ArrowLeft className="w-[clamp(0.875rem,3.5vw,1rem)] h-[clamp(0.875rem,3.5vw,1rem)] mr-2" />
-                  Volver a Fase Anterior
                 </Button>
               </div>
             </div>

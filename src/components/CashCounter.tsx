@@ -931,7 +931,6 @@ const CashCounter = ({
         electronicPayments={electronicPayments}
         deliveryCalculation={deliveryCalculation}
         phaseState={phaseState}
-        onBack={handleBackToStart}
         onComplete={handleCompleteCalculation}
       />
     );
