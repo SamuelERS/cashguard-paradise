@@ -141,8 +141,26 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
     onClose();
   };
 
-  // Calcular progreso
-  const progressValue = ((currentStep - 1) / (totalSteps - 1)) * 100;
+  // Definir tareas específicas para cada paso
+  const stepTasks = {
+    1: ['rulesAccepted'],                // Protocolo de Seguridad
+    2: ['selectedStore'],                // Selección de Sucursal
+    3: ['selectedCashier'],              // Selección de Cajero
+    4: ['selectedWitness'],              // Selección de Testigo
+    5: ['expectedSales']                 // Venta Esperada
+  };
+
+  // Calcular progreso basado en tareas completadas
+  const totalTasks = Object.values(stepTasks).flat().length;
+  const completedTasks = Object.entries(wizardData).reduce((count, [key, value]) => {
+    // Contar campos completados
+    if (value !== '' && value !== false) {
+      return count + 1;
+    }
+    return count;
+  }, 0);
+
+  const progressValue = Math.round((completedTasks / totalTasks) * 100);
 
   // Renderizar contenido según el paso actual
   const renderStepContent = () => {
