@@ -305,8 +305,9 @@ export function Phase2Manager({
             className="flex-1 h-[clamp(2.5rem,8vw,2.75rem)] px-[clamp(0.5rem,2vw,0.75rem)] rounded-[clamp(0.375rem,1.5vw,0.5rem)] font-medium transition-all duration-300 text-[clamp(0.75rem,3vw,0.875rem)] flex items-center justify-center whitespace-nowrap"
             style={{
               background: 'linear-gradient(135deg, #00ba7c 0%, #06d6a0 100%)',
-              border: '1px solid rgba(0, 186, 124, 0.4)',
               color: '#ffffff',
+              border: '1px solid rgba(0, 186, 124, 0.4)',
+              borderRadius: `clamp(6px, 2.5vw, 10px)`,
               boxShadow: '0 3px 12px rgba(0, 186, 124, 0.2)',
             }}
             onMouseEnter={(e) => {
@@ -329,17 +330,17 @@ export function Phase2Manager({
       <AlertDialog open={showExitConfirmation} onOpenChange={setShowExitConfirmation}>
       <AlertDialogContent style={{
         backgroundColor: 'rgba(36, 36, 36, 0.95)',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
+        backdropFilter: `blur(clamp(12px, 4vw, 20px))`,
+        WebkitBackdropFilter: `blur(clamp(12px, 4vw, 20px))`,
         border: '1px solid rgba(255, 255, 255, 0.15)',
-        borderRadius: '16px',
+        borderRadius: `clamp(8px, 3vw, 16px)`,
         boxShadow: '0 4px 24px rgba(0, 0, 0, 0.8)'
       }}>
         <AlertDialogHeader>
-          <AlertDialogTitle style={{ color: '#f4212e', fontSize: '1.25rem' }}>
+          <AlertDialogTitle style={{ color: '#f4212e', fontSize: `clamp(1rem, 4.5vw, 1.25rem)` }}>
             ⚠️ ¿Confirmar salida?
           </AlertDialogTitle>
-          <AlertDialogDescription style={{ color: '#e1e8ed', fontSize: '0.95rem', lineHeight: '1.5' }}>
+          <AlertDialogDescription style={{ color: '#e1e8ed', fontSize: `clamp(0.875rem, 3.5vw, 0.95rem)`, lineHeight: '1.5' }}>
             Se perderá todo el progreso del conteo actual. 
             <br />
             <span style={{ color: '#f4a52a', fontWeight: '500' }}>
@@ -353,7 +354,9 @@ export function Phase2Manager({
               backgroundColor: 'rgba(255, 255, 255, 0.05)',
               border: '1px solid rgba(255, 255, 255, 0.3)',
               color: '#e1e8ed',
-              borderRadius: '10px'
+              borderRadius: `clamp(6px, 2.5vw, 10px)`,
+              padding: `clamp(0.5rem, 2vw, 0.75rem) clamp(0.75rem, 3vw, 1rem)`,
+              fontSize: `clamp(0.875rem, 3.5vw, 1rem)`
             }}
           >
             Cancelar
@@ -364,8 +367,10 @@ export function Phase2Manager({
               background: 'linear-gradient(135deg, #f4212e 0%, #ff4444 100%)',
               color: 'white',
               border: 'none',
-              borderRadius: '10px',
-              fontWeight: '600'
+              borderRadius: `clamp(6px, 2.5vw, 10px)`,
+              fontWeight: '600',
+              padding: `clamp(0.5rem, 2vw, 0.75rem) clamp(0.75rem, 3vw, 1rem)`,
+              fontSize: `clamp(0.875rem, 3.5vw, 1rem)`
             }}
           >
             Sí, volver al inicio
@@ -403,7 +408,7 @@ export function Phase2Manager({
             alignItems: 'center', 
             gap: `clamp(0.375rem, 1.5vw, 0.5rem)` 
           }}>
-            <AlertCircle className="w-[clamp(1rem,4vw,1.5rem)] h-[clamp(1rem,4vw,1.5rem)]" />
+            <AlertCircle className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)]" />
             📋 Preparación para Entrega a Gerencia
           </AlertDialogTitle>
         </AlertDialogHeader>
