@@ -104,21 +104,6 @@ export const GuidedProgressIndicator = ({
             <p className="text-text-primary font-medium" style={{ fontSize: `clamp(0.75rem, 3vw, 0.875rem)` }}>{instructionText}</p>
           </div>
         </div>
-
-        {/* Warning compacto - responsive */}
-        {!isCompleted && (
-          <div className="flex items-center text-warning" style={{ 
-            marginTop: `clamp(6px, 1.5vw, 8px)`,
-            gap: `clamp(4px, 1vw, 6px)`,
-            fontSize: `clamp(0.625rem, 2.5vw, 0.75rem)`
-          }}>
-            <AlertTriangle style={{
-              width: `clamp(12px, 3vw, 14px)`,
-              height: `clamp(12px, 3vw, 14px)`
-            }} />
-            <span>No podrá retroceder</span>
-          </div>
-        )}
       </div>
     );
   }
