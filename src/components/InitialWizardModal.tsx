@@ -180,8 +180,10 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
             </div>
 
             {/* 🤖 [IA] - v1.0.59: Card transparente con glass effect */}
-            {/* 🤖 [IA] - v1.2.12: Optimización de capas - sin fondo duplicado */}
-            <div className="rounded-lg" style={{
+            <div className="rounded-lg" style={{ 
+              backgroundColor: 'rgba(36, 36, 36, 0.4)',
+              backdropFilter: 'blur(clamp(12px, 4vw, 20px))',
+              WebkitBackdropFilter: 'blur(clamp(12px, 4vw, 20px))',
               border: '1px solid rgba(244, 165, 42, 0.3)',
               borderLeft: '3px solid #f4a52a',
               boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.1)',
@@ -220,6 +222,9 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                   key={index}
                   className="flex items-start premium-rule-card"
                   style={{
+                    backgroundColor: 'rgba(36, 36, 36, 0.4)',
+                    backdropFilter: 'blur(clamp(12px, 4vw, 20px))',
+                    WebkitBackdropFilter: 'blur(clamp(12px, 4vw, 20px))',
                     borderLeft: rule.critical ? '4px solid #f4212e' : '4px solid #f4a52a',
                     border: '1px solid rgba(255, 255, 255, 0.15)',
                     boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.05)',
@@ -228,10 +233,10 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                     borderRadius: 'clamp(0.5rem, 2vw, 0.75rem)'
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = 'rgba(36, 36, 36, 0.2)';
+                    e.currentTarget.style.backgroundColor = 'rgba(36, 36, 36, 0.5)';
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.backgroundColor = 'rgba(36, 36, 36, 0.4)';
                   }}
                   role="listitem"
                   aria-label={`Regla ${index + 1}: ${rule.text}`}
@@ -276,6 +281,9 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               <motion.div 
                 className="flex items-start"
                 style={{ 
+                  backgroundColor: 'rgba(36, 36, 36, 0.4)',
+                  backdropFilter: 'blur(clamp(12px, 4vw, 20px))',
+                  WebkitBackdropFilter: 'blur(clamp(12px, 4vw, 20px))',
                   border: wizardData.rulesAccepted ? '2px solid rgba(0, 186, 124, 0.6)' : '2px solid rgba(29, 155, 240, 0.6)',
                   boxShadow: wizardData.rulesAccepted ? '0 0 15px rgba(0, 186, 124, 0.2)' : '0 0 15px rgba(29, 155, 240, 0.2)',
                   transition: 'all 0.3s ease',
@@ -375,6 +383,9 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               <SelectTrigger 
                 className="w-full h-10 sm:h-12 text-sm sm:text-base transition-all duration-300"
                 style={{ 
+                  backgroundColor: 'rgba(36, 36, 36, 0.4)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
                   border: '1px solid rgba(255, 255, 255, 0.15)',
                   boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
                   color: '#e1e8ed'
@@ -418,6 +429,9 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 style={{ 
+                  backgroundColor: 'rgba(36, 36, 36, 0.4)',
+                  backdropFilter: 'blur(clamp(12px, 4vw, 20px))',
+                  WebkitBackdropFilter: 'blur(clamp(12px, 4vw, 20px))',
                   border: '1px solid rgba(0, 186, 124, 0.4)',
                   boxShadow: '0 0 15px rgba(0, 186, 124, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
                   padding: 'clamp(0.75rem, 3vw, 1rem)',
@@ -453,8 +467,10 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
           }}>
             {/* 🤖 [IA] - v1.0.61: Glass effect premium en Step 3 */}
             {/* 🤖 [IA] - v1.2.12: Responsividad mejorada y textos concisos */}
-            {/* 🤖 [IA] - v1.2.12: Optimización de capas - sin fondo duplicado */}
-            <div className="flex items-center" style={{
+            <div className="flex items-center" style={{ 
+              backgroundColor: 'rgba(36, 36, 36, 0.4)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
               border: '1px solid rgba(255, 255, 255, 0.15)',
               boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
               gap: 'clamp(0.5rem,2vw,0.75rem)',
@@ -494,6 +510,9 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               <SelectTrigger 
                 className="w-full transition-all duration-300"
                 style={{ 
+                  backgroundColor: 'rgba(36, 36, 36, 0.4)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
                   border: '1px solid rgba(255, 255, 255, 0.15)',
                   boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
                   color: '#e1e8ed',
@@ -541,6 +560,9 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                 animate={{ opacity: 1, y: 0 }}
                 className="rounded-lg"
                 style={{ 
+                  backgroundColor: 'rgba(36, 36, 36, 0.4)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
                   border: '1px solid rgba(0, 186, 124, 0.4)',
                   boxShadow: '0 0 15px rgba(0, 186, 124, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
                   padding: 'clamp(0.75rem,3vw,1rem)',
@@ -582,8 +604,10 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
             flexDirection: 'column'
           }}>
             {/* 🤖 [IA] - v1.0.62: Glass effect premium en Step 4 */}
-            {/* 🤖 [IA] - v1.2.12: Optimización de capas - sin fondo duplicado */}
-            <div className="flex items-center" style={{
+            <div className="flex items-center" style={{ 
+              backgroundColor: 'rgba(36, 36, 36, 0.4)',
+              backdropFilter: 'blur(clamp(12px, 4vw, 20px))',
+              WebkitBackdropFilter: 'blur(clamp(12px, 4vw, 20px))',
               border: '1px solid rgba(255, 255, 255, 0.15)',
               boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
               gap: 'clamp(0.75rem, 3vw, 1rem)',
@@ -618,6 +642,9 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               <SelectTrigger 
                 className="w-full h-10 sm:h-12 text-sm sm:text-base transition-all duration-300"
                 style={{ 
+                  backgroundColor: 'rgba(36, 36, 36, 0.4)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
                   border: '1px solid rgba(255, 255, 255, 0.15)',
                   boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
                   color: '#e1e8ed'
@@ -664,6 +691,9 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 style={{ 
+                  backgroundColor: 'rgba(36, 36, 36, 0.4)',
+                  backdropFilter: 'blur(clamp(12px, 4vw, 20px))',
+                  WebkitBackdropFilter: 'blur(clamp(12px, 4vw, 20px))',
                   border: '1px solid rgba(244, 33, 46, 0.4)',
                   boxShadow: '0 0 15px rgba(244, 33, 46, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
                   padding: 'clamp(0.75rem, 3vw, 1rem)',
@@ -693,6 +723,9 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                 animate={{ opacity: 1, y: 0 }}
                 className="p-3 sm:p-4 rounded-lg"
                 style={{ 
+                  backgroundColor: 'rgba(36, 36, 36, 0.4)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
                   border: '1px solid rgba(0, 186, 124, 0.4)',
                   boxShadow: '0 0 15px rgba(0, 186, 124, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
                 }}
@@ -728,8 +761,10 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
             flexDirection: 'column'
           }}>
             {/* 🤖 [IA] - v1.0.63: Glass effect premium en Step 5 */}
-            {/* 🤖 [IA] - v1.2.12: Optimización de capas - sin fondo duplicado */}
-            <div className="flex items-center" style={{
+            <div className="flex items-center" style={{ 
+              backgroundColor: 'rgba(36, 36, 36, 0.4)',
+              backdropFilter: 'blur(clamp(12px, 4vw, 20px))',
+              WebkitBackdropFilter: 'blur(clamp(12px, 4vw, 20px))',
               border: '1px solid rgba(255, 255, 255, 0.15)',
               boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
               gap: 'clamp(0.75rem, 3vw, 1rem)',
@@ -769,6 +804,9 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               {/* 🤖 [IA] - v1.2.9: Contenedor flex para input y botón confirmar */}
               <div className="flex flex-col sm:flex-row" style={{ gap: 'clamp(0.375rem, 1.5vw, 0.5rem)' }}>
                 <div className="relative flex-1" style={{ 
+                  backgroundColor: 'rgba(36, 36, 36, 0.4)',
+                  backdropFilter: 'blur(clamp(12px, 4vw, 20px))',
+                  WebkitBackdropFilter: 'blur(clamp(12px, 4vw, 20px))',
                   border: '1px solid rgba(255, 255, 255, 0.15)',
                   borderRadius: 'clamp(0.375rem, 1.5vw, 0.5rem)',
                   padding: 'clamp(0.25rem, 1vw, 0.375rem)',
@@ -878,6 +916,9 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 style={{ 
+                  backgroundColor: 'rgba(36, 36, 36, 0.4)',
+                  backdropFilter: 'blur(clamp(12px, 4vw, 20px))',
+                  WebkitBackdropFilter: 'blur(clamp(12px, 4vw, 20px))',
                   border: '1px solid rgba(0, 186, 124, 0.4)',
                   boxShadow: '0 0 15px rgba(0, 186, 124, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
                   padding: 'clamp(0.75rem, 3vw, 1rem)',
