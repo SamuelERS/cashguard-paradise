@@ -102,7 +102,7 @@ export function Phase2VerificationSection({
     <motion.div
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
-      className="space-y-4 max-w-md mx-auto sm:max-w-2xl lg:max-w-3xl"
+      className="space-y-4 max-w-md mx-auto sm:max-w-2xl lg:max-w-3xl overflow-y-auto max-h-screen"
     >
       {/* Header - Simplificado sin redundancias v1.0.77 */}
       <motion.div 

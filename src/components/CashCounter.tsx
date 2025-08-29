@@ -136,8 +136,11 @@ const CashCounter = ({
 
   // 🤖 [IA] - v1.2.9 - Component-specific PWA scroll prevention
   useEffect(() => {
-    // Solo aplicar en PWA mode
-    if (window.matchMedia('(display-mode: standalone)').matches) {
+    // 🚨 FIX: No aplicar scroll blocking en Phase 3 (reportes finales)
+    const isPhase3 = phaseState.currentPhase === 3;
+    
+    // Solo aplicar en PWA mode Y no estar en Phase 3
+    if (window.matchMedia('(display-mode: standalone)').matches && !isPhase3) {
       // Guardar estilos originales
       const originalStyles = {
         position: document.body.style.position,
@@ -162,7 +165,7 @@ const CashCounter = ({
       const handleTouchMove = (e: TouchEvent) => {
         // Solo prevenir si el target no es un elemento scrollable dentro del modal
         const target = e.target as HTMLElement;
-        const scrollableContainer = target.closest('.overflow-y-auto');
+        const scrollableContainer = target.closest('.overflow-y-auto, [data-scrollable]');
         if (!scrollableContainer) {
           e.preventDefault();
         }
@@ -183,7 +186,7 @@ const CashCounter = ({
         document.removeEventListener('touchmove', handleTouchMove);
       };
     }
-  }, []); // Solo ejecutar una vez al montar el componente
+  }, [phaseState.currentPhase]); // 🚨 FIX: Dependencia en currentPhase para reactivar cuando cambie
 
   // 🤖 [IA] - v1.0.3 - Auto-iniciar Fase 1 si viene del wizard
   // 🤖 [IA] - v1.2.8 - Mostrar modal de instrucciones antes de iniciar
