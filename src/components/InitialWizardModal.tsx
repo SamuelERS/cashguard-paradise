@@ -301,24 +301,24 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
 
       case 2: // Selección de Sucursal
         return (
-          <div className="space-y-6" style={{ 
+          <div className="space-y-6 p-5 sm:p-7" style={{ 
             backgroundColor: 'rgba(36, 36, 36, 0.4)',
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
             border: '1px solid rgba(255, 255, 255, 0.15)',
-            padding: '28px',
             borderRadius: '16px',
             boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
           }}>
             {/* 🤖 [IA] - v1.0.61: Glass effect premium mejorado en Step 2 */}
-            <div className="flex items-center gap-3 p-4 rounded-lg" style={{ 
+            {/* 🤖 [IA] - v1.2.12: Responsividad completa y textos concisos */}
+            <div className="flex items-center gap-2 sm:gap-3 p-3 sm:p-4 rounded-lg" style={{ 
               backgroundColor: 'rgba(36, 36, 36, 0.4)',
               backdropFilter: 'blur(20px)',
               WebkitBackdropFilter: 'blur(20px)',
               border: '1px solid rgba(255, 255, 255, 0.15)',
               boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
             }}>
-              <MapPin className="w-8 h-8 flex-shrink-0" style={{ 
+              <MapPin className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" style={{ 
                 background: 'linear-gradient(135deg, #0a84ff 0%, #5e5ce6 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
@@ -326,7 +326,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               }} />
               <div className="flex-1 min-w-0">
                 <h3 className="font-semibold text-lg sm:text-xl" style={{ color: '#e1e8ed' }}>Ubicación</h3>
-                <p className="text-sm mt-1" style={{ color: '#8899a6' }}>Seleccione la sucursal donde realizará el corte</p>
+                <p className="text-xs sm:text-sm mt-1" style={{ color: '#8899a6' }}>Sucursal del corte</p>
               </div>
             </div>
 
@@ -363,7 +363,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                   e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
                 }}
               >
-                <SelectValue placeholder="Seleccione una sucursal" />
+                <SelectValue placeholder="Elegir sucursal" />
               </SelectTrigger>
               <SelectContent style={{
                 backgroundColor: 'rgba(36, 36, 36, 0.9)',
@@ -394,8 +394,8 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                 }}
               >
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5 flex-shrink-0" style={{ color: '#00ba7c' }} />
-                  <span className="font-medium" style={{ color: '#e1e8ed' }}>Sucursal seleccionada correctamente</span>
+                  <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" style={{ color: '#00ba7c' }} />
+                  <span className="font-medium" style={{ color: '#e1e8ed' }}>✓ Seleccionada</span>
                 </div>
               </motion.div>
             )}
@@ -404,32 +404,50 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
 
       case 3: // Selección de Cajero
         return (
-          <div className="space-y-6" style={{ 
+          <div className="space-y-[clamp(1rem,4vw,1.5rem)]" style={{ 
             backgroundColor: 'rgba(36, 36, 36, 0.4)',
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
             border: '1px solid rgba(255, 255, 255, 0.15)',
-            padding: '28px',
-            borderRadius: '16px',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+            borderRadius: 'clamp(0.75rem,3vw,1rem)',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+            padding: 'clamp(1.25rem,5vw,1.75rem)'
           }}>
             {/* 🤖 [IA] - v1.0.61: Glass effect premium en Step 3 */}
-            <div className="flex items-center gap-3 p-4 rounded-lg" style={{ 
+            {/* 🤖 [IA] - v1.2.12: Responsividad mejorada y textos concisos */}
+            <div className="flex items-center" style={{ 
               backgroundColor: 'rgba(36, 36, 36, 0.4)',
               backdropFilter: 'blur(20px)',
               WebkitBackdropFilter: 'blur(20px)',
               border: '1px solid rgba(255, 255, 255, 0.15)',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+              gap: 'clamp(0.5rem,2vw,0.75rem)',
+              padding: 'clamp(0.75rem,3vw,1rem)',
+              borderRadius: 'clamp(0.5rem,2vw,0.75rem)'
             }}>
-              <Users className="w-8 h-8 flex-shrink-0" style={{ 
-                background: 'linear-gradient(135deg, #0a84ff 0%, #5e5ce6 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text'
-              }} />
+              <Users 
+                className="flex-shrink-0" 
+                style={{ 
+                  width: 'clamp(1.5rem,4vw,2rem)',
+                  height: 'clamp(1.5rem,4vw,2rem)',
+                  background: 'linear-gradient(135deg, #0a84ff 0%, #5e5ce6 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text'
+                }} 
+                aria-label="Icono de cajero responsable"
+                role="img"
+              />
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-lg sm:text-xl" style={{ color: '#e1e8ed' }}>Cajero</h3>
-                <p className="text-sm mt-1" style={{ color: '#8899a6' }}>Seleccione el cajero responsable del corte</p>
+                <h3 className="font-semibold" style={{ 
+                  color: '#e1e8ed',
+                  fontSize: 'clamp(1.125rem,4.5vw,1.25rem)'
+                }}>Cajero</h3>
+                <p style={{ 
+                  color: '#8899a6',
+                  fontSize: 'clamp(0.75rem,3vw,0.875rem)',
+                  marginTop: 'clamp(0.125rem,0.5vw,0.25rem)'
+                }}>Seleccione responsable de corte</p>
               </div>
             </div>
 
@@ -438,14 +456,17 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               onValueChange={(value) => updateWizardData({ selectedCashier: value })}
             >
               <SelectTrigger 
-                className="w-full h-10 sm:h-12 text-sm sm:text-base transition-all duration-300"
+                className="w-full transition-all duration-300"
                 style={{ 
                   backgroundColor: 'rgba(36, 36, 36, 0.4)',
                   backdropFilter: 'blur(20px)',
                   WebkitBackdropFilter: 'blur(20px)',
                   border: '1px solid rgba(255, 255, 255, 0.15)',
                   boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
-                  color: '#e1e8ed'
+                  color: '#e1e8ed',
+                  height: 'clamp(2.75rem,6vw,3rem)',
+                  fontSize: 'clamp(0.875rem,3.5vw,1rem)',
+                  borderRadius: 'clamp(0.375rem,1.5vw,0.5rem)'
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.backgroundColor = 'rgba(36, 36, 36, 0.5)';
@@ -464,7 +485,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                   e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
                 }}
               >
-                <SelectValue placeholder="Seleccione el cajero" />
+                <SelectValue placeholder="Seleccione el cajero responsable" />
               </SelectTrigger>
               <SelectContent style={{
                 backgroundColor: 'rgba(36, 36, 36, 0.9)',
@@ -485,18 +506,31 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="p-3 sm:p-4 rounded-lg"
+                className="rounded-lg"
                 style={{ 
                   backgroundColor: 'rgba(36, 36, 36, 0.4)',
                   backdropFilter: 'blur(20px)',
                   WebkitBackdropFilter: 'blur(20px)',
                   border: '1px solid rgba(0, 186, 124, 0.4)',
-                  boxShadow: '0 0 15px rgba(0, 186, 124, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+                  boxShadow: '0 0 15px rgba(0, 186, 124, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+                  padding: 'clamp(0.75rem,3vw,1rem)',
+                  borderRadius: 'clamp(0.5rem,2vw,0.75rem)'
                 }}
               >
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5 flex-shrink-0" style={{ color: '#00ba7c' }} />
-                  <span className="font-medium" style={{ color: '#e1e8ed' }}>Cajero seleccionado correctamente</span>
+                <div className="flex items-center" style={{ gap: 'clamp(0.375rem,1.5vw,0.5rem)' }}>
+                  <CheckCircle 
+                    className="flex-shrink-0" 
+                    style={{ 
+                      color: '#00ba7c',
+                      width: 'clamp(1rem,3vw,1.25rem)',
+                      height: 'clamp(1rem,3vw,1.25rem)'
+                    }} 
+                    aria-label="Cajero seleccionado correctamente"
+                  />
+                  <span className="font-medium" style={{ 
+                    color: '#e1e8ed',
+                    fontSize: 'clamp(0.875rem,3.5vw,1rem)'
+                  }}>✓ Cajero seleccionado</span>
                 </div>
               </motion.div>
             )}
