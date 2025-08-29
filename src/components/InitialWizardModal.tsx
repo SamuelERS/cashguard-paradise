@@ -149,11 +149,15 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
     switch (currentStep) {
       case 1: // Protocolo Anti-Fraude
         return (
-          <div className="space-y-5 p-5 sm:p-7" style={{ 
+          <div style={{ 
             backgroundColor: 'rgba(36, 36, 36, 0.4)',
             border: '1px solid rgba(255, 255, 255, 0.15)',
             borderRadius: 'clamp(0.75rem, 3vw, 1rem)',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+            padding: 'clamp(1.25rem, 5vw, 1.75rem)',
+            gap: 'clamp(1rem, 4vw, 1.25rem)',
+            display: 'flex',
+            flexDirection: 'column'
           }}>
             {/* Header con Icono de Escudo */}
             <div className="flex items-center justify-center mb-4">
@@ -176,28 +180,39 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
             </div>
 
             {/* 🤖 [IA] - v1.0.59: Card transparente con glass effect */}
-            <div className="rounded-lg p-4" style={{ 
+            <div className="rounded-lg" style={{ 
               backgroundColor: 'rgba(36, 36, 36, 0.4)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
+              backdropFilter: 'blur(clamp(12px, 4vw, 20px))',
+              WebkitBackdropFilter: 'blur(clamp(12px, 4vw, 20px))',
               border: '1px solid rgba(244, 165, 42, 0.3)',
               borderLeft: '3px solid #f4a52a',
-              boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+              boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+              padding: 'clamp(0.75rem, 3vw, 1rem)',
+              borderRadius: 'clamp(0.5rem, 2vw, 0.75rem)'
             }}>
-              <div className="flex items-center gap-2 mb-2">
-                <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: '#f4a52a' }} />
-                <h3 className="font-semibold text-sm sm:text-base" style={{ color: '#f4a52a' }}>IMPORTANTE</h3>
+              <div className="flex items-center" style={{ gap: 'clamp(0.375rem, 1.5vw, 0.5rem)', marginBottom: 'clamp(0.375rem, 1.5vw, 0.5rem)' }}>
+                <AlertTriangle style={{ 
+                  width: 'clamp(1rem, 3vw, 1.25rem)',
+                  height: 'clamp(1rem, 3vw, 1.25rem)',
+                  color: '#f4a52a' 
+                }} />
+                <h3 className="font-semibold" style={{ 
+                  color: '#f4a52a',
+                  fontSize: 'clamp(0.875rem, 3.5vw, 1rem)'
+                }}>IMPORTANTE</h3>
               </div>
-              <p className="text-xs sm:text-sm" style={{
-                color: '#e1e8ed'
+              <p style={{
+                color: '#e1e8ed',
+                fontSize: 'clamp(0.75rem, 3vw, 0.875rem)'
               }}>
                 Sistema de protección de efectivo. Todo queda registrado.
               </p>
             </div>
 
-            <div className="space-y-3">
-              <h3 className="font-semibold text-base sm:text-lg" style={{
-                color: '#e1e8ed'
+            <div style={{ gap: 'clamp(0.75rem, 3vw, 1rem)', display: 'flex', flexDirection: 'column' }}>
+              <h3 className="font-semibold" style={{
+                color: '#e1e8ed',
+                fontSize: 'clamp(1rem, 4vw, 1.125rem)'
               }}>
                 Protocolo obligatorio:
               </h3>
@@ -205,14 +220,17 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               {protocolRules.map((rule, index) => (
                 <div
                   key={index}
-                  className="flex items-start gap-3 p-3 sm:p-4 rounded-lg premium-rule-card"
+                  className="flex items-start premium-rule-card"
                   style={{
                     backgroundColor: 'rgba(36, 36, 36, 0.4)',
-                    backdropFilter: 'blur(20px)',
-                    WebkitBackdropFilter: 'blur(20px)',
+                    backdropFilter: 'blur(clamp(12px, 4vw, 20px))',
+                    WebkitBackdropFilter: 'blur(clamp(12px, 4vw, 20px))',
                     borderLeft: rule.critical ? '4px solid #f4212e' : '4px solid #f4a52a',
                     border: '1px solid rgba(255, 255, 255, 0.15)',
-                    boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.05)'
+                    boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.05)',
+                    gap: 'clamp(0.75rem, 3vw, 1rem)',
+                    padding: 'clamp(0.75rem, 3vw, 1rem)',
+                    borderRadius: 'clamp(0.5rem, 2vw, 0.75rem)'
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.backgroundColor = 'rgba(36, 36, 36, 0.5)';
@@ -224,18 +242,22 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                   aria-label={`Regla ${index + 1}: ${rule.text}`}
                 >
                   <div className="flex-shrink-0">{rule.icon}</div>
-                  <span className="flex-1 leading-relaxed text-xs sm:text-sm" style={{
-                    color: '#e1e8ed'
+                  <span className="flex-1 leading-relaxed" style={{
+                    color: '#e1e8ed',
+                    fontSize: 'clamp(0.75rem, 3vw, 0.875rem)'
                   }}>{rule.text}</span>
                   {/* 🤖 [IA] - v1.0.30 - Badge diferenciado: CRÍTICO o ALERTA */}
                   {(rule.critical || rule.isAlert) && (
                     <span 
-                      className="font-semibold rounded-md text-xs sm:text-sm px-2 sm:px-3 py-1"
+                      className="font-semibold rounded-md"
                       style={{
                         backgroundColor: rule.isAlert ? 'rgba(244, 165, 42, 0.1)' : 'rgba(244, 33, 46, 0.1)',
                         color: rule.isAlert ? '#f4a52a' : '#f4212e',
                         border: rule.isAlert ? '1px solid rgba(244, 165, 42, 0.4)' : '1px solid rgba(244, 33, 46, 0.4)',
-                        boxShadow: rule.isAlert ? '0 0 10px rgba(244, 165, 42, 0.2)' : '0 0 10px rgba(244, 33, 46, 0.2)'
+                        boxShadow: rule.isAlert ? '0 0 10px rgba(244, 165, 42, 0.2)' : '0 0 10px rgba(244, 33, 46, 0.2)',
+                        fontSize: 'clamp(0.75rem, 3vw, 0.875rem)',
+                        padding: 'clamp(0.375rem, 1.5vw, 0.5rem) clamp(0.5rem, 2vw, 0.75rem)',
+                        borderRadius: 'clamp(4px, 1.5vw, 6px)'
                       }}
                       aria-label={rule.isAlert ? "Alerta informativa" : "Regla crítica de cumplimiento obligatorio"}
                       role="status"
@@ -249,16 +271,25 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
 
             {/* 🤖 [IA] - v1.0.59 - Checkbox con glass effect */}
             {/* 🤖 [IA] - v1.2.12 - Responsividad mejorada y textos concisos */}
-            <div className="space-y-3 pt-4" style={{ borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
+            <div style={{ 
+              borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+              paddingTop: 'clamp(0.75rem, 3vw, 1rem)',
+              gap: 'clamp(0.75rem, 3vw, 1rem)',
+              display: 'flex',
+              flexDirection: 'column'
+            }}>
               <motion.div 
-                className="flex items-start space-x-3 p-3 rounded-lg"
+                className="flex items-start"
                 style={{ 
                   backgroundColor: 'rgba(36, 36, 36, 0.4)',
-                  backdropFilter: 'blur(20px)',
-                  WebkitBackdropFilter: 'blur(20px)',
+                  backdropFilter: 'blur(clamp(12px, 4vw, 20px))',
+                  WebkitBackdropFilter: 'blur(clamp(12px, 4vw, 20px))',
                   border: wizardData.rulesAccepted ? '2px solid rgba(0, 186, 124, 0.6)' : '2px solid rgba(29, 155, 240, 0.6)',
                   boxShadow: wizardData.rulesAccepted ? '0 0 15px rgba(0, 186, 124, 0.2)' : '0 0 15px rgba(29, 155, 240, 0.2)',
-                  transition: 'all 0.3s ease'
+                  transition: 'all 0.3s ease',
+                  gap: 'clamp(0.75rem, 3vw, 1rem)',
+                  padding: 'clamp(0.75rem, 3vw, 1rem)',
+                  borderRadius: 'clamp(0.5rem, 2vw, 0.75rem)'
                 }}
               >
                 <motion.div
@@ -282,9 +313,12 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                 </motion.div>
                 <Label 
                   htmlFor="rules-accepted" 
-                  className="text-sm sm:text-base font-medium cursor-pointer leading-relaxed"
+                  className="font-medium cursor-pointer leading-relaxed"
                   id="rules-description"
-                  style={{ color: '#e1e8ed' }}
+                  style={{ 
+                    color: '#e1e8ed',
+                    fontSize: 'clamp(0.875rem, 3.5vw, 1rem)'
+                  }}
                 >
                   Acepto el protocolo de seguridad
                 </Label>
@@ -295,32 +329,48 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
 
       case 2: // Selección de Sucursal
         return (
-          <div className="space-y-6 p-5 sm:p-7" style={{ 
+          <div style={{ 
             backgroundColor: 'rgba(36, 36, 36, 0.4)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
+            backdropFilter: 'blur(clamp(12px, 4vw, 20px))',
+            WebkitBackdropFilter: 'blur(clamp(12px, 4vw, 20px))',
             border: '1px solid rgba(255, 255, 255, 0.15)',
-            borderRadius: '16px',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+            borderRadius: 'clamp(0.75rem, 3vw, 1rem)',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+            padding: 'clamp(1.25rem, 5vw, 1.75rem)',
+            gap: 'clamp(1rem, 4vw, 1.5rem)',
+            display: 'flex',
+            flexDirection: 'column'
           }}>
             {/* 🤖 [IA] - v1.0.61: Glass effect premium mejorado en Step 2 */}
             {/* 🤖 [IA] - v1.2.12: Responsividad completa y textos concisos */}
-            <div className="flex items-center gap-2 sm:gap-3 p-3 sm:p-4 rounded-lg" style={{ 
+            <div className="flex items-center" style={{ 
               backgroundColor: 'rgba(36, 36, 36, 0.4)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
+              backdropFilter: 'blur(clamp(12px, 4vw, 20px))',
+              WebkitBackdropFilter: 'blur(clamp(12px, 4vw, 20px))',
               border: '1px solid rgba(255, 255, 255, 0.15)',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+              gap: 'clamp(0.5rem, 2vw, 0.75rem)',
+              padding: 'clamp(0.75rem, 3vw, 1rem)',
+              borderRadius: 'clamp(0.5rem, 2vw, 0.75rem)'
             }}>
-              <MapPin className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" style={{ 
+              <MapPin className="flex-shrink-0" style={{ 
+                width: 'clamp(1.5rem, 4vw, 2rem)',
+                height: 'clamp(1.5rem, 4vw, 2rem)',
                 background: 'linear-gradient(135deg, #0a84ff 0%, #5e5ce6 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text'
               }} />
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-lg sm:text-xl" style={{ color: '#e1e8ed' }}>Ubicación</h3>
-                <p className="text-xs sm:text-sm mt-1" style={{ color: '#8899a6' }}>Sucursal del corte</p>
+                <h3 className="font-semibold" style={{ 
+                  color: '#e1e8ed',
+                  fontSize: 'clamp(1.125rem, 4.5vw, 1.25rem)'
+                }}>Ubicación</h3>
+                <p style={{ 
+                  color: '#8899a6',
+                  fontSize: 'clamp(0.75rem, 3vw, 0.875rem)',
+                  marginTop: 'clamp(0.125rem, 0.5vw, 0.25rem)'
+                }}>Sucursal del corte</p>
               </div>
             </div>
 
@@ -378,18 +428,26 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="p-3 sm:p-4 rounded-lg"
                 style={{ 
                   backgroundColor: 'rgba(36, 36, 36, 0.4)',
-                  backdropFilter: 'blur(20px)',
-                  WebkitBackdropFilter: 'blur(20px)',
+                  backdropFilter: 'blur(clamp(12px, 4vw, 20px))',
+                  WebkitBackdropFilter: 'blur(clamp(12px, 4vw, 20px))',
                   border: '1px solid rgba(0, 186, 124, 0.4)',
-                  boxShadow: '0 0 15px rgba(0, 186, 124, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+                  boxShadow: '0 0 15px rgba(0, 186, 124, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+                  padding: 'clamp(0.75rem, 3vw, 1rem)',
+                  borderRadius: 'clamp(0.5rem, 2vw, 0.75rem)'
                 }}
               >
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" style={{ color: '#00ba7c' }} />
-                  <span className="font-medium" style={{ color: '#e1e8ed' }}>✓ Seleccionada</span>
+                <div className="flex items-center" style={{ gap: 'clamp(0.375rem, 1.5vw, 0.5rem)' }}>
+                  <CheckCircle className="flex-shrink-0" style={{ 
+                    color: '#00ba7c',
+                    width: 'clamp(1rem, 3vw, 1.25rem)',
+                    height: 'clamp(1rem, 3vw, 1.25rem)'
+                  }} />
+                  <span className="font-medium" style={{ 
+                    color: '#e1e8ed',
+                    fontSize: 'clamp(0.875rem, 3.5vw, 1rem)'
+                  }}>✓ Seleccionada</span>
                 </div>
               </motion.div>
             )}
@@ -533,32 +591,47 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
 
       case 4: // Selección de Testigo
         return (
-          <div className="space-y-6" style={{ 
+          <div style={{ 
             backgroundColor: 'rgba(36, 36, 36, 0.4)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
+            backdropFilter: 'blur(clamp(12px, 4vw, 20px))',
+            WebkitBackdropFilter: 'blur(clamp(12px, 4vw, 20px))',
             border: '1px solid rgba(255, 255, 255, 0.15)',
-            padding: '28px',
-            borderRadius: '16px',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+            padding: 'clamp(1.25rem, 5vw, 1.75rem)',
+            borderRadius: 'clamp(0.75rem, 3vw, 1rem)',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+            gap: 'clamp(1rem, 4vw, 1.5rem)',
+            display: 'flex',
+            flexDirection: 'column'
           }}>
             {/* 🤖 [IA] - v1.0.62: Glass effect premium en Step 4 */}
-            <div className="flex items-center gap-3 p-4 rounded-lg" style={{ 
+            <div className="flex items-center" style={{ 
               backgroundColor: 'rgba(36, 36, 36, 0.4)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
+              backdropFilter: 'blur(clamp(12px, 4vw, 20px))',
+              WebkitBackdropFilter: 'blur(clamp(12px, 4vw, 20px))',
               border: '1px solid rgba(255, 255, 255, 0.15)',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+              gap: 'clamp(0.75rem, 3vw, 1rem)',
+              padding: 'clamp(0.75rem, 3vw, 1rem)',
+              borderRadius: 'clamp(0.5rem, 2vw, 0.75rem)'
             }}>
-              <Shield className="w-8 h-8 flex-shrink-0" style={{ 
+              <Shield className="flex-shrink-0" style={{ 
+                width: 'clamp(1.5rem, 4vw, 2rem)',
+                height: 'clamp(1.5rem, 4vw, 2rem)',
                 background: 'linear-gradient(135deg, #0a84ff 0%, #5e5ce6 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text'
               }} />
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-lg sm:text-xl" style={{ color: '#e1e8ed' }}>Testigo</h3>
-                <p className="text-sm mt-1" style={{ color: '#8899a6' }}>Seleccione el testigo verificador del corte</p>
+                <h3 className="font-semibold" style={{ 
+                  color: '#e1e8ed',
+                  fontSize: 'clamp(1.125rem, 4.5vw, 1.25rem)'
+                }}>Testigo</h3>
+                <p style={{ 
+                  color: '#8899a6',
+                  fontSize: 'clamp(0.75rem, 3vw, 0.875rem)',
+                  marginTop: 'clamp(0.125rem, 0.5vw, 0.25rem)'
+                }}>Seleccione el testigo verificador del corte</p>
               </div>
             </div>
 
@@ -617,18 +690,26 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="p-3 sm:p-4 rounded-lg"
                 style={{ 
                   backgroundColor: 'rgba(36, 36, 36, 0.4)',
-                  backdropFilter: 'blur(20px)',
-                  WebkitBackdropFilter: 'blur(20px)',
+                  backdropFilter: 'blur(clamp(12px, 4vw, 20px))',
+                  WebkitBackdropFilter: 'blur(clamp(12px, 4vw, 20px))',
                   border: '1px solid rgba(244, 33, 46, 0.4)',
-                  boxShadow: '0 0 15px rgba(244, 33, 46, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+                  boxShadow: '0 0 15px rgba(244, 33, 46, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+                  padding: 'clamp(0.75rem, 3vw, 1rem)',
+                  borderRadius: 'clamp(0.5rem, 2vw, 0.75rem)'
                 }}
               >
-                <div className="flex items-center gap-2">
-                  <AlertTriangle className="w-5 h-5 flex-shrink-0" style={{ color: '#f4212e' }} />
-                  <span className="font-medium" style={{ color: '#f4212e' }}>
+                <div className="flex items-center" style={{ gap: 'clamp(0.375rem, 1.5vw, 0.5rem)' }}>
+                  <AlertTriangle className="flex-shrink-0" style={{ 
+                    color: '#f4212e',
+                    width: 'clamp(1rem, 3vw, 1.25rem)',
+                    height: 'clamp(1rem, 3vw, 1.25rem)'
+                  }} />
+                  <span className="font-medium" style={{ 
+                    color: '#f4212e',
+                    fontSize: 'clamp(0.875rem, 3.5vw, 1rem)'
+                  }}>
                     El cajero y el testigo deben ser personas diferentes
                   </span>
                 </div>
@@ -649,9 +730,16 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                   boxShadow: '0 0 15px rgba(0, 186, 124, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
                 }}
               >
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5 flex-shrink-0" style={{ color: '#00ba7c' }} />
-                  <span className="font-medium" style={{ color: '#e1e8ed' }}>Testigo seleccionado correctamente</span>
+                <div className="flex items-center" style={{ gap: 'clamp(0.375rem, 1.5vw, 0.5rem)' }}>
+                  <CheckCircle className="flex-shrink-0" style={{ 
+                    color: '#00ba7c',
+                    width: 'clamp(1rem, 3vw, 1.25rem)',
+                    height: 'clamp(1rem, 3vw, 1.25rem)'
+                  }} />
+                  <span className="font-medium" style={{ 
+                    color: '#e1e8ed',
+                    fontSize: 'clamp(0.875rem, 3.5vw, 1rem)'
+                  }}>Testigo seleccionado correctamente</span>
                 </div>
               </motion.div>
             )}
@@ -660,53 +748,74 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
 
       case 5: // Venta Esperada
         return (
-          <div className="space-y-6" style={{ 
+          <div style={{ 
             backgroundColor: 'rgba(36, 36, 36, 0.4)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
+            backdropFilter: 'blur(clamp(12px, 4vw, 20px))',
+            WebkitBackdropFilter: 'blur(clamp(12px, 4vw, 20px))',
             border: '1px solid rgba(255, 255, 255, 0.15)',
-            padding: '28px',
-            borderRadius: '16px',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+            padding: 'clamp(1.25rem, 5vw, 1.75rem)',
+            borderRadius: 'clamp(0.75rem, 3vw, 1rem)',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+            gap: 'clamp(1rem, 4vw, 1.5rem)',
+            display: 'flex',
+            flexDirection: 'column'
           }}>
             {/* 🤖 [IA] - v1.0.63: Glass effect premium en Step 5 */}
-            <div className="flex items-center gap-3 p-4 rounded-lg" style={{ 
+            <div className="flex items-center" style={{ 
               backgroundColor: 'rgba(36, 36, 36, 0.4)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
+              backdropFilter: 'blur(clamp(12px, 4vw, 20px))',
+              WebkitBackdropFilter: 'blur(clamp(12px, 4vw, 20px))',
               border: '1px solid rgba(255, 255, 255, 0.15)',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+              gap: 'clamp(0.75rem, 3vw, 1rem)',
+              padding: 'clamp(0.75rem, 3vw, 1rem)',
+              borderRadius: 'clamp(0.5rem, 2vw, 0.75rem)'
             }}>
-              <DollarSign className="w-8 h-8 flex-shrink-0" style={{ 
+              <DollarSign className="flex-shrink-0" style={{ 
+                width: 'clamp(1.5rem, 4vw, 2rem)',
+                height: 'clamp(1.5rem, 4vw, 2rem)',
                 background: 'linear-gradient(135deg, #00ba7c 0%, #06d6a0 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text'
               }} />
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-lg sm:text-xl" style={{ color: '#e1e8ed' }}>Venta Esperada</h3>
-                <p className="text-sm mt-1" style={{ color: '#8899a6' }}>
+                <h3 className="font-semibold" style={{ 
+                  color: '#e1e8ed',
+                  fontSize: 'clamp(1.125rem, 4.5vw, 1.25rem)'
+                }}>Venta Esperada</h3>
+                <p style={{ 
+                  color: '#8899a6',
+                  fontSize: 'clamp(0.75rem, 3vw, 0.875rem)',
+                  marginTop: 'clamp(0.125rem, 0.5vw, 0.25rem)'
+                }}>
                   Monto esperado del sistema SICAR
                 </p>
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="expected-sales" className="text-base font-medium" style={{ color: '#e1e8ed' }}>
+            <div style={{ gap: 'clamp(0.375rem, 1.5vw, 0.5rem)', display: 'flex', flexDirection: 'column' }}>
+              <Label htmlFor="expected-sales" className="font-medium" style={{ 
+                color: '#e1e8ed',
+                fontSize: 'clamp(0.875rem, 3.5vw, 1rem)'
+              }}>
                 Monto ($)
               </Label>
               {/* 🤖 [IA] - v1.2.9: Contenedor flex para input y botón confirmar */}
-              <div className="flex flex-col sm:flex-row gap-2">
+              <div className="flex flex-col sm:flex-row" style={{ gap: 'clamp(0.375rem, 1.5vw, 0.5rem)' }}>
                 <div className="relative flex-1" style={{ 
                   backgroundColor: 'rgba(36, 36, 36, 0.4)',
-                  backdropFilter: 'blur(20px)',
-                  WebkitBackdropFilter: 'blur(20px)',
+                  backdropFilter: 'blur(clamp(12px, 4vw, 20px))',
+                  WebkitBackdropFilter: 'blur(clamp(12px, 4vw, 20px))',
                   border: '1px solid rgba(255, 255, 255, 0.15)',
-                  borderRadius: '8px',
-                  padding: '4px',
+                  borderRadius: 'clamp(0.375rem, 1.5vw, 0.5rem)',
+                  padding: 'clamp(0.25rem, 1vw, 0.375rem)',
                   boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)'
                 }}>
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-lg" style={{ color: '#00ba7c' }}>
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold" style={{ 
+                    color: '#00ba7c',
+                    fontSize: 'clamp(1rem, 4vw, 1.125rem)'
+                  }}>
                     $
                   </span>
                   <Input
@@ -725,11 +834,14 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                       }
                     }}
                     placeholder="0.00"
-                    className="pl-10 h-10 sm:h-12 text-base sm:text-lg font-semibold"
+                    className="font-semibold"
                     style={{ 
                       backgroundColor: 'transparent',
                       border: 'none',
-                      color: '#e1e8ed'
+                      color: '#e1e8ed',
+                      paddingLeft: 'clamp(2.25rem, 8vw, 2.5rem)',
+                      height: 'clamp(2.5rem, 6vw, 3rem)',
+                      fontSize: 'clamp(1rem, 4vw, 1.125rem)'
                     }}
                   />
                 </div>
@@ -739,22 +851,26 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                   disabled={!isCompleted}
                   variant={isCompleted ? "ready" : "outline"}
                   size="sm"
-                  className="h-10 sm:h-12 px-6 transition-all duration-300 font-medium whitespace-nowrap"
+                  className="transition-all duration-300 font-medium whitespace-nowrap"
                   style={isCompleted ? {
                     background: 'linear-gradient(135deg, #00ba7c 0%, #008060 100%)',
                     color: '#ffffff',
                     border: 'none',
                     boxShadow: '0 3px 12px rgba(0, 186, 124, 0.2)',
-                    fontSize: '14px',
+                    fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
                     fontWeight: '600',
-                    borderRadius: '8px'
+                    borderRadius: 'clamp(0.375rem, 1.5vw, 0.5rem)',
+                    height: 'clamp(2.5rem, 6vw, 3rem)',
+                    padding: 'clamp(0.75rem, 3vw, 1.5rem)'
                   } : {
                     backgroundColor: '#242424',
                     border: '1px solid #33333350',
                     color: '#4a5568',
                     cursor: 'not-allowed',
-                    fontSize: '14px',
-                    borderRadius: '8px'
+                    fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
+                    borderRadius: 'clamp(0.375rem, 1.5vw, 0.5rem)',
+                    height: 'clamp(2.5rem, 6vw, 3rem)',
+                    padding: 'clamp(0.75rem, 3vw, 1.5rem)'
                   }}
                   onMouseEnter={(e) => {
                     if (isCompleted) {
@@ -780,7 +896,11 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                   }}
                   aria-label="Confirmar venta esperada"
                 >
-                  <CheckCircle className="w-4 h-4 mr-1.5" />
+                  <CheckCircle style={{ 
+                    width: 'clamp(1rem, 3vw, 1.25rem)',
+                    height: 'clamp(1rem, 3vw, 1.25rem)',
+                    marginRight: 'clamp(0.375rem, 1.5vw, 0.5rem)'
+                  }} />
                   <span>Confirmar</span>
                 </Button>
               </div>
@@ -795,47 +915,66 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="p-3 sm:p-4 rounded-lg"
                 style={{ 
                   backgroundColor: 'rgba(36, 36, 36, 0.4)',
-                  backdropFilter: 'blur(20px)',
-                  WebkitBackdropFilter: 'blur(20px)',
+                  backdropFilter: 'blur(clamp(12px, 4vw, 20px))',
+                  WebkitBackdropFilter: 'blur(clamp(12px, 4vw, 20px))',
                   border: '1px solid rgba(0, 186, 124, 0.4)',
-                  boxShadow: '0 0 15px rgba(0, 186, 124, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+                  boxShadow: '0 0 15px rgba(0, 186, 124, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+                  padding: 'clamp(0.75rem, 3vw, 1rem)',
+                  borderRadius: 'clamp(0.5rem, 2vw, 0.75rem)'
                 }}
               >
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5 flex-shrink-0" style={{ color: '#00ba7c' }} />
-                  <span className="font-medium" style={{ color: '#e1e8ed' }}>
+                <div className="flex items-center" style={{ gap: 'clamp(0.375rem, 1.5vw, 0.5rem)' }}>
+                  <CheckCircle className="flex-shrink-0" style={{ 
+                    color: '#00ba7c',
+                    width: 'clamp(1rem, 3vw, 1.25rem)',
+                    height: 'clamp(1rem, 3vw, 1.25rem)'
+                  }} />
+                  <span className="font-medium" style={{ 
+                    color: '#e1e8ed',
+                    fontSize: 'clamp(0.875rem, 3.5vw, 1rem)'
+                  }}>
                     Venta esperada: ${parseFloat(wizardData.expectedSales).toFixed(2)}
                   </span>
                 </div>
               </motion.div>
             )}
 
-            <div className="p-3 sm:p-4 rounded-lg" style={{ 
+            <div style={{ 
               backgroundColor: 'rgba(36, 36, 36, 0.4)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
+              backdropFilter: 'blur(clamp(12px, 4vw, 20px))',
+              WebkitBackdropFilter: 'blur(clamp(12px, 4vw, 20px))',
               border: '1px solid rgba(10, 132, 255, 0.4)',
               borderLeft: '3px solid #0a84ff',
-              boxShadow: '0 0 15px rgba(10, 132, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+              boxShadow: '0 0 15px rgba(10, 132, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+              padding: 'clamp(0.75rem, 3vw, 1rem)',
+              borderRadius: 'clamp(0.5rem, 2vw, 0.75rem)'
             }}>
-              <h4 className="font-semibold mb-2" style={{ color: '#0a84ff' }}>Resumen de Información:</h4>
-              <div className="space-y-1 text-sm">
-                <div className="flex justify-between gap-2">
+              <h4 className="font-semibold" style={{ 
+                color: '#0a84ff',
+                fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
+                marginBottom: 'clamp(0.375rem, 1.5vw, 0.5rem)'
+              }}>Resumen de Información:</h4>
+              <div style={{ 
+                gap: 'clamp(0.125rem, 0.5vw, 0.25rem)',
+                display: 'flex',
+                flexDirection: 'column',
+                fontSize: 'clamp(0.75rem, 3vw, 0.875rem)'
+              }}>
+                <div className="flex justify-between" style={{ gap: 'clamp(0.375rem, 1.5vw, 0.5rem)' }}>
                   <span className="min-w-0" style={{ color: '#8899a6' }}>Sucursal:</span>
                   <span className="font-medium text-right truncate" style={{ color: '#e1e8ed' }}>
                     {STORES.find(s => s.id === wizardData.selectedStore)?.name}
                   </span>
                 </div>
-                <div className="flex justify-between gap-2">
+                <div className="flex justify-between" style={{ gap: 'clamp(0.375rem, 1.5vw, 0.5rem)' }}>
                   <span className="min-w-0" style={{ color: '#8899a6' }}>Cajero:</span>
                   <span className="font-medium text-right truncate" style={{ color: '#e1e8ed' }}>
                     {availableEmployees.find(e => e.id === wizardData.selectedCashier)?.name}
                   </span>
                 </div>
-                <div className="flex justify-between gap-2">
+                <div className="flex justify-between" style={{ gap: 'clamp(0.375rem, 1.5vw, 0.5rem)' }}>
                   <span className="min-w-0" style={{ color: '#8899a6' }}>Testigo:</span>
                   <span className="font-medium text-right truncate" style={{ color: '#e1e8ed' }}>
                     {availableEmployees.find(e => e.id === wizardData.selectedWitness)?.name}
