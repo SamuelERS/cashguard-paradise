@@ -451,13 +451,7 @@ export function GuidedFieldView({
                 if (sectionFields.length > 0) {
                   return (
                     <div className="px-3 my-4">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="flex items-center gap-1 text-xs" style={{ color: isMorningCount ? '#f4a52a' : '#0a84ff' }}>
-                          {sectionIcon}
-                          <span className="font-medium">{sectionName}:</span>
-                          <span className="text-gray-400">{completedInSection} de {totalInSection}</span>
-                        </span>
-                      </div>
+                      {/* Barra de progreso primero - más prominente */}
                       <div className="h-1 bg-black/40 rounded-full overflow-hidden">
                         <div 
                           className="h-full rounded-full transition-all duration-300"
@@ -468,6 +462,15 @@ export function GuidedFieldView({
                               : 'linear-gradient(90deg, #0a84ff, #5e5ce6)'
                           }}
                         />
+                      </div>
+                      
+                      {/* Texto centrado debajo de la barra */}
+                      <div className="flex justify-center items-center gap-2 mt-2">
+                        <span className="flex items-center gap-1 text-xs" style={{ color: isMorningCount ? '#f4a52a' : '#0a84ff' }}>
+                          {sectionIcon}
+                          <span className="font-medium">{sectionName}:</span>
+                          <span className="text-gray-400">{completedInSection} de {totalInSection}</span>
+                        </span>
                       </div>
                     </div>
                   );
