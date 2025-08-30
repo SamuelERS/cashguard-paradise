@@ -1,0 +1,174 @@
+/* 🤖 [IA] - v1.2.18: Campo con efectos sutiles para reutilización en otras partes de la app */
+/* Versión ultra-ligera sin animación infinita - Ideal para formularios y otros componentes */
+
+/* =======================================
+ * VERSIÓN ESTÁTICA - Solo hover/focus
+ * =======================================*/
+
+.field-glow-lite {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 0 1px rgba(10, 132, 255, 0.15);
+  border-radius: 6px;
+}
+
+.field-glow-lite:hover {
+  box-shadow: 0 0 0 1px rgba(10, 132, 255, 0.25),
+              0 0 4px rgba(10, 132, 255, 0.12);
+}
+
+.field-glow-lite:focus,
+.field-glow-lite:focus-within {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(10, 132, 255, 0.35),
+              0 0 6px rgba(10, 132, 255, 0.18);
+}
+
+/* Variante para modo morning (naranja) */
+.field-glow-lite-morning {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 0 1px rgba(244, 165, 42, 0.15);
+  border-radius: 6px;
+}
+
+.field-glow-lite-morning:hover {
+  box-shadow: 0 0 0 1px rgba(244, 165, 42, 0.25),
+              0 0 4px rgba(244, 165, 42, 0.12);
+}
+
+.field-glow-lite-morning:focus,
+.field-glow-lite-morning:focus-within {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(244, 165, 42, 0.35),
+              0 0 6px rgba(244, 165, 42, 0.18);
+}
+
+/* =======================================
+ * VERSIÓN CON 3 PULSOS AL FOCUS
+ * =======================================*/
+
+/* Animación más sutil que la principal */
+@keyframes pulse-lite-evening {
+  0%, 100% {
+    box-shadow: 0 0 0 1px rgba(10, 132, 255, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 0 2px rgba(10, 132, 255, 0.3),
+                0 0 8px rgba(10, 132, 255, 0.15);
+  }
+}
+
+@keyframes pulse-lite-morning {
+  0%, 100% {
+    box-shadow: 0 0 0 1px rgba(244, 165, 42, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 0 2px rgba(244, 165, 42, 0.3),
+                0 0 8px rgba(244, 165, 42, 0.15);
+  }
+}
+
+/* Aplicar 3 pulsos al enfocar */
+.field-glow-lite-pulse:focus,
+.field-glow-lite-pulse.is-focused {
+  animation: pulse-lite-evening 1.5s ease-in-out 3;
+}
+
+.field-glow-lite-pulse-morning:focus,
+.field-glow-lite-pulse-morning.is-focused {
+  animation: pulse-lite-morning 1.5s ease-in-out 3;
+}
+
+/* =======================================
+ * VERSIÓN MÍNIMA - Solo border
+ * =======================================*/
+
+.field-border-lite {
+  transition: border-color 0.25s ease;
+  border: 1px solid rgba(10, 132, 255, 0.2);
+  border-radius: 6px;
+}
+
+.field-border-lite:hover {
+  border-color: rgba(10, 132, 255, 0.35);
+}
+
+.field-border-lite:focus,
+.field-border-lite:focus-within {
+  outline: none;
+  border-color: rgba(10, 132, 255, 0.5);
+}
+
+/* Variante morning para border mínimo */
+.field-border-lite-morning {
+  transition: border-color 0.25s ease;
+  border: 1px solid rgba(244, 165, 42, 0.2);
+  border-radius: 6px;
+}
+
+.field-border-lite-morning:hover {
+  border-color: rgba(244, 165, 42, 0.35);
+}
+
+.field-border-lite-morning:focus,
+.field-border-lite-morning:focus-within {
+  outline: none;
+  border-color: rgba(244, 165, 42, 0.5);
+}
+
+/* =======================================
+ * UTILIDADES Y RESPONSIVE
+ * =======================================*/
+
+/* Reducir efectos en móviles para mejor rendimiento */
+@media (max-width: 640px) {
+  .field-glow-lite:focus,
+  .field-glow-lite:focus-within,
+  .field-glow-lite-morning:focus,
+  .field-glow-lite-morning:focus-within {
+    box-shadow: 0 0 0 2px rgba(10, 132, 255, 0.3),
+                0 0 4px rgba(10, 132, 255, 0.12);
+  }
+  
+  .field-glow-lite-morning:focus,
+  .field-glow-lite-morning:focus-within {
+    box-shadow: 0 0 0 2px rgba(244, 165, 42, 0.3),
+                0 0 4px rgba(244, 165, 42, 0.12);
+  }
+}
+
+/* Respetar preferencias de movimiento reducido */
+@media (prefers-reduced-motion: reduce) {
+  .field-glow-lite-pulse:focus,
+  .field-glow-lite-pulse.is-focused,
+  .field-glow-lite-pulse-morning:focus,
+  .field-glow-lite-pulse-morning.is-focused {
+    animation: none;
+    /* Solo mantener estado focus estático */
+    box-shadow: 0 0 0 2px rgba(10, 132, 255, 0.3) !important;
+  }
+  
+  .field-glow-lite-pulse-morning:focus,
+  .field-glow-lite-pulse-morning.is-focused {
+    box-shadow: 0 0 0 2px rgba(244, 165, 42, 0.3) !important;
+  }
+}
+
+/* Clases utilitarias para control de estado */
+.field-glow-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none !important;
+  border-color: rgba(100, 100, 100, 0.2) !important;
+}
+
+.field-glow-error {
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.3),
+              0 0 6px rgba(239, 68, 68, 0.15) !important;
+  border-color: rgba(239, 68, 68, 0.5) !important;
+}
+
+.field-glow-success {
+  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.3),
+              0 0 6px rgba(34, 197, 94, 0.15) !important;
+  border-color: rgba(34, 197, 94, 0.5) !important;
+}

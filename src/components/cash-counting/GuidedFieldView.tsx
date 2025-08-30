@@ -11,6 +11,7 @@ import { DENOMINATIONS } from '@/types/cash';
 import { formatCurrency } from '@/utils/calculations';
 import { useInputValidation } from '@/hooks/useInputValidation';
 import { useTimingConfig } from '@/hooks/useTimingConfig';
+import { usePulseAnimation } from '@/hooks/useVisibleAnimation'; // 🤖 [IA] - v1.2.18: Optimización automática de animaciones
 import { cn } from '@/lib/utils';
 import '@/styles/features/guided-field-pulse.css';
 
@@ -49,6 +50,9 @@ export function GuidedFieldView({
   const darkAccent = isMorningCount ? '#e67e22' : '#0066cc'; // Naranja oscuro / Azul oscuro
   
   const borderColor = isMorningCount ? 'rgba(244, 165, 42, 0.3)' : 'rgba(10, 132, 255, 0.3)';
+  
+  // 🤖 [IA] - v1.2.18: Hook optimizado para controlar animación automáticamente
+  const { shouldAnimate, isVisible, elementRef } = usePulseAnimation(isActive);
   const borderColorLight = isMorningCount ? 'rgba(244, 165, 42, 0.15)' : 'rgba(10, 132, 255, 0.15)';
   const borderColorSolid = isMorningCount ? 'rgba(244, 165, 42, 0.1)' : 'rgba(10, 132, 255, 0.1)';
   const focusGlow = isMorningCount ? 'rgba(244, 165, 42, 0.25)' : 'rgba(10, 132, 255, 0.25)';
@@ -340,7 +344,11 @@ export function GuidedFieldView({
                     </span>
                   )}
                   <Input
-                    ref={inputRef}
+                    ref={(node) => {
+                      // Combinar refs: inputRef + elementRef para IntersectionObserver
+                      if (inputRef && 'current' in inputRef) inputRef.current = node;
+                      if (elementRef && 'current' in elementRef) elementRef.current = node;
+                    }}
                     type="tel"  // 🤖 [IA] - v1.1.15: Cambiado de "text" a "tel" para mejor activación del teclado numérico
                     inputMode={getInputMode(currentFieldType === 'electronic' ? 'currency' : 'integer')}
                     pattern={getPattern(currentFieldType === 'electronic' ? 'currency' : 'integer')}
@@ -368,7 +376,8 @@ export function GuidedFieldView({
                     } as React.CSSProperties}
                     className={cn(
                       "focus:outline-none",
-                      isActive && (isMorningCount ? "guided-field-pulse-morning" : "guided-field-pulse-evening")
+                      shouldAnimate && (isMorningCount ? "guided-field-pulse-morning" : "guided-field-pulse-evening"),
+                      !isVisible && "animation-paused" // 🤖 [IA] - Pausar cuando no es visible
                     )}
                     autoFocus // 🤖 [IA] - v1.1.17: autoFocus necesario para mantener teclado entre campos
                   />

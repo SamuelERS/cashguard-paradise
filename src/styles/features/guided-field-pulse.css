@@ -5,29 +5,27 @@
  * ANIMACIONES RESPONSIVAS - MÓVILES 
  * =======================================*/
 
-/* Móviles pequeños - Efectos más sutiles */
+/* Móviles pequeños - Efectos MÁS SUTILES (-40% intensidad) */
 @media (max-width: 640px) {
   @keyframes pulse-glow-morning {
     0%, 100% {
-      box-shadow: 0 0 0 2px rgba(244, 165, 42, 0.4),
-                  0 0 8px rgba(244, 165, 42, 0.2);
+      box-shadow: 0 0 0 1px rgba(244, 165, 42, 0.3),
+                  0 0 6px rgba(244, 165, 42, 0.15);
     }
     50% {
-      box-shadow: 0 0 0 2px rgba(244, 165, 42, 0.6),
-                  0 0 12px rgba(244, 165, 42, 0.4),
-                  0 0 16px rgba(244, 165, 42, 0.1);
+      box-shadow: 0 0 0 2px rgba(244, 165, 42, 0.45),
+                  0 0 8px rgba(244, 165, 42, 0.25);
     }
   }
 
   @keyframes pulse-glow-evening {
     0%, 100% {
-      box-shadow: 0 0 0 2px rgba(10, 132, 255, 0.4),
-                  0 0 8px rgba(10, 132, 255, 0.2);
+      box-shadow: 0 0 0 1px rgba(10, 132, 255, 0.3),
+                  0 0 6px rgba(10, 132, 255, 0.15);
     }
     50% {
-      box-shadow: 0 0 0 2px rgba(10, 132, 255, 0.6),
-                  0 0 12px rgba(10, 132, 255, 0.4),
-                  0 0 16px rgba(10, 132, 255, 0.1);
+      box-shadow: 0 0 0 2px rgba(10, 132, 255, 0.45),
+                  0 0 8px rgba(10, 132, 255, 0.25);
     }
   }
 }
@@ -36,29 +34,27 @@
  * ANIMACIONES RESPONSIVAS - TABLETS
  * =======================================*/
 
-/* Tablets - Efectos medianos */
+/* Tablets - Efectos MEDIANOS (-30% intensidad) */
 @media (min-width: 641px) and (max-width: 1024px) {
   @keyframes pulse-glow-morning {
     0%, 100% {
-      box-shadow: 0 0 0 3px rgba(244, 165, 42, 0.4),
-                  0 0 15px rgba(244, 165, 42, 0.2);
+      box-shadow: 0 0 0 2px rgba(244, 165, 42, 0.35),
+                  0 0 12px rgba(244, 165, 42, 0.18);
     }
     50% {
-      box-shadow: 0 0 0 3px rgba(244, 165, 42, 0.6),
-                  0 0 20px rgba(244, 165, 42, 0.4),
-                  0 0 25px rgba(244, 165, 42, 0.2);
+      box-shadow: 0 0 0 3px rgba(244, 165, 42, 0.5),
+                  0 0 16px rgba(244, 165, 42, 0.3);
     }
   }
 
   @keyframes pulse-glow-evening {
     0%, 100% {
-      box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.4),
-                  0 0 15px rgba(10, 132, 255, 0.2);
+      box-shadow: 0 0 0 2px rgba(10, 132, 255, 0.35),
+                  0 0 12px rgba(10, 132, 255, 0.18);
     }
     50% {
-      box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.6),
-                  0 0 20px rgba(10, 132, 255, 0.4),
-                  0 0 25px rgba(10, 132, 255, 0.2);
+      box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.5),
+                  0 0 16px rgba(10, 132, 255, 0.3);
     }
   }
 }
@@ -103,11 +99,27 @@
  * =======================================*/
 
 .guided-field-pulse-morning {
-  animation: pulse-glow-morning 2s ease-in-out infinite;
+  animation: pulse-glow-morning 2.5s ease-in-out infinite;
 }
 
 .guided-field-pulse-evening {
-  animation: pulse-glow-evening 2s ease-in-out infinite;
+  animation: pulse-glow-evening 2.5s ease-in-out infinite;
+}
+
+/* 🤖 [IA] - Clase para pausar animación cuando no es visible */
+.animation-paused {
+  animation-play-state: paused !important;
+}
+
+/* Optimización GPU - Promover a capa compuesta solo durante animación */
+.guided-field-pulse-morning,
+.guided-field-pulse-evening {
+  will-change: box-shadow;
+}
+
+/* Remover will-change cuando está pausada para liberar memoria GPU */
+.animation-paused {
+  will-change: auto;
 }
 
 /* Reducir animación en dispositivos con preferencia de movimiento reducido */
