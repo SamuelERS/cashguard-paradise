@@ -1,4 +1,4 @@
-// 🤖 [IA] - v1.1.08: Fixed total confirmation button not advancing to completion
+// 🤖 [IA] - v1.2.19: Extended with backward navigation and anti-fraud locking
 import { useState, useCallback } from 'react';
 import { CashCount, ElectronicPayments, DENOMINATIONS } from '@/types/cash';
 import { OperationMode } from '@/types/operation-mode'; // 🤖 [IA] - v1.0.85
@@ -9,6 +9,8 @@ export interface GuidedCountingState {
   completedSteps: Set<number>;
   isCompleted: boolean;
   fieldOrder: string[];
+  isLocked: boolean; // 🤖 [IA] - v1.2.19: Anti-fraud lock after electronic payments
+  lastElectronicStep: number | null; // 🤖 [IA] - v1.2.19: Track when electronic section starts
 }
 
 // 🤖 [IA] - v1.0.85: Separate field orders for morning count vs evening cut
@@ -93,7 +95,9 @@ export function useGuidedCounting(operationMode?: OperationMode) { // 🤖 [IA] 
     totalSteps: fieldOrder.length,
     completedSteps: new Set(),
     isCompleted: false,
-    fieldOrder: fieldOrder
+    fieldOrder: fieldOrder,
+    isLocked: false, // 🤖 [IA] - v1.2.19: Initially unlocked
+    lastElectronicStep: null // 🤖 [IA] - v1.2.19: No electronic steps completed yet
   });
 
   const [pendingValue, setPendingValue] = useState<string>('');
@@ -119,6 +123,48 @@ export function useGuidedCounting(operationMode?: OperationMode) { // 🤖 [IA] 
   const isFieldAccessible = useCallback((fieldName: string) => {
     return isFieldActive(fieldName) || isFieldCompleted(fieldName);
   }, [isFieldActive, isFieldCompleted]);
+
+  // 🤖 [IA] - v1.2.19: canGoNext ELIMINADA - Solo se necesita canGoPrevious
+
+  const canGoPrevious = useCallback(() => {
+    // Can go previous if:
+    // 1. Not at the first step
+    // 2. Not locked (after electronic payments)
+    // 3. Not completed
+    return guidedState.currentStep > 1 && !guidedState.isLocked && !guidedState.isCompleted;
+  }, [guidedState.currentStep, guidedState.isLocked, guidedState.isCompleted]);
+
+  const goPrevious = useCallback(() => {
+    if (!canGoPrevious()) {
+      return false;
+    }
+
+    setGuidedState(prev => {
+      const previousStep = prev.currentStep - 1;
+      const newCompletedSteps = new Set(prev.completedSteps);
+      
+      // 🤖 [IA] - v1.2.19: MEJORADO - Eliminar el campo anterior de completados para permitir edición
+      // Al retroceder al campo anterior, debe volverse editable
+      newCompletedSteps.delete(previousStep);
+      
+      return {
+        ...prev,
+        currentStep: previousStep,
+        completedSteps: newCompletedSteps, // Campo anterior removido de completados = editable
+        isCompleted: false // Reset completion status when going back
+      };
+    });
+
+    return true;
+  }, [canGoPrevious]);
+
+  // 🤖 [IA] - v1.2.19: Función goNext ELIMINADA - Causa problemas de estado sin callbacks
+
+  // 🤖 [IA] - v1.2.19: Check if current field is electronic payment
+  const isCurrentFieldElectronic = useCallback(() => {
+    const currentField = getCurrentField();
+    return ['credomatic', 'promerica', 'bankTransfer', 'paypal'].includes(currentField);
+  }, [getCurrentField]);
 
   const confirmCurrentField = useCallback((
     value: string,
@@ -166,11 +212,18 @@ export function useGuidedCounting(operationMode?: OperationMode) { // 🤖 [IA] 
       const nextStep = prev.currentStep + 1;
       const isCompleted = nextStep > prev.totalSteps;
       
+      // 🤖 [IA] - v1.2.19: MEJORADO - Bloquear al llegar a totales, no después de PayPal
+      const nextField = fieldOrder[nextStep - 1];
+      const shouldLock = nextField === 'totalCash' || nextField === 'totalElectronic' || isCompleted;
+      
       return {
         ...prev,
         currentStep: isCompleted ? prev.currentStep : nextStep,
         completedSteps: newCompletedSteps,
-        isCompleted
+        isCompleted,
+        // Bloquear navegación al entrar en fase de totales (sistema ciego)
+        isLocked: shouldLock ? true : prev.isLocked,
+        lastElectronicStep: shouldLock && !prev.isLocked ? prev.currentStep : prev.lastElectronicStep
       };
     });
 
@@ -184,7 +237,9 @@ export function useGuidedCounting(operationMode?: OperationMode) { // 🤖 [IA] 
       totalSteps: fieldOrder.length,
       completedSteps: new Set(),
       isCompleted: false,
-      fieldOrder: fieldOrder
+      fieldOrder: fieldOrder,
+      isLocked: false, // 🤖 [IA] - v1.2.19: Reset lock state
+      lastElectronicStep: null // 🤖 [IA] - v1.2.19: Reset electronic tracking
     });
     setPendingValue('');
   }, [fieldOrder]);
@@ -220,6 +275,10 @@ export function useGuidedCounting(operationMode?: OperationMode) { // 🤖 [IA] 
     isFieldAccessible,
     confirmCurrentField,
     resetGuidedCounting,
+    // 🤖 [IA] - v1.2.19: Simplified navigation functions
+    canGoPrevious,
+    goPrevious,
+    isCurrentFieldElectronic,
     FIELD_ORDER,
     FIELD_LABELS
   };

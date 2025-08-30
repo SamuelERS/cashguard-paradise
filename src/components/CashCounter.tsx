@@ -1,9 +1,11 @@
-// 🤖 [IA] - v1.1.09 - Morning count visual identity with yellow/orange colors
+// 🤖 [IA] - v1.2.19 - Phase 1 Navigation System simplified to 2-button layout
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Calculator, Users, MapPin, DollarSign, Sunrise, Moon } from "lucide-react";
+import { ArrowLeft, X, Calculator, Users, MapPin, DollarSign, Sunrise } from "lucide-react";
 // 🤖 [IA] - v1.2.18 - Import modular CSS for desktop alignment improvements
 import '../styles/features/cash-counter-desktop-alignment.css';
+// 🤖 [IA] - v1.2.19 - Import modular CSS for phase 1 navigation
+import '../styles/features/phase1-navigation.css';
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -19,6 +21,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"; // 🤖 [IA] - v1.2.9: Diálogo de confirmación
+import { GlassAlertDialog } from "@/components/ui/GlassAlertDialog"; // 🤖 [IA] - v1.2.19: Modal confirmación retroceso
 import CashCalculation from "@/components/CashCalculation";
 import { GuidedProgressIndicator } from "@/components/ui/GuidedProgressIndicator";
 import { GuidedCoinSection } from "@/components/cash-counting/GuidedCoinSection";
@@ -75,6 +78,7 @@ const CashCounter = ({
   const [selectedWitness, setSelectedWitness] = useState(initialWitness);
   const [expectedSales, setExpectedSales] = useState(initialExpectedSales);
   const [showExitConfirmation, setShowExitConfirmation] = useState(false); // 🤖 [IA] - v1.2.9: Estado para diálogo de confirmación
+  const [showBackConfirmation, setShowBackConfirmation] = useState(false); // 🤖 [IA] - v1.2.19: Estado para confirmación de retroceso
   
   // 🤖 [IA] - v1.0.3 - Iniciar directamente si hay datos del wizard
   const hasInitialData = initialStore && initialCashier && initialWitness && initialExpectedSales;
@@ -107,6 +111,10 @@ const CashCounter = ({
     isFieldAccessible,
     confirmCurrentField,
     resetGuidedCounting,
+    // 🤖 [IA] - v1.2.19: Simplified navigation functions
+    canGoPrevious,
+    goPrevious,
+    isCurrentFieldElectronic,
     FIELD_ORDER
   } = useGuidedCounting(operationMode); // 🤖 [IA] - v1.0.85: Pass operation mode
 
@@ -357,6 +365,39 @@ const CashCounter = ({
     resetGuidedCounting();
     resetAllPhases();
     if (onBack) onBack();
+  };
+
+  // 🤖 [IA] - v1.2.19: Funciones de navegación de fase 1
+  const handlePreviousStep = () => {
+    if (!canGoPrevious()) {
+      // Si está bloqueado, mostrar mensaje mejorado
+      if (guidedState.isLocked) {
+        toast.error("🔒 Conteo finalizado - No se puede retroceder en la fase de totales");
+        return;
+      }
+      if (guidedState.currentStep === 1) {
+        toast.info("ℹ️ Ya está en el primer campo");
+        return;
+      }
+      return;
+    }
+    setShowBackConfirmation(true);
+  };
+
+  const handleConfirmPrevious = () => {
+    const success = goPrevious();
+    setShowBackConfirmation(false);
+    if (success) {
+      toast.success("⬅️ Campo anterior activado - Los valores se mantuvieron");
+    } else {
+      toast.error("⚠️ No se pudo retroceder");
+    }
+  };
+
+  // 🤖 [IA] - v1.2.19: Función handleNextStep ELIMINADA - Usar confirmación de campo únicamente
+
+  const handleCancelProcess = () => {
+    setShowExitConfirmation(true);
   };
 
   const renderStoreSelection = () => (
@@ -784,16 +825,27 @@ const CashCounter = ({
             </div>
           </div>
 
-          {/* Botones de navegación - 🤖 [IA] - v1.2.14: Sistema de diseño coherente */}
-          <div className="cash-counter-navigation flex justify-center lg:max-w-lg lg:mx-auto">
+          {/* Sistema de navegación simplificado - 🤖 [IA] - v1.2.19: 2-Button Navigation System */}
+          <div className="phase1-navigation">
+            {/* Botón Cancelar (izquierda) */}
             <Button
-              onClick={() => setShowExitConfirmation(true)}
-              variant="outline"
-              className="cash-counter-nav-button"
+              onClick={handleCancelProcess}
+              className="phase1-cancel-button"
+              aria-label="Cancelar proceso y volver al inicio"
             >
-              <ArrowLeft className="cash-counter-nav-icon" />
-              <span>Volver</span>
-              <span className="hidden sm:inline ml-1">a Inicio</span>
+              <X className="phase1-nav-icon" />
+              <span className="phase1-nav-text-hidden">Cancelar</span>
+            </Button>
+            
+            {/* Botón Anterior (derecha) */}
+            <Button
+              onClick={handlePreviousStep}
+              disabled={!canGoPrevious()}
+              className="phase1-previous-button"
+              aria-label="Retroceder al campo anterior"
+            >
+              <ArrowLeft className="phase1-nav-icon" />
+              <span className="phase1-nav-text-hidden">Anterior</span>
             </Button>
           </div>
 
@@ -825,6 +877,18 @@ const CashCounter = ({
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
+
+          {/* 🤖 [IA] - v1.2.19: Modal de confirmación para retroceso con Glass Morphism */}
+          <GlassAlertDialog
+            open={showBackConfirmation}
+            onConfirm={handleConfirmPrevious}
+            onCancel={() => setShowBackConfirmation(false)}
+            title="⬅️ ¿Retroceder al campo anterior?"
+            description="Todos los valores ingresados se mantendrán guardados."
+            warning="Podrás revisar y editar campos anteriores sin perder datos."
+            confirmText="Sí, retroceder"
+            cancelText="Continuar aquí"
+          />
 
         </div>
     </motion.div>
