@@ -880,7 +880,7 @@ const CashCounter = ({
                   </span>
                 </AlertDialogDescription>
               </AlertDialogHeader>
-              <AlertDialogFooter className="flex flex-col-reverse sm:flex-row sm:justify-center gap-y-4 sm:gap-y-0 sm:gap-x-4">
+              <AlertDialogFooter>
                 <AlertDialogCancel 
                   style={{
                     backgroundColor: 'rgba(255, 255, 255, 0.05)',

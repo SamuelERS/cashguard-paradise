@@ -114,7 +114,7 @@ export const GlassAlertDialog: React.FC<GlassAlertDialogProps> = ({
         >
           <AlertDialogAction
             onClick={onConfirm}
-            className="hover:bg-white/10"
+            className="hover:opacity-90 inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-semibold transition-all duration-300 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 btn-primary h-12 px-6 py-3 hover:bg-white/10"
             style={{
               // [IA] - Botón confirmar con gradiente rojo consistente con CashCounter
               background: 'linear-gradient(135deg, rgb(244, 33, 46) 0%, rgb(255, 68, 68) 100%)',
@@ -123,6 +123,9 @@ export const GlassAlertDialog: React.FC<GlassAlertDialogProps> = ({
               borderRadius: '10px',
               fontWeight: 600,
               fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
+              boxShadow: 'none',
+              outline: 'none',
+              height: '3rem', // [IA] - Altura explícita para consistencia
             }}
           >
             {confirmText}
@@ -130,7 +133,7 @@ export const GlassAlertDialog: React.FC<GlassAlertDialogProps> = ({
           
           <AlertDialogCancel
             onClick={onCancel}
-            className="hover:bg-white/10"
+            className="hover:bg-white/10 inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-semibold transition-all duration-300 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 btn-secondary h-12 px-6 py-3 mt-2 sm:mt-0"
             style={{
               // [IA] - Botón cancelar con diseño glass morphism consistente con CashCounter
               backgroundColor: 'rgba(255, 255, 255, 0.05)',
@@ -138,6 +141,9 @@ export const GlassAlertDialog: React.FC<GlassAlertDialogProps> = ({
               color: 'rgb(225, 232, 237)',
               borderRadius: '10px',
               fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
+              boxShadow: 'none',
+              outline: 'none',
+              height: '3rem', // [IA] - Altura explícita para consistencia
             }}
           >
             {cancelText}
