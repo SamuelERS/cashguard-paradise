@@ -1,0 +1,111 @@
+/* 
+ * 🤖 [IA] - v1.2.25: Guided Field Confirm Button - Success Alert Colors
+ * Nuevo archivo modular siguiendo v1.2.18 architecture (index.css CONGELADO)
+ * Colores EXACTOS del sistema Alert Success - Sin box-shadow
+ */
+
+/* Guided Field Confirm Button - Colores EXACTOS Alert Success */
+.guided-field-confirm-button {
+  /* Flat Style - Colores EXACTOS Alert Success */
+  background: #dcfce7 !important; /* bg-green-100 EXACTO - Override btn-primary and inline gradients */
+  border: 2px solid #22c55e !important; /* border-green-500 EXACTO - Override btn-primary */
+  box-shadow: none !important; /* Remove btn-primary shadow completely */
+  
+  color: #14532d !important; /* text-green-900 EXACTO - Override btn-primary and text-white */
+  
+  /* Maintain existing responsive layout properties from inline styles */
+  border-radius: clamp(8px, 2vw, 12px); /* Responsive border-radius from inline styles */
+  height: clamp(48px, 12vw, 56px); /* Responsive height from inline styles */
+  padding: 0 clamp(12px, 3vw, 24px); /* Responsive padding from inline styles */
+  font-size: clamp(14px, 3vw, 18px); /* Responsive font-size from inline styles */
+  font-weight: bold; /* Bold weight from inline styles */
+  min-width: clamp(100px, 25vw, 140px); /* Min-width from inline styles */
+  
+  transition: all 0.3s ease;
+  cursor: pointer;
+  
+  /* Maintain button structure */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+}
+
+.guided-field-confirm-button:hover:not(:disabled) {
+  background: #bbf7d0 !important; /* hover:bg-green-200 EXACTO - Override btn-primary */
+  border-color: #16a34a !important; /* hover:border-green-600 - Override btn-primary */
+  color: #14532d !important; /* text-green-900 EXACTO - Override btn-primary */
+  box-shadow: none !important; /* Remove btn-primary:hover shadow completely */
+  transform: translateY(-1px) scale(1.02); /* Efecto sutil de escala */
+}
+
+.guided-field-confirm-button:active:not(:disabled) {
+  transform: translateY(0) scale(0.98); /* Efecto de presión */
+  background: #bbf7d0 !important; /* Consistente con hover - green-200 - Override btn-primary */
+  color: #14532d !important; /* text-green-900 EXACTO - Override btn-primary */
+  box-shadow: none !important; /* Remove any active state shadows */
+}
+
+/* Estado deshabilitado cuando el input está vacío */
+.guided-field-confirm-button:disabled {
+  background: rgba(128, 128, 128, 0.3) !important; /* Consistente con el estado actual disabled */
+  border: 1px solid rgba(128, 128, 128, 0.5) !important;
+  color: #6b7280 !important; /* text-gray-500 */
+  cursor: not-allowed;
+  box-shadow: none !important;
+  opacity: 0.6; /* Mantener la opacidad del estado actual */
+  transform: none; /* No transform cuando disabled */
+}
+
+/* Dark mode - Colores EXACTOS Alert Success */
+@media (prefers-color-scheme: dark) {
+  .guided-field-confirm-button {
+    background: #14532d !important; /* dark:bg-green-900 EXACTO - Override btn-primary */
+    border-color: #15803d !important; /* dark:border-green-700 EXACTO - Override btn-primary */
+    color: #dcfce7 !important; /* dark:text-green-100 EXACTO - Override btn-primary */
+  }
+  
+  .guided-field-confirm-button:hover:not(:disabled) {
+    background: #166534 !important; /* dark:hover:bg-green-800 EXACTO - Override btn-primary */
+    border-color: #16a34a !important; /* Override btn-primary */
+    color: #dcfce7 !important; /* Override btn-primary */
+  }
+  
+  .guided-field-confirm-button:active:not(:disabled) {
+    background: #166534 !important; /* Consistente con hover en dark - Override btn-primary */
+    color: #dcfce7 !important; /* Override btn-primary */
+  }
+  
+  .guided-field-confirm-button:disabled {
+    background: rgba(128, 128, 128, 0.3) !important; /* dark disabled - consistent */
+    border-color: rgba(128, 128, 128, 0.5) !important;
+    color: #6b7280 !important;
+  }
+}
+
+/* Mejoras para accesibilidad */
+.guided-field-confirm-button:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* Responsividad mejorada para móviles */
+@media (max-width: 640px) {
+  .guided-field-confirm-button {
+    /* Responsive values already handled by clamp() in main styles */
+    /* This section available for additional mobile-specific adjustments if needed */
+  }
+}
+
+/* Icon styling dentro del botón */
+.guided-field-confirm-button svg {
+  flex-shrink: 0;
+  margin-left: 0.25rem; /* ml-1 equivalent */
+}
+
+/* Maintain ChevronRight icon styling */
+.guided-field-confirm-button .lucide-chevron-right {
+  width: 1rem; /* w-4 */
+  height: 1rem; /* h-4 */
+}

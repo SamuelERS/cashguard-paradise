@@ -14,6 +14,7 @@ import { useTimingConfig } from '@/hooks/useTimingConfig';
 import { usePulseAnimation } from '@/hooks/useVisibleAnimation'; // 🤖 [IA] - v1.2.18: Optimización automática de animaciones
 import { cn } from '@/lib/utils';
 import '@/styles/features/guided-field-pulse.css';
+import '@/styles/features/guided-field-confirm-button.css';
 
 interface GuidedFieldViewProps {
   currentFieldName: string;
@@ -387,7 +388,6 @@ export function GuidedFieldView({
                   onClick={handleConfirm}
                   disabled={!inputValue}
                   style={{
-                    background: inputValue ? gradientBg : 'rgba(128, 128, 128, 0.3)',
                     border: 'none',
                     borderRadius: 'clamp(8px, 2vw, 12px)', // 🤖 [IA] - v1.2.18: Responsive border-radius
                     height: 'clamp(48px, 12vw, 56px)', // 🤖 [IA] - v1.2.18: Responsive height to match input - vw mejor para móviles
@@ -397,7 +397,7 @@ export function GuidedFieldView({
                     minWidth: 'clamp(100px, 25vw, 140px)', // 🤖 [IA] - v1.2.18: Min-width para evitar compresión en móviles
                     transition: 'all 0.3s'
                   }}
-                  className="text-white shadow-lg"
+                  className="guided-field-confirm-button text-white shadow-lg"
                   onTouchStart={(e) => e.preventDefault()} // 🤖 [IA] - v1.1.17: preventDefault para mantener focus
                 >
                   Confirmar
