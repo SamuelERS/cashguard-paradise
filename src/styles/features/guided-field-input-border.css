@@ -1,0 +1,111 @@
+/* 
+ * 🤖 [IA] - v1.2.25: Guided Field Input Border - Optimized for Pulse Effect
+ * Migración desde index.css siguiendo v1.2.18 architecture (index.css CONGELADO)
+ * Bordes más delgados y sutiles para resaltar mejor el efecto de pulso
+ */
+
+/* Base input styling - borde delgado y sutil */
+.guided-field-input {
+  border-width: 1px !important; /* Reducido de 2px a 1px */
+  border-style: solid !important;
+  border-color: rgba(255, 255, 255, 0.2) !important; /* Blanco sutil por defecto */
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Morning mode - borde blanco muy sutil */
+.guided-field-input.morning-mode {
+  border-color: rgba(255, 255, 255, 0.25) !important; /* Override index.css */
+}
+
+/* Evening mode - borde blanco más sutil */
+.guided-field-input.evening-mode {
+  border-color: rgba(255, 255, 255, 0.2) !important; /* Override index.css */
+}
+
+/* Cuando tiene valor - borde ligeramente más visible */
+.guided-field-input.morning-mode.has-value {
+  border-color: rgba(255, 255, 255, 0.35) !important;
+  box-shadow: 0 0 0 2px rgba(244, 165, 42, 0.1) !important; /* Glow más sutil */
+}
+
+.guided-field-input.evening-mode.has-value {
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 0 0 2px rgba(10, 132, 255, 0.1) !important; /* Glow más sutil */
+}
+
+/* Focus states - mantenemos el contraste necesario */
+.guided-field-input:focus {
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  outline: none;
+}
+
+.guided-field-input.morning-mode:focus {
+  border-color: rgba(255, 255, 255, 0.45) !important;
+}
+
+.guided-field-input.evening-mode:focus {
+  border-color: rgba(255, 255, 255, 0.4) !important;
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+  .guided-field-input {
+    border-color: rgba(255, 255, 255, 0.15) !important; /* Más sutil en dark mode */
+  }
+  
+  .guided-field-input.morning-mode {
+    border-color: rgba(255, 255, 255, 0.18) !important;
+  }
+  
+  .guided-field-input.evening-mode {
+    border-color: rgba(255, 255, 255, 0.15) !important;
+  }
+  
+  .guided-field-input.morning-mode.has-value {
+    border-color: rgba(255, 255, 255, 0.25) !important;
+    box-shadow: 0 0 0 2px rgba(244, 165, 42, 0.08) !important;
+  }
+  
+  .guided-field-input.evening-mode.has-value {
+    border-color: rgba(255, 255, 255, 0.22) !important;
+    box-shadow: 0 0 0 2px rgba(10, 132, 255, 0.08) !important;
+  }
+  
+  .guided-field-input:focus {
+    border-color: rgba(255, 255, 255, 0.3) !important;
+  }
+  
+  .guided-field-input.morning-mode:focus {
+    border-color: rgba(255, 255, 255, 0.35) !important;
+  }
+  
+  .guided-field-input.evening-mode:focus {
+    border-color: rgba(255, 255, 255, 0.3) !important;
+  }
+}
+
+/* Responsive adjustments - bordes aún más sutiles en móviles */
+@media (max-width: 640px) {
+  .guided-field-input {
+    border-color: rgba(255, 255, 255, 0.18) !important; /* Más sutil en móviles */
+  }
+  
+  .guided-field-input.morning-mode,
+  .guided-field-input.evening-mode {
+    border-color: rgba(255, 255, 255, 0.18) !important;
+  }
+  
+  .guided-field-input.has-value {
+    border-color: rgba(255, 255, 255, 0.25) !important;
+  }
+}
+
+/* Estados especiales - mantener accesibilidad */
+.guided-field-input:disabled {
+  border-color: rgba(128, 128, 128, 0.3) !important;
+  opacity: 0.6;
+}
+
+.guided-field-input:invalid {
+  border-color: rgba(239, 68, 68, 0.5) !important; /* Rojo sutil para errores */
+}

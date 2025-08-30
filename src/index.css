@@ -2001,6 +2001,11 @@
   transition: all 0.3s ease;
 }
 
+/* 🤖 [IA] - v1.2.25: Guided Field Input Border MIGRADO a /src/styles/features/guided-field-input-border.css
+ * Estos estilos han sido movidos al archivo modular para bordes más delgados y sutiles
+ * que permiten resaltar mejor el efecto de pulso
+ */
+/*
 .guided-field-input.morning-mode {
   border-color: rgba(244, 165, 42, 0.3);
 }
@@ -2008,6 +2013,7 @@
 .guided-field-input.evening-mode {
   border-color: rgba(10, 132, 255, 0.3);
 }
+*/
 
 .guided-field-input.morning-mode.has-value {
   box-shadow: 0 0 0 3px rgba(244, 165, 42, 0.15);

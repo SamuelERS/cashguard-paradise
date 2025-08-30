@@ -851,34 +851,17 @@ const CashCounter = ({
             </Button>
           </div>
 
-          {/* 🤖 [IA] - v1.2.14: AlertDialog con sistema de diseño coherente */}
-          <AlertDialog open={showExitConfirmation} onOpenChange={setShowExitConfirmation}>
-            <AlertDialogContent className="cash-counter-alert-dialog !border-0">
-              <AlertDialogHeader className="flex flex-col space-y-2 text-center sm:text-left">
-                <AlertDialogTitle className="cash-counter-alert-title">
-                  ⚠️ ¿Confirmar salida?
-                </AlertDialogTitle>
-                <AlertDialogDescription className="cash-counter-alert-description">
-                  Se perderá todo el progreso del conteo actual. 
-                  <br />
-                  <span className="cash-counter-alert-warning">
-                    Esta acción no se puede deshacer.
-                  </span>
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter className="cash-counter-alert-footer">
-                <AlertDialogAction 
-                  onClick={handleBackToStart}
-                  className="cash-counter-alert-action"
-                >
-                  Sí, volver al inicio
-                </AlertDialogAction>
-                <AlertDialogCancel className="cash-counter-alert-cancel">
-                  Continuar aquí
-                </AlertDialogCancel>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+          {/* 🤖 [IA] - v1.2.25: Glass AlertDialog con diseño coherente y Glass Morphism funcional */}
+          <GlassAlertDialog
+            open={showExitConfirmation}
+            onConfirm={handleBackToStart}
+            onCancel={() => setShowExitConfirmation(false)}
+            title="⚠️ ¿Confirmar salida?"
+            description="Se perderá todo el progreso del conteo actual."
+            warning="Esta acción no se puede deshacer."
+            confirmText="Sí, volver al inicio"
+            cancelText="Continuar aquí"
+          />
 
           {/* 🤖 [IA] - v1.2.19: Modal de confirmación para retroceso con Glass Morphism */}
           <GlassAlertDialog

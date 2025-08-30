@@ -15,6 +15,7 @@ import { usePulseAnimation } from '@/hooks/useVisibleAnimation'; // 🤖 [IA] - 
 import { cn } from '@/lib/utils';
 import '@/styles/features/guided-field-pulse.css';
 import '@/styles/features/guided-field-confirm-button.css';
+import '@/styles/features/guided-field-input-border.css';
 
 interface GuidedFieldViewProps {
   currentFieldName: string;
