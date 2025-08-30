@@ -754,7 +754,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
             </div>
             <div className="flex justify-center mt-1">
               <span className="text-xs">
-                <span className="text-primary font-medium">Progreso:</span>
+                <span className="text-primary font-medium">Preparación de Corte</span>
                 <span className="text-gray-400"> {progressValue}% completado</span>
               </span>
             </div>
