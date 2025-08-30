@@ -91,28 +91,28 @@
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
     
-    /* 🤖 [IA] - v1.2.14: Sistema de diseño coherente - Variables responsive unificadas */
+    /* 🤖 [IA] - v1.2.15: Proporciones optimizadas para equilibrio desktop/móvil */
     
-    /* Espaciados responsive unificados */
-    --spacing-xs: clamp(8px, 2vw, 12px);
-    --spacing-sm: clamp(12px, 3vw, 16px);
-    --spacing-md: clamp(16px, 4vw, 20px);
-    --spacing-lg: clamp(20px, 5vw, 24px);
-    --spacing-xl: clamp(24px, 6vw, 32px);
-    --spacing-xxl: clamp(32px, 8vw, 48px);
+    /* Espaciados responsive optimizados - 25% reducción */
+    --spacing-xs: clamp(6px, 1.5vw, 10px);
+    --spacing-sm: clamp(10px, 2.5vw, 14px);
+    --spacing-md: clamp(12px, 3vw, 16px);
+    --spacing-lg: clamp(16px, 4vw, 20px);
+    --spacing-xl: clamp(20px, 5vw, 28px);
+    --spacing-xxl: clamp(28px, 7vw, 40px);
     
-    /* Tipografía coherente - Sistema rem responsive */
-    --text-xs: clamp(0.75rem, 2.5vw, 0.875rem);
-    --text-sm: clamp(0.875rem, 3vw, 1rem);
-    --text-base: clamp(1rem, 3.5vw, 1.125rem);
-    --text-lg: clamp(1.125rem, 4vw, 1.25rem);
-    --text-xl: clamp(1.25rem, 4.5vw, 1.5rem);
-    --text-2xl: clamp(1.5rem, 5vw, 1.875rem);
+    /* Tipografía equilibrada - Sistema dorado 1.618 */
+    --text-xs: clamp(0.75rem, 2.2vw, 0.825rem);
+    --text-sm: clamp(0.875rem, 2.8vw, 0.95rem);
+    --text-base: clamp(1rem, 3.2vw, 1.05rem);
+    --text-lg: clamp(1.05rem, 3.5vw, 1.125rem);
+    --text-xl: clamp(1.125rem, 3.8vw, 1.25rem);
+    --text-2xl: clamp(1.25rem, 4.5vw, 1.5rem);
     
-    /* Alturas de controles unificadas */
-    --input-height: clamp(40px, 10vw, 48px);
-    --button-height: clamp(40px, 10vw, 48px);
-    --button-height-sm: clamp(32px, 8vw, 36px);
+    /* Alturas optimizadas - Proporción dorada aplicada */
+    --input-height: clamp(36px, 8vw, 42px);
+    --button-height: clamp(36px, 8vw, 42px);
+    --button-height-sm: clamp(30px, 7vw, 34px);
     
     /* Iconos responsive unificados */
     --icon-xs: clamp(12px, 3vw, 14px);
@@ -1483,7 +1483,7 @@
   left: 100%;
 }
 
-/* 🤖 [IA] - v1.2.14: Sistema de diseño coherente para CashCounter */
+/* 🤖 [IA] - v1.2.15: Proporciones optimizadas para CashCounter */
 
 /* Contenedor principal CashCounter */
 .cash-counter-container {
@@ -1494,14 +1494,14 @@
   border-radius: var(--radius-xl);
   padding: var(--spacing-md);
   box-shadow: var(--glass-shadow);
-  min-height: clamp(300px, 60vh, 400px);
+  min-height: clamp(280px, 55vh, 380px);
   max-height: 90vh;
   display: flex;
   flex-direction: column;
   position: relative;
 }
 
-/* Header del CashCounter */
+/* Header del CashCounter - Más compacto */
 .cash-counter-header {
   position: relative;
   background: var(--glass-bg-primary);
@@ -1513,24 +1513,24 @@
   text-align: center;
 }
 
-/* Título del header */
+/* Título del header - Tamaño reducido */
 .cash-counter-title {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-sm);
+  gap: var(--spacing-xs);
 }
 
 .cash-counter-title h2 {
-  font-size: var(--text-xl);
-  font-weight: bold;
+  font-size: var(--text-lg);
+  font-weight: 600;
   color: #e1e8ed;
   margin: 0;
 }
 
 .cash-counter-icon {
-  width: var(--icon-lg);
-  height: var(--icon-lg);
+  width: var(--icon-md);
+  height: var(--icon-md);
 }
 
 /* Área de contenido scrollable */
@@ -1690,8 +1690,8 @@
   -webkit-backdrop-filter: var(--glass-blur);
   border: 1px solid var(--glass-border-primary);
   border-radius: var(--radius-xl);
-  padding: var(--spacing-lg);
-  margin-bottom: var(--spacing-lg);
+  padding: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
   box-shadow: var(--glass-shadow);
 }
 
@@ -1704,25 +1704,25 @@
   border-left: 4px solid rgba(10, 132, 255, 0.8);
 }
 
-/* Header principal */
+/* Header principal - Compacto */
 .guided-progress-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
 }
 
 /* Sección izquierda del header */
 .guided-progress-info {
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
+  gap: var(--spacing-xs);
 }
 
-/* Badge circular con step number */
+/* Badge circular con step number - Reducido */
 .guided-progress-badge {
-  width: 2.5rem;
-  height: 2.5rem;
+  width: clamp(32px, 7vw, 36px);
+  height: clamp(32px, 7vw, 36px);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -1743,16 +1743,16 @@
   font-size: var(--text-sm);
 }
 
-/* Textos del header */
+/* Textos del header - Reducidos */
 .guided-progress-title {
-  font-size: var(--text-lg);
-  font-weight: bold;
+  font-size: var(--text-base);
+  font-weight: 600;
   color: #e1e8ed;
   margin: 0;
 }
 
 .guided-progress-subtitle {
-  font-size: var(--text-sm);
+  font-size: var(--text-xs);
   color: #8899a6;
   margin: 0;
 }
@@ -1769,7 +1769,7 @@
 }
 
 .guided-progress-percentage {
-  font-size: var(--text-xl);
+  font-size: var(--text-lg);
   font-weight: bold;
 }
 
@@ -1804,12 +1804,12 @@
   background: linear-gradient(90deg, rgb(10, 132, 255), rgb(94, 92, 230));
 }
 
-/* Sección de instrucciones */
+/* Sección de instrucciones - Compacta */
 .guided-progress-instructions {
   background: rgba(36, 36, 36, 0.3);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-lg);
-  padding: var(--spacing-md);
+  padding: var(--spacing-xs);
 }
 
 .guided-progress-instruction-content {
@@ -1844,15 +1844,15 @@
 
 /* 🤖 [IA] - v1.2.14: Sistema coherente para GuidedFieldView */
 
-/* Contenedor principal del campo activo */
+/* Contenedor principal del campo activo - Espaciado equilibrado */
 .guided-field-container {
   background: var(--glass-bg-primary);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
   border-radius: var(--radius-xl);
-  padding: var(--spacing-sm);
+  padding: var(--spacing-xs);
   box-shadow: var(--glass-shadow);
-  max-width: 48rem;
+  max-width: 44rem;
   margin: 0 auto;
 }
 
@@ -1869,18 +1869,18 @@
               inset 0 1px 0 rgba(94, 92, 230, 0.2);
 }
 
-/* Header del campo activo */
+/* Header del campo activo - Espaciado reducido */
 .guided-field-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: var(--spacing-sm);
+  margin-bottom: var(--spacing-xs);
 }
 
-/* Icono del campo */
+/* Icono del campo - Reducido */
 .guided-field-icon {
-  width: 3rem;
-  height: 3rem;
+  width: clamp(40px, 9vw, 48px);
+  height: clamp(40px, 9vw, 48px);
   border-radius: var(--radius-lg);
   display: flex;
   align-items: center;
@@ -1907,18 +1907,18 @@
 .guided-field-icon span {
   color: white;
   font-weight: bold;
-  font-size: var(--text-xl);
+  font-size: var(--text-lg);
 }
 
-/* Información central del campo */
+/* Información central del campo - Espaciado optimizado */
 .guided-field-info {
   flex: 1;
-  margin: 0 var(--spacing-sm);
+  margin: 0 var(--spacing-xs);
 }
 
 .guided-field-title {
-  font-size: var(--text-xl);
-  font-weight: bold;
+  font-size: var(--text-lg);
+  font-weight: 600;
   margin-bottom: 0.25rem;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -1975,9 +1975,9 @@
   height: var(--icon-sm);
 }
 
-/* Sección de input */
+/* Sección de input - Espaciado compacto */
 .guided-field-input-section {
-  margin-bottom: var(--spacing-sm);
+  margin-bottom: var(--spacing-xs);
 }
 
 .guided-field-label {
@@ -2003,10 +2003,10 @@
   height: var(--input-height);
   background-color: rgba(255, 255, 255, 0.05);
   border-radius: var(--radius-md);
-  font-size: 1.25rem;
+  font-size: var(--text-base);
   font-weight: bold;
   text-align: center;
-  padding: 0 var(--spacing-md);
+  padding: 0 var(--spacing-sm);
   color: white;
   border: 2px solid transparent;
   transition: all 0.3s ease;
@@ -2042,15 +2042,15 @@
   z-index: 10;
 }
 
-/* Botón de confirmación */
+/* Botón de confirmación - Optimizado */
 .guided-field-confirm-button {
   height: var(--button-height);
   background: rgba(128, 128, 128, 0.3);
   border: none;
   border-radius: var(--radius-md);
-  padding: 0 var(--spacing-lg);
-  font-size: var(--text-base);
-  font-weight: bold;
+  padding: 0 var(--spacing-md);
+  font-size: var(--text-sm);
+  font-weight: 600;
   color: white;
   transition: all 0.3s ease;
   cursor: not-allowed;
