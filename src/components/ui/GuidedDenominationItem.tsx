@@ -66,7 +66,7 @@ export const GuidedDenominationItem = ({
   const { handleEnterNavigation } = useFieldNavigation([fieldName]);
 
   const { validateInput, getPattern, getInputMode } = useInputValidation(); // 🤖 [IA] - Hook de validación
-  const { createTimeoutWithCleanup } = useTimingConfig(); // 🤖 [IA] - BUG #6 Fix: Evitar race conditions
+  const { createTimeoutWithCleanup, createTimeout } = useTimingConfig(); // 🤖 [IA] - BUG #6 Fix: Evitar race conditions
 
   const handleInputChange = (value: string) => {
     if (isActive) {
@@ -91,7 +91,7 @@ export const GuidedDenominationItem = ({
       }
       
       // 🤖 [IA] - v1.0.44: Fix navegación completa incluyendo bill100 → credomatic
-      navigationTimeoutRef.current = createTimeoutWithCleanup(() => {
+      navigationTimeoutRef.current = createTimeout(() => {
         // Orden completo de campos para navegación fluida
         const fieldOrder = [
           'penny', 'nickel', 'dime', 'quarter', 'dollarCoin',  // Monedas
