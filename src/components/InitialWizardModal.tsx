@@ -167,16 +167,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
     switch (currentStep) {
       case 1: // Protocolo Anti-Fraude
         return (
-          <div style={{ 
-            backgroundColor: 'rgba(36, 36, 36, 0.4)',
-            border: '1px solid rgba(255, 255, 255, 0.15)',
-            borderRadius: 'clamp(0.75rem, 3vw, 1rem)',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-            padding: 'clamp(1.25rem, 5vw, 1.75rem)',
-            gap: 'clamp(1rem, 4vw, 1.25rem)',
-            display: 'flex',
-            flexDirection: 'column'
-          }}>
+          <div className="wizard-step-container">
             {/* Header con Icono de Escudo */}
             <div className="flex items-center justify-center mb-4">
               <motion.div
@@ -240,21 +231,9 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                   key={index}
                   className="flex items-start premium-rule-card"
                   style={{
-                    backgroundColor: 'rgba(36, 36, 36, 0.4)',
-                    backdropFilter: 'blur(clamp(12px, 4vw, 20px))',
-                    WebkitBackdropFilter: 'blur(clamp(12px, 4vw, 20px))',
                     borderLeft: rule.critical ? '4px solid #f4212e' : '4px solid #f4a52a',
-                    border: '1px solid rgba(255, 255, 255, 0.15)',
-                    boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.05)',
                     gap: 'clamp(0.75rem, 3vw, 1rem)',
-                    padding: 'clamp(0.75rem, 3vw, 1rem)',
-                    borderRadius: 'clamp(0.5rem, 2vw, 0.75rem)'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = 'rgba(36, 36, 36, 0.5)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = 'rgba(36, 36, 36, 0.4)';
+                    padding: 'clamp(0.75rem, 3vw, 1rem)'
                   }}
                   role="listitem"
                   aria-label={`Regla ${index + 1}: ${rule.text}`}
@@ -264,19 +243,10 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                     color: '#e1e8ed',
                     fontSize: 'clamp(0.75rem, 3vw, 0.875rem)'
                   }}>{rule.text}</span>
-                  {/* 🤖 [IA] - v1.0.30 - Badge diferenciado: CRÍTICO o ALERTA */}
+                  {/* 🤖 [IA] - v1.2.12 - Badge premium con efectos shimmer */}
                   {(rule.critical || rule.isAlert) && (
                     <span 
-                      className="font-semibold rounded-md"
-                      style={{
-                        backgroundColor: rule.isAlert ? 'rgba(244, 165, 42, 0.1)' : 'rgba(244, 33, 46, 0.1)',
-                        color: rule.isAlert ? '#f4a52a' : '#f4212e',
-                        border: rule.isAlert ? '1px solid rgba(244, 165, 42, 0.4)' : '1px solid rgba(244, 33, 46, 0.4)',
-                        boxShadow: rule.isAlert ? '0 0 10px rgba(244, 165, 42, 0.2)' : '0 0 10px rgba(244, 33, 46, 0.2)',
-                        fontSize: 'clamp(0.75rem, 3vw, 0.875rem)',
-                        padding: 'clamp(0.375rem, 1.5vw, 0.5rem) clamp(0.5rem, 2vw, 0.75rem)',
-                        borderRadius: 'clamp(4px, 1.5vw, 6px)'
-                      }}
+                      className={rule.isAlert ? "wizard-alert-badge" : "wizard-critical-badge"}
                       aria-label={rule.isAlert ? "Alerta informativa" : "Regla crítica de cumplimiento obligatorio"}
                       role="status"
                     >
@@ -347,30 +317,9 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
 
       case 2: // Selección de Sucursal
         return (
-          <div style={{ 
-            backgroundColor: 'rgba(36, 36, 36, 0.4)',
-            backdropFilter: 'blur(clamp(12px, 4vw, 20px))',
-            WebkitBackdropFilter: 'blur(clamp(12px, 4vw, 20px))',
-            border: '1px solid rgba(255, 255, 255, 0.15)',
-            borderRadius: 'clamp(0.75rem, 3vw, 1rem)',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-            padding: 'clamp(1.25rem, 5vw, 1.75rem)',
-            gap: 'clamp(1rem, 4vw, 1.5rem)',
-            display: 'flex',
-            flexDirection: 'column'
-          }}>
-            {/* 🤖 [IA] - v1.0.61: Glass effect premium mejorado en Step 2 */}
-            {/* 🤖 [IA] - v1.2.12: Responsividad completa y textos concisos */}
-            <div className="flex items-center" style={{ 
-              backgroundColor: 'rgba(36, 36, 36, 0.4)',
-              backdropFilter: 'blur(clamp(12px, 4vw, 20px))',
-              WebkitBackdropFilter: 'blur(clamp(12px, 4vw, 20px))',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-              gap: 'clamp(0.5rem, 2vw, 0.75rem)',
-              padding: 'clamp(0.75rem, 3vw, 1rem)',
-              borderRadius: 'clamp(0.5rem, 2vw, 0.75rem)'
-            }}>
+          <div className="wizard-step-container">
+            {/* 🤖 [IA] - v1.2.12: Header section optimizado */}
+            <div className="wizard-header-section">
               <MapPin className="flex-shrink-0" style={{ 
                 width: 'clamp(1.5rem, 4vw, 2rem)',
                 height: 'clamp(1.5rem, 4vw, 2rem)',
@@ -398,42 +347,10 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               aria-label="Selección de sucursal para corte de caja"
               aria-required="true"
             >
-              <SelectTrigger 
-                className="w-full h-10 sm:h-12 text-sm sm:text-base transition-all duration-300"
-                style={{ 
-                  backgroundColor: 'rgba(36, 36, 36, 0.4)',
-                  backdropFilter: 'blur(20px)',
-                  WebkitBackdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(255, 255, 255, 0.15)',
-                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
-                  color: '#e1e8ed'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = 'rgba(36, 36, 36, 0.5)';
-                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.25)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'rgba(36, 36, 36, 0.4)';
-                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
-                }}
-                onFocus={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(10, 132, 255, 0.5)';
-                  e.currentTarget.style.boxShadow = '0 0 15px rgba(10, 132, 255, 0.2)';
-                }}
-                onBlur={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
-                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
-                }}
-              >
+              <SelectTrigger className="wizard-select-trigger w-full">
                 <SelectValue placeholder="Elegir sucursal" />
               </SelectTrigger>
-              <SelectContent style={{
-                backgroundColor: 'rgba(36, 36, 36, 0.9)',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)',
-                border: '1px solid rgba(255, 255, 255, 0.15)',
-                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.7)'
-              }}>
+              <SelectContent className="wizard-select-content">
                 {STORES.map((store) => (
                   <SelectItem key={store.id} value={store.id}>
                     {store.name}
@@ -446,15 +363,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                style={{ 
-                  backgroundColor: 'rgba(36, 36, 36, 0.4)',
-                  backdropFilter: 'blur(clamp(12px, 4vw, 20px))',
-                  WebkitBackdropFilter: 'blur(clamp(12px, 4vw, 20px))',
-                  border: '1px solid rgba(0, 186, 124, 0.4)',
-                  boxShadow: '0 0 15px rgba(0, 186, 124, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-                  padding: 'clamp(0.75rem, 3vw, 1rem)',
-                  borderRadius: 'clamp(0.5rem, 2vw, 0.75rem)'
-                }}
+                className="wizard-success-feedback"
               >
                 <div className="flex items-center" style={{ gap: 'clamp(0.375rem, 1.5vw, 0.5rem)' }}>
                   <CheckCircle className="flex-shrink-0" style={{ 
@@ -474,27 +383,9 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
 
       case 3: // Selección de Cajero
         return (
-          <div className="space-y-[clamp(1rem,4vw,1.5rem)]" style={{ 
-            backgroundColor: 'rgba(36, 36, 36, 0.4)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
-            border: '1px solid rgba(255, 255, 255, 0.15)',
-            borderRadius: 'clamp(0.75rem,3vw,1rem)',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-            padding: 'clamp(1.25rem,5vw,1.75rem)'
-          }}>
-            {/* 🤖 [IA] - v1.0.61: Glass effect premium en Step 3 */}
-            {/* 🤖 [IA] - v1.2.12: Responsividad mejorada y textos concisos */}
-            <div className="flex items-center" style={{ 
-              backgroundColor: 'rgba(36, 36, 36, 0.4)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-              gap: 'clamp(0.5rem,2vw,0.75rem)',
-              padding: 'clamp(0.75rem,3vw,1rem)',
-              borderRadius: 'clamp(0.5rem,2vw,0.75rem)'
-            }}>
+          <div className="wizard-step-container">
+            {/* 🤖 [IA] - v1.2.12: Header section Cajero optimizado */}
+            <div className="wizard-header-section">
               <Users 
                 className="flex-shrink-0" 
                 style={{ 
@@ -525,45 +416,10 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               value={wizardData.selectedCashier} 
               onValueChange={(value) => updateWizardData({ selectedCashier: value })}
             >
-              <SelectTrigger 
-                className="w-full transition-all duration-300"
-                style={{ 
-                  backgroundColor: 'rgba(36, 36, 36, 0.4)',
-                  backdropFilter: 'blur(20px)',
-                  WebkitBackdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(255, 255, 255, 0.15)',
-                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
-                  color: '#e1e8ed',
-                  height: 'clamp(2.75rem,6vw,3rem)',
-                  fontSize: 'clamp(0.875rem,3.5vw,1rem)',
-                  borderRadius: 'clamp(0.375rem,1.5vw,0.5rem)'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = 'rgba(36, 36, 36, 0.5)';
-                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.25)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'rgba(36, 36, 36, 0.4)';
-                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
-                }}
-                onFocus={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(10, 132, 255, 0.5)';
-                  e.currentTarget.style.boxShadow = '0 0 15px rgba(10, 132, 255, 0.2)';
-                }}
-                onBlur={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
-                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
-                }}
-              >
+              <SelectTrigger className="wizard-select-trigger w-full">
                 <SelectValue placeholder="Seleccione el cajero responsable" />
               </SelectTrigger>
-              <SelectContent style={{
-                backgroundColor: 'rgba(36, 36, 36, 0.9)',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)',
-                border: '1px solid rgba(255, 255, 255, 0.15)',
-                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.7)'
-              }}>
+              <SelectContent className="wizard-select-content">
                 {availableEmployees.map((employee) => (
                   <SelectItem key={employee.id} value={employee.id}>
                     {employee.name}
@@ -576,16 +432,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="rounded-lg"
-                style={{ 
-                  backgroundColor: 'rgba(36, 36, 36, 0.4)',
-                  backdropFilter: 'blur(20px)',
-                  WebkitBackdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(0, 186, 124, 0.4)',
-                  boxShadow: '0 0 15px rgba(0, 186, 124, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-                  padding: 'clamp(0.75rem,3vw,1rem)',
-                  borderRadius: 'clamp(0.5rem,2vw,0.75rem)'
-                }}
+                className="wizard-success-feedback"
               >
                 <div className="flex items-center" style={{ gap: 'clamp(0.375rem,1.5vw,0.5rem)' }}>
                   <CheckCircle 
@@ -609,29 +456,9 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
 
       case 4: // Selección de Testigo
         return (
-          <div style={{ 
-            backgroundColor: 'rgba(36, 36, 36, 0.4)',
-            backdropFilter: 'blur(clamp(12px, 4vw, 20px))',
-            WebkitBackdropFilter: 'blur(clamp(12px, 4vw, 20px))',
-            border: '1px solid rgba(255, 255, 255, 0.15)',
-            padding: 'clamp(1.25rem, 5vw, 1.75rem)',
-            borderRadius: 'clamp(0.75rem, 3vw, 1rem)',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-            gap: 'clamp(1rem, 4vw, 1.5rem)',
-            display: 'flex',
-            flexDirection: 'column'
-          }}>
-            {/* 🤖 [IA] - v1.0.62: Glass effect premium en Step 4 */}
-            <div className="flex items-center" style={{ 
-              backgroundColor: 'rgba(36, 36, 36, 0.4)',
-              backdropFilter: 'blur(clamp(12px, 4vw, 20px))',
-              WebkitBackdropFilter: 'blur(clamp(12px, 4vw, 20px))',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-              gap: 'clamp(0.75rem, 3vw, 1rem)',
-              padding: 'clamp(0.75rem, 3vw, 1rem)',
-              borderRadius: 'clamp(0.5rem, 2vw, 0.75rem)'
-            }}>
+          <div className="wizard-step-container">
+            {/* 🤖 [IA] - v1.2.12: Header section Testigo optimizado */}
+            <div className="wizard-header-section">
               <Shield className="flex-shrink-0" style={{ 
                 width: 'clamp(1.5rem, 4vw, 2rem)',
                 height: 'clamp(1.5rem, 4vw, 2rem)',
@@ -659,42 +486,10 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               value={wizardData.selectedWitness} 
               onValueChange={(value) => updateWizardData({ selectedWitness: value })}
             >
-              <SelectTrigger 
-                className="w-full h-10 sm:h-12 text-sm sm:text-base transition-all duration-300"
-                style={{ 
-                  backgroundColor: 'rgba(36, 36, 36, 0.4)',
-                  backdropFilter: 'blur(20px)',
-                  WebkitBackdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(255, 255, 255, 0.15)',
-                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
-                  color: '#e1e8ed'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = 'rgba(36, 36, 36, 0.5)';
-                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.25)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'rgba(36, 36, 36, 0.4)';
-                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
-                }}
-                onFocus={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(10, 132, 255, 0.5)';
-                  e.currentTarget.style.boxShadow = '0 0 15px rgba(10, 132, 255, 0.2)';
-                }}
-                onBlur={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
-                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
-                }}
-              >
+              <SelectTrigger className="wizard-select-trigger w-full">
                 <SelectValue placeholder="Seleccione el testigo" />
               </SelectTrigger>
-              <SelectContent style={{
-                backgroundColor: 'rgba(36, 36, 36, 0.9)',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)',
-                border: '1px solid rgba(255, 255, 255, 0.15)',
-                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.7)'
-              }}>
+              <SelectContent className="wizard-select-content">
                 {availableEmployees
                   .filter(emp => emp.id !== wizardData.selectedCashier)
                   .map((employee) => (
@@ -710,15 +505,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                style={{ 
-                  backgroundColor: 'rgba(36, 36, 36, 0.4)',
-                  backdropFilter: 'blur(clamp(12px, 4vw, 20px))',
-                  WebkitBackdropFilter: 'blur(clamp(12px, 4vw, 20px))',
-                  border: '1px solid rgba(244, 33, 46, 0.4)',
-                  boxShadow: '0 0 15px rgba(244, 33, 46, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-                  padding: 'clamp(0.75rem, 3vw, 1rem)',
-                  borderRadius: 'clamp(0.5rem, 2vw, 0.75rem)'
-                }}
+                className="wizard-error-feedback"
               >
                 <div className="flex items-center" style={{ gap: 'clamp(0.375rem, 1.5vw, 0.5rem)' }}>
                   <AlertTriangle className="flex-shrink-0" style={{ 
@@ -741,14 +528,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="p-3 sm:p-4 rounded-lg"
-                style={{ 
-                  backgroundColor: 'rgba(36, 36, 36, 0.4)',
-                  backdropFilter: 'blur(20px)',
-                  WebkitBackdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(0, 186, 124, 0.4)',
-                  boxShadow: '0 0 15px rgba(0, 186, 124, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
-                }}
+                className="wizard-success-feedback"
               >
                 <div className="flex items-center" style={{ gap: 'clamp(0.375rem, 1.5vw, 0.5rem)' }}>
                   <CheckCircle className="flex-shrink-0" style={{ 
@@ -768,29 +548,9 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
 
       case 5: // Venta Esperada
         return (
-          <div style={{ 
-            backgroundColor: 'rgba(36, 36, 36, 0.4)',
-            backdropFilter: 'blur(clamp(12px, 4vw, 20px))',
-            WebkitBackdropFilter: 'blur(clamp(12px, 4vw, 20px))',
-            border: '1px solid rgba(255, 255, 255, 0.15)',
-            padding: 'clamp(1.25rem, 5vw, 1.75rem)',
-            borderRadius: 'clamp(0.75rem, 3vw, 1rem)',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-            gap: 'clamp(1rem, 4vw, 1.5rem)',
-            display: 'flex',
-            flexDirection: 'column'
-          }}>
-            {/* 🤖 [IA] - v1.0.63: Glass effect premium en Step 5 */}
-            <div className="flex items-center" style={{ 
-              backgroundColor: 'rgba(36, 36, 36, 0.4)',
-              backdropFilter: 'blur(clamp(12px, 4vw, 20px))',
-              WebkitBackdropFilter: 'blur(clamp(12px, 4vw, 20px))',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-              gap: 'clamp(0.75rem, 3vw, 1rem)',
-              padding: 'clamp(0.75rem, 3vw, 1rem)',
-              borderRadius: 'clamp(0.5rem, 2vw, 0.75rem)'
-            }}>
+          <div className="wizard-step-container">
+            {/* 🤖 [IA] - v1.2.12: Header section Venta Esperada optimizado */}
+            <div className="wizard-header-section">
               <DollarSign className="flex-shrink-0" style={{ 
                 width: 'clamp(1.5rem, 4vw, 2rem)',
                 height: 'clamp(1.5rem, 4vw, 2rem)',
@@ -935,15 +695,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                style={{ 
-                  backgroundColor: 'rgba(36, 36, 36, 0.4)',
-                  backdropFilter: 'blur(clamp(12px, 4vw, 20px))',
-                  WebkitBackdropFilter: 'blur(clamp(12px, 4vw, 20px))',
-                  border: '1px solid rgba(0, 186, 124, 0.4)',
-                  boxShadow: '0 0 15px rgba(0, 186, 124, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-                  padding: 'clamp(0.75rem, 3vw, 1rem)',
-                  borderRadius: 'clamp(0.5rem, 2vw, 0.75rem)'
-                }}
+                className="wizard-success-feedback"
               >
                 <div className="flex items-center" style={{ gap: 'clamp(0.375rem, 1.5vw, 0.5rem)' }}>
                   <CheckCircle className="flex-shrink-0" style={{ 
@@ -1020,14 +772,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
       }
     }}>
       <DialogContent 
-        className="w-[95vw] max-w-[95vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] sm:max-h-[85vh] overflow-y-auto overflow-x-hidden p-0 mx-auto [&>button]:hidden"
-        style={{
-          backgroundColor: 'rgba(25, 25, 25, 0.65)',
-          backdropFilter: 'blur(40px) saturate(180%)',
-          WebkitBackdropFilter: 'blur(40px) saturate(180%)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05)'
-        }}
+        className="wizard-modal-content w-[95vw] max-w-[95vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] sm:max-h-[85vh] overflow-y-auto overflow-x-hidden p-0 [&>button]:hidden"
       >
         <div style={{ padding: `clamp(16px, ${24 * viewportScale}px, 24px)` }}>
           <DialogHeader>

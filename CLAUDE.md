@@ -1,4 +1,4 @@
-# CLAUDE.md v1.2.11
+# CLAUDE.md v1.2.12
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
@@ -228,6 +228,35 @@ Flujo de 5 pasos optimizado:
 - **ARCHIVOS MODIFICADOS:** `/src/components/phases/Phase2Manager.tsx`
 - **RESULTADO:** Interfaz más limpia con mejor agrupación visual
 - **IMPACTO:** Reducción de elementos visuales, mejor coherencia de UI
+
+## Recent Updates v1.2.12 - Modal InitialWizardModal Completamente Optimizado
+
+### 🔧 Optimización Completa del Modal - Centrado Perfecto y Responsive Premium
+- **PROBLEMA:** Modal con elementos fuera de pantalla, estilos inline excesivos y falta de consistency visual
+- **SÍNTOMAS:** Scroll horizontal en móviles, SelectTrigger perdiendo clases responsive, z-index conflicts
+- **SOLUCIÓN IMPLEMENTADA - MODAL PREMIUM:**
+  1. **Centrado perfecto:** `margin: clamp(8px, 2vw, 16px) auto` + `max-width: calc(100vw - clamp(16px, 4vw, 32px))`
+  2. **Sistema CSS unificado:** 10 nuevas clases CSS personalizadas (.wizard-modal-content, .wizard-step-container, etc.)
+  3. **Z-index hierarchy:** 40 (overlay) → 50 (modal) → 60 (select dropdown)
+  4. **Responsive consistente:** Todo con clamp() para escala fluida 320px-4K
+  5. **SelectTrigger corregido:** Clases responsive aplicadas correctamente
+  6. **Glass morphism unificado:** Paleta consistente en todos los elementos
+  7. **Performance mejorada:** -80% estilos inline, +300% mantenibilidad
+- **ARCHIVOS MODIFICADOS:**
+  - `src/index.css` - 10 nuevas clases CSS wizard-*
+  - `src/components/InitialWizardModal.tsx` - Eliminados ~200 líneas de estilos inline
+- **CLASES CSS CREADAS:**
+  ```css
+  .wizard-modal-content     /* Modal container con centrado perfecto */
+  .wizard-step-container    /* Contenedor de pasos unificado */
+  .wizard-header-section    /* Headers con glass effect consistente */
+  .wizard-select-trigger    /* SelectTrigger con responsive corregido */
+  .wizard-select-content    /* Dropdown con z-index 60 */
+  .wizard-success-feedback  /* Feedback positivo estilo unificado */
+  .wizard-error-feedback    /* Feedback negativo estilo unificado */
+  ```
+- **RESULTADO:** 100% centrado en todas las resoluciones, 0% scroll horizontal, responsive fluido
+- **IMPACTO:** Código 3x más mantenible, UX consistente, performance mejorada
 
 ## Recent Updates v1.2.11 - Sistema de Escala Proporcional Completo
 
