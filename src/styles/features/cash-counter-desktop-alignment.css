@@ -342,6 +342,20 @@
     height: 46px !important;
     font-size: 18px !important;
   }
+
+  /* Progress integrado - Tablet */
+  .progress-integrated-container {
+    margin-top: 12px !important;
+    padding-top: 10px !important;
+  }
+
+  .progress-integrated-text {
+    font-size: 12px !important;
+  }
+
+  .progress-integrated-bar {
+    height: 5px !important;
+  }
 }
 
 /* === iPhone 16 Pro Max & Premium (430px - 767px) === */
@@ -375,6 +389,21 @@
   .flex.gap-2 input,
   .flex.gap-2 button {
     height: 44px !important;
+  }
+
+  /* Progress integrado - iPhone Premium */
+  .progress-integrated-container {
+    margin-top: 10px !important;
+    padding-top: 8px !important;
+  }
+
+  .progress-integrated-text {
+    font-size: 11px !important;
+    gap: 6px !important;
+  }
+
+  .progress-integrated-bar {
+    height: 4px !important;
   }
 }
 
@@ -416,6 +445,21 @@
 
   .cash-counter-navigation {
     padding: 12px !important;
+  }
+
+  /* Progress integrado - Samsung A35 */
+  .progress-integrated-container {
+    margin-top: 8px !important;
+    padding-top: 6px !important;
+  }
+
+  .progress-integrated-text {
+    font-size: 10px !important;
+    gap: 4px !important;
+  }
+
+  .progress-integrated-bar {
+    height: 3px !important;
   }
 }
 
@@ -579,5 +623,93 @@
     text-rendering: optimizeLegibility !important;
     -webkit-font-smoothing: antialiased !important;
     -moz-osx-font-smoothing: grayscale !important;
+  }
+
+  /* === Progress Indicator Integrado dentro del Card === */
+  .progress-integrated-container {
+    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+    margin-top: 14px !important;
+    padding-top: 12px !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+
+  .progress-integrated-text {
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .progress-integrated-text .icon {
+    width: 14px !important;
+    height: 14px !important;
+    flex-shrink: 0 !important;
+  }
+
+  .progress-integrated-count {
+    font-weight: 700 !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+  }
+
+  .progress-integrated-total {
+    opacity: 0.6 !important;
+  }
+
+  .progress-integrated-bar {
+    height: 6px !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+    border-radius: 3px !important;
+    overflow: hidden !important;
+    position: relative !important;
+  }
+
+  .progress-integrated-fill {
+    height: 100% !important;
+    border-radius: 3px !important;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    position: relative !important;
+    overflow: hidden !important;
+  }
+
+  .progress-integrated-fill::after {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent) !important;
+    animation: shimmer-progress 2.5s infinite !important;
+  }
+
+  /* Animación cuando se completa un item */
+  .progress-integrated-container.completed-item {
+    animation: progress-pulse 0.6s ease-out !important;
+  }
+
+  @keyframes progress-pulse {
+    0% {
+      transform: scale(1);
+      background-color: rgba(255, 255, 255, 0.02);
+    }
+    50% {
+      transform: scale(1.02);
+      background-color: rgba(48, 209, 88, 0.1);
+    }
+    100% {
+      transform: scale(1);
+      background-color: rgba(255, 255, 255, 0.02);
+    }
+  }
+
+  @keyframes shimmer-progress {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(200%);
+    }
   }
 }
