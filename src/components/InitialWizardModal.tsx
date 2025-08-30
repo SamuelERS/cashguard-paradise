@@ -578,10 +578,10 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                 Monto ($)
               </Label>
               {/* 🤖 [IA] - v1.2.9: Contenedor flex para input y botón confirmar */}
-              <div className="flex flex-col sm:flex-row" style={{ gap: 'clamp(0.375rem, 1.5vw, 0.5rem)' }}>
+              <div className="flex flex-col sm:flex-row" style={{ gap: 'clamp(0.375rem, 1.5vw, 0.5rem)', alignItems: 'stretch' }}>
                 <div className="wizard-glass-element relative flex-1" style={{ 
                   borderRadius: 'clamp(0.375rem, 1.5vw, 0.5rem)',
-                  padding: 'clamp(0.5rem, 2vw, 0.75rem)'
+                  padding: 'clamp(0.25rem, 0.5vw, 0.375rem) clamp(0.5rem, 2vw, 0.75rem)'
                 }}>
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 font-bold" style={{ 
                     color: '#00ba7c',
@@ -611,7 +611,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                       border: 'none',
                       color: '#e1e8ed',
                       paddingLeft: 'clamp(1.75rem, 5vw, 2.25rem)',
-                      height: 'clamp(2.5rem, 6vw, 3rem)',
+                      height: 'clamp(2.25rem, 5vw, 2.75rem)',
                       fontSize: 'clamp(1rem, 4vw, 1.125rem)'
                     }}
                   />
