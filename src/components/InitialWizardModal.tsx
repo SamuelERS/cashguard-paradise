@@ -671,7 +671,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
 
             <div className="wizard-glass-element" style={{ 
               borderLeft: '3px solid #0a84ff',
-              boxShadow: '0 0 15px rgba(10, 132, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+              boxShadow: '0 4px 24px rgba(0, 0, 0, 0.2), 0 0 15px rgba(10, 132, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
             }}>
               <h4 className="font-semibold" style={{ 
                 color: '#0a84ff',
