@@ -1,4 +1,4 @@
-// 🤖 [IA] - v1.2.13 - Glass Morphism Alert Dialog Component
+// [IA] - v1.2.13 - Glass Morphism Alert Dialog Component
 // Componente reutilizable para confirmaciones con diseño premium
 // Implementa especificaciones exactas del sistema de diseño v1.2.13
 
@@ -14,7 +14,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-// 🤖 [IA] - Props tipadas para máxima flexibilidad y reutilización
+// [IA] - Props tipadas para máxima flexibilidad y reutilización
 interface GlassAlertDialogProps {
   open: boolean;
   onConfirm: () => void;
@@ -43,7 +43,7 @@ export const GlassAlertDialog: React.FC<GlassAlertDialogProps> = ({
   open,
   onConfirm,
   onCancel,
-  title = "⚠️ ¿Confirmar salida?",
+  title = "¿Confirmar salida?",
   description = "Se perderá todo el progreso del conteo actual.",
   warning = "Esta acción no se puede deshacer.",
   confirmText = "Sí, volver al inicio",
@@ -54,7 +54,7 @@ export const GlassAlertDialog: React.FC<GlassAlertDialogProps> = ({
       <AlertDialogContent
         className="!border-0"
         style={{
-          // 🤖 [IA] - Glass Morphism v1.2.13 - Sistema de diseño premium
+          // [IA] - Glass Morphism v1.2.13 - Sistema de diseño premium
           backgroundColor: 'rgba(36, 36, 36, 0.4)',
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)', // Safari support
@@ -62,7 +62,7 @@ export const GlassAlertDialog: React.FC<GlassAlertDialogProps> = ({
           borderRadius: '16px',
           boxShadow: '0 4px 24px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
           
-          // 🤖 [IA] - Dimensiones responsive con clamp()
+          // [IA] - Dimensiones responsive con clamp()
           width: 'calc(100vw - 2rem)',
           maxWidth: 'clamp(320px, 90vw, 500px)',
           margin: '0 auto',
@@ -72,7 +72,7 @@ export const GlassAlertDialog: React.FC<GlassAlertDialogProps> = ({
         <AlertDialogHeader>
           <AlertDialogTitle 
             style={{ 
-              // 🤖 [IA] - Título con color de peligro y tamaño responsive
+              // [IA] - Título con color de peligro y tamaño responsive
               color: '#f4212e',
               fontSize: 'clamp(1.125rem, 4vw, 1.25rem)',
               fontWeight: 600,
@@ -83,7 +83,7 @@ export const GlassAlertDialog: React.FC<GlassAlertDialogProps> = ({
           </AlertDialogTitle>
           <AlertDialogDescription 
             style={{ 
-              // 🤖 [IA] - Descripción principal con color claro
+              // [IA] - Descripción principal con color claro
               color: '#e1e8ed',
               fontSize: 'clamp(0.875rem, 3.5vw, 0.95rem)',
               textAlign: 'center',
@@ -94,7 +94,7 @@ export const GlassAlertDialog: React.FC<GlassAlertDialogProps> = ({
             {warning && (
               <span 
                 style={{ 
-                  // 🤖 [IA] - Advertencia secundaria con color amarillo
+                  // [IA] - Advertencia secundaria con color amarillo
                   display: 'block',
                   marginTop: '8px',
                   color: '#f4a52a',
@@ -109,23 +109,20 @@ export const GlassAlertDialog: React.FC<GlassAlertDialogProps> = ({
         </AlertDialogHeader>
         
         <AlertDialogFooter 
-          className="gap-3"
-          style={{ marginTop: '24px' }}
+          className="flex flex-col-reverse sm:flex-row sm:justify-center gap-y-4 sm:gap-y-0 sm:gap-x-4"
+          style={{ marginTop: '16px' }}
         >
           <AlertDialogAction
             onClick={onConfirm}
-            className="!bg-transparent !border-0"
+            className="hover:opacity-90"
             style={{
-              // 🤖 [IA] - Botón confirmar con gradiente rojo de peligro intensificado
-              background: 'linear-gradient(135deg, #f4212e, #ff3333)',
-              color: '#ffffff',
-              fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
+              // [IA] - Botón confirmar con gradiente rojo consistente con CashCounter
+              background: 'linear-gradient(135deg, rgb(244, 33, 46) 0%, rgb(255, 68, 68) 100%)',
+              color: 'white',
+              border: 'none',
+              borderRadius: '10px',
               fontWeight: 600,
-              padding: '10px 20px',
-              borderRadius: '12px',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              boxShadow: '0 2px 8px rgba(244, 33, 46, 0.3)',
-              transition: 'all 0.2s ease',
+              fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
             }}
           >
             {confirmText}
@@ -133,17 +130,14 @@ export const GlassAlertDialog: React.FC<GlassAlertDialogProps> = ({
           
           <AlertDialogCancel
             onClick={onCancel}
-            className="!bg-transparent !border-0"
+            className="hover:bg-white/10"
             style={{
-              // 🤖 [IA] - Botón cancelar con glass effect sutil y borde ajustado
+              // [IA] - Botón cancelar con diseño glass morphism consistente con CashCounter
               backgroundColor: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              color: '#e1e8ed',
+              border: '1px solid rgba(255, 255, 255, 0.3)',
+              color: 'rgb(225, 232, 237)',
+              borderRadius: '10px',
               fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
-              padding: '10px 20px',
-              borderRadius: '12px',
-              boxShadow: '0 2px 8px rgba(255, 255, 255, 0.1)',
-              transition: 'all 0.2s ease',
             }}
           >
             {cancelText}

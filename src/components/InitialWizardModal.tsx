@@ -867,8 +867,8 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
         }}
         onCancel={() => setShowBackConfirmation(false)}
         title="⚠️ ¿Retroceder al paso anterior?"
-        description="Los datos ingresados en este paso se mantendrán temporalmente."
-        warning="Deberás verificar la información al regresar a este paso."
+        description="Los datos ingresados se mantendrán."
+        warning="Retrocede si quieres corregir información."
         confirmText="Sí, retroceder"
         cancelText="Continuar aquí"
       />
