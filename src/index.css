@@ -90,6 +90,57 @@
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+    
+    /* 🤖 [IA] - v1.2.14: Sistema de diseño coherente - Variables responsive unificadas */
+    
+    /* Espaciados responsive unificados */
+    --spacing-xs: clamp(8px, 2vw, 12px);
+    --spacing-sm: clamp(12px, 3vw, 16px);
+    --spacing-md: clamp(16px, 4vw, 20px);
+    --spacing-lg: clamp(20px, 5vw, 24px);
+    --spacing-xl: clamp(24px, 6vw, 32px);
+    --spacing-xxl: clamp(32px, 8vw, 48px);
+    
+    /* Tipografía coherente - Sistema rem responsive */
+    --text-xs: clamp(0.75rem, 2.5vw, 0.875rem);
+    --text-sm: clamp(0.875rem, 3vw, 1rem);
+    --text-base: clamp(1rem, 3.5vw, 1.125rem);
+    --text-lg: clamp(1.125rem, 4vw, 1.25rem);
+    --text-xl: clamp(1.25rem, 4.5vw, 1.5rem);
+    --text-2xl: clamp(1.5rem, 5vw, 1.875rem);
+    
+    /* Alturas de controles unificadas */
+    --input-height: clamp(40px, 10vw, 48px);
+    --button-height: clamp(40px, 10vw, 48px);
+    --button-height-sm: clamp(32px, 8vw, 36px);
+    
+    /* Iconos responsive unificados */
+    --icon-xs: clamp(12px, 3vw, 14px);
+    --icon-sm: clamp(14px, 3.5vw, 16px);
+    --icon-md: clamp(20px, 5vw, 24px);
+    --icon-lg: clamp(32px, 8vw, 40px);
+    --icon-xl: clamp(40px, 10vw, 56px);
+    
+    /* Border radius unificado */
+    --radius-xs: clamp(0.25rem, 1vw, 0.375rem);
+    --radius-sm: clamp(0.375rem, 1.5vw, 0.5rem);
+    --radius-md: clamp(0.5rem, 2vw, 0.75rem);
+    --radius-lg: clamp(0.75rem, 3vw, 1rem);
+    --radius-xl: clamp(1rem, 4vw, 1.25rem);
+    
+    /* Glass morphism unificado */
+    --glass-bg-primary: rgba(36, 36, 36, 0.4);
+    --glass-bg-secondary: rgba(25, 25, 25, 0.5);
+    --glass-border-primary: rgba(255, 255, 255, 0.15);
+    --glass-border-secondary: rgba(255, 255, 255, 0.1);
+    --glass-blur: blur(20px);
+    --glass-shadow: 0 4px 24px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    
+    /* Breakpoints como variables para uso en JS si es necesario */
+    --bp-sm: 640px;
+    --bp-md: 768px;
+    --bp-lg: 1024px;
+    --bp-xl: 1280px;
   }
 
   .dark {
@@ -1430,6 +1481,682 @@
 
 .wizard-alert-badge:hover::before {
   left: 100%;
+}
+
+/* 🤖 [IA] - v1.2.14: Sistema de diseño coherente para CashCounter */
+
+/* Contenedor principal CashCounter */
+.cash-counter-container {
+  background: var(--glass-bg-primary);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border-primary);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-md);
+  box-shadow: var(--glass-shadow);
+  min-height: clamp(300px, 60vh, 400px);
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* Header del CashCounter */
+.cash-counter-header {
+  position: relative;
+  background: var(--glass-bg-primary);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  margin: calc(-1 * var(--spacing-md)) calc(-1 * var(--spacing-md)) var(--spacing-xs);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  text-align: center;
+}
+
+/* Título del header */
+.cash-counter-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+}
+
+.cash-counter-title h2 {
+  font-size: var(--text-xl);
+  font-weight: bold;
+  color: #e1e8ed;
+  margin: 0;
+}
+
+.cash-counter-icon {
+  width: var(--icon-lg);
+  height: var(--icon-lg);
+}
+
+/* Área de contenido scrollable */
+.cash-counter-content {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: var(--spacing-xs);
+  margin-bottom: var(--spacing-sm);
+  padding-top: var(--spacing-sm);
+}
+
+/* Área de navegación del footer */
+.cash-counter-navigation {
+  flex-shrink: 0;
+  padding-top: var(--spacing-md);
+  margin-top: auto;
+}
+
+/* Botón de navegación principal */
+.cash-counter-nav-button {
+  width: 100%;
+  max-width: 20rem;
+  height: var(--button-height-sm);
+  font-size: var(--text-xs);
+  padding: 0 var(--spacing-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #e1e8ed;
+  border-radius: var(--radius-lg);
+  transition: all 0.3s ease;
+  gap: var(--spacing-xs);
+  margin: 0 auto;
+}
+
+@media (min-width: 640px) {
+  .cash-counter-nav-button {
+    font-size: var(--text-sm);
+    padding: 0 var(--spacing-md);
+  }
+}
+
+@media (min-width: 1024px) {
+  .cash-counter-nav-button {
+    max-width: 32rem;
+  }
+}
+
+.cash-counter-nav-button:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-1px);
+}
+
+/* Iconos de navegación responsive */
+.cash-counter-nav-icon {
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+  flex-shrink: 0;
+}
+
+/* Alert Dialog coherente */
+.cash-counter-alert-dialog {
+  background: var(--glass-bg-primary);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border-primary);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--glass-shadow);
+  width: calc(100vw - 2rem);
+  max-width: clamp(320px, 90vw, 500px);
+  margin: 0 auto;
+  padding: var(--spacing-lg);
+}
+
+.cash-counter-alert-title {
+  color: #f4212e;
+  font-size: var(--text-lg);
+  font-weight: 600;
+  text-align: center;
+  margin: 0;
+}
+
+.cash-counter-alert-description {
+  color: #e1e8ed;
+  font-size: var(--text-sm);
+  text-align: center;
+  margin-top: var(--spacing-sm);
+  line-height: 1.5;
+}
+
+.cash-counter-alert-warning {
+  color: #f4a52a;
+  font-weight: 500;
+  font-size: var(--text-xs);
+}
+
+.cash-counter-alert-footer {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-md);
+}
+
+@media (min-width: 640px) {
+  .cash-counter-alert-footer {
+    flex-direction: row;
+    justify-content: center;
+    gap: var(--spacing-md);
+  }
+}
+
+.cash-counter-alert-action {
+  background: linear-gradient(135deg, #f4212e 0%, #ff4444 100%);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: var(--text-sm);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.cash-counter-alert-action:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(244, 33, 46, 0.3);
+}
+
+.cash-counter-alert-cancel {
+  background-color: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #e1e8ed;
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.cash-counter-alert-cancel:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* 🤖 [IA] - v1.2.14: Sistema coherente para GuidedProgressIndicator */
+
+/* Contenedor principal unificado */
+.guided-progress-container {
+  background: var(--glass-bg-primary);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border-primary);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+  box-shadow: var(--glass-shadow);
+}
+
+/* Borde lateral dinámico */
+.guided-progress-container.morning-mode {
+  border-left: 4px solid rgba(244, 165, 42, 0.8);
+}
+
+.guided-progress-container.evening-mode {
+  border-left: 4px solid rgba(10, 132, 255, 0.8);
+}
+
+/* Header principal */
+.guided-progress-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-md);
+}
+
+/* Sección izquierda del header */
+.guided-progress-info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+/* Badge circular con step number */
+.guided-progress-badge {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.guided-progress-badge.morning-mode {
+  background: linear-gradient(135deg, rgb(244, 165, 42) 0%, rgb(255, 184, 77) 100%);
+}
+
+.guided-progress-badge.evening-mode {
+  background: linear-gradient(135deg, rgb(10, 132, 255) 0%, rgb(94, 92, 230) 100%);
+}
+
+.guided-progress-badge span {
+  color: white;
+  font-weight: bold;
+  font-size: var(--text-sm);
+}
+
+/* Textos del header */
+.guided-progress-title {
+  font-size: var(--text-lg);
+  font-weight: bold;
+  color: #e1e8ed;
+  margin: 0;
+}
+
+.guided-progress-subtitle {
+  font-size: var(--text-sm);
+  color: #8899a6;
+  margin: 0;
+}
+
+/* Sección de progreso numérico */
+.guided-progress-stats {
+  text-align: right;
+}
+
+.guided-progress-stats-label {
+  font-size: var(--text-sm);
+  color: #8899a6;
+  margin-bottom: 0.25rem;
+}
+
+.guided-progress-percentage {
+  font-size: var(--text-xl);
+  font-weight: bold;
+}
+
+.guided-progress-percentage.morning-mode {
+  color: rgb(244, 165, 42);
+}
+
+.guided-progress-percentage.evening-mode {
+  color: rgb(10, 132, 255);
+}
+
+/* Barra de progreso */
+.guided-progress-bar-container {
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+  height: 0.5rem;
+  overflow: hidden;
+  margin-bottom: var(--spacing-md);
+}
+
+.guided-progress-bar {
+  height: 100%;
+  transition: width 0.5s ease-out;
+}
+
+.guided-progress-bar.morning-mode {
+  background: linear-gradient(90deg, rgb(244, 165, 42), rgb(255, 184, 77));
+}
+
+.guided-progress-bar.evening-mode {
+  background: linear-gradient(90deg, rgb(10, 132, 255), rgb(94, 92, 230));
+}
+
+/* Sección de instrucciones */
+.guided-progress-instructions {
+  background: rgba(36, 36, 36, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
+}
+
+.guided-progress-instruction-content {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.guided-progress-instruction-icon {
+  width: var(--icon-md);
+  height: var(--icon-md);
+  flex-shrink: 0;
+}
+
+.guided-progress-instruction-icon.morning-mode {
+  color: rgb(244, 165, 42);
+}
+
+.guided-progress-instruction-icon.evening-mode {
+  color: rgb(10, 132, 255);
+}
+
+.guided-progress-instruction-icon.success {
+  color: rgb(48, 209, 88);
+}
+
+.guided-progress-instruction-text {
+  color: #e1e8ed;
+  font-weight: 500;
+  font-size: var(--text-base);
+}
+
+/* 🤖 [IA] - v1.2.14: Sistema coherente para GuidedFieldView */
+
+/* Contenedor principal del campo activo */
+.guided-field-container {
+  background: var(--glass-bg-primary);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-sm);
+  box-shadow: var(--glass-shadow);
+  max-width: 48rem;
+  margin: 0 auto;
+}
+
+/* Bordes dinámicos según modo */
+.guided-field-container.morning-mode {
+  border: 2px solid rgba(244, 165, 42, 0.3);
+  box-shadow: 0 8px 32px rgba(244, 165, 42, 0.15), 
+              inset 0 1px 0 rgba(255, 184, 77, 0.2);
+}
+
+.guided-field-container.evening-mode {
+  border: 2px solid rgba(10, 132, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(10, 132, 255, 0.15), 
+              inset 0 1px 0 rgba(94, 92, 230, 0.2);
+}
+
+/* Header del campo activo */
+.guided-field-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-sm);
+}
+
+/* Icono del campo */
+.guided-field-icon {
+  width: 3rem;
+  height: 3rem;
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.guided-field-icon.coin {
+  background: linear-gradient(to bottom right, #f4a52a, rgba(244, 165, 42, 0.8), rgba(244, 165, 42, 0.6));
+}
+
+.guided-field-icon.bill {
+  background: linear-gradient(to bottom right, #00ba7c, rgba(0, 186, 124, 0.8), rgba(0, 186, 124, 0.6));
+}
+
+.guided-field-icon.electronic.morning-mode {
+  background: linear-gradient(to bottom right, #f4a52a, rgba(244, 165, 42, 0.8), rgba(244, 165, 42, 0.6));
+}
+
+.guided-field-icon.electronic.evening-mode {
+  background: linear-gradient(to bottom right, #0a84ff, rgba(10, 132, 255, 0.8), rgba(94, 92, 230, 0.6));
+}
+
+.guided-field-icon span {
+  color: white;
+  font-weight: bold;
+  font-size: var(--text-xl);
+}
+
+/* Información central del campo */
+.guided-field-info {
+  flex: 1;
+  margin: 0 var(--spacing-sm);
+}
+
+.guided-field-title {
+  font-size: var(--text-xl);
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.guided-field-title.coin {
+  background: linear-gradient(135deg, #f4a52a 0%, #ffb84d 100%);
+}
+
+.guided-field-title.bill {
+  background: linear-gradient(135deg, #00ba7c 0%, #06d6a0 100%);
+}
+
+.guided-field-title.electronic.morning-mode {
+  background: linear-gradient(135deg, #f4a52a 0%, #ffb84d 100%);
+}
+
+.guided-field-title.electronic.evening-mode {
+  background: linear-gradient(135deg, #0a84ff 0%, #5e5ce6 100%);
+}
+
+/* Badge de sección */
+.guided-field-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.guided-field-badge.coin {
+  background-color: rgba(244, 165, 42, 0.2);
+  border: 1px solid rgba(244, 165, 42, 0.4);
+  color: #f4a52a;
+}
+
+.guided-field-badge.bill {
+  background-color: rgba(0, 186, 124, 0.2);
+  border: 1px solid rgba(0, 186, 124, 0.4);
+  color: #00ba7c;
+}
+
+.guided-field-badge.electronic {
+  background-color: rgba(10, 132, 255, 0.15);
+  border: 1px solid rgba(10, 132, 255, 0.3);
+  color: #0a84ff;
+}
+
+.guided-field-badge-icon {
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+}
+
+/* Sección de input */
+.guided-field-input-section {
+  margin-bottom: var(--spacing-sm);
+}
+
+.guided-field-label {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: #8899a6;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.guided-field-input-group {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.guided-field-input-wrapper {
+  flex: 1;
+  position: relative;
+}
+
+.guided-field-input {
+  width: 100%;
+  height: var(--input-height);
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-md);
+  font-size: 1.25rem;
+  font-weight: bold;
+  text-align: center;
+  padding: 0 var(--spacing-md);
+  color: white;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.guided-field-input.morning-mode {
+  border-color: rgba(244, 165, 42, 0.3);
+}
+
+.guided-field-input.evening-mode {
+  border-color: rgba(10, 132, 255, 0.3);
+}
+
+.guided-field-input.morning-mode.has-value {
+  box-shadow: 0 0 0 3px rgba(244, 165, 42, 0.15);
+}
+
+.guided-field-input.evening-mode.has-value {
+  box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.15);
+}
+
+.guided-field-input.electronic {
+  padding-left: 2.5rem;
+}
+
+.guided-field-currency-symbol {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #8899a6;
+  font-weight: 600;
+  z-index: 10;
+}
+
+/* Botón de confirmación */
+.guided-field-confirm-button {
+  height: var(--button-height);
+  background: rgba(128, 128, 128, 0.3);
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 0 var(--spacing-lg);
+  font-size: var(--text-base);
+  font-weight: bold;
+  color: white;
+  transition: all 0.3s ease;
+  cursor: not-allowed;
+}
+
+.guided-field-confirm-button.active.morning-mode {
+  background: linear-gradient(135deg, #f4a52a 0%, #ffb84d 100%);
+  cursor: pointer;
+}
+
+.guided-field-confirm-button.active.evening-mode {
+  background: linear-gradient(135deg, #0a84ff 0%, #5e5ce6 100%);
+  cursor: pointer;
+}
+
+.guided-field-confirm-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.guided-field-confirm-icon {
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+  margin-left: 0.25rem;
+}
+
+/* Feedback visual */
+.guided-field-feedback {
+  margin-top: 0.5rem;
+  display: flex;
+  justify-content: center;
+}
+
+.guided-field-feedback-content {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: var(--text-xs);
+  opacity: 0.5;
+}
+
+.guided-field-feedback-icon {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+/* Barra de progreso de sección */
+.guided-field-section-progress {
+  padding: 0 var(--spacing-sm);
+  margin: var(--spacing-md) 0;
+}
+
+.guided-field-section-progress-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.guided-field-section-progress-info {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: var(--text-xs);
+}
+
+.guided-field-section-progress-info.morning-mode {
+  color: #f4a52a;
+}
+
+.guided-field-section-progress-info.evening-mode {
+  color: #0a84ff;
+}
+
+.guided-field-section-progress-icon {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.guided-field-section-progress-text {
+  font-weight: 500;
+}
+
+.guided-field-section-progress-count {
+  color: #8899a6;
+}
+
+.guided-field-section-progress-bar {
+  height: 0.25rem;
+  background-color: rgba(0, 0, 0, 0.4);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.guided-field-section-progress-fill {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.3s ease;
+}
+
+.guided-field-section-progress-fill.morning-mode {
+  background: linear-gradient(90deg, rgb(244, 165, 42), rgb(255, 184, 77));
+}
+
+.guided-field-section-progress-fill.evening-mode {
+  background: linear-gradient(90deg, rgb(10, 132, 255), rgb(94, 92, 230));
 }
 
 /* 🤖 [IA] - v1.2.13: Clases premium para botones del wizard - Refactor completo */

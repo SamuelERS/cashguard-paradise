@@ -700,66 +700,29 @@ const CashCounter = ({
         animate={{ opacity: 1, y: 0 }}
         className="space-y-2 max-w-md mx-auto sm:max-w-2xl lg:max-w-4xl"
       >
-        {/* 🤖 [IA] - v1.2.11 - Container principal responsive con clamp() y viewport units */}
-        <div className="space-y-4" style={{ 
-          backgroundColor: 'rgba(36, 36, 36, 0.4)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          border: '1px solid rgba(255, 255, 255, 0.15)',
-          padding: `clamp(12px, ${16 * viewportScale}px, 16px)`,
-          borderRadius: '16px',
-          boxShadow: '0 4px 24px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-          minHeight: `clamp(300px, 60vh, 400px)`,
-          maxHeight: '90vh',
-          display: 'flex',
-          flexDirection: 'column',
-          position: 'relative',
-          fontSize: `clamp(14px, ${16 * viewportScale}px, 16px)`
-        }}>
-          {/* 🤖 [IA] - v1.2.11 - Header responsive con viewport units y clamp() */}
-          <div className="text-center" style={{
-            position: 'relative',
-            backgroundColor: 'rgba(36, 36, 36, 0.4)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
-            padding: `clamp(6px, 1.5vw, 12px)`,
-            marginBottom: `clamp(0.25rem, 1vw, 0.5rem)`,
-            marginLeft: `-${Math.max(12, 16 * viewportScale)}px`,
-            marginRight: `-${Math.max(12, 16 * viewportScale)}px`,
-            marginTop: `-${Math.max(12, 16 * viewportScale)}px`,
-            borderRadius: '16px 16px 0 0'
-          }}>
-            <div className="flex items-center justify-center" style={{ gap: `clamp(8px, 2vw, 12px)` }}>
-              <IconComponent style={{
-                width: `clamp(32px, 8vw, 40px)`,
-                height: `clamp(32px, 8vw, 40px)`,
+        {/* 🤖 [IA] - v1.2.14 - Container principal con sistema de diseño coherente */}
+        <div className="cash-counter-container space-y-4">
+          {/* 🤖 [IA] - v1.2.14 - Header con sistema de diseño coherente */}
+          <div className="cash-counter-header">
+            <div className="cash-counter-title">
+              <IconComponent className="cash-counter-icon" style={{
                 background: primaryGradient,
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text'
               }} />
-              <h2 style={{ 
-                fontSize: `clamp(1.25rem, 5vw, 1.5rem)`,
-                fontWeight: 'bold',
-                color: '#e1e8ed' 
-              }}>
-                Fase 1: Conteo Inicial
-              </h2>
+              <h2>Fase 1: Conteo Inicial</h2>
             </div>
           </div>
 
-          {/* Scrollable content container - 🤖 [IA] - v1.2.11: Responsive sin scroll en móviles */}
-          <div style={{ 
-            flex: '1 1 auto', 
-            minHeight: isMobileDevice ? '0' : `clamp(150px, 30vh, 200px)`,
+          {/* 🤖 [IA] - v1.2.14 - Área de contenido con sistema coherente */}
+          <div className="cash-counter-content" style={{
+            minHeight: isMobileDevice ? '0' : 'clamp(150px, 30vh, 200px)',
             maxHeight: isMobileDevice ? 'none' : 'calc(90vh - 120px)',
-            overflowY: isMobileDevice ? 'visible' : 'auto', 
-            overflowX: 'hidden', 
-            paddingRight: isMobileDevice ? '0' : '8px',
-            marginBottom: `clamp(8px, 2vw, 24px)` 
+            overflowY: isMobileDevice ? 'visible' : 'auto'
           }}>
-            {/* Guided Progress Indicator - 🤖 [IA] - v1.2.11: Espaciado responsive */}
-            <div style={{ paddingTop: `clamp(8px, 2vw, 16px)` }}>
+            {/* Guided Progress Indicator - 🤖 [IA] - v1.2.14: Sistema coherente */}
+            <div>
               <GuidedProgressIndicator
                 currentStep={guidedState.currentStep}
                 totalSteps={guidedState.totalSteps}
@@ -819,105 +782,42 @@ const CashCounter = ({
             </div>
           </div>
 
-          {/* Botones de navegación - 🤖 [IA] - v1.2.9: Botón con confirmación y espaciado mejorado */}
-          <div className="flex justify-center lg:max-w-lg lg:mx-auto" style={{ 
-            flexShrink: 0,
-            paddingTop: '16px',
-            marginTop: 'auto'
-          }}>
+          {/* Botones de navegación - 🤖 [IA] - v1.2.14: Sistema de diseño coherente */}
+          <div className="cash-counter-navigation flex justify-center lg:max-w-lg lg:mx-auto">
             <Button
               onClick={() => setShowExitConfirmation(true)}
               variant="outline"
-              className="w-full max-w-xs h-11 text-xs sm:text-sm px-3 sm:px-4 flex items-center justify-center whitespace-nowrap"
-              style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                border: '1px solid rgba(255, 255, 255, 0.3)',
-                color: '#e1e8ed'
-              }}
+              className="cash-counter-nav-button"
             >
-              <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2 flex-shrink-0" />
+              <ArrowLeft className="cash-counter-nav-icon" />
               <span>Volver</span>
               <span className="hidden sm:inline ml-1">a Inicio</span>
             </Button>
           </div>
 
-          {/* 🤖 [IA] - v1.2.13: AlertDialog con Glass Morphism coherente y responsive */}
+          {/* 🤖 [IA] - v1.2.14: AlertDialog con sistema de diseño coherente */}
           <AlertDialog open={showExitConfirmation} onOpenChange={setShowExitConfirmation}>
-            <AlertDialogContent className="!border-0" style={{
-              // 🤖 [IA] - v1.2.13: Glass Morphism premium completo
-              pointerEvents: 'auto',
-              backgroundColor: 'rgba(36, 36, 36, 0.4)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              borderRadius: '16px',
-              boxShadow: '0 4px 24px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-              width: 'calc(100vw - 2rem)',
-              maxWidth: 'clamp(320px, 90vw, 500px)',
-              margin: '0 auto',
-              padding: '24px'
-            }}>
+            <AlertDialogContent className="cash-counter-alert-dialog !border-0">
               <AlertDialogHeader className="flex flex-col space-y-2 text-center sm:text-left">
-                <AlertDialogTitle style={{ 
-                  color: 'rgb(244, 33, 46)', 
-                  fontSize: 'clamp(1.125rem, 4vw, 1.25rem)',
-                  fontWeight: 600,
-                  textAlign: 'center'
-                }}>
+                <AlertDialogTitle className="cash-counter-alert-title">
                   ⚠️ ¿Confirmar salida?
                 </AlertDialogTitle>
-                <AlertDialogDescription style={{ 
-                  color: 'rgb(225, 232, 237)', 
-                  fontSize: 'clamp(0.875rem, 3.5vw, 0.95rem)',
-                  textAlign: 'center',
-                  marginTop: '12px',
-                  lineHeight: '1.5' 
-                }}>
+                <AlertDialogDescription className="cash-counter-alert-description">
                   Se perderá todo el progreso del conteo actual. 
                   <br />
-                  <span style={{ 
-                    color: 'rgb(244, 165, 42)', 
-                    fontWeight: 500,
-                    fontSize: 'clamp(0.813rem, 3.25vw, 0.875rem)'
-                  }}>
+                  <span className="cash-counter-alert-warning">
                     Esta acción no se puede deshacer.
                   </span>
                 </AlertDialogDescription>
               </AlertDialogHeader>
-              <AlertDialogFooter 
-                className="flex flex-col-reverse sm:flex-row sm:justify-center gap-y-4 sm:gap-y-0 sm:gap-x-4"
-                style={{ marginTop: '16px' }}
-              >
+              <AlertDialogFooter className="cash-counter-alert-footer">
                 <AlertDialogAction 
                   onClick={handleBackToStart}
-                  style={{
-                    background: 'linear-gradient(135deg, rgb(244, 33, 46) 0%, rgb(255, 68, 68) 100%)',
-                    color: 'white',
-                    border: '1px solid rgba(255, 255, 255, 0.3)',
-                    borderRadius: '10px',
-                    fontWeight: 600,
-                    fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
-                    boxShadow: 'none',
-                    outline: 'none',
-                    height: '3rem'
-                  }}
-                  className="hover:bg-white/10"
+                  className="cash-counter-alert-action"
                 >
                   Sí, volver al inicio
                 </AlertDialogAction>
-                <AlertDialogCancel 
-                  style={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                    border: '1px solid rgba(255, 255, 255, 0.3)',
-                    color: 'rgb(225, 232, 237)',
-                    borderRadius: '10px',
-                    fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
-                    boxShadow: 'none',
-                    outline: 'none',
-                    height: '3rem'
-                  }}
-                  className="hover:bg-white/10 mt-2 sm:mt-0"
-                >
+                <AlertDialogCancel className="cash-counter-alert-cancel">
                   Cancelar
                 </AlertDialogCancel>
               </AlertDialogFooter>
