@@ -393,7 +393,7 @@ export function GuidedFieldView({
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="mt-2 flex justify-center"
+                  className="mt-2 flex justify-start"
                 >
                   <div className="flex items-center gap-1 text-xs opacity-50">
                     <Check className="w-3 h-3" />
