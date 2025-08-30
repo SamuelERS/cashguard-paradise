@@ -1,0 +1,125 @@
+/* 🤖 [IA] - v1.2.18: Animación de pulso responsiva para campos activos en GuidedFieldView */
+/* Archivo CSS modular siguiendo arquitectura establecida con breakpoints responsive */
+
+/* =======================================
+ * ANIMACIONES RESPONSIVAS - MÓVILES 
+ * =======================================*/
+
+/* Móviles pequeños - Efectos más sutiles */
+@media (max-width: 640px) {
+  @keyframes pulse-glow-morning {
+    0%, 100% {
+      box-shadow: 0 0 0 2px rgba(244, 165, 42, 0.4),
+                  0 0 8px rgba(244, 165, 42, 0.2);
+    }
+    50% {
+      box-shadow: 0 0 0 2px rgba(244, 165, 42, 0.6),
+                  0 0 12px rgba(244, 165, 42, 0.4),
+                  0 0 16px rgba(244, 165, 42, 0.1);
+    }
+  }
+
+  @keyframes pulse-glow-evening {
+    0%, 100% {
+      box-shadow: 0 0 0 2px rgba(10, 132, 255, 0.4),
+                  0 0 8px rgba(10, 132, 255, 0.2);
+    }
+    50% {
+      box-shadow: 0 0 0 2px rgba(10, 132, 255, 0.6),
+                  0 0 12px rgba(10, 132, 255, 0.4),
+                  0 0 16px rgba(10, 132, 255, 0.1);
+    }
+  }
+}
+
+/* =======================================
+ * ANIMACIONES RESPONSIVAS - TABLETS
+ * =======================================*/
+
+/* Tablets - Efectos medianos */
+@media (min-width: 641px) and (max-width: 1024px) {
+  @keyframes pulse-glow-morning {
+    0%, 100% {
+      box-shadow: 0 0 0 3px rgba(244, 165, 42, 0.4),
+                  0 0 15px rgba(244, 165, 42, 0.2);
+    }
+    50% {
+      box-shadow: 0 0 0 3px rgba(244, 165, 42, 0.6),
+                  0 0 20px rgba(244, 165, 42, 0.4),
+                  0 0 25px rgba(244, 165, 42, 0.2);
+    }
+  }
+
+  @keyframes pulse-glow-evening {
+    0%, 100% {
+      box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.4),
+                  0 0 15px rgba(10, 132, 255, 0.2);
+    }
+    50% {
+      box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.6),
+                  0 0 20px rgba(10, 132, 255, 0.4),
+                  0 0 25px rgba(10, 132, 255, 0.2);
+    }
+  }
+}
+
+/* =======================================
+ * ANIMACIONES RESPONSIVAS - DESKTOP
+ * =======================================*/
+
+/* Desktop - Efectos más prominentes */
+@media (min-width: 1025px) {
+  @keyframes pulse-glow-morning {
+    0%, 100% {
+      box-shadow: 0 0 0 4px rgba(244, 165, 42, 0.4),
+                  0 0 25px rgba(244, 165, 42, 0.2),
+                  0 0 35px rgba(244, 165, 42, 0.1);
+    }
+    50% {
+      box-shadow: 0 0 0 4px rgba(244, 165, 42, 0.6),
+                  0 0 35px rgba(244, 165, 42, 0.4),
+                  0 0 45px rgba(244, 165, 42, 0.2),
+                  0 0 55px rgba(244, 165, 42, 0.1);
+    }
+  }
+
+  @keyframes pulse-glow-evening {
+    0%, 100% {
+      box-shadow: 0 0 0 4px rgba(10, 132, 255, 0.4),
+                  0 0 25px rgba(10, 132, 255, 0.2),
+                  0 0 35px rgba(10, 132, 255, 0.1);
+    }
+    50% {
+      box-shadow: 0 0 0 4px rgba(10, 132, 255, 0.6),
+                  0 0 35px rgba(10, 132, 255, 0.4),
+                  0 0 45px rgba(10, 132, 255, 0.2),
+                  0 0 55px rgba(10, 132, 255, 0.1);
+    }
+  }
+}
+
+/* =======================================
+ * CLASES APLICABLES - RESPONSIVE
+ * =======================================*/
+
+.guided-field-pulse-morning {
+  animation: pulse-glow-morning 2s ease-in-out infinite;
+}
+
+.guided-field-pulse-evening {
+  animation: pulse-glow-evening 2s ease-in-out infinite;
+}
+
+/* Reducir animación en dispositivos con preferencia de movimiento reducido */
+@media (prefers-reduced-motion: reduce) {
+  .guided-field-pulse-morning,
+  .guided-field-pulse-evening {
+    animation: none;
+    /* Solo mantener un sutil glow estático */
+    box-shadow: 0 0 0 2px rgba(244, 165, 42, 0.3);
+  }
+  
+  .guided-field-pulse-evening {
+    box-shadow: 0 0 0 2px rgba(10, 132, 255, 0.3);
+  }
+}

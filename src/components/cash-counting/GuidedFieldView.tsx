@@ -12,6 +12,7 @@ import { formatCurrency } from '@/utils/calculations';
 import { useInputValidation } from '@/hooks/useInputValidation';
 import { useTimingConfig } from '@/hooks/useTimingConfig';
 import { cn } from '@/lib/utils';
+import '@/styles/features/guided-field-pulse.css';
 
 interface GuidedFieldViewProps {
   currentFieldName: string;
@@ -238,35 +239,44 @@ export function GuidedFieldView({
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
           border: `2px solid ${borderColor}`,
-          borderRadius: '16px',
-          padding: '14px',
+          borderRadius: 'clamp(12px, 3vw, 20px)', // 🤖 [IA] - v1.2.18: Responsive border-radius
+          padding: 'clamp(12px, 3vw, 20px)', // 🤖 [IA] - v1.2.18: Responsive padding
           // 🤖 [IA] - v1.1.18: Sombra con tono dorado sutil para conteo matutino
           boxShadow: isMorningCount 
             ? `0 8px 32px rgba(244, 165, 42, 0.15), inset 0 1px 0 rgba(255, 184, 77, 0.2)`
             : `0 8px 32px rgba(10, 132, 255, 0.15), inset 0 1px 0 rgba(94, 92, 230, 0.2)`
         }}>
             {/* 🤖 [IA] - v1.0.95: Header con indicador de sección */}
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center justify-between" style={{ marginBottom: 'clamp(12px, 2.5vw, 16px)' }}>
               {/* Ícono con gradiente según tipo */}
-              <div className={cn(
-                "w-12 h-12 rounded-xl flex items-center justify-center shadow-lg",
-                currentFieldType === 'coin' ? 'bg-gradient-to-br from-warning via-warning/80 to-warning/60' :
-                currentFieldType === 'bill' ? 'bg-gradient-to-br from-success via-success/80 to-success/60' :
-                isMorningCount 
-                  ? 'bg-gradient-to-br from-warning via-warning/80 to-warning/60'
-                  : 'bg-gradient-to-br from-accent-primary via-accent-primary/80 to-accent-secondary'
-              )}>
+              <div 
+                className={cn(
+                  "flex items-center justify-center shadow-lg",
+                  currentFieldType === 'coin' ? 'bg-gradient-to-br from-warning via-warning/80 to-warning/60' :
+                  currentFieldType === 'bill' ? 'bg-gradient-to-br from-success via-success/80 to-success/60' :
+                  isMorningCount 
+                    ? 'bg-gradient-to-br from-warning via-warning/80 to-warning/60'
+                    : 'bg-gradient-to-br from-accent-primary via-accent-primary/80 to-accent-secondary'
+                )}
+                style={{
+                  width: 'clamp(40px, 10vw, 56px)', // 🤖 [IA] - v1.2.18: Responsive width
+                  height: 'clamp(40px, 10vw, 56px)', // 🤖 [IA] - v1.2.18: Responsive height
+                  borderRadius: 'clamp(8px, 2vw, 12px)' // 🤖 [IA] - v1.2.18: Responsive border-radius
+                }}
+              >
                 {currentFieldType === 'coin' ? (
-                  <span className="text-white font-bold text-xl">¢</span>
+                  <span className="text-white font-bold" style={{ fontSize: 'clamp(16px, 4vw, 24px)' }}>¢</span>
                 ) : currentFieldType === 'bill' ? (
-                  <span className="text-white font-bold text-xl">$</span>
+                  <span className="text-white font-bold" style={{ fontSize: 'clamp(16px, 4vw, 24px)' }}>$</span>
                 ) : (
-                  <CreditCard className="w-6 h-6 text-white" />
+                  <CreditCard className="text-white" style={{ width: 'clamp(20px, 5vw, 28px)', height: 'clamp(20px, 5vw, 28px)' }} />
                 )}
               </div>
               {/* Información central */}
               <div className="flex-1 mx-3">
-                <h3 className="text-xl font-bold mb-1" style={{
+                <h3 className="font-bold" style={{
+                  fontSize: 'clamp(18px, 4.5vw, 28px)', // 🤖 [IA] - v1.2.18: Responsive font-size
+                  marginBottom: 'clamp(4px, 1vw, 8px)', // 🤖 [IA] - v1.2.18: Responsive margin
                   background: currentFieldType === 'coin' ? 'linear-gradient(135deg, #f4a52a 0%, #ffb84d 100%)' :
                             currentFieldType === 'bill' ? 'linear-gradient(135deg, #00ba7c 0%, #06d6a0 100%)' :
                             gradientBg,
@@ -314,7 +324,7 @@ export function GuidedFieldView({
               </label>
               
               {/* Input y botón integrados */}
-              <div className="flex gap-2">
+              <div className="flex" style={{ gap: 'clamp(8px, 2vw, 16px)' }}>
                 <div className="flex-1 relative">
                   {currentFieldType === 'electronic' && (
                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary font-semibold z-10">
@@ -336,18 +346,22 @@ export function GuidedFieldView({
                     style={{
                       backgroundColor: 'rgba(255, 255, 255, 0.05)',
                       border: `2px solid ${borderColor}`,
-                      borderRadius: '10px',
-                      fontSize: '20px',
+                      borderRadius: 'clamp(8px, 2vw, 12px)',
+                      fontSize: 'clamp(18px, 4vw, 24px)', // 🤖 [IA] - v1.2.18: Responsive font-size - mínimo más grande para móviles
                       fontWeight: 'bold',
-                      height: '48px',
+                      height: 'clamp(48px, 12vw, 56px)', // 🤖 [IA] - v1.2.18: Responsive height - vw mejor para móviles
                       textAlign: 'center',
-                      paddingLeft: currentFieldType === 'electronic' ? '40px' : '16px',
+                      paddingLeft: currentFieldType === 'electronic' ? 'clamp(36px, 6vw, 48px)' : 'clamp(14px, 3vw, 20px)', // 🤖 [IA] - v1.2.18: Responsive padding - ajustar mínimos
+                      paddingRight: 'clamp(14px, 3vw, 20px)', // 🤖 [IA] - v1.2.18: Responsive padding right - aumentar mínimo
                       // 🤖 [IA] - v1.1.18: Override del ring azul con color dinámico
                       '--tw-ring-color': isMorningCount ? '#f4a52a' : '#0a84ff',
                       boxShadow: inputValue ? `0 0 0 3px ${focusGlow}` : 'none',
                       transition: 'all 0.3s ease'
                     } as React.CSSProperties}
-                    className="focus:outline-none"
+                    className={cn(
+                      "focus:outline-none",
+                      isActive && (isMorningCount ? "guided-field-pulse-morning" : "guided-field-pulse-evening")
+                    )}
                     autoFocus // 🤖 [IA] - v1.1.17: autoFocus necesario para mantener teclado entre campos
                   />
                 </div>
@@ -358,11 +372,12 @@ export function GuidedFieldView({
                   style={{
                     background: inputValue ? gradientBg : 'rgba(128, 128, 128, 0.3)',
                     border: 'none',
-                    borderRadius: '10px',
-                    height: '48px',
-                    padding: '0 20px',
-                    fontSize: '16px',
+                    borderRadius: 'clamp(8px, 2vw, 12px)', // 🤖 [IA] - v1.2.18: Responsive border-radius
+                    height: 'clamp(48px, 12vw, 56px)', // 🤖 [IA] - v1.2.18: Responsive height to match input - vw mejor para móviles
+                    padding: '0 clamp(12px, 3vw, 24px)', // 🤖 [IA] - v1.2.18: Responsive padding - reducir mínimo para más espacio
+                    fontSize: 'clamp(14px, 3vw, 18px)', // 🤖 [IA] - v1.2.18: Responsive font-size - reducir de 3.5vw a 3vw
                     fontWeight: 'bold',
+                    minWidth: 'clamp(100px, 25vw, 140px)', // 🤖 [IA] - v1.2.18: Min-width para evitar compresión en móviles
                     transition: 'all 0.3s'
                   }}
                   className="text-white shadow-lg"
