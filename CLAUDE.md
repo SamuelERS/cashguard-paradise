@@ -50,9 +50,14 @@ CashGuard Paradise v1.2.16 is a cash management system for "Acuarios Paradise" r
 
 *Para historial completo v1.0.80 - v1.1.20, ver [CHANGELOG-DETALLADO.md](/Documentos%20MarkDown/CHANGELOG-DETALLADO.md)*
 
-### v1.2.16 - Rediseño Estético Modal
-Mejora completa estética: badge progreso sutil, contraste dorado iconos, progress bar visible, input/botón unificado.
-**Archivos:** `src/index.css`, `CLAUDE.md`
+### v1.2.16 - Rediseño Estético Modal + CSS Warnings Fix
+**REDISEÑO MODAL:** Mejora completa estética: badge progreso sutil, contraste dorado iconos, progress bar visible, input/botón unificado.
+**CSS WARNINGS FIX:** Solución 100% Docker-compatible para eliminar 5 warnings "Unknown at rule @tailwind/@apply":
+- Configuración `.vscode/settings.json` con desactivación CSS validation
+- Comentarios supresión `/* stylelint-disable-next-line at-rule-no-unknown */` en `src/index.css`
+- Script helper `Scripts/css-warnings-fix.sh` para automatización
+- Build verificado exitosamente sin errores
+**Archivos:** `src/index.css`, `.vscode/settings.json`, `Scripts/css-warnings-fix.sh`, `CLAUDE.md`
 
 ### v1.2.15 - Optimización Proporciones UX/UI 
 Elementos 25-30% más compactos desktop, proporción dorada aplicada, variables CSS optimizadas, mejor aprovechamiento espacio.
