@@ -4,8 +4,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft, X, Calculator, Users, MapPin, DollarSign, Sunrise } from "lucide-react";
 // 🤖 [IA] - v1.2.18 - Import modular CSS for desktop alignment improvements
 import '../styles/features/cash-counter-desktop-alignment.css';
-// 🤖 [IA] - v1.2.19 - Import modular CSS for phase 1 navigation
-import '../styles/features/phase1-navigation.css';
+// 🤖 [IA] - v1.2.21 - Removed duplicated phase1-navigation.css (conflicted with glass version)
 // 🤖 [IA] - v1.2.20 - Import Glass Morphism for phase 1 navigation container
 import '../styles/features/phase1-navigation-glass.css';
 // 🤖 [IA] - v1.2.20 - Import Glass Morphism coherence optimization
