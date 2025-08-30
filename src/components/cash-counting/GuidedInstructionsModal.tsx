@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { AlertTriangle, Info, Shield, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
+import '@/styles/features/guided-instructions-start-button.css';
 
 interface GuidedInstructionsModalProps {
   isOpen: boolean;
@@ -238,11 +239,10 @@ export function GuidedInstructionsModal({
           <Button
             onClick={handleConfirm}
             disabled={!understood}
-            className="w-full font-bold shadow-lg transition-all duration-300"
+            className="guided-instructions-start-button w-full font-bold shadow-lg transition-all duration-300"
             style={{
               height: `clamp(40px, ${48 * viewportScale}px, 48px)`,
               fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
-              background: understood ? gradientBg : 'rgba(128, 128, 128, 0.3)',
               border: 'none',
               opacity: understood ? 1 : 0.6,
               transform: understood ? 'scale(1)' : 'scale(0.98)'

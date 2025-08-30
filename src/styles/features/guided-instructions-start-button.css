@@ -1,0 +1,104 @@
+/* 
+ * 🤖 [IA] - v1.2.23: Guided Instructions Start Button - Success Alert Colors
+ * Nuevo archivo modular siguiendo v1.2.18 architecture (index.css CONGELADO)
+ * Colores EXACTOS del sistema Alert Success - Sin box-shadow
+ */
+
+/* Guided Instructions Start Button - Colores EXACTOS Alert Success */
+.guided-instructions-start-button {
+  /* Flat Style - Colores EXACTOS Alert Success */
+  background: #dcfce7 !important; /* bg-green-100 EXACTO - Override btn-primary and inline gradients */
+  border: 2px solid #22c55e !important; /* border-green-500 EXACTO - Override btn-primary */
+  box-shadow: none !important; /* Remove btn-primary shadow completely */
+  
+  color: #14532d !important; /* text-green-900 EXACTO - Override btn-primary */
+  
+  /* Maintain existing layout properties */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+  border-radius: 0.75rem;
+  font-weight: 700; /* font-bold */
+  
+  transition: all 0.3s ease;
+  cursor: pointer;
+  width: 100%;
+}
+
+.guided-instructions-start-button:hover:not(:disabled) {
+  background: #bbf7d0 !important; /* hover:bg-green-200 EXACTO - Override btn-primary */
+  border-color: #16a34a !important; /* hover:border-green-600 - Override btn-primary */
+  color: #14532d !important; /* text-green-900 EXACTO - Override btn-primary */
+  box-shadow: none !important; /* Remove btn-primary:hover shadow completely */
+  transform: translateY(-1px) scale(1.02); /* Efecto sutil de escala */
+}
+
+.guided-instructions-start-button:active:not(:disabled) {
+  transform: translateY(0) scale(0.98); /* Efecto de presión */
+  background: #bbf7d0 !important; /* Consistente con hover - green-200 - Override btn-primary */
+  color: #14532d !important; /* text-green-900 EXACTO - Override btn-primary */
+  box-shadow: none !important; /* Remove any active state shadows */
+}
+
+/* Estado deshabilitado cuando el checkbox no está marcado */
+.guided-instructions-start-button:disabled {
+  background: rgba(128, 128, 128, 0.3) !important; /* Consistente con el estado actual disabled */
+  border: 1px solid rgba(128, 128, 128, 0.5) !important;
+  color: #6b7280 !important; /* text-gray-500 */
+  cursor: not-allowed;
+  box-shadow: none !important;
+  opacity: 0.6; /* Mantener la opacidad del estado actual */
+  transform: scale(0.98); /* Mantener el transform del estado actual */
+}
+
+/* Dark mode - Colores EXACTOS Alert Success */
+@media (prefers-color-scheme: dark) {
+  .guided-instructions-start-button {
+    background: #14532d !important; /* dark:bg-green-900 EXACTO - Override btn-primary */
+    border-color: #15803d !important; /* dark:border-green-700 EXACTO - Override btn-primary */
+    color: #dcfce7 !important; /* dark:text-green-100 EXACTO - Override btn-primary */
+  }
+  
+  .guided-instructions-start-button:hover:not(:disabled) {
+    background: #166534 !important; /* dark:hover:bg-green-800 EXACTO - Override btn-primary */
+    border-color: #16a34a !important; /* Override btn-primary */
+    color: #dcfce7 !important; /* Override btn-primary */
+  }
+  
+  .guided-instructions-start-button:active:not(:disabled) {
+    background: #166534 !important; /* Consistente con hover en dark - Override btn-primary */
+    color: #dcfce7 !important; /* Override btn-primary */
+  }
+  
+  .guided-instructions-start-button:disabled {
+    background: rgba(128, 128, 128, 0.3) !important; /* dark disabled - consistent */
+    border-color: rgba(128, 128, 128, 0.5) !important;
+    color: #6b7280 !important;
+  }
+}
+
+/* Mejoras para accesibilidad */
+.guided-instructions-start-button:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* Responsividad mejorada para móviles */
+@media (max-width: 640px) {
+  .guided-instructions-start-button {
+    font-size: 0.875rem;
+  }
+}
+
+/* Icon styling dentro del botón */
+.guided-instructions-start-button svg {
+  flex-shrink: 0;
+}
+
+/* Span con flex items-center */
+.guided-instructions-start-button .flex.items-center {
+  display: flex;
+  align-items: center;
+}
