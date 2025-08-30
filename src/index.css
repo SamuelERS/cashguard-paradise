@@ -1579,9 +1579,9 @@
 .cash-counter-nav-button {
   width: 100%;
   max-width: 20rem;
-  height: var(--button-height-sm);
-  font-size: var(--text-xs);
-  padding: 0 var(--spacing-sm);
+  height: 48px;
+  font-size: clamp(0.875rem, 3.5vw, 1rem);
+  padding: 12px 24px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1597,8 +1597,7 @@
 
 @media (min-width: 640px) {
   .cash-counter-nav-button {
-    font-size: var(--text-sm);
-    padding: 0 var(--spacing-md);
+    /* Ya se usa clamp() responsive, no necesita override */
   }
 }
 
