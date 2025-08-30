@@ -566,7 +566,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                 <h3 className="font-semibold" style={{ 
                   color: '#e1e8ed',
                   fontSize: 'clamp(1.125rem, 4.5vw, 1.25rem)'
-                }}>Venta Esperada</h3>
+                }}>Ingresa Total Vendido</h3>
               </div>
             </div>
 
