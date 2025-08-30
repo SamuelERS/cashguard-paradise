@@ -114,12 +114,12 @@ export const GlassAlertDialog: React.FC<GlassAlertDialogProps> = ({
         >
           <AlertDialogAction
             onClick={onConfirm}
-            className="hover:opacity-90"
+            className="hover:bg-white/10"
             style={{
               // [IA] - Botón confirmar con gradiente rojo consistente con CashCounter
               background: 'linear-gradient(135deg, rgb(244, 33, 46) 0%, rgb(255, 68, 68) 100%)',
               color: 'white',
-              border: 'none',
+              border: '1px solid rgba(255, 255, 255, 0.3)',
               borderRadius: '10px',
               fontWeight: 600,
               fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
