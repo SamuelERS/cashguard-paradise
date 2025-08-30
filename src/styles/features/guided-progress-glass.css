@@ -1,0 +1,203 @@
+/*
+ * 🤖 [IA] - v1.2.20: Glass Morphism para GuidedProgressIndicator
+ * Implementación completa del efecto Glass con dual box-shadow
+ * Arquitectura modular CSS siguiendo v1.2.18 (index.css CONGELADO)
+ */
+
+/* Container principal con Glass Morphism perfecto */
+.guided-progress-container {
+  /* Glass Morphism - Template perfecto usando variables CSS */
+  background: var(--glass-bg-primary) !important;
+  backdrop-filter: var(--glass-blur) !important;
+  -webkit-backdrop-filter: var(--glass-blur) !important;
+  
+  /* Borde sutil luminoso */
+  border: 1px solid var(--glass-border-primary) !important;
+  
+  /* Dual box-shadow (exterior + interior) - Efecto Glass completo */
+  box-shadow: var(--glass-shadow) !important;
+  
+  /* Bordes redondeados responsivos */
+  border-radius: var(--radius-xl) !important;
+  
+  /* Padding responsive manteniendo espaciado */
+  padding: var(--spacing-sm) !important;
+  margin-bottom: var(--spacing-lg) !important;
+  
+  /* Performance optimization - GPU acceleration */
+  transform: translateZ(0);
+  will-change: backdrop-filter;
+  contain: paint;
+}
+
+/* Borde lateral dinámico con Glass effect mejorado */
+.guided-progress-container.morning-mode {
+  /* Borde izquierdo dorado con glow sutil */
+  border-left: 4px solid rgba(244, 165, 42, 0.8) !important;
+  /* Efecto glow sutil para morning mode */
+  box-shadow: 
+    0 8px 32px 0 rgba(0, 0, 0, 0.37),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.1),
+    -2px 0 8px 0 rgba(244, 165, 42, 0.15) !important;
+}
+
+.guided-progress-container.evening-mode {
+  /* Borde izquierdo azul con glow sutil */
+  border-left: 4px solid rgba(10, 132, 255, 0.8) !important;
+  /* Efecto glow sutil para evening mode */
+  box-shadow: 
+    0 8px 32px 0 rgba(0, 0, 0, 0.37),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.1),
+    -2px 0 8px 0 rgba(10, 132, 255, 0.15) !important;
+}
+
+/* Header con Glass enhancement */
+.guided-progress-header {
+  /* Subtle Glass backdrop para distinguir del container */
+  background: var(--glass-border-secondary) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  
+  /* Borde sutil interno */
+  border: 1px solid var(--glass-border-secondary) !important;
+  border-radius: var(--radius-md) !important;
+  
+  /* Padding optimizado para Glass effect */
+  padding: var(--spacing-xs) !important;
+  margin-bottom: var(--spacing-xs) !important;
+  
+  /* Sutil inner shadow para profundidad */
+  box-shadow: inset 0 1px 2px 0 rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Badge con Glass effect mejorado */
+.guided-progress-badge {
+  /* Glass backdrop más pronunciado para el badge */
+  background: rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(15px) !important;
+  -webkit-backdrop-filter: blur(15px) !important;
+  
+  /* Borde más visible para el badge */
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  
+  /* Sombra interna para efecto 3D */
+  box-shadow: 
+    inset 0 1px 2px 0 rgba(255, 255, 255, 0.1),
+    0 2px 8px 0 rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Progress bar container con Glass */
+.guided-progress-bar-container {
+  /* Subtle Glass background */
+  background: var(--glass-bg-secondary) !important;
+  backdrop-filter: blur(5px) !important;
+  -webkit-backdrop-filter: blur(5px) !important;
+  
+  /* Borde sutil para definir la barra */
+  border: 1px solid var(--glass-border-secondary) !important;
+  border-radius: var(--radius-xl) !important;
+  
+  /* Sombra interna para profundidad */
+  box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.3) !important;
+  
+  /* Height responsive */
+  height: var(--spacing-xs) !important;
+  margin-bottom: var(--spacing-xs) !important;
+}
+
+/* Progress bar actual con Glass glow */
+.guided-progress-bar {
+  /* Glass effect con color mode */
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  
+  /* Border radius matching container */
+  border-radius: clamp(1rem, 4vw, 1.5rem) !important;
+  
+  /* Sombra externa para glow effect */
+  box-shadow: 0 0 8px 0 currentColor !important;
+  
+  /* Smooth transition */
+  transition: all 0.5s ease-out !important;
+}
+
+.guided-progress-bar.morning-mode {
+  /* Morning gradient con Glass effect */
+  background: linear-gradient(90deg, 
+    rgba(244, 165, 42, 0.9) 0%, 
+    rgba(255, 184, 77, 0.9) 100%) !important;
+  
+  /* Orange glow */
+  box-shadow: 
+    0 0 8px 0 rgba(244, 165, 42, 0.4),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+.guided-progress-bar.evening-mode {
+  /* Evening gradient con Glass effect */
+  background: linear-gradient(90deg, 
+    rgba(10, 132, 255, 0.9) 0%, 
+    rgba(94, 92, 230, 0.9) 100%) !important;
+  
+  /* Blue glow */
+  box-shadow: 
+    0 0 8px 0 rgba(10, 132, 255, 0.4),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Instructions con Glass backdrop */
+.guided-progress-instructions {
+  /* Subtle Glass background */
+  background: rgba(255, 255, 255, 0.03) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  
+  /* Borde muy sutil */
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: clamp(0.5rem, 2vw, 0.75rem) !important;
+  
+  /* Padding responsive */
+  padding: clamp(8px, 2vw, 12px) !important;
+  
+  /* Sutil sombra interna */
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Dark mode adjustments para Glass */
+@media (prefers-color-scheme: dark) {
+  .guided-progress-container {
+    /* Darker Glass base en dark mode */
+    background: rgba(20, 20, 20, 0.5) !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+  }
+  
+  .guided-progress-header {
+    background: rgba(255, 255, 255, 0.01) !important;
+    border-color: rgba(255, 255, 255, 0.06) !important;
+  }
+  
+  .guided-progress-badge {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+  }
+}
+
+/* Performance optimizations */
+@supports (backdrop-filter: blur(20px)) {
+  .guided-progress-container {
+    /* Enhanced Glass effect en navegadores compatibles */
+    background: rgba(36, 36, 36, 0.35) !important;
+  }
+}
+
+/* Fallback para navegadores sin backdrop-filter */
+@supports not (backdrop-filter: blur(20px)) {
+  .guided-progress-container {
+    /* Fallback background más opaco */
+    background: rgba(36, 36, 36, 0.85) !important;
+  }
+  
+  .guided-progress-header {
+    background: rgba(255, 255, 255, 0.08) !important;
+  }
+}

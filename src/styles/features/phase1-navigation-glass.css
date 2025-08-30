@@ -1,0 +1,244 @@
+/*
+ * 🤖 [IA] - v1.2.20: Glass Morphism para Phase1 Navigation Container
+ * Glass effect en el contenedor de navegación manteniendo Alert colors en botones
+ * Arquitectura modular CSS siguiendo v1.2.18 (index.css CONGELADO)
+ */
+
+/* Container principal con Glass Morphism perfecto */
+.phase1-navigation {
+  /* Glass Morphism - Template perfecto usando variables CSS */
+  background: var(--glass-bg-primary) !important;
+  backdrop-filter: var(--glass-blur) !important;
+  -webkit-backdrop-filter: var(--glass-blur) !important;
+  
+  /* Borde sutil luminoso */
+  border: 1px solid var(--glass-border-primary) !important;
+  border-top: 2px solid rgba(255, 255, 255, 0.2) !important; /* Borde superior más visible */
+  
+  /* Dual box-shadow (exterior + interior) - Efecto Glass completo */
+  box-shadow: 
+    0 -4px 16px 0 rgba(0, 0, 0, 0.25),
+    var(--glass-shadow) !important;
+  
+  /* Bordes redondeados responsivos */
+  border-radius: 0 0 var(--radius-xl) var(--radius-xl) !important;
+  
+  /* Padding y margin responsive manteniendo espaciado */
+  margin-top: var(--spacing-xl) !important;
+  padding: var(--spacing-md) !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  max-width: 32rem !important;
+  gap: var(--spacing-lg) !important;
+  
+  /* Flex properties mantenidos */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  
+  /* Performance optimization - GPU acceleration */
+  transform: translateZ(0);
+  will-change: backdrop-filter;
+  contain: paint;
+}
+
+/* Glass enhancement para botones - Mantener Alert colors pero agregar Glass backdrop */
+.phase1-cancel-button {
+  /* Glass backdrop sutil detrás del color Alert */
+  position: relative;
+  overflow: hidden;
+  
+  /* Mantener todos los estilos Alert Error existentes */
+  background: #fee2e2 !important; /* bg-red-100 EXACTO */
+  border: 2px solid #ef4444 !important; /* border-red-500 EXACTO */
+  color: #7f1d1d !important; /* text-red-900 EXACTO */
+  box-shadow: none !important; /* Mantener flat style */
+}
+
+.phase1-cancel-button::before {
+  /* Pseudo-elemento con Glass backdrop sutil */
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(254, 226, 226, 0.1); /* Glass tint matching red-100 */
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border-radius: inherit;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.phase1-cancel-button:hover::before {
+  opacity: 1;
+}
+
+.phase1-previous-button {
+  /* Glass backdrop sutil detrás del color Alert */
+  position: relative;
+  overflow: hidden;
+  
+  /* Mantener todos los estilos Alert Warning existentes */
+  background: #fef3c7 !important; /* bg-yellow-100 EXACTO */
+  border: 2px solid #eab308 !important; /* border-yellow-500 EXACTO */
+  color: #78350f !important; /* text-yellow-900 EXACTO */
+  box-shadow: none !important; /* Mantener flat style */
+}
+
+.phase1-previous-button::before {
+  /* Pseudo-elemento con Glass backdrop sutil */
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(254, 243, 199, 0.1); /* Glass tint matching yellow-100 */
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border-radius: inherit;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.phase1-previous-button:hover::before:not(:disabled) {
+  opacity: 1;
+}
+
+/* Estados hover mejorados con Glass effect */
+.phase1-cancel-button:hover {
+  /* Mantener Alert colors pero agregar Glass glow */
+  background: #fecaca !important; /* hover:bg-red-200 EXACTO */
+  border-color: #dc2626 !important; /* hover:border-red-600 */
+  color: #7f1d1d !important; /* text-red-900 EXACTO */
+  box-shadow: 
+    0 0 0 0 transparent,
+    0 0 8px 0 rgba(239, 68, 68, 0.2) !important; /* Subtle red glow */
+  transform: translateY(-1px) scale(1.02);
+}
+
+.phase1-previous-button:hover:not(:disabled) {
+  /* Mantener Alert colors pero agregar Glass glow */
+  background: #fde68a !important; /* hover:bg-yellow-200 EXACTO */
+  border-color: #ca8a04 !important; /* hover:border-yellow-600 */
+  color: #78350f !important; /* text-yellow-900 EXACTO */
+  box-shadow: 
+    0 0 0 0 transparent,
+    0 0 8px 0 rgba(234, 179, 8, 0.2) !important; /* Subtle yellow glow */
+  transform: translateY(-1px) scale(1.02);
+}
+
+/* Estados active mejorados */
+.phase1-cancel-button:active {
+  transform: translateY(0) scale(0.98);
+  background: #fecaca !important;
+  color: #7f1d1d !important;
+  box-shadow: 
+    inset 0 2px 4px 0 rgba(239, 68, 68, 0.1),
+    0 0 4px 0 rgba(239, 68, 68, 0.1) !important;
+}
+
+.phase1-previous-button:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+  background: #fde68a !important;
+  color: #78350f !important;
+  box-shadow: 
+    inset 0 2px 4px 0 rgba(234, 179, 8, 0.1),
+    0 0 4px 0 rgba(234, 179, 8, 0.1) !important;
+}
+
+/* Disabled state con Glass effect */
+.phase1-previous-button:disabled {
+  background: rgba(128, 128, 128, 0.3) !important;
+  border: 1px solid rgba(128, 128, 128, 0.5) !important;
+  color: #6b7280 !important;
+  cursor: not-allowed;
+  box-shadow: none !important;
+  opacity: 0.6;
+  transform: none;
+  
+  /* Glass backdrop disabled */
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+.phase1-previous-button:disabled::before {
+  display: none; /* No Glass effect cuando disabled */
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+  .phase1-navigation {
+    /* Darker Glass base en dark mode */
+    background: rgba(20, 20, 20, 0.5) !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    border-top-color: rgba(255, 255, 255, 0.18) !important;
+    
+    /* Enhanced shadow en dark mode */
+    box-shadow: 
+      0 -4px 16px 0 rgba(0, 0, 0, 0.4),
+      0 8px 32px 0 rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.08) !important;
+  }
+  
+  /* Dark mode button adjustments manteniendo Alert colors */
+  .phase1-cancel-button {
+    background: #7f1d1d !important; /* dark:bg-red-900 EXACTO */
+    border-color: #b91c1c !important; /* dark:border-red-700 EXACTO */
+    color: #fee2e2 !important; /* dark:text-red-100 EXACTO */
+  }
+  
+  .phase1-cancel-button::before {
+    background: rgba(127, 29, 29, 0.1); /* Glass tint matching red-900 */
+  }
+  
+  .phase1-previous-button {
+    background: #78350f !important; /* dark:bg-yellow-900 EXACTO */
+    border-color: #a16207 !important; /* dark:border-yellow-700 EXACTO */
+    color: #fef3c7 !important; /* dark:text-yellow-100 EXACTO */
+  }
+  
+  .phase1-previous-button::before {
+    background: rgba(120, 53, 15, 0.1); /* Glass tint matching yellow-900 */
+  }
+}
+
+/* Performance optimizations */
+@supports (backdrop-filter: blur(20px)) {
+  .phase1-navigation {
+    /* Enhanced Glass effect en navegadores compatibles */
+    background: rgba(36, 36, 36, 0.35) !important;
+  }
+}
+
+/* Fallback para navegadores sin backdrop-filter */
+@supports not (backdrop-filter: blur(20px)) {
+  .phase1-navigation {
+    /* Fallback background más opaco */
+    background: rgba(36, 36, 36, 0.85) !important;
+  }
+  
+  .phase1-cancel-button::before,
+  .phase1-previous-button::before {
+    display: none; /* No pseudo-elementos sin backdrop-filter */
+  }
+}
+
+/* Responsividad mejorada para móviles con Glass */
+@media (max-width: 640px) {
+  .phase1-navigation {
+    /* Menos blur en móviles para performance */
+    backdrop-filter: blur(15px) !important;
+    -webkit-backdrop-filter: blur(15px) !important;
+    
+    /* Padding ajustado para móviles */
+    padding: 1rem !important;
+    gap: 0.375rem !important;
+    margin-top: 1rem !important;
+  }
+  
+  .phase1-cancel-button::before,
+  .phase1-previous-button::before {
+    /* Menos blur en pseudo-elementos móviles */
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+  }
+}

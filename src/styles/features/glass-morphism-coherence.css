@@ -1,0 +1,198 @@
+/*
+ * 🤖 [IA] - v1.2.20: Glass Morphism Coherence Optimization
+ * Asegurar coherencia visual perfecta entre todos los elementos Glass
+ * Arquitectura modular CSS siguiendo v1.2.18 (index.css CONGELADO)
+ */
+
+/* Variables Glass Morphism globales (override para coherencia) */
+:root {
+  /* Enhanced dual shadow para todos los elementos Glass */
+  --glass-shadow-enhanced: 
+    0 8px 32px 0 rgba(0, 0, 0, 0.37),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.1),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+  
+  /* Border consistency */
+  --glass-border-highlight: rgba(255, 255, 255, 0.2);
+  
+  /* Performance blur levels */
+  --glass-blur-light: blur(10px);
+  --glass-blur-medium: blur(15px);
+  --glass-blur-full: blur(20px);
+}
+
+/* Global Glass optimization para todos los componentes */
+.glass-card,
+.guided-progress-container,
+.cash-counter-container,
+.phase1-navigation,
+[class*="glass-"] {
+  /* Ensure consistent backdrop support */
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  
+  /* Enhanced shadow coherence */
+  box-shadow: var(--glass-shadow-enhanced);
+  
+  /* Performance optimization global */
+  transform: translateZ(0);
+  will-change: backdrop-filter, transform;
+  contain: paint layout;
+  
+  /* Smooth transitions */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Border coherence across all Glass elements */
+.guided-progress-container,
+.phase1-navigation,
+.cash-counter-container,
+.cash-counter-header {
+  border: 1px solid var(--glass-border-primary) !important;
+}
+
+/* Consistent border radius */
+.guided-progress-container,
+.phase1-navigation,
+.cash-counter-container {
+  border-radius: var(--radius-xl) !important;
+}
+
+.guided-progress-header,
+.guided-progress-instructions,
+[class*="progress-bar-container"] {
+  border-radius: var(--radius-md) !important;
+}
+
+/* Consistent spacing */
+.guided-progress-container,
+.phase1-navigation {
+  padding: var(--spacing-md) !important;
+  margin-bottom: var(--spacing-lg) !important;
+}
+
+.guided-progress-header,
+.guided-progress-instructions {
+  padding: var(--spacing-sm) !important;
+  margin-bottom: var(--spacing-sm) !important;
+}
+
+/* Text color consistency */
+.guided-progress-container *,
+.phase1-navigation *,
+.cash-counter-container * {
+  color: var(--text-primary);
+}
+
+.guided-progress-subtitle,
+.guided-progress-stats-label,
+[class*="instruction-text"] {
+  color: var(--text-secondary) !important;
+}
+
+/* Hover states consistency */
+.guided-progress-container:hover,
+.phase1-navigation:hover,
+.glass-card:hover {
+  background: var(--glass-bg-primary) !important;
+  border-color: var(--glass-border-highlight) !important;
+  box-shadow: 
+    0 12px 40px 0 rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.15),
+    0 0 0 1px rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Focus states coherence */
+.guided-progress-container:focus-within,
+.phase1-navigation:focus-within {
+  outline: 2px solid var(--glass-border-primary);
+  outline-offset: 2px;
+}
+
+/* Performance optimizations for mobile */
+@media (max-width: 768px) {
+  .glass-card,
+  .guided-progress-container,
+  .cash-counter-container,
+  .phase1-navigation,
+  [class*="glass-"] {
+    /* Reduced blur for mobile performance */
+    backdrop-filter: var(--glass-blur-medium) !important;
+    -webkit-backdrop-filter: var(--glass-blur-medium) !important;
+    
+    /* Simplified shadows on mobile */
+    box-shadow: 
+      0 4px 16px 0 rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.08) !important;
+  }
+}
+
+/* Ultra-low end mobile optimization */
+@media (max-width: 480px) {
+  .glass-card,
+  .guided-progress-container,
+  .phase1-navigation,
+  [class*="glass-"] {
+    /* Minimal blur for very low end devices */
+    backdrop-filter: var(--glass-blur-light) !important;
+    -webkit-backdrop-filter: var(--glass-blur-light) !important;
+    
+    /* More opaque background for readability */
+    background: rgba(36, 36, 36, 0.6) !important;
+  }
+}
+
+/* Dark mode coherence */
+@media (prefers-color-scheme: dark) {
+  .glass-card,
+  .guided-progress-container,
+  .cash-counter-container,
+  .phase1-navigation,
+  [class*="glass-"] {
+    background: rgba(20, 20, 20, 0.5) !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    
+    box-shadow: 
+      0 8px 32px 0 rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.08) !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .glass-card,
+  .guided-progress-container,
+  .phase1-navigation,
+  [class*="glass-"] {
+    background: rgba(36, 36, 36, 0.8) !important;
+    border: 2px solid rgba(255, 255, 255, 0.3) !important;
+    backdrop-filter: blur(5px) !important;
+    -webkit-backdrop-filter: blur(5px) !important;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .glass-card,
+  .guided-progress-container,
+  .phase1-navigation,
+  [class*="glass-"] {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* Print styles - Remove Glass effects */
+@media print {
+  .glass-card,
+  .guided-progress-container,
+  .phase1-navigation,
+  [class*="glass-"] {
+    background: white !important;
+    border: 1px solid black !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+    color: black !important;
+  }
+}

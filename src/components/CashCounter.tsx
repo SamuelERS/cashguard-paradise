@@ -6,6 +6,12 @@ import { ArrowLeft, X, Calculator, Users, MapPin, DollarSign, Sunrise } from "lu
 import '../styles/features/cash-counter-desktop-alignment.css';
 // 🤖 [IA] - v1.2.19 - Import modular CSS for phase 1 navigation
 import '../styles/features/phase1-navigation.css';
+// 🤖 [IA] - v1.2.20 - Import Glass Morphism for phase 1 navigation container
+import '../styles/features/phase1-navigation-glass.css';
+// 🤖 [IA] - v1.2.20 - Import Glass Morphism coherence optimization
+import '../styles/features/glass-morphism-coherence.css';
+// 🤖 [IA] - v1.2.20 - Import responsive verification for all breakpoints
+import '../styles/features/responsive-verification.css';
 import '../styles/features/cash-counter-alert-buttons.css';
 import '../styles/features/cash-counter-alert-dialog.css';
 import { Button } from "@/components/ui/button";
