@@ -1461,7 +1461,7 @@
   border: 1px solid #3a4451;
   color: #657786;
   font-size: 14px;
-  font-weight: 400;
+  font-weight: 600;
   border-radius: 10px;
   height: 36px;
   padding: 0 12px;
@@ -1479,9 +1479,9 @@
 .wizard-nav-previous-button {
   background-color: #1a1f26;
   border: 1px solid #2a3441;
-  color: #8899a6;
+  color: #ffffff;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   border-radius: 10px;
   height: 36px;
   padding: 0 16px;
