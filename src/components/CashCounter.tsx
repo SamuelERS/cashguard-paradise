@@ -843,7 +843,7 @@ const CashCounter = ({
 
           {/* 🤖 [IA] - v1.2.13: AlertDialog con Glass Morphism coherente y responsive */}
           <AlertDialog open={showExitConfirmation} onOpenChange={setShowExitConfirmation}>
-            <AlertDialogContent style={{
+            <AlertDialogContent className="!border-0" style={{
               // 🤖 [IA] - v1.2.13: Glass Morphism premium completo
               pointerEvents: 'auto',
               backgroundColor: 'rgba(36, 36, 36, 0.4)',
