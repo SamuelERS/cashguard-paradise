@@ -346,7 +346,7 @@ export function GuidedFieldView({
                       '--tw-ring-color': isMorningCount ? '#f4a52a' : '#0a84ff',
                       boxShadow: inputValue ? `0 0 0 3px ${focusGlow}` : 'none',
                       transition: 'all 0.3s ease'
-                    } as React.CSSProperties}
+                    }}
                     className="focus:outline-none"
                     autoFocus // 🤖 [IA] - v1.1.17: autoFocus necesario para mantener teclado entre campos
                   />
