@@ -1,4 +1,4 @@
-// 🤖 [IA] - v1.2.12: Modal responsivo con sistema de escala proporcional
+// 🤖 [IA] - v1.2.13: Modal con Glass Morphism coherente del proyecto
 import React, { useState, useEffect, useMemo } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -73,11 +73,13 @@ export function GuidedInstructionsModal({
       <DialogContent 
         className="w-[95vw] max-w-[95vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] sm:max-h-[85vh] overflow-y-auto border-0 p-0 [&>button]:hidden"
         style={{
-          backgroundColor: 'rgba(36, 36, 36, 0.95)',
+          // 🤖 [IA] - v1.2.13: Glass Morphism consistente con proyecto (40% opacidad)
+          backgroundColor: 'rgba(36, 36, 36, 0.4)',
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)'
+          border: '1px solid rgba(255, 255, 255, 0.15)',
+          // 🤖 [IA] - v1.2.13: Sombras duales del sistema (externa + interna)
+          boxShadow: '0 4px 24px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
         }}
       >
         {/* Header con gradiente - Responsive */}
@@ -133,8 +135,12 @@ export function GuidedInstructionsModal({
                 style={{
                   gap: `clamp(10px, ${12 * viewportScale}px, 12px)`,
                   padding: `clamp(12px, ${16 * viewportScale}px, 16px)`,
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)'
+                  // 🤖 [IA] - v1.2.13: Glass Morphism para cards de instrucciones
+                  backgroundColor: 'rgba(36, 36, 36, 0.4)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  boxShadow: '0 4px 24px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
                 }}
               >
                 <div 
@@ -187,8 +193,12 @@ export function GuidedInstructionsModal({
               marginTop: `clamp(16px, ${24 * viewportScale}px, 24px)`,
               padding: `clamp(12px, ${16 * viewportScale}px, 16px)`,
               gap: `clamp(10px, ${12 * viewportScale}px, 12px)`,
-              backgroundColor: understood ? `${primaryColor}11` : 'rgba(255, 255, 255, 0.03)',
-              border: understood ? `2px solid ${primaryColor}44` : '2px solid rgba(255, 255, 255, 0.1)',
+              // 🤖 [IA] - v1.2.13: Glass Morphism para checkbox container
+              backgroundColor: understood ? `${primaryColor}11` : 'rgba(36, 36, 36, 0.4)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              border: understood ? `2px solid ${primaryColor}44` : '2px solid rgba(255, 255, 255, 0.15)',
+              boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)',
               transition: 'all 0.3s ease'
             }}
             onClick={() => setUnderstood(!understood)}
