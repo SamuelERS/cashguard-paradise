@@ -623,6 +623,14 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                   disabled={!isCompleted}
                   className="wizard-confirm-button whitespace-nowrap"
                   aria-label="Confirmar venta esperada"
+                  style={{
+                    // Match input (clamp(2.25rem, 5vw, 2.75rem)) + wrapper vertical padding (2 * clamp(0.25rem, 0.5vw, 0.375rem))
+                    height: 'calc(clamp(2.25rem, 5vw, 2.75rem) + 2 * clamp(0.25rem, 0.5vw, 0.375rem))',
+                    // Remove vertical padding to avoid exceeding height, keep horizontal padding responsive
+                    padding: '0 clamp(0.75rem, 3vw, 1rem)',
+                    // Match the glass element border radius for visual consistency
+                    borderRadius: 'clamp(0.375rem, 1.5vw, 0.5rem)'
+                  }}
                 >
                   <CheckCircle style={{ 
                     width: 'clamp(1.25rem, 4vw, 1.5rem)',
