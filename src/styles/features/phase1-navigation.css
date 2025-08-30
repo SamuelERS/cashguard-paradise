@@ -76,49 +76,40 @@
   font-weight: 600;
   font-size: clamp(0.875rem, 3.5vw, 1rem);
   
-  /* Glass Morphism Effect - Blue gradient */
-  background: linear-gradient(135deg, rgba(10, 132, 255, 0.1) 0%, rgba(94, 92, 230, 0.1) 100%);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(10, 132, 255, 0.3);
-  box-shadow: 
-    0 4px 24px rgba(0, 0, 0, 0.3),
-    0 0 15px rgba(10, 132, 255, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  /* Flat Style - Colores EXACTOS Alert Warning */
+  background: #fef3c7 !important; /* bg-yellow-100 EXACTO - Override btn-primary and glass effect */
+  border: 2px solid #eab308 !important; /* border-yellow-500 EXACTO - Override btn-primary */
+  box-shadow: none !important; /* Remove btn-primary shadow completely */
   
-  color: #0a84ff;
+  color: #78350f !important; /* text-yellow-900 EXACTO - Override btn-primary */
   transition: all 0.3s ease;
   cursor: pointer;
   white-space: nowrap;
 }
 
 .phase1-previous-button:hover:not(:disabled) {
-  background: linear-gradient(135deg, rgba(10, 132, 255, 0.15) 0%, rgba(94, 92, 230, 0.15) 100%);
-  border-color: rgba(10, 132, 255, 0.5);
-  box-shadow: 
-    0 6px 32px rgba(0, 0, 0, 0.4),
-    0 0 20px rgba(10, 132, 255, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
-  transform: translateY(-1px);
+  background: #fde68a !important; /* hover:bg-yellow-200 EXACTO - Override btn-primary */
+  border-color: #ca8a04 !important; /* hover:border-yellow-600 - Override btn-primary */
+  color: #78350f !important; /* text-yellow-900 EXACTO - Override btn-primary */
+  box-shadow: none !important; /* Remove btn-primary:hover shadow completely */
+  transform: translateY(-1px) scale(1.02); /* Efecto sutil de escala */
 }
 
 .phase1-previous-button:active:not(:disabled) {
-  transform: translateY(0);
-  box-shadow: 
-    0 2px 16px rgba(0, 0, 0, 0.2),
-    0 0 10px rgba(10, 132, 255, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transform: translateY(0) scale(0.98); /* Efecto de presión */
+  background: #fde68a !important; /* Consistente con hover - yellow-200 - Override btn-primary */
+  color: #78350f !important; /* text-yellow-900 EXACTO - Override btn-primary */
+  box-shadow: none !important; /* Remove any active state shadows */
 }
 
 .phase1-previous-button:disabled {
-  opacity: 0.5;
+  background: rgba(128, 128, 128, 0.3) !important; /* Consistente con el estado actual disabled */
+  border: 1px solid rgba(128, 128, 128, 0.5) !important;
+  color: #6b7280 !important; /* text-gray-500 */
   cursor: not-allowed;
-  background: rgba(60, 70, 85, 0.3);
-  border-color: rgba(60, 70, 85, 0.5);
-  color: rgba(136, 153, 166, 0.6);
-  box-shadow: 
-    0 2px 16px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  box-shadow: none !important;
+  opacity: 0.6; /* Mantener la opacidad del estado actual */
+  transform: none; /* No transform cuando disabled */
 }
 
 /* 🤖 [IA] - v1.2.19: Botón Siguiente ELIMINADO - Usar únicamente confirmación de campo
@@ -171,6 +162,29 @@
   .phase1-cancel-button:active {
     background: #991b1b !important; /* Consistente con hover en dark - Override btn-primary */
     color: #fee2e2 !important; /* Override btn-primary */
+  }
+  
+  .phase1-previous-button {
+    background: #78350f !important; /* dark:bg-yellow-900 EXACTO - Override btn-primary */
+    border-color: #a16207 !important; /* dark:border-yellow-700 EXACTO - Override btn-primary */
+    color: #fef3c7 !important; /* dark:text-yellow-100 EXACTO - Override btn-primary */
+  }
+  
+  .phase1-previous-button:hover:not(:disabled) {
+    background: #92400e !important; /* dark:hover:bg-yellow-800 EXACTO - Override btn-primary */
+    border-color: #ca8a04 !important; /* Override btn-primary */
+    color: #fef3c7 !important; /* Override btn-primary */
+  }
+  
+  .phase1-previous-button:active:not(:disabled) {
+    background: #92400e !important; /* Consistente con hover en dark - Override btn-primary */
+    color: #fef3c7 !important; /* Override btn-primary */
+  }
+  
+  .phase1-previous-button:disabled {
+    background: rgba(128, 128, 128, 0.3) !important; /* dark disabled - consistent */
+    border-color: rgba(128, 128, 128, 0.5) !important;
+    color: #6b7280 !important;
   }
 }
 
