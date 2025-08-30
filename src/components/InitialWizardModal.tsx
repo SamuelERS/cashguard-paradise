@@ -16,6 +16,7 @@ import { STORES, getEmployeesByStore } from "@/data/paradise";
 import '@/styles/features/modal-dark-scrollbar.css';
 import '@/styles/features/wizard-cancel-button.css';
 import '@/styles/features/wizard-nav-previous-button.css';
+import '@/styles/features/wizard-nav-next-button.css';
 import { toast } from "sonner";
 import { useTimingConfig } from "@/hooks/useTimingConfig"; // 🤖 [IA] - Hook de timing unificado v1.0.22
 import { useInputValidation } from "@/hooks/useInputValidation"; // 🤖 [IA] - v1.0.45: Hook para validación de decimales
