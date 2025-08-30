@@ -30,38 +30,30 @@
   font-weight: 600;
   font-size: clamp(0.875rem, 3.5vw, 1rem);
   
-  /* Glass Morphism Effect */
-  background: rgba(244, 33, 46, 0.1);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(244, 33, 46, 0.3);
-  box-shadow: 
-    0 4px 24px rgba(0, 0, 0, 0.3),
-    0 0 15px rgba(244, 33, 46, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  /* Flat Style - Colores EXACTOS Alert Error */
+  background: #fee2e2 !important; /* bg-red-100 EXACTO - Override btn-primary */
+  border: 2px solid #ef4444 !important; /* border-red-500 EXACTO - Override btn-primary */
+  box-shadow: none !important; /* Remove btn-primary shadow completely */
   
-  color: #f4212e;
+  color: #7f1d1d !important; /* text-red-900 EXACTO - Override btn-primary */
   transition: all 0.3s ease;
   cursor: pointer;
   white-space: nowrap;
 }
 
 .phase1-cancel-button:hover {
-  background: rgba(244, 33, 46, 0.2);
-  border-color: rgba(244, 33, 46, 0.5);
-  box-shadow: 
-    0 6px 32px rgba(0, 0, 0, 0.4),
-    0 0 20px rgba(244, 33, 46, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
-  transform: translateY(-1px);
+  background: #fecaca !important; /* hover:bg-red-200 EXACTO - Override btn-primary */
+  border-color: #dc2626 !important; /* hover:border-red-600 - Override btn-primary */
+  color: #7f1d1d !important; /* text-red-900 EXACTO - Override btn-primary */
+  box-shadow: none !important; /* Remove btn-primary:hover shadow completely */
+  transform: translateY(-1px) scale(1.02); /* Efecto sutil de escala */
 }
 
 .phase1-cancel-button:active {
-  transform: translateY(0);
-  box-shadow: 
-    0 2px 16px rgba(0, 0, 0, 0.2),
-    0 0 10px rgba(244, 33, 46, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transform: translateY(0) scale(0.98); /* Efecto de presión */
+  background: #fecaca !important; /* Consistente con hover - red-200 - Override btn-primary */
+  color: #7f1d1d !important; /* text-red-900 EXACTO - Override btn-primary */
+  box-shadow: none !important; /* Remove any active state shadows */
 }
 
 /* 🤖 [IA] - v1.2.19: Container eliminado - ya no se necesita para botón único
@@ -162,15 +154,32 @@
   }
 }
 
+/* Dark mode - Colores EXACTOS Alert Error */
+@media (prefers-color-scheme: dark) {
+  .phase1-cancel-button {
+    background: #7f1d1d !important; /* dark:bg-red-900 EXACTO - Override btn-primary */
+    border-color: #b91c1c !important; /* dark:border-red-700 EXACTO - Override btn-primary */
+    color: #fee2e2 !important; /* dark:text-red-100 EXACTO - Override btn-primary */
+  }
+  
+  .phase1-cancel-button:hover {
+    background: #991b1b !important; /* dark:hover:bg-red-800 EXACTO - Override btn-primary */
+    border-color: #dc2626 !important; /* Override btn-primary */
+    color: #fee2e2 !important; /* Override btn-primary */
+  }
+  
+  .phase1-cancel-button:active {
+    background: #991b1b !important; /* Consistente con hover en dark - Override btn-primary */
+    color: #fee2e2 !important; /* Override btn-primary */
+  }
+}
+
 /* Mejoras para accesibilidad */
 .phase1-cancel-button:focus-visible,
 .phase1-previous-button:focus-visible,
 .phase1-next-button:focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: 2px;
-  box-shadow: 
-    0 0 0 2px var(--background),
-    0 0 0 4px var(--ring);
 }
 
 /* Texto oculto en pantallas pequeñas */
