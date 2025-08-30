@@ -42,107 +42,83 @@
   contain: paint;
 }
 
-/* Glass enhancement para botones - Mantener Alert colors pero agregar Glass backdrop */
+/* 🤖 [IA] - v1.2.21: BOTONES SIN GLASS - Solo Alert colors sólidos */
 .phase1-cancel-button {
-  /* Glass backdrop sutil detrás del color Alert */
-  position: relative;
-  overflow: hidden;
+  /* Aislamiento completo para prevenir herencia de Glass */
+  position: relative !important;
+  z-index: 2 !important;
+  isolation: isolate !important;
   
-  /* Mantener todos los estilos Alert Error existentes */
-  background: #fee2e2 !important; /* bg-red-100 EXACTO */
+  /* Remover cualquier Glass effect */
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  
+  /* Mantener SOLO los colores Alert Error sólidos */
+  background: #fee2e2 !important; /* bg-red-100 EXACTO - SÓLIDO */
   border: 2px solid #ef4444 !important; /* border-red-500 EXACTO */
   color: #7f1d1d !important; /* text-red-900 EXACTO */
   box-shadow: none !important; /* Mantener flat style */
 }
 
+/* 🤖 [IA] - v1.2.21: ELIMINAR pseudo-elemento Glass */
 .phase1-cancel-button::before {
-  /* Pseudo-elemento con Glass backdrop sutil */
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: rgba(254, 226, 226, 0.1); /* Glass tint matching red-100 */
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
-  border-radius: inherit;
-  z-index: -1;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.phase1-cancel-button:hover::before {
-  opacity: 1;
+  display: none !important; /* NO Glass backdrop */
 }
 
 .phase1-previous-button {
-  /* Glass backdrop sutil detrás del color Alert */
-  position: relative;
-  overflow: hidden;
+  /* 🤖 [IA] - v1.2.21: Aislamiento completo para prevenir herencia de Glass */
+  position: relative !important;
+  z-index: 2 !important;
+  isolation: isolate !important;
   
-  /* Mantener todos los estilos Alert Warning existentes */
-  background: #fef3c7 !important; /* bg-yellow-100 EXACTO */
+  /* Remover cualquier Glass effect */
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  
+  /* Mantener SOLO los colores Alert Warning sólidos */
+  background: #fef3c7 !important; /* bg-yellow-100 EXACTO - SÓLIDO */
   border: 2px solid #eab308 !important; /* border-yellow-500 EXACTO */
   color: #78350f !important; /* text-yellow-900 EXACTO */
   box-shadow: none !important; /* Mantener flat style */
 }
 
+/* 🤖 [IA] - v1.2.21: ELIMINAR pseudo-elemento Glass */
 .phase1-previous-button::before {
-  /* Pseudo-elemento con Glass backdrop sutil */
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: rgba(254, 243, 199, 0.1); /* Glass tint matching yellow-100 */
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
-  border-radius: inherit;
-  z-index: -1;
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  display: none !important; /* NO Glass backdrop */
 }
 
-.phase1-previous-button:hover::before:not(:disabled) {
-  opacity: 1;
-}
-
-/* Estados hover mejorados con Glass effect */
+/* 🤖 [IA] - v1.2.21: Estados hover SIN Glass - Solo Alert colors sólidos */
 .phase1-cancel-button:hover {
-  /* Mantener Alert colors pero agregar Glass glow */
-  background: #fecaca !important; /* hover:bg-red-200 EXACTO */
+  /* Mantener Alert colors SÓLIDOS sin glow Glass */
+  background: #fecaca !important; /* hover:bg-red-200 EXACTO - SÓLIDO */
   border-color: #dc2626 !important; /* hover:border-red-600 */
   color: #7f1d1d !important; /* text-red-900 EXACTO */
-  box-shadow: 
-    0 0 0 0 transparent,
-    0 0 8px 0 rgba(239, 68, 68, 0.2) !important; /* Subtle red glow */
+  box-shadow: none !important; /* SIN Glass glow */
   transform: translateY(-1px) scale(1.02);
 }
 
 .phase1-previous-button:hover:not(:disabled) {
-  /* Mantener Alert colors pero agregar Glass glow */
-  background: #fde68a !important; /* hover:bg-yellow-200 EXACTO */
+  /* Mantener Alert colors SÓLIDOS sin glow Glass */
+  background: #fde68a !important; /* hover:bg-yellow-200 EXACTO - SÓLIDO */
   border-color: #ca8a04 !important; /* hover:border-yellow-600 */
   color: #78350f !important; /* text-yellow-900 EXACTO */
-  box-shadow: 
-    0 0 0 0 transparent,
-    0 0 8px 0 rgba(234, 179, 8, 0.2) !important; /* Subtle yellow glow */
+  box-shadow: none !important; /* SIN Glass glow */
   transform: translateY(-1px) scale(1.02);
 }
 
-/* Estados active mejorados */
+/* 🤖 [IA] - v1.2.21: Estados active SIN Glass - Solo Alert colors sólidos */
 .phase1-cancel-button:active {
   transform: translateY(0) scale(0.98);
-  background: #fecaca !important;
+  background: #fecaca !important; /* red-200 SÓLIDO */
   color: #7f1d1d !important;
-  box-shadow: 
-    inset 0 2px 4px 0 rgba(239, 68, 68, 0.1),
-    0 0 4px 0 rgba(239, 68, 68, 0.1) !important;
+  box-shadow: none !important; /* SIN Glass effects */
 }
 
 .phase1-previous-button:active:not(:disabled) {
   transform: translateY(0) scale(0.98);
-  background: #fde68a !important;
+  background: #fde68a !important; /* yellow-200 SÓLIDO */
   color: #78350f !important;
-  box-shadow: 
-    inset 0 2px 4px 0 rgba(234, 179, 8, 0.1),
-    0 0 4px 0 rgba(234, 179, 8, 0.1) !important;
+  box-shadow: none !important; /* SIN Glass effects */
 }
 
 /* Disabled state con Glass effect */
