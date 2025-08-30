@@ -91,9 +91,9 @@ export function GuidedInstructionsModal({
             borderRadius: '16px 16px 0 0'
           }}
         >
-          <DialogHeader>
+          <DialogHeader className="text-center">
             <DialogTitle 
-              className="font-bold text-white flex items-center"
+              className="font-bold text-white flex items-center justify-center"
               style={{
                 fontSize: 'clamp(1.25rem, 5vw, 1.5rem)',
                 gap: 'clamp(6px, 1.5vw, 8px)'
