@@ -844,69 +844,82 @@ const CashCounter = ({
           {/* 🤖 [IA] - v1.2.13: AlertDialog con Glass Morphism coherente y responsive */}
           <AlertDialog open={showExitConfirmation} onOpenChange={setShowExitConfirmation}>
             <AlertDialogContent style={{
-              // 🤖 [IA] - v1.2.13: Glass Morphism coherente con sistema (40% opacidad)
+              // 🤖 [IA] - v1.2.13: Glass Morphism premium completo
+              pointerEvents: 'auto',
               backgroundColor: 'rgba(36, 36, 36, 0.4)',
               backdropFilter: 'blur(20px)',
               WebkitBackdropFilter: 'blur(20px)',
               border: '1px solid rgba(255, 255, 255, 0.15)',
               borderRadius: '16px',
-              // 🤖 [IA] - v1.2.13: Sombras duales del sistema (externa + interna)
               boxShadow: '0 4px 24px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-              // 🤖 [IA] - v1.2.13: Ancho responsive con márgenes seguros
               width: 'calc(100vw - 2rem)',
               maxWidth: 'clamp(320px, 90vw, 500px)',
-              margin: '0 auto'
+              margin: '0 auto',
+              padding: '24px'
             }}>
-              <AlertDialogHeader>
+              <AlertDialogHeader className="flex flex-col space-y-2 text-center sm:text-left">
                 <AlertDialogTitle style={{ 
-                  color: '#f4212e', 
-                  fontSize: 'clamp(1.125rem, 4vw, 1.25rem)' // 🤖 [IA] - v1.2.13: Responsive
+                  color: 'rgb(244, 33, 46)', 
+                  fontSize: 'clamp(1.125rem, 4vw, 1.25rem)',
+                  fontWeight: 600,
+                  textAlign: 'center'
                 }}>
                   ⚠️ ¿Confirmar salida?
                 </AlertDialogTitle>
                 <AlertDialogDescription style={{ 
-                  color: '#e1e8ed', 
-                  fontSize: 'clamp(0.875rem, 3.5vw, 0.95rem)', // 🤖 [IA] - v1.2.13: Responsive
+                  color: 'rgb(225, 232, 237)', 
+                  fontSize: 'clamp(0.875rem, 3.5vw, 0.95rem)',
+                  textAlign: 'center',
+                  marginTop: '12px',
                   lineHeight: '1.5' 
                 }}>
                   Se perderá todo el progreso del conteo actual. 
                   <br />
                   <span style={{ 
-                    color: '#f4a52a', 
-                    fontWeight: '500',
-                    fontSize: 'clamp(0.813rem, 3.25vw, 0.875rem)' // 🤖 [IA] - v1.2.13: Responsive
+                    color: 'rgb(244, 165, 42)', 
+                    fontWeight: 500,
+                    fontSize: 'clamp(0.813rem, 3.25vw, 0.875rem)'
                   }}>
                     Esta acción no se puede deshacer.
                   </span>
                 </AlertDialogDescription>
               </AlertDialogHeader>
-              <AlertDialogFooter>
+              <AlertDialogFooter 
+                className="flex flex-col-reverse sm:flex-row sm:justify-center gap-y-4 sm:gap-y-0 sm:gap-x-4"
+                style={{ marginTop: '16px' }}
+              >
+                <AlertDialogAction 
+                  onClick={handleBackToStart}
+                  style={{
+                    background: 'linear-gradient(135deg, rgb(244, 33, 46) 0%, rgb(255, 68, 68) 100%)',
+                    color: 'white',
+                    border: '1px solid rgba(255, 255, 255, 0.3)',
+                    borderRadius: '10px',
+                    fontWeight: 600,
+                    fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
+                    boxShadow: 'none',
+                    outline: 'none',
+                    height: '3rem'
+                  }}
+                  className="hover:bg-white/10"
+                >
+                  Sí, volver al inicio
+                </AlertDialogAction>
                 <AlertDialogCancel 
                   style={{
                     backgroundColor: 'rgba(255, 255, 255, 0.05)',
                     border: '1px solid rgba(255, 255, 255, 0.3)',
-                    color: '#e1e8ed',
+                    color: 'rgb(225, 232, 237)',
                     borderRadius: '10px',
-                    fontSize: 'clamp(0.875rem, 3.5vw, 1rem)' // 🤖 [IA] - v1.2.13: Responsive
+                    fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
+                    boxShadow: 'none',
+                    outline: 'none',
+                    height: '3rem'
                   }}
-                  className="hover:bg-white/10"
+                  className="hover:bg-white/10 mt-2 sm:mt-0"
                 >
                   Cancelar
                 </AlertDialogCancel>
-                <AlertDialogAction 
-                  onClick={handleBackToStart}
-                  style={{
-                    background: 'linear-gradient(135deg, #f4212e 0%, #ff4444 100%)',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '10px',
-                    fontWeight: '600',
-                    fontSize: 'clamp(0.875rem, 3.5vw, 1rem)' // 🤖 [IA] - v1.2.13: Responsive
-                  }}
-                  className="hover:opacity-90"
-                >
-                  Sí, volver al inicio
-                </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
