@@ -123,6 +123,7 @@ export const GlassAlertDialog: React.FC<GlassAlertDialogProps> = ({
               fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
               padding: '10px 20px',
               borderRadius: '12px',
+              boxShadow: '0 2px 8px rgba(255, 255, 255, 0.1)',
               transition: 'all 0.2s ease',
             }}
           >
