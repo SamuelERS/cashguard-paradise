@@ -2,6 +2,8 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, Calculator, Users, MapPin, DollarSign, Sunrise, Moon } from "lucide-react";
+// 🤖 [IA] - v1.2.18 - Import modular CSS for desktop alignment improvements
+import '../styles/features/cash-counter-desktop-alignment.css';
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";

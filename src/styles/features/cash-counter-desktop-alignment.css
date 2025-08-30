@@ -1,0 +1,298 @@
+/* 🤖 [IA] - v1.2.18: Mejoras de alineación y estética para desktop
+ * ============================================================================
+ * Archivo modular para corregir problemas de alineación en escritorio
+ * sin modificar el archivo index.css congelado
+ * ============================================================================
+ */
+
+/* === Desktop Alignment Fixes (min-width: 1024px) === */
+@media (min-width: 1024px) {
+  
+  /* 1. GuidedProgressIndicator - Alineación perfecta con grid */
+  .guided-progress-container {
+    max-width: 100% !important;
+    padding: 20px 24px !important;
+    background: rgba(28, 28, 32, 0.5) !important;
+    border-radius: 20px !important;
+    margin-bottom: 20px !important;
+  }
+
+  .guided-progress-header {
+    display: grid !important;
+    grid-template-columns: 1fr auto !important;
+    align-items: center !important;
+    gap: 24px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .guided-progress-info {
+    display: flex !important;
+    align-items: center !important;
+    gap: 16px !important;
+  }
+
+  .guided-progress-badge {
+    width: 48px !important;
+    height: 48px !important;
+    font-size: 20px !important;
+    font-weight: bold !important;
+  }
+
+  .guided-progress-title {
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    margin-bottom: 4px !important;
+    letter-spacing: 0.5px !important;
+  }
+
+  .guided-progress-subtitle {
+    font-size: 14px !important;
+    opacity: 0.8 !important;
+  }
+
+  .guided-progress-stats {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-end !important;
+    gap: 4px !important;
+  }
+
+  .guided-progress-stats-label {
+    font-size: 12px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    opacity: 0.6 !important;
+  }
+
+  .guided-progress-percentage {
+    font-size: 28px !important;
+    font-weight: bold !important;
+  }
+
+  .guided-progress-bar-container {
+    height: 6px !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-radius: 3px !important;
+    margin-bottom: 16px !important;
+    overflow: hidden !important;
+  }
+
+  .guided-progress-bar {
+    height: 100% !important;
+    border-radius: 3px !important;
+  }
+
+  .guided-progress-instructions {
+    background: rgba(10, 132, 255, 0.08) !important;
+    border: 1px solid rgba(10, 132, 255, 0.2) !important;
+    border-radius: 12px !important;
+    padding: 12px 16px !important;
+  }
+
+  .guided-progress-instruction-content {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+  }
+
+  .guided-progress-instruction-icon {
+    width: 20px !important;
+    height: 20px !important;
+    flex-shrink: 0 !important;
+  }
+
+  .guided-progress-instruction-text {
+    font-size: 15px !important;
+    font-weight: 500 !important;
+    margin: 0 !important;
+  }
+
+  /* 2. Cash Counter Container - Mejor espaciado */
+  .cash-counter-container {
+    max-width: 900px !important;
+    margin: 0 auto !important;
+    padding: 24px !important;
+  }
+
+  .cash-counter-header {
+    margin-bottom: 20px !important;
+    padding: 16px 20px !important;
+  }
+
+  .cash-counter-content {
+    padding: 0 20px !important;
+    min-height: 300px !important;
+  }
+
+  /* 3. Field Input Section - Alineación horizontal perfecta */
+  .space-y-3.max-w-md.mx-auto {
+    max-width: 100% !important;
+  }
+
+  /* Card principal del campo */
+  .space-y-3.max-w-md.mx-auto > div:first-child {
+    padding: 20px !important;
+    margin-bottom: 16px !important;
+  }
+
+  /* Header del campo - Grid layout para mejor alineación */
+  .flex.items-center.justify-between.mb-3 {
+    display: grid !important;
+    grid-template-columns: auto 1fr auto !important;
+    gap: 16px !important;
+    align-items: center !important;
+    margin-bottom: 20px !important;
+  }
+
+  /* Input y botón - Alineación perfecta */
+  .flex.gap-2 {
+    display: flex !important;
+    gap: 12px !important;
+    align-items: stretch !important;
+  }
+
+  .flex.gap-2 > .flex-1 {
+    flex: 1 1 auto !important;
+  }
+
+  .flex.gap-2 input {
+    height: 52px !important;
+    font-size: 22px !important;
+    padding: 0 20px !important;
+    border-radius: 12px !important;
+  }
+
+  .flex.gap-2 button {
+    height: 52px !important;
+    min-width: 140px !important;
+    font-size: 17px !important;
+    font-weight: 600 !important;
+    padding: 0 24px !important;
+    border-radius: 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+  }
+
+  /* 4. Progress indicators de monedas/billetes */
+  .px-3.my-4 {
+    padding: 0 !important;
+    margin: 16px 0 0 0 !important;
+  }
+
+  .px-3.my-4 .h-1 {
+    height: 3px !important;
+    margin-top: 8px !important;
+  }
+
+  /* 5. Navegación inferior */
+  .cash-counter-navigation {
+    margin-top: 24px !important;
+    padding-top: 20px !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+  }
+
+  .cash-counter-nav-button {
+    height: 48px !important;
+    padding: 0 32px !important;
+    font-size: 16px !important;
+    gap: 12px !important;
+  }
+
+  /* 6. Ajustes específicos para el título del campo */
+  h3.text-xl.font-bold.mb-1 {
+    font-size: 22px !important;
+    margin-bottom: 0 !important;
+  }
+
+  /* 7. Badge de tipo (Monedas/Billetes) más compacto */
+  /* Usando selector de atributo para evitar problemas con escape de clases */
+  [class*="px-3"][class*="py-1"] {
+    padding: 6px 12px !important;
+    border-radius: 8px !important;
+  }
+
+  [class*="px-3"][class*="py-1"] span {
+    font-size: 13px !important;
+  }
+
+  /* 8. Label de cantidad más sutil */
+  label.text-sm.font-medium {
+    font-size: 13px !important;
+    opacity: 0.7 !important;
+    margin-bottom: 8px !important;
+    display: block !important;
+  }
+
+  /* 9. Contenedor general más compacto */
+  .space-y-4 {
+    gap: 16px !important;
+  }
+
+  /* 10. Scroll suave para el contenido */
+  .cash-counter-content {
+    scroll-behavior: smooth !important;
+    scrollbar-width: thin !important;
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent !important;
+  }
+
+  .cash-counter-content::-webkit-scrollbar {
+    width: 6px !important;
+  }
+
+  .cash-counter-content::-webkit-scrollbar-track {
+    background: transparent !important;
+  }
+
+  .cash-counter-content::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    border-radius: 3px !important;
+  }
+
+  .cash-counter-content::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.3) !important;
+  }
+}
+
+/* === Tablet Adjustments (768px - 1023px) === */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .guided-progress-container {
+    padding: 16px 20px !important;
+  }
+
+  .cash-counter-container {
+    max-width: 720px !important;
+    padding: 20px !important;
+  }
+
+  .flex.gap-2 input,
+  .flex.gap-2 button {
+    height: 48px !important;
+  }
+}
+
+/* === Mobile Preservation (max-width: 767px) === */
+@media (max-width: 767px) {
+  /* Mantener diseño móvil existente sin cambios */
+  .guided-progress-container,
+  .cash-counter-container {
+    /* No override - mantener estilos existentes */
+  }
+}
+
+/* === Animation Enhancements === */
+@media (prefers-reduced-motion: no-preference) {
+  .guided-progress-bar {
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+
+  .flex.gap-2 button:not(:disabled):hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 8px 20px rgba(10, 132, 255, 0.3) !important;
+  }
+
+  .flex.gap-2 button:not(:disabled):active {
+    transform: translateY(0) !important;
+  }
+}
