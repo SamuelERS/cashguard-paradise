@@ -567,13 +567,6 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                   color: '#e1e8ed',
                   fontSize: 'clamp(1.125rem, 4.5vw, 1.25rem)'
                 }}>Venta Esperada</h3>
-                <p style={{ 
-                  color: '#8899a6',
-                  fontSize: 'clamp(0.75rem, 3vw, 0.875rem)',
-                  marginTop: 'clamp(0.125rem, 0.5vw, 0.25rem)'
-                }}>
-                  Ingresa Total Vendido
-                </p>
               </div>
             </div>
 
