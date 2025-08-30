@@ -112,13 +112,32 @@ export const GlassAlertDialog: React.FC<GlassAlertDialogProps> = ({
           className="gap-3"
           style={{ marginTop: '24px' }}
         >
+          <AlertDialogAction
+            onClick={onConfirm}
+            className="!bg-transparent !border-0"
+            style={{
+              // 🤖 [IA] - Botón confirmar con gradiente rojo de peligro intensificado
+              background: 'linear-gradient(135deg, #f4212e, #ff3333)',
+              color: '#ffffff',
+              fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
+              fontWeight: 600,
+              padding: '10px 20px',
+              borderRadius: '12px',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              boxShadow: '0 2px 8px rgba(244, 33, 46, 0.3)',
+              transition: 'all 0.2s ease',
+            }}
+          >
+            {confirmText}
+          </AlertDialogAction>
+          
           <AlertDialogCancel
             onClick={onCancel}
             className="!bg-transparent !border-0"
             style={{
-              // 🤖 [IA] - Botón cancelar con glass effect sutil
+              // 🤖 [IA] - Botón cancelar con glass effect sutil y borde ajustado
               backgroundColor: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.3)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
               color: '#e1e8ed',
               fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
               padding: '10px 20px',
@@ -129,24 +148,6 @@ export const GlassAlertDialog: React.FC<GlassAlertDialogProps> = ({
           >
             {cancelText}
           </AlertDialogCancel>
-          
-          <AlertDialogAction
-            onClick={onConfirm}
-            className="!bg-transparent !border-0"
-            style={{
-              // 🤖 [IA] - Botón confirmar con gradiente rojo de peligro
-              background: 'linear-gradient(135deg, #f4212e, #ff4444)',
-              color: '#ffffff',
-              fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
-              fontWeight: 600,
-              padding: '10px 20px',
-              borderRadius: '12px',
-              boxShadow: '0 2px 8px rgba(244, 33, 46, 0.3)',
-              transition: 'all 0.2s ease',
-            }}
-          >
-            {confirmText}
-          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
