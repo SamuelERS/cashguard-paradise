@@ -708,7 +708,7 @@ const CashCounter = ({
           border: '1px solid rgba(255, 255, 255, 0.15)',
           padding: `clamp(12px, ${16 * viewportScale}px, 16px)`,
           borderRadius: '16px',
-          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+          boxShadow: '0 4px 24px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
           minHeight: `clamp(300px, 60vh, 400px)`,
           maxHeight: '90vh',
           display: 'flex',
@@ -719,7 +719,7 @@ const CashCounter = ({
           {/* 🤖 [IA] - v1.2.11 - Header responsive con viewport units y clamp() */}
           <div className="text-center" style={{
             position: 'relative',
-            backgroundColor: 'rgba(36, 36, 36, 0.95)',
+            backgroundColor: 'rgba(36, 36, 36, 0.4)',
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
             padding: `clamp(6px, 1.5vw, 12px)`,
