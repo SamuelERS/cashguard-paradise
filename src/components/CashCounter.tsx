@@ -874,7 +874,7 @@ const CashCounter = ({
                   Sí, volver al inicio
                 </AlertDialogAction>
                 <AlertDialogCancel className="cash-counter-alert-cancel">
-                  Cancelar
+                  Continuar aquí
                 </AlertDialogCancel>
               </AlertDialogFooter>
             </AlertDialogContent>
