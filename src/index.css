@@ -1690,7 +1690,7 @@
   -webkit-backdrop-filter: var(--glass-blur);
   border: 1px solid var(--glass-border-primary);
   border-radius: var(--radius-xl);
-  padding: var(--spacing-sm);
+  padding: clamp(10px, 2.5vw, 14px);
   margin-bottom: var(--spacing-md);
   box-shadow: var(--glass-shadow);
 }
@@ -1704,12 +1704,13 @@
   border-left: 4px solid rgba(10, 132, 255, 0.8);
 }
 
-/* Header principal - Compacto */
+/* Header principal - Mejor alineación */
 .guided-progress-header {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   justify-content: space-between;
   margin-bottom: var(--spacing-sm);
+  gap: var(--spacing-xs);
 }
 
 /* Sección izquierda del header */
@@ -1719,14 +1720,15 @@
   gap: var(--spacing-xs);
 }
 
-/* Badge circular con step number - Reducido */
+/* Badge circular con step number - Sutil y proporcional */
 .guided-progress-badge {
-  width: clamp(32px, 7vw, 36px);
-  height: clamp(32px, 7vw, 36px);
+  width: clamp(24px, 5vw, 28px);
+  height: clamp(24px, 5vw, 28px);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .guided-progress-badge.morning-mode {
@@ -1740,7 +1742,7 @@
 .guided-progress-badge span {
   color: white;
   font-weight: bold;
-  font-size: var(--text-sm);
+  font-size: clamp(0.75rem, 2.5vw, 0.875rem);
 }
 
 /* Textos del header - Reducidos */
@@ -1769,8 +1771,9 @@
 }
 
 .guided-progress-percentage {
-  font-size: var(--text-lg);
+  font-size: var(--text-base);
   font-weight: bold;
+  opacity: 0.9;
 }
 
 .guided-progress-percentage.morning-mode {
@@ -1781,35 +1784,40 @@
   color: rgb(10, 132, 255);
 }
 
-/* Barra de progreso */
+/* Barra de progreso - Más visible */
 .guided-progress-bar-container {
   width: 100%;
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.05);
   border-radius: 9999px;
-  height: 0.5rem;
+  height: 0.375rem;
   overflow: hidden;
-  margin-bottom: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
 }
 
 .guided-progress-bar {
   height: 100%;
   transition: width 0.5s ease-out;
+  box-shadow: 0 0 10px currentColor;
 }
 
 .guided-progress-bar.morning-mode {
   background: linear-gradient(90deg, rgb(244, 165, 42), rgb(255, 184, 77));
+  color: rgb(244, 165, 42);
 }
 
 .guided-progress-bar.evening-mode {
   background: linear-gradient(90deg, rgb(10, 132, 255), rgb(94, 92, 230));
+  color: rgb(10, 132, 255);
 }
 
-/* Sección de instrucciones - Compacta */
+/* Sección de instrucciones - Más integrada */
 .guided-progress-instructions {
   background: rgba(36, 36, 36, 0.3);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-lg);
   padding: var(--spacing-xs);
+  margin-top: var(--spacing-xs);
+  font-size: var(--text-sm);
 }
 
 .guided-progress-instruction-content {
@@ -1844,16 +1852,17 @@
 
 /* 🤖 [IA] - v1.2.14: Sistema coherente para GuidedFieldView */
 
-/* Contenedor principal del campo activo - Espaciado equilibrado */
+/* Contenedor principal del campo activo - Espaciado coherente */
 .guided-field-container {
   background: var(--glass-bg-primary);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
   border-radius: var(--radius-xl);
-  padding: var(--spacing-xs);
+  padding: clamp(12px, 3vw, 16px);
   box-shadow: var(--glass-shadow);
   max-width: 44rem;
   margin: 0 auto;
+  gap: var(--spacing-sm);
 }
 
 /* Bordes dinámicos según modo */
@@ -1889,7 +1898,9 @@
 }
 
 .guided-field-icon.coin {
-  background: linear-gradient(to bottom right, #f4a52a, rgba(244, 165, 42, 0.8), rgba(244, 165, 42, 0.6));
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  box-shadow: 0 4px 16px rgba(255, 215, 0, 0.25);
 }
 
 .guided-field-icon.bill {
@@ -1907,7 +1918,8 @@
 .guided-field-icon span {
   color: white;
   font-weight: bold;
-  font-size: var(--text-lg);
+  font-size: clamp(1rem, 4vw, 1.25rem);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 /* Información central del campo - Espaciado optimizado */
@@ -1990,7 +2002,8 @@
 
 .guided-field-input-group {
   display: flex;
-  gap: 0.5rem;
+  gap: var(--spacing-xs);
+  align-items: stretch;
 }
 
 .guided-field-input-wrapper {
@@ -2000,7 +2013,7 @@
 
 .guided-field-input {
   width: 100%;
-  height: var(--input-height);
+  height: clamp(38px, 8vw, 44px);
   background-color: rgba(255, 255, 255, 0.05);
   border-radius: var(--radius-md);
   font-size: var(--text-base);
@@ -2042,9 +2055,9 @@
   z-index: 10;
 }
 
-/* Botón de confirmación - Optimizado */
+/* Botón de confirmación - Más integrado */
 .guided-field-confirm-button {
-  height: var(--button-height);
+  height: clamp(38px, 8vw, 44px);
   background: rgba(128, 128, 128, 0.3);
   border: none;
   border-radius: var(--radius-md);
@@ -2054,16 +2067,22 @@
   color: white;
   transition: all 0.3s ease;
   cursor: not-allowed;
+  min-width: clamp(100px, 20vw, 120px);
+  opacity: 0.6;
 }
 
 .guided-field-confirm-button.active.morning-mode {
   background: linear-gradient(135deg, #f4a52a 0%, #ffb84d 100%);
   cursor: pointer;
+  opacity: 1;
+  box-shadow: 0 2px 12px rgba(244, 165, 42, 0.3);
 }
 
 .guided-field-confirm-button.active.evening-mode {
   background: linear-gradient(135deg, #0a84ff 0%, #5e5ce6 100%);
   cursor: pointer;
+  opacity: 1;
+  box-shadow: 0 2px 12px rgba(10, 132, 255, 0.3);
 }
 
 .guided-field-confirm-button:hover:not(:disabled) {
@@ -2097,10 +2116,12 @@
   height: 0.75rem;
 }
 
-/* Barra de progreso de sección */
+/* Barra de progreso de sección - Más prominente */
 .guided-field-section-progress {
-  padding: 0 var(--spacing-sm);
-  margin: var(--spacing-md) 0;
+  background: rgba(10, 132, 255, 0.05);
+  border-radius: var(--radius-sm);
+  padding: var(--spacing-xs);
+  margin-top: var(--spacing-sm);
 }
 
 .guided-field-section-progress-header {
@@ -2114,7 +2135,8 @@
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
+  font-weight: 500;
 }
 
 .guided-field-section-progress-info.morning-mode {
@@ -2138,11 +2160,17 @@
   color: #8899a6;
 }
 
+/* Mini progress bar para sección */
 .guided-field-section-progress-bar {
-  height: 0.25rem;
-  background-color: rgba(0, 0, 0, 0.4);
-  border-radius: 9999px;
+  height: 2px;
+  background: rgba(10, 132, 255, 0.2);
+  margin-top: 4px;
+  border-radius: 1px;
   overflow: hidden;
+}
+
+.guided-field-section-progress-bar.morning-mode {
+  background: rgba(244, 165, 42, 0.2);
 }
 
 .guided-field-section-progress-fill {
