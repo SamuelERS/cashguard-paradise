@@ -13,6 +13,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import '@/styles/features/glass-alert-cancel-button.css';
 
 // [IA] - Props tipadas para máxima flexibilidad y reutilización
 interface GlassAlertDialogProps {
@@ -133,18 +134,7 @@ export const GlassAlertDialog: React.FC<GlassAlertDialogProps> = ({
           
           <AlertDialogCancel
             onClick={onCancel}
-            className="hover:bg-white/10 inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-semibold transition-all duration-300 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 btn-secondary h-12 px-6 py-3 mt-2 sm:mt-0"
-            style={{
-              // [IA] - Botón cancelar con diseño glass morphism consistente con CashCounter
-              backgroundColor: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.3)',
-              color: 'rgb(225, 232, 237)',
-              borderRadius: '10px',
-              fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
-              boxShadow: 'none',
-              outline: 'none',
-              height: '3rem', // [IA] - Altura explícita para consistencia
-            }}
+            className="glass-alert-cancel-button hover:bg-white/10 inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-semibold transition-all duration-300 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 btn-secondary h-12 px-6 py-3 mt-2 sm:mt-0"
           >
             {cancelText}
           </AlertDialogCancel>
