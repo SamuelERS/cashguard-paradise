@@ -14,6 +14,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import '@/styles/features/glass-alert-cancel-button.css';
+import '@/styles/features/glass-alert-action-button.css';
 
 // [IA] - Props tipadas para máxima flexibilidad y reutilización
 interface GlassAlertDialogProps {
@@ -115,19 +116,7 @@ export const GlassAlertDialog: React.FC<GlassAlertDialogProps> = ({
         >
           <AlertDialogAction
             onClick={onConfirm}
-            className="hover:opacity-90 inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-semibold transition-all duration-300 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 btn-primary h-12 px-6 py-3 hover:bg-white/10"
-            style={{
-              // [IA] - Botón confirmar con gradiente rojo consistente con CashCounter
-              background: 'linear-gradient(135deg, rgb(244, 33, 46) 0%, rgb(255, 68, 68) 100%)',
-              color: 'white',
-              border: '1px solid rgba(255, 255, 255, 0.3)',
-              borderRadius: '10px',
-              fontWeight: 600,
-              fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
-              boxShadow: 'none',
-              outline: 'none',
-              height: '3rem', // [IA] - Altura explícita para consistencia
-            }}
+            className="glass-alert-action-button hover:opacity-90 inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-semibold transition-all duration-300 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 btn-primary h-12 px-6 py-3 hover:bg-white/10"
           >
             {confirmText}
           </AlertDialogAction>

@@ -1,0 +1,97 @@
+/* 
+ * 🤖 [IA] - v1.2.22: Glass Alert Action Button - Warning Alert Colors
+ * Nuevo archivo modular siguiendo v1.2.18 architecture (index.css CONGELADO)
+ * Colores EXACTOS del sistema Alert Warning - Sin box-shadow
+ */
+
+/* Glass Alert Action Button - Colores EXACTOS Alert Warning */
+.glass-alert-action-button {
+  /* Flat Style - Colores EXACTOS Alert Warning */
+  background: #fef3c7 !important; /* bg-yellow-100 EXACTO - Override btn-primary */
+  border: 2px solid #eab308 !important; /* border-yellow-500 EXACTO - Override btn-primary */
+  box-shadow: none !important; /* Remove btn-primary shadow completely */
+  
+  color: #78350f !important; /* text-yellow-900 EXACTO - Override btn-primary */
+  
+  /* Maintain existing layout properties */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+  border-radius: 0.75rem;
+  font-size: clamp(0.875rem, 3.5vw, 1rem);
+  font-weight: 600;
+  height: 3rem;
+  padding: 0 1.5rem;
+  
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.glass-alert-action-button:hover {
+  background: #fde68a !important; /* hover:bg-yellow-200 EXACTO - Override btn-primary */
+  border-color: #d97706 !important; /* hover:border-yellow-600 - Override btn-primary */
+  color: #78350f !important; /* text-yellow-900 EXACTO - Override btn-primary */
+  box-shadow: none !important; /* Remove btn-primary:hover shadow completely */
+  opacity: 0.9; /* Subtle opacity change for feedback */
+  transform: translateY(-1px) scale(1.02); /* Efecto sutil de escala */
+}
+
+.glass-alert-action-button:active {
+  transform: translateY(0) scale(0.98); /* Efecto de presión */
+  background: #fde68a !important; /* Consistente con hover - yellow-200 - Override btn-primary */
+  color: #78350f !important; /* text-yellow-900 EXACTO - Override btn-primary */
+  box-shadow: none !important; /* Remove any active state shadows */
+}
+
+.glass-alert-action-button:disabled {
+  background: #374151 !important; /* Disabled state - gray */
+  border: 1px solid rgba(51, 51, 51, 0.3) !important;
+  color: #6b7280 !important; /* text-gray-500 */
+  cursor: not-allowed;
+  box-shadow: none !important;
+  transform: none;
+  opacity: 0.6;
+}
+
+/* Dark mode - Colores EXACTOS Alert Warning */
+@media (prefers-color-scheme: dark) {
+  .glass-alert-action-button {
+    background: #78350f !important; /* dark:bg-yellow-900 EXACTO - Override btn-primary */
+    border-color: #a16207 !important; /* dark:border-yellow-700 EXACTO - Override btn-primary */
+    color: #fef3c7 !important; /* dark:text-yellow-100 EXACTO - Override btn-primary */
+  }
+  
+  .glass-alert-action-button:hover {
+    background: #92400e !important; /* dark:hover:bg-yellow-800 EXACTO - Override btn-primary */
+    border-color: #d97706 !important; /* Override btn-primary */
+    color: #fef3c7 !important; /* Override btn-primary */
+  }
+  
+  .glass-alert-action-button:active {
+    background: #92400e !important; /* Consistente con hover en dark - Override btn-primary */
+    color: #fef3c7 !important; /* Override btn-primary */
+  }
+  
+  .glass-alert-action-button:disabled {
+    background: #1f2937 !important; /* dark disabled */
+    border-color: rgba(75, 85, 99, 0.3) !important;
+    color: #6b7280 !important;
+  }
+}
+
+/* Mejoras para accesibilidad */
+.glass-alert-action-button:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* Responsividad mejorada para móviles */
+@media (max-width: 640px) {
+  .glass-alert-action-button {
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    height: 2.75rem;
+  }
+}
