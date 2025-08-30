@@ -555,8 +555,8 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
             {/* 🤖 [IA] - v1.2.12: Header section Venta Esperada optimizado */}
             <div className="wizard-header-section">
               <DollarSign className="flex-shrink-0" style={{ 
-                width: 'clamp(1.5rem, 4vw, 2rem)',
-                height: 'clamp(1.5rem, 4vw, 2rem)',
+                width: 'clamp(1.25rem, 4vw, 1.5rem)',
+                height: 'clamp(1.25rem, 4vw, 1.5rem)',
                 background: 'linear-gradient(135deg, #00ba7c 0%, #06d6a0 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
@@ -581,9 +581,9 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               <div className="flex flex-col sm:flex-row" style={{ gap: 'clamp(0.375rem, 1.5vw, 0.5rem)' }}>
                 <div className="wizard-glass-element relative flex-1" style={{ 
                   borderRadius: 'clamp(0.375rem, 1.5vw, 0.5rem)',
-                  padding: 'clamp(0.25rem, 1vw, 0.375rem)'
+                  padding: 'clamp(0.5rem, 2vw, 0.75rem)'
                 }}>
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold" style={{ 
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 font-bold" style={{ 
                     color: '#00ba7c',
                     fontSize: 'clamp(1rem, 4vw, 1.125rem)'
                   }}>
@@ -610,7 +610,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                       backgroundColor: 'transparent',
                       border: 'none',
                       color: '#e1e8ed',
-                      paddingLeft: 'clamp(2.25rem, 8vw, 2.5rem)',
+                      paddingLeft: 'clamp(1.75rem, 5vw, 2.25rem)',
                       height: 'clamp(2.5rem, 6vw, 3rem)',
                       fontSize: 'clamp(1rem, 4vw, 1.125rem)'
                     }}
@@ -625,8 +625,8 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                   aria-label="Confirmar venta esperada"
                 >
                   <CheckCircle style={{ 
-                    width: 'clamp(1rem, 3vw, 1.25rem)',
-                    height: 'clamp(1rem, 3vw, 1.25rem)',
+                    width: 'clamp(1.25rem, 4vw, 1.5rem)',
+                    height: 'clamp(1.25rem, 4vw, 1.5rem)',
                     marginRight: 'clamp(0.375rem, 1.5vw, 0.5rem)'
                   }} />
                   <span>Confirmar</span>
@@ -648,8 +648,8 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                 <div className="flex items-center" style={{ gap: 'clamp(0.375rem, 1.5vw, 0.5rem)' }}>
                   <CheckCircle className="flex-shrink-0" style={{ 
                     color: '#00ba7c',
-                    width: 'clamp(1rem, 3vw, 1.25rem)',
-                    height: 'clamp(1rem, 3vw, 1.25rem)'
+                    width: 'clamp(1.25rem, 4vw, 1.5rem)',
+                    height: 'clamp(1.25rem, 4vw, 1.5rem)'
                   }} />
                   <span className="font-medium" style={{ 
                     color: '#e1e8ed',
@@ -671,7 +671,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                 marginBottom: 'clamp(0.375rem, 1.5vw, 0.5rem)'
               }}>Resumen de Información:</h4>
               <div style={{ 
-                gap: 'clamp(0.125rem, 0.5vw, 0.25rem)',
+                gap: 'clamp(0.25rem, 1vw, 0.375rem)',
                 display: 'flex',
                 flexDirection: 'column',
                 fontSize: 'clamp(0.75rem, 3vw, 0.875rem)'
