@@ -312,6 +312,18 @@
     border-radius: clamp(0.5rem, 2vw, 0.75rem);
   }
 
+  /* 🤖 [IA] - v1.2.14: Clase glass morphism estandarizada para elementos del wizard */
+  .wizard-glass-element {
+    background-color: rgba(36, 36, 36, 0.4);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2), 
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    border-radius: clamp(0.5rem, 2vw, 0.75rem);
+    padding: clamp(0.75rem, 3vw, 1rem);
+  }
+
   /* 🤖 [IA] - Z-index hierarchy para modales */
   .wizard-modal-overlay {
     z-index: 40;

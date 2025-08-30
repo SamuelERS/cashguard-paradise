@@ -579,14 +579,9 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               </Label>
               {/* 🤖 [IA] - v1.2.9: Contenedor flex para input y botón confirmar */}
               <div className="flex flex-col sm:flex-row" style={{ gap: 'clamp(0.375rem, 1.5vw, 0.5rem)' }}>
-                <div className="relative flex-1" style={{ 
-                  backgroundColor: 'rgba(36, 36, 36, 0.4)',
-                  backdropFilter: 'blur(clamp(12px, 4vw, 20px))',
-                  WebkitBackdropFilter: 'blur(clamp(12px, 4vw, 20px))',
-                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                <div className="wizard-glass-element relative flex-1" style={{ 
                   borderRadius: 'clamp(0.375rem, 1.5vw, 0.5rem)',
-                  padding: 'clamp(0.25rem, 1vw, 0.375rem)',
-                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)'
+                  padding: 'clamp(0.25rem, 1vw, 0.375rem)'
                 }}>
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold" style={{ 
                     color: '#00ba7c',
@@ -666,15 +661,9 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               </motion.div>
             )}
 
-            <div style={{ 
-              backgroundColor: 'rgba(36, 36, 36, 0.4)',
-              backdropFilter: 'blur(clamp(12px, 4vw, 20px))',
-              WebkitBackdropFilter: 'blur(clamp(12px, 4vw, 20px))',
-              border: '1px solid rgba(10, 132, 255, 0.4)',
+            <div className="wizard-glass-element" style={{ 
               borderLeft: '3px solid #0a84ff',
-              boxShadow: '0 0 15px rgba(10, 132, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-              padding: 'clamp(0.75rem, 3vw, 1rem)',
-              borderRadius: 'clamp(0.5rem, 2vw, 0.75rem)'
+              boxShadow: '0 0 15px rgba(10, 132, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
             }}>
               <h4 className="font-semibold" style={{ 
                 color: '#0a84ff',
