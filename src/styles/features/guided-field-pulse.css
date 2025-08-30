@@ -63,33 +63,27 @@
  * ANIMACIONES RESPONSIVAS - DESKTOP
  * =======================================*/
 
-/* Desktop - Efectos más prominentes */
+/* Desktop - Efectos SUTILES (-50% intensidad vs anterior) */
 @media (min-width: 1025px) {
   @keyframes pulse-glow-morning {
     0%, 100% {
-      box-shadow: 0 0 0 4px rgba(244, 165, 42, 0.4),
-                  0 0 25px rgba(244, 165, 42, 0.2),
-                  0 0 35px rgba(244, 165, 42, 0.1);
+      box-shadow: 0 0 0 2px rgba(244, 165, 42, 0.25),
+                  0 0 15px rgba(244, 165, 42, 0.15);
     }
     50% {
-      box-shadow: 0 0 0 4px rgba(244, 165, 42, 0.6),
-                  0 0 35px rgba(244, 165, 42, 0.4),
-                  0 0 45px rgba(244, 165, 42, 0.2),
-                  0 0 55px rgba(244, 165, 42, 0.1);
+      box-shadow: 0 0 0 3px rgba(244, 165, 42, 0.4),
+                  0 0 20px rgba(244, 165, 42, 0.25);
     }
   }
 
   @keyframes pulse-glow-evening {
     0%, 100% {
-      box-shadow: 0 0 0 4px rgba(10, 132, 255, 0.4),
-                  0 0 25px rgba(10, 132, 255, 0.2),
-                  0 0 35px rgba(10, 132, 255, 0.1);
+      box-shadow: 0 0 0 2px rgba(10, 132, 255, 0.25),
+                  0 0 15px rgba(10, 132, 255, 0.15);
     }
     50% {
-      box-shadow: 0 0 0 4px rgba(10, 132, 255, 0.6),
-                  0 0 35px rgba(10, 132, 255, 0.4),
-                  0 0 45px rgba(10, 132, 255, 0.2),
-                  0 0 55px rgba(10, 132, 255, 0.1);
+      box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.4),
+                  0 0 20px rgba(10, 132, 255, 0.25);
     }
   }
 }
