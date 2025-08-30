@@ -1,6 +1,6 @@
 // 🤖 [IA] - v1.2.6: Espaciados y anchos optimizados para Android sin overflow
 // 🤖 [IA] - v1.0.96: Optimización responsive - Vista guiada con anchos adaptativos
-import { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Banknote, Coins, CreditCard, ChevronRight, Check } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
@@ -346,7 +346,7 @@ export function GuidedFieldView({
                       '--tw-ring-color': isMorningCount ? '#f4a52a' : '#0a84ff',
                       boxShadow: inputValue ? `0 0 0 3px ${focusGlow}` : 'none',
                       transition: 'all 0.3s ease'
-                    }}
+                    } as React.CSSProperties}
                     className="focus:outline-none"
                     autoFocus // 🤖 [IA] - v1.1.17: autoFocus necesario para mantener teclado entre campos
                   />
