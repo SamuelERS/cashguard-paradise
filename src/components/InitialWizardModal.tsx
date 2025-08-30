@@ -816,8 +816,8 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               className="wizard-cancel-button"
               aria-label="Cancelar proceso"
             >
-              <X className="w-4 h-4 text-white" />
-              <span className="hidden sm:inline ml-1.5 text-white">Cancelar</span>
+              <X className="w-4 h-4" />
+              <span className="hidden sm:inline ml-1.5">Cancelar</span>
             </Button>
             
             {/* Navigation Buttons - Right Side */}

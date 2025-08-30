@@ -61,7 +61,10 @@ export function GuidedFieldView({
     ? 'linear-gradient(135deg, rgba(230, 126, 34, 0.1), rgba(244, 165, 42, 0.1), rgba(255, 184, 77, 0.1))'
     : 'linear-gradient(135deg, rgba(0, 102, 204, 0.1), rgba(10, 132, 255, 0.1), rgba(94, 92, 230, 0.1))';
 
-  const [inputValue, setInputValue] = useState(isCompleted ? currentFieldValue.toString() : '');
+  // 🤖 [IA] - v1.2.19: MEJORADO - Siempre inicializar con el valor actual para permitir edición
+  const [inputValue, setInputValue] = useState(
+    currentFieldValue > 0 ? currentFieldValue.toString() : ''
+  );
   const [showError, setShowError] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -117,12 +120,17 @@ export function GuidedFieldView({
     }
   }, [isActive, currentFieldName, createTimeoutWithCleanup, isStandalone]);
 
-  // 🤖 [IA] - v1.1.16: Limpiar valor cuando cambia el campo activo
+  // 🤖 [IA] - v1.2.19: MEJORADO - Preservar valores existentes al activar campo para edición
   useEffect(() => {
-    if (isActive && !isCompleted) {
-      setInputValue('');
+    if (isActive) {
+      // Si hay un valor previo, mostrarlo. Si no, limpiar
+      if (currentFieldValue > 0) {
+        setInputValue(currentFieldValue.toString());
+      } else if (!isCompleted) {
+        setInputValue('');
+      }
     }
-  }, [currentFieldName, isActive, isCompleted]);
+  }, [currentFieldName, isActive, isCompleted, currentFieldValue]);
 
   const handleInputChange = (value: string) => {
     if (isActive) {
