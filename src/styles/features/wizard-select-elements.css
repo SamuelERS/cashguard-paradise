@@ -1,0 +1,160 @@
+/* 🤖 [IA] - v1.2.18: Wizard Select Elements - Colores exactos del Alert Info */
+
+/* 
+ * Elementos Select del wizard con alta especificidad
+ * Mantiene glass morphism + colores azul Info para elementos seleccionados
+ * Incluye: trigger, content, items con estados hover/selected/focus
+ */
+
+/* Select Trigger - Mantener glass morphism con acentos azul Info */
+.wizard-select-trigger {
+  background-color: rgba(36, 36, 36, 0.4) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+  color: #e1e8ed !important;
+  height: clamp(2.5rem, 6vw, 3rem);
+  font-size: clamp(0.875rem, 3.5vw, 1rem);
+  border-radius: clamp(0.375rem, 1.5vw, 0.5rem);
+  transition: all 0.3s ease;
+}
+
+.wizard-select-trigger:hover {
+  background-color: rgba(36, 36, 36, 0.5) !important;
+  border-color: rgba(59, 130, 246, 0.3) !important; /* blue-500 sutil */
+}
+
+.wizard-select-trigger:focus {
+  border-color: #3b82f6 !important; /* blue-500 vibrante */
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.3) !important;
+  outline: none !important;
+}
+
+.wizard-select-trigger:focus-visible {
+  outline: 2px solid #3b82f6 !important;
+  outline-offset: 2px;
+}
+
+/* Select Content - Dropdown con glass morphism */
+.wizard-select-content {
+  background-color: rgba(36, 36, 36, 0.95) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(59, 130, 246, 0.2) !important; /* blue-500 border */
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7), 0 0 20px rgba(59, 130, 246, 0.1) !important;
+  z-index: 60 !important;
+}
+
+/* Select Items - Estados hover, focus y selected con azul Info */
+.wizard-select-item,
+.wizard-select-content [data-radix-select-item] {
+  color: #e1e8ed !important;
+  padding: 8px 12px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  border-radius: 4px !important;
+  margin: 2px !important;
+}
+
+/* Hover state para items - Alert Info colores exactos */
+.wizard-select-item:hover,
+.wizard-select-content [data-radix-select-item]:hover,
+.wizard-select-content [data-radix-select-item][data-highlighted] {
+  background-color: #bfdbfe !important; /* hover:bg-blue-200 */
+  color: #1e3a8a !important; /* text-blue-900 */
+  outline: none !important;
+}
+
+/* Selected/Focused state - Alert Info colores exactos */
+.wizard-select-item[data-state="checked"],
+.wizard-select-content [data-radix-select-item][data-state="checked"],
+.wizard-select-content [data-radix-select-item][aria-selected="true"] {
+  background-color: #dbeafe !important; /* bg-blue-100 */
+  color: #1e3a8a !important; /* text-blue-900 */
+  font-weight: 500 !important;
+}
+
+/* Check icon en items seleccionados */
+.wizard-select-item[data-state="checked"] svg,
+.wizard-select-content [data-radix-select-item][data-state="checked"] svg {
+  color: #2563eb !important; /* text-blue-600 */
+}
+
+/* Focus dentro del dropdown */
+.wizard-select-content [data-radix-select-item]:focus,
+.wizard-select-content [data-radix-select-item]:focus-visible {
+  background-color: #bfdbfe !important; /* hover:bg-blue-200 */
+  color: #1e3a8a !important; /* text-blue-900 */
+  outline: none !important;
+}
+
+/* Dark mode - Ajustes para consistencia */
+@media (prefers-color-scheme: dark) {
+  .wizard-select-trigger {
+    background-color: rgba(30, 30, 30, 0.4) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+  }
+  
+  .wizard-select-trigger:hover {
+    background-color: rgba(30, 30, 30, 0.5) !important;
+    border-color: rgba(59, 130, 246, 0.4) !important;
+  }
+  
+  .wizard-select-content {
+    background-color: rgba(30, 30, 30, 0.95) !important;
+    border-color: rgba(59, 130, 246, 0.3) !important;
+  }
+  
+  /* Dark mode item seleccionado - Alert Info colores exactos */
+  .wizard-select-item[data-state="checked"],
+  .wizard-select-content [data-radix-select-item][data-state="checked"] {
+    background-color: #1e3a8a !important; /* dark:bg-blue-900 */
+    color: #dbeafe !important; /* dark:text-blue-100 */
+  }
+  
+  /* Dark mode hover */
+  .wizard-select-item:hover,
+  .wizard-select-content [data-radix-select-item]:hover,
+  .wizard-select-content [data-radix-select-item][data-highlighted] {
+    background-color: #1e40af !important; /* dark:hover:bg-blue-800 */
+    color: #dbeafe !important; /* dark:text-blue-100 */
+  }
+  
+  /* Dark mode focus */
+  .wizard-select-content [data-radix-select-item]:focus,
+  .wizard-select-content [data-radix-select-item]:focus-visible {
+    background-color: #1e40af !important; /* dark:hover:bg-blue-800 */
+    color: #dbeafe !important; /* dark:text-blue-100 */
+  }
+  
+  /* Dark mode check icon */
+  .wizard-select-item[data-state="checked"] svg,
+  .wizard-select-content [data-radix-select-item][data-state="checked"] svg {
+    color: #dbeafe !important; /* dark:text-blue-100 */
+  }
+}
+
+/* Asegurar alta especificidad para sobrescribir shadcn/ui */
+[data-radix-select-content] .wizard-select-content {
+  background-color: rgba(36, 36, 36, 0.95) !important;
+}
+
+/* Scrollbar personalizado para el dropdown */
+.wizard-select-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.wizard-select-content::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+}
+
+.wizard-select-content::-webkit-scrollbar-thumb {
+  background: rgba(59, 130, 246, 0.3);
+  border-radius: 3px;
+}
+
+.wizard-select-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(59, 130, 246, 0.5);
+}

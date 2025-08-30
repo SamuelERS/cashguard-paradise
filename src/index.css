@@ -342,28 +342,8 @@
     align-items: center;
   }
 
-  .wizard-select-trigger {
-    background-color: rgba(36, 36, 36, 0.4);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    color: #e1e8ed;
-    height: clamp(2.5rem, 6vw, 3rem);
-    font-size: clamp(0.875rem, 3.5vw, 1rem);
-    border-radius: clamp(0.375rem, 1.5vw, 0.5rem);
-    transition: all 0.3s ease;
-  }
-
-  .wizard-select-trigger:hover {
-    background-color: rgba(36, 36, 36, 0.5);
-    border-color: rgba(255, 255, 255, 0.25);
-  }
-
-  .wizard-select-trigger:focus {
-    border-color: rgba(10, 132, 255, 0.5);
-    box-shadow: 0 0 15px rgba(10, 132, 255, 0.2);
-  }
+  /* Wizard Select Trigger - Migrado a archivo modular */
+  /* 🤖 [IA] - v1.2.18: Estilos movidos a src/styles/features/wizard-select-elements.css */
 
   .wizard-success-feedback {
     background-color: rgba(36, 36, 36, 0.4);
@@ -406,20 +386,11 @@
     z-index: 50;
   }
 
-  .wizard-select-content {
-    background-color: rgba(36, 36, 36, 0.95);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
-    z-index: 60;
-  }
+  /* Wizard Select Content - Migrado a archivo modular */
+  /* 🤖 [IA] - v1.2.18: Estilos movidos a src/styles/features/wizard-select-elements.css */
 
   /* 🤖 [IA] - Mejoras de accesibilidad y focus management */
-  .wizard-select-trigger:focus-visible {
-    outline: 2px solid rgba(10, 132, 255, 0.8);
-    outline-offset: 2px;
-  }
+  /* Focus-visible migrado a wizard-select-elements.css */
 
   .wizard-modal-content:focus-visible {
     outline: none;
