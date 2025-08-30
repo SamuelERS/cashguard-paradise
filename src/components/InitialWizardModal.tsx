@@ -626,54 +626,11 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                   />
                 </div>
                 {/* Botón Confirmar al lado del input */}
+                {/* 🤖 [IA] - v1.2.13: Botón refactorizado con clase CSS */}
                 <Button
                   onClick={handleComplete}
                   disabled={!isCompleted}
-                  variant={isCompleted ? "ready" : "outline"}
-                  size="sm"
-                  className="transition-all duration-300 font-medium whitespace-nowrap"
-                  style={isCompleted ? {
-                    background: 'linear-gradient(135deg, #00ba7c 0%, #008060 100%)',
-                    color: '#ffffff',
-                    border: 'none',
-                    boxShadow: '0 3px 12px rgba(0, 186, 124, 0.2)',
-                    fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
-                    fontWeight: '600',
-                    borderRadius: 'clamp(0.375rem, 1.5vw, 0.5rem)',
-                    height: 'clamp(2.5rem, 6vw, 3rem)',
-                    padding: 'clamp(0.75rem, 3vw, 1.5rem)'
-                  } : {
-                    backgroundColor: '#242424',
-                    border: '1px solid #33333350',
-                    color: '#4a5568',
-                    cursor: 'not-allowed',
-                    fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
-                    borderRadius: 'clamp(0.375rem, 1.5vw, 0.5rem)',
-                    height: 'clamp(2.5rem, 6vw, 3rem)',
-                    padding: 'clamp(0.75rem, 3vw, 1.5rem)'
-                  }}
-                  onMouseEnter={(e) => {
-                    if (isCompleted) {
-                      e.currentTarget.style.transform = 'translateY(-2px)';
-                      e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 186, 124, 0.3)';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (isCompleted) {
-                      e.currentTarget.style.transform = 'translateY(0)';
-                      e.currentTarget.style.boxShadow = '0 3px 12px rgba(0, 186, 124, 0.2)';
-                    }
-                  }}
-                  onMouseDown={(e) => {
-                    if (isCompleted) {
-                      e.currentTarget.style.transform = 'scale(0.98)';
-                    }
-                  }}
-                  onMouseUp={(e) => {
-                    if (isCompleted) {
-                      e.currentTarget.style.transform = 'translateY(-2px)';
-                    }
-                  }}
+                  className="wizard-confirm-button whitespace-nowrap"
                   aria-label="Confirmar venta esperada"
                 >
                   <CheckCircle style={{ 
@@ -856,113 +813,36 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
 
           {/* Navigation Buttons - Single Row Layout */}
           <div className="flex items-center justify-between mt-6 pt-4" style={{ borderTop: '1px solid #2a3441' }}>
-            {/* Cancel Button - Left Side */}
+            {/* 🤖 [IA] - v1.2.13: Cancel Button refactorizado + comportamiento corregido */}
             <Button
               onClick={handleClose}
-              variant="ghost"
-              size="sm"
-              className="h-9 px-3 transition-all duration-200"
-              style={{
-                backgroundColor: 'transparent',
-                border: '1px solid #3a4451',
-                color: '#657786',
-                fontSize: '14px',
-                fontWeight: '400',
-                borderRadius: '10px'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = '#f4212e30';
-                e.currentTarget.style.color = '#f4212e';
-                e.currentTarget.style.backgroundColor = '#f4212e08';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = '#3a4451';
-                e.currentTarget.style.color = '#657786';
-                e.currentTarget.style.backgroundColor = 'transparent';
-              }}
+              className="wizard-cancel-button"
               aria-label="Cancelar proceso"
             >
-              <span className="hidden sm:inline">Cancelar</span>
-              <X className="w-4 h-4 sm:hidden" />
+              <X className="w-4 h-4" />
+              <span className="hidden sm:inline ml-1.5">Cancelar</span>
             </Button>
             
             {/* Navigation Buttons - Right Side */}
             <div className="flex items-center gap-1">
+              {/* 🤖 [IA] - v1.2.13: Botón Anterior refactorizado */}
               {canGoPrevious && (
                 <Button
                   onClick={goPrevious}
-                  variant="outline"
-                  size="sm"
-                  className="h-9 px-4 transition-all duration-300"
-                  style={{
-                    backgroundColor: '#1a1f26',
-                    border: '1px solid #2a3441',
-                    color: '#8899a6',
-                    fontSize: '14px',
-                    fontWeight: '500',
-                    borderRadius: '10px'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = '#202530';
-                    e.currentTarget.style.transform = 'translateY(-1px)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = '#1a1f26';
-                    e.currentTarget.style.transform = 'translateY(0)';
-                  }}
+                  className="wizard-nav-previous-button"
                   aria-label="Volver al paso anterior"
                 >
                   <ArrowLeft className="w-4 h-4" />
-                  <span className="hidden sm:inline ml-1.5">Anterior</span>
+                  <span className="hidden sm:inline">Anterior</span>
                 </Button>
               )}
               
-              {/* 🤖 [IA] - v1.2.9: No mostrar botón confirmar en step 5 (ya está junto al input) */}
+              {/* 🤖 [IA] - v1.2.13: Botón Siguiente refactorizado */}
               {currentStep < totalSteps && (
                 <Button
                   onClick={handleNext}
                   disabled={!canGoNext}
-                  variant={canGoNext ? "ready" : "outline"}
-                  size="sm"
-                  className="h-9 px-4 transition-all duration-300 font-medium"
-                  style={canGoNext ? {
-                    background: 'linear-gradient(135deg, #0a84ff 0%, #5e5ce6 100%)',
-                    color: '#ffffff',
-                    border: 'none',
-                    boxShadow: '0 3px 12px rgba(10, 132, 255, 0.2)',
-                    fontSize: '14px',
-                    fontWeight: '600',
-                    borderRadius: '10px'
-                  } : {
-                    backgroundColor: '#242424',
-                    border: '1px solid #33333350',
-                    color: '#4a5568',
-                    cursor: 'not-allowed',
-                    fontSize: '14px',
-                    borderRadius: '10px'
-                  }}
-                  onMouseEnter={(e) => {
-                    if (canGoNext) {
-                      e.currentTarget.style.transform = 'translateY(-2px)';
-                      e.currentTarget.style.boxShadow = '0 6px 20px rgba(10, 132, 255, 0.3)';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (canGoNext) {
-                      e.currentTarget.style.transform = 'translateY(0)';
-                      e.currentTarget.style.boxShadow = '0 3px 12px rgba(10, 132, 255, 0.2)';
-                    }
-                  }}
-                  onMouseDown={(e) => {
-                    if (canGoNext) {
-                      e.currentTarget.style.transform = 'scale(0.98)';
-                    }
-                  }}
-                  onMouseUp={(e) => {
-                    if (canGoNext) {
-                      e.currentTarget.style.transform = 'translateY(-2px)';
-                    }
-                  }}
+                  className="wizard-nav-next-button"
                   aria-label="Continuar al siguiente paso"
                   aria-describedby={!canGoNext ? "validation-feedback" : undefined}
                 >

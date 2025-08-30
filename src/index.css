@@ -1419,3 +1419,116 @@
 .wizard-alert-badge:hover::before {
   left: 100%;
 }
+
+/* 🤖 [IA] - v1.2.13: Clases premium para botones del wizard - Refactor completo */
+
+/* Botón Confirmar - Verde con estados enabled/disabled */
+.wizard-confirm-button {
+  background: linear-gradient(135deg, #00ba7c 0%, #008060 100%);
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 3px 12px rgba(0, 186, 124, 0.2);
+  font-size: clamp(0.875rem, 3.5vw, 1rem);
+  font-weight: 600;
+  border-radius: clamp(0.375rem, 1.5vw, 0.5rem);
+  height: clamp(2.5rem, 6vw, 3rem);
+  padding: clamp(0.75rem, 3vw, 1.5rem);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.wizard-confirm-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 186, 124, 0.3);
+}
+
+.wizard-confirm-button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.wizard-confirm-button:disabled {
+  background-color: #242424;
+  border: 1px solid #33333350;
+  color: #4a5568;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* Botón Cancelar - Gris con hover rojo */
+.wizard-cancel-button {
+  background-color: transparent;
+  border: 1px solid #3a4451;
+  color: #657786;
+  font-size: 14px;
+  font-weight: 400;
+  border-radius: 10px;
+  height: 36px;
+  padding: 0 12px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.wizard-cancel-button:hover {
+  border-color: #f4212e30;
+  color: #f4212e;
+  background-color: #f4212e08;
+}
+
+/* Botón Anterior - Gris sutil con hover */
+.wizard-nav-previous-button {
+  background-color: #1a1f26;
+  border: 1px solid #2a3441;
+  color: #8899a6;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 10px;
+  height: 36px;
+  padding: 0 16px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.wizard-nav-previous-button:hover {
+  background-color: #202530;
+  transform: translateY(-1px);
+}
+
+/* Botón Siguiente - Azul con estados enabled/disabled */
+.wizard-nav-next-button {
+  background: linear-gradient(135deg, #0a84ff 0%, #5e5ce6 100%);
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 3px 12px rgba(10, 132, 255, 0.2);
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 10px;
+  height: 36px;
+  padding: 0 16px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.wizard-nav-next-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(10, 132, 255, 0.3);
+}
+
+.wizard-nav-next-button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.wizard-nav-next-button:disabled {
+  background-color: #242424;
+  border: 1px solid #33333350;
+  color: #4a5568;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
