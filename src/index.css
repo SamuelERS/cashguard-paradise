@@ -1591,7 +1591,11 @@
   flex-shrink: 0;
 }
 
-/* Alert Dialog coherente */
+/* 🤖 [IA] - v1.2.25: Alert Dialog MIGRADO a /src/styles/features/cash-counter-alert-dialog.css
+ * Estos estilos han sido movidos al archivo modular para mejor mantenibilidad
+ * y corregir el problema de centrado de botones + responsividad mejorada
+ */
+/* 
 .cash-counter-alert-dialog {
   background: var(--glass-bg-primary);
   backdrop-filter: var(--glass-blur);
@@ -1641,6 +1645,7 @@
     gap: var(--spacing-md);
   }
 }
+*/
 
 /* 🤖 [IA] - v1.2.24: cash-counter-alert-action migrado a archivo modular */
 /* Estilos movidos a src/styles/features/cash-counter-alert-buttons.css */

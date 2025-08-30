@@ -7,6 +7,7 @@ import '../styles/features/cash-counter-desktop-alignment.css';
 // 🤖 [IA] - v1.2.19 - Import modular CSS for phase 1 navigation
 import '../styles/features/phase1-navigation.css';
 import '../styles/features/cash-counter-alert-buttons.css';
+import '../styles/features/cash-counter-alert-dialog.css';
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
