@@ -16,6 +16,7 @@ import { STORES, getEmployeesByStore } from "@/data/paradise";
 import { toast } from "sonner";
 import { useTimingConfig } from "@/hooks/useTimingConfig"; // 🤖 [IA] - Hook de timing unificado v1.0.22
 import { useInputValidation } from "@/hooks/useInputValidation"; // 🤖 [IA] - v1.0.45: Hook para validación de decimales
+import { GlassAlertDialog } from "@/components/ui/GlassAlertDialog"; // 🤖 [IA] - v1.2.13: Modal de confirmación Glass Morphism
 
 interface InitialWizardModalProps {
   isOpen: boolean;
@@ -51,6 +52,8 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
   const [shouldPulse, setShouldPulse] = useState(true);
   // 🤖 [IA] - v1.0.38 - Simplificado: ya no hay validación de firma
   const [hasVibratedForError, setHasVibratedForError] = useState(false);
+  // 🤖 [IA] - v1.2.13 - Estado para controlar el modal de confirmación al retroceder
+  const [showBackConfirmation, setShowBackConfirmation] = useState(false);
   
   // 🤖 [IA] - v1.0.29 - Fix memory leak con cleanup mejorado
   useEffect(() => {
@@ -825,10 +828,10 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
             
             {/* Navigation Buttons - Right Side */}
             <div className="flex items-center gap-1">
-              {/* 🤖 [IA] - v1.2.13: Botón Anterior refactorizado */}
+              {/* 🤖 [IA] - v1.2.13: Botón Anterior con confirmación para evitar pérdida accidental */}
               {canGoPrevious && (
                 <Button
-                  onClick={goPrevious}
+                  onClick={() => setShowBackConfirmation(true)}
                   className="wizard-nav-previous-button"
                   aria-label="Volver al paso anterior"
                 >
@@ -854,6 +857,21 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
           </div>
         </div>
       </DialogContent>
+      
+      {/* 🤖 [IA] - v1.2.13: Modal de confirmación Glass Morphism para prevenir retrocesos accidentales */}
+      <GlassAlertDialog
+        open={showBackConfirmation}
+        onConfirm={() => {
+          goPrevious();
+          setShowBackConfirmation(false);
+        }}
+        onCancel={() => setShowBackConfirmation(false)}
+        title="⚠️ ¿Confirmar retroceso?"
+        description="Si retrocedes perderás los datos ingresados en este paso."
+        warning="Esta acción podría requerir volver a ingresar información."
+        confirmText="Sí, retroceder"
+        cancelText="Permanecer aquí"
+      />
     </Dialog>
   );
 };

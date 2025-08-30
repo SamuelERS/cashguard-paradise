@@ -1,10 +1,10 @@
-# CLAUDE.md v1.2.12
+# CLAUDE.md v1.2.13
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview
 
-CashGuard Paradise v1.2.11 is a cash management system for "Acuarios Paradise" retail stores, built with React, TypeScript, Vite, and shadcn/ui. The application now implements **dual operation modes**: morning cash count (inicio de turno) and evening cash cut (fin de turno), with multi-phase protocols and anti-fraud measures.
+CashGuard Paradise v1.2.13 is a cash management system for "Acuarios Paradise" retail stores, built with React, TypeScript, Vite, and shadcn/ui. The application now implements **dual operation modes**: morning cash count (inicio de turno) and evening cash cut (fin de turno), with multi-phase protocols and anti-fraud measures.
 
 ### 🧪 Testing Status - 100% Docker Containerized
 - **SECTOR 1 ✅**: Testing framework foundation (10 smoke tests) - Ejecutándose en Docker
@@ -122,6 +122,42 @@ Flujo de 5 pasos optimizado:
 ## 📝 Recent Updates
 
 *Para historial completo v1.0.2 - v1.0.79, ver [CHANGELOG-HISTORICO.md](/Documentos%20MarkDown/CHANGELOG-HISTORICO.md)*
+
+### v1.2.13 - GlassAlertDialog Component - Modal de Confirmación Premium
+
+#### 🎨 Implementación de AlertDialog con Glass Morphism v1.2.13
+- **SOLICITUD:** Modal de confirmación para botón "Anterior" con Glass Morphism premium
+- **PROBLEMA:** Retrocesos accidentales causaban pérdida de datos en wizard
+- **SOLUCIÓN MODULAR - ESCALABLE Y REUTILIZABLE:**
+  1. **Nuevo componente:** `GlassAlertDialog.tsx` - 120 líneas de código reutilizable
+  2. **Arquitectura modular:** Sin inflación del archivo principal (solo +6 líneas en InitialWizardModal)
+  3. **Especificaciones v1.2.13 implementadas:**
+     - Background: `rgba(36, 36, 36, 0.4)` con `blur(20px)`
+     - Border: `rgba(255, 255, 255, 0.15)`
+     - Responsive: `clamp(320px, 90vw, 500px)` adaptativo
+     - Tipografía: `clamp()` para todos los tamaños
+     - Colores: Rojo `#f4212e` (peligro), Amarillo `#f4a52a` (advertencia)
+  4. **Props flexibles:** title, description, warning, confirmText, cancelText
+  5. **Responsive automático:** Mobile (columna) vs Desktop (fila)
+- **INTEGRACIÓN EN INITIALWIZARDMODAL:**
+  1. **Import mínimo:** Una línea de importación
+  2. **Estado simple:** `const [showBackConfirmation, setShowBackConfirmation] = useState(false)`
+  3. **Botón modificado:** `onClick={() => setShowBackConfirmation(true)}`
+  4. **Modal implementado:** Con handlers `onConfirm` y `onCancel`
+- **ARCHIVOS CREADOS:**
+  - `src/components/ui/GlassAlertDialog.tsx` - Componente reutilizable con documentación completa
+- **ARCHIVOS MODIFICADOS:**
+  - `src/components/InitialWizardModal.tsx` - Solo 6 líneas nuevas (+0.7% aumento)
+  - `CLAUDE.md` - Actualizado a v1.2.13 con documentación del cambio
+- **VENTAJAS DE LA ARQUITECTURA:**
+  1. **Escalabilidad:** Disponible para cualquier confirmación futura
+  2. **Mantenibilidad:** Estilos centralizados en un solo lugar
+  3. **Performance:** Sin duplicación de código Glass Morphism
+  4. **Consistencia:** Misma experiencia visual en toda la app
+  5. **Flexibilidad:** Props personalizables para diferentes contextos
+- **RESULTADO:** Modal premium con prevención de pérdida de datos
+- **IMPACTO:** Mejor UX sin acciones accidentales, componente reutilizable para el futuro
+- **BUILD VERIFICADO:** ✅ Construcción exitosa sin errores (1.46s)
 
 ### v1.2.8 - Sistema Ciego Anti-Fraude Completo
 - **PROBLEMA CRÍTICO:** El sistema mostraba totales durante el conteo permitiendo manipulación
