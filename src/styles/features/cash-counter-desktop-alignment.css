@@ -1,244 +1,293 @@
-/* 🤖 [IA] - v1.2.18: Mejoras de alineación y estética para desktop
+/* 🤖 [IA] - v1.2.19: Refinamiento profesional UX/UI con ojo crítico Frontend
  * ============================================================================
- * Archivo modular para corregir problemas de alineación en escritorio
- * sin modificar el archivo index.css congelado
+ * Optimización completa para interfaces modernas con breakpoints específicos
+ * Compatible con iPhone 16 Pro Max, Samsung A35 y dispositivos premium/budget
  * ============================================================================
  */
 
-/* === Desktop Alignment Fixes (min-width: 1024px) === */
+/* === Desktop Professional (1024px+) === */
 @media (min-width: 1024px) {
   
-  /* 1. GuidedProgressIndicator - Alineación perfecta con grid */
+  /* 1. Container principal optimizado */
+  .cash-counter-container {
+    max-width: 800px !important; /* Reducido de 900px para mejor proporción */
+    margin: 0 auto !important;
+    padding: 20px !important;
+  }
+
+  /* 2. GuidedProgressIndicator - Refinamiento completo */
   .guided-progress-container {
     max-width: 100% !important;
-    padding: 20px 24px !important;
-    background: rgba(28, 28, 32, 0.5) !important;
-    border-radius: 20px !important;
-    margin-bottom: 20px !important;
+    padding: 18px 24px !important;
+    background: rgba(28, 28, 32, 0.6) !important;
+    backdrop-filter: blur(10px) !important;
+    border-radius: 16px !important;
+    margin-bottom: 16px !important; /* Reducido de 20px */
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
   }
 
   .guided-progress-header {
     display: grid !important;
     grid-template-columns: 1fr auto !important;
     align-items: center !important;
-    gap: 24px !important;
-    margin-bottom: 16px !important;
+    gap: 20px !important;
+    margin-bottom: 14px !important;
   }
 
   .guided-progress-info {
     display: flex !important;
     align-items: center !important;
-    gap: 16px !important;
+    gap: 14px !important;
   }
 
   .guided-progress-badge {
-    width: 48px !important;
-    height: 48px !important;
-    font-size: 20px !important;
-    font-weight: bold !important;
+    width: 44px !important;
+    height: 44px !important;
+    font-size: 19px !important;
+    font-weight: 700 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    animation: pulse-subtle 3s ease-in-out infinite !important;
   }
 
   .guided-progress-title {
-    font-size: 18px !important;
-    font-weight: 700 !important;
-    margin-bottom: 4px !important;
-    letter-spacing: 0.5px !important;
+    font-size: 17px !important;
+    font-weight: 600 !important;
+    margin-bottom: 2px !important;
+    letter-spacing: 0.3px !important;
   }
 
   .guided-progress-subtitle {
-    font-size: 14px !important;
-    opacity: 0.8 !important;
+    font-size: 13px !important;
+    opacity: 0.7 !important;
   }
 
+  /* CRÍTICO: Alineación perfecta PROGRESO con percentage */
   .guided-progress-stats {
     display: flex !important;
-    flex-direction: column !important;
-    align-items: flex-end !important;
-    gap: 4px !important;
+    flex-direction: row !important; /* Cambiado a row */
+    align-items: baseline !important; /* Alineación baseline para texto */
+    gap: 12px !important;
   }
 
   .guided-progress-stats-label {
-    font-size: 12px !important;
+    font-size: 11px !important;
     text-transform: uppercase !important;
-    letter-spacing: 1px !important;
-    opacity: 0.6 !important;
+    letter-spacing: 1.2px !important;
+    opacity: 0.5 !important;
+    font-weight: 500 !important;
   }
 
   .guided-progress-percentage {
-    font-size: 28px !important;
-    font-weight: bold !important;
+    font-size: 32px !important;
+    font-weight: 700 !important;
+    line-height: 1 !important;
   }
 
+  /* Progress bar más visible y atractiva */
   .guided-progress-bar-container {
-    height: 6px !important;
-    background: rgba(255, 255, 255, 0.1) !important;
-    border-radius: 3px !important;
-    margin-bottom: 16px !important;
+    height: 8px !important; /* Aumentado de 6px */
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-radius: 4px !important;
+    margin-bottom: 14px !important;
     overflow: hidden !important;
+    position: relative !important;
   }
 
   .guided-progress-bar {
     height: 100% !important;
-    border-radius: 3px !important;
+    border-radius: 4px !important;
+    position: relative !important;
+    overflow: hidden !important;
+  }
+
+  .guided-progress-bar::after {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent) !important;
+    animation: shimmer 2s infinite !important;
   }
 
   .guided-progress-instructions {
-    background: rgba(10, 132, 255, 0.08) !important;
-    border: 1px solid rgba(10, 132, 255, 0.2) !important;
-    border-radius: 12px !important;
-    padding: 12px 16px !important;
+    background: rgba(10, 132, 255, 0.06) !important;
+    border: 1px solid rgba(10, 132, 255, 0.15) !important;
+    border-radius: 10px !important;
+    padding: 10px 14px !important;
   }
 
   .guided-progress-instruction-content {
     display: flex !important;
     align-items: center !important;
-    gap: 12px !important;
+    gap: 10px !important;
   }
 
   .guided-progress-instruction-icon {
-    width: 20px !important;
-    height: 20px !important;
+    width: 18px !important;
+    height: 18px !important;
     flex-shrink: 0 !important;
   }
 
   .guided-progress-instruction-text {
-    font-size: 15px !important;
+    font-size: 14px !important;
     font-weight: 500 !important;
     margin: 0 !important;
   }
 
-  /* 2. Cash Counter Container - Mejor espaciado */
-  .cash-counter-container {
-    max-width: 900px !important;
-    margin: 0 auto !important;
-    padding: 24px !important;
-  }
-
+  /* 3. Cash Counter Header refinado */
   .cash-counter-header {
-    margin-bottom: 20px !important;
-    padding: 16px 20px !important;
+    margin-bottom: 16px !important;
+    padding: 14px 18px !important;
   }
 
   .cash-counter-content {
-    padding: 0 20px !important;
-    min-height: 300px !important;
+    padding: 0 16px !important;
+    min-height: 280px !important;
   }
 
-  /* 3. Field Input Section - Alineación horizontal perfecta */
+  /* 4. Field Input Section - Proporciones profesionales */
   .space-y-3.max-w-md.mx-auto {
     max-width: 100% !important;
   }
 
-  /* Card principal del campo */
+  /* Card principal del campo - Más compacto */
   .space-y-3.max-w-md.mx-auto > div:first-child {
-    padding: 20px !important;
-    margin-bottom: 16px !important;
+    padding: 18px !important;
+    margin-bottom: 14px !important;
   }
 
-  /* Header del campo - Grid layout para mejor alineación */
+  /* Header del campo - Grid optimizado */
   .flex.items-center.justify-between.mb-3 {
     display: grid !important;
     grid-template-columns: auto 1fr auto !important;
-    gap: 16px !important;
+    gap: 14px !important;
     align-items: center !important;
-    margin-bottom: 20px !important;
+    margin-bottom: 16px !important;
   }
 
-  /* Input y botón - Alineación perfecta */
+  /* CRÍTICO: Input/Button ratio 70/30 profesional */
   .flex.gap-2 {
     display: flex !important;
-    gap: 12px !important;
+    gap: 10px !important;
     align-items: stretch !important;
   }
 
   .flex.gap-2 > .flex-1 {
-    flex: 1 1 auto !important;
+    flex: 0 0 70% !important; /* Input ocupa 70% */
   }
 
   .flex.gap-2 input {
-    height: 52px !important;
-    font-size: 22px !important;
-    padding: 0 20px !important;
-    border-radius: 12px !important;
+    height: 48px !important;
+    font-size: 20px !important;
+    padding: 0 18px !important;
+    border-radius: 10px !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    width: 100% !important;
+  }
+
+  .flex.gap-2 input:focus {
+    transform: scale(1.01) !important;
+    border-width: 3px !important;
+    box-shadow: 0 0 0 4px rgba(10, 132, 255, 0.1) !important;
   }
 
   .flex.gap-2 button {
-    height: 52px !important;
-    min-width: 140px !important;
-    font-size: 17px !important;
+    flex: 0 0 calc(30% - 10px) !important; /* Botón ocupa 30% menos el gap */
+    height: 48px !important;
+    min-width: unset !important;
+    font-size: 16px !important;
     font-weight: 600 !important;
-    padding: 0 24px !important;
-    border-radius: 12px !important;
+    padding: 0 20px !important;
+    border-radius: 10px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 8px !important;
+    gap: 6px !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
   }
 
-  /* 4. Progress indicators de monedas/billetes */
+  .flex.gap-2 button:not(:disabled):hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 10px 25px rgba(10, 132, 255, 0.25) !important;
+  }
+
+  .flex.gap-2 button:not(:disabled):active {
+    transform: translateY(0) !important;
+  }
+
+  /* 5. Progress indicators de monedas/billetes - Más visible */
   .px-3.my-4 {
     padding: 0 !important;
-    margin: 16px 0 0 0 !important;
+    margin: 12px 0 0 0 !important;
+  }
+
+  .px-3.my-4 .flex.items-center.gap-2.mb-1 {
+    margin-bottom: 6px !important;
   }
 
   .px-3.my-4 .h-1 {
-    height: 3px !important;
-    margin-top: 8px !important;
+    height: 4px !important;
+    margin-top: 6px !important;
+    background: rgba(255, 255, 255, 0.05) !important;
   }
 
-  /* 5. Navegación inferior */
+  /* 6. Navegación inferior refinada */
   .cash-counter-navigation {
-    margin-top: 24px !important;
-    padding-top: 20px !important;
-    border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+    margin-top: 20px !important;
+    padding-top: 16px !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
   }
 
   .cash-counter-nav-button {
-    height: 48px !important;
-    padding: 0 32px !important;
-    font-size: 16px !important;
-    gap: 12px !important;
+    height: 44px !important;
+    padding: 0 28px !important;
+    font-size: 15px !important;
+    gap: 10px !important;
   }
 
-  /* 6. Ajustes específicos para el título del campo */
+  /* 7. Ajustes específicos para el título del campo */
   h3.text-xl.font-bold.mb-1 {
-    font-size: 22px !important;
+    font-size: 20px !important;
     margin-bottom: 0 !important;
   }
 
-  /* 7. Badge de tipo (Monedas/Billetes) más compacto */
-  /* Usando selector de atributo para evitar problemas con escape de clases */
+  /* 8. Badge de tipo (Monedas/Billetes) refinado */
   [class*="px-3"][class*="py-1"] {
-    padding: 6px 12px !important;
-    border-radius: 8px !important;
+    padding: 5px 10px !important;
+    border-radius: 6px !important;
   }
 
   [class*="px-3"][class*="py-1"] span {
-    font-size: 13px !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
   }
 
-  /* 8. Label de cantidad más sutil */
+  /* 9. Label de cantidad más sutil */
   label.text-sm.font-medium {
-    font-size: 13px !important;
-    opacity: 0.7 !important;
-    margin-bottom: 8px !important;
+    font-size: 12px !important;
+    opacity: 0.6 !important;
+    margin-bottom: 6px !important;
     display: block !important;
   }
 
-  /* 9. Contenedor general más compacto */
+  /* 10. Contenedor general más compacto */
   .space-y-4 {
-    gap: 16px !important;
+    gap: 14px !important;
   }
 
-  /* 10. Scroll suave para el contenido */
+  /* 11. Scroll refinado */
   .cash-counter-content {
     scroll-behavior: smooth !important;
     scrollbar-width: thin !important;
-    scrollbar-color: rgba(255, 255, 255, 0.2) transparent !important;
+    scrollbar-color: rgba(255, 255, 255, 0.15) transparent !important;
   }
 
   .cash-counter-content::-webkit-scrollbar {
-    width: 6px !important;
+    width: 5px !important;
   }
 
   .cash-counter-content::-webkit-scrollbar-track {
@@ -246,53 +295,289 @@
   }
 
   .cash-counter-content::-webkit-scrollbar-thumb {
-    background-color: rgba(255, 255, 255, 0.2) !important;
-    border-radius: 3px !important;
+    background-color: rgba(255, 255, 255, 0.15) !important;
+    border-radius: 2.5px !important;
   }
 
   .cash-counter-content::-webkit-scrollbar-thumb:hover {
-    background-color: rgba(255, 255, 255, 0.3) !important;
+    background-color: rgba(255, 255, 255, 0.25) !important;
   }
 }
 
-/* === Tablet Adjustments (768px - 1023px) === */
+/* === Tablet Professional (768px - 1023px) === */
 @media (min-width: 768px) and (max-width: 1023px) {
+  .cash-counter-container {
+    max-width: 680px !important;
+    padding: 18px !important;
+  }
+
   .guided-progress-container {
     padding: 16px 20px !important;
   }
 
-  .cash-counter-container {
-    max-width: 720px !important;
-    padding: 20px !important;
+  .guided-progress-stats {
+    flex-direction: row !important;
+    align-items: baseline !important;
+    gap: 10px !important;
+  }
+
+  .guided-progress-percentage {
+    font-size: 28px !important;
+  }
+
+  .flex.gap-2 {
+    gap: 10px !important;
+  }
+
+  .flex.gap-2 > .flex-1 {
+    flex: 0 0 65% !important; /* Input 65% en tablet */
+  }
+
+  .flex.gap-2 button {
+    flex: 0 0 calc(35% - 10px) !important; /* Botón 35% en tablet */
   }
 
   .flex.gap-2 input,
   .flex.gap-2 button {
-    height: 48px !important;
+    height: 46px !important;
+    font-size: 18px !important;
   }
 }
 
-/* === Mobile Preservation (max-width: 767px) === */
-@media (max-width: 767px) {
-  /* Mantener diseño móvil existente sin cambios */
-  .guided-progress-container,
-  .cash-counter-container {
-    /* No override - mantener estilos existentes */
+/* === iPhone 16 Pro Max & Premium (430px - 767px) === */
+@media (min-width: 430px) and (max-width: 767px) {
+  .guided-progress-container {
+    padding: 14px 16px !important;
+  }
+
+  .guided-progress-stats {
+    flex-direction: column !important;
+    align-items: flex-end !important;
+  }
+
+  .guided-progress-percentage {
+    font-size: 26px !important;
+  }
+
+  .flex.gap-2 {
+    flex-direction: row !important;
+    gap: 8px !important;
+  }
+
+  .flex.gap-2 > .flex-1 {
+    flex: 0 0 60% !important;
+  }
+
+  .flex.gap-2 button {
+    flex: 0 0 calc(40% - 8px) !important;
+  }
+
+  .flex.gap-2 input,
+  .flex.gap-2 button {
+    height: 44px !important;
   }
 }
 
-/* === Animation Enhancements === */
+/* === Samsung A35 & Budget (360px - 429px) === */
+@media (min-width: 360px) and (max-width: 429px) {
+  .guided-progress-container {
+    padding: 12px 14px !important;
+  }
+
+  .guided-progress-badge {
+    width: 40px !important;
+    height: 40px !important;
+  }
+
+  .guided-progress-stats {
+    flex-direction: column !important;
+    align-items: flex-end !important;
+  }
+
+  .guided-progress-percentage {
+    font-size: 24px !important;
+  }
+
+  .flex.gap-2 {
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+
+  .flex.gap-2 > .flex-1,
+  .flex.gap-2 button {
+    flex: 1 1 100% !important;
+    width: 100% !important;
+  }
+
+  .flex.gap-2 input,
+  .flex.gap-2 button {
+    height: 42px !important;
+  }
+
+  .cash-counter-navigation {
+    padding: 12px !important;
+  }
+}
+
+/* === Small Mobile (< 360px) === */
+@media (max-width: 359px) {
+  .guided-progress-container {
+    padding: 10px 12px !important;
+  }
+
+  .guided-progress-percentage {
+    font-size: 22px !important;
+  }
+
+  .flex.gap-2 {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+
+  .flex.gap-2 > .flex-1,
+  .flex.gap-2 button {
+    flex: 1 1 100% !important;
+    width: 100% !important;
+  }
+
+  .flex.gap-2 input,
+  .flex.gap-2 button {
+    height: 40px !important;
+    font-size: 16px !important;
+  }
+}
+
+/* === Micro-interacciones y Animaciones Profesionales === */
+@keyframes pulse-subtle {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(10, 132, 255, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(10, 132, 255, 0);
+  }
+}
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
 @media (prefers-reduced-motion: no-preference) {
+  /* Progress bar animation suave */
   .guided-progress-bar {
-    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+
+  /* Badge pulse sutil cada 3 segundos */
+  .guided-progress-badge.evening-mode {
+    animation: pulse-subtle 3s ease-in-out infinite !important;
+  }
+
+  /* Input focus animation */
+  .flex.gap-2 input {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+
+  .flex.gap-2 input:focus {
+    animation: glow-pulse 2s ease-in-out infinite !important;
+  }
+
+  /* Button hover elevation */
+  .flex.gap-2 button {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+
+  .flex.gap-2 button:not(:disabled) {
+    cursor: pointer !important;
   }
 
   .flex.gap-2 button:not(:disabled):hover {
-    transform: translateY(-1px) !important;
-    box-shadow: 0 8px 20px rgba(10, 132, 255, 0.3) !important;
+    transform: translateY(-2px) scale(1.02) !important;
+    box-shadow: 0 12px 28px rgba(10, 132, 255, 0.35) !important;
   }
 
   .flex.gap-2 button:not(:disabled):active {
-    transform: translateY(0) !important;
+    transform: translateY(0) scale(0.98) !important;
+    box-shadow: 0 4px 12px rgba(10, 132, 255, 0.25) !important;
+  }
+
+  /* Smooth transitions for navigation */
+  .cash-counter-nav-button {
+    transition: all 0.2s ease !important;
+  }
+
+  .cash-counter-nav-button:hover {
+    transform: translateX(-4px) !important;
+  }
+
+  /* Progress percentage gradient animation */
+  .guided-progress-percentage.evening-mode {
+    background: linear-gradient(45deg, #0a84ff, #5e5ce6) !important;
+    background-size: 200% 200% !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    animation: gradient-shift 3s ease infinite !important;
+  }
+}
+
+/* === Polish Final: Detalles Profesionales === */
+@media (min-width: 1024px) {
+  /* Sombras sutiles para profundidad */
+  .guided-progress-container {
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1), 
+                0 1px 2px rgba(0, 0, 0, 0.06) !important;
+  }
+
+  .space-y-3.max-w-md.mx-auto > div:first-child {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08),
+                0 1px 3px rgba(0, 0, 0, 0.05) !important;
+  }
+
+  /* Hover states para elementos interactivos */
+  [class*="px-3"][class*="py-1"]:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    cursor: default !important;
+  }
+
+  /* Focus visible para accesibilidad */
+  .flex.gap-2 input:focus-visible,
+  .flex.gap-2 button:focus-visible {
+    outline: 2px solid rgba(10, 132, 255, 0.5) !important;
+    outline-offset: 2px !important;
+  }
+
+  /* Typography refinements */
+  .guided-progress-title,
+  h3.text-xl.font-bold.mb-1 {
+    text-rendering: optimizeLegibility !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
   }
 }
