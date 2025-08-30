@@ -1,0 +1,193 @@
+/* 🤖 [IA] - v1.2.18: Scrollbar oscuro para modales y contenedores con overflow */
+/* Archivo CSS modular siguiendo arquitectura establecida */
+
+/* =====================================
+ * SCROLLBAR PRINCIPAL PARA MODALES
+ * =====================================*/
+
+/* Scrollbar para el modal wizard específico */
+.wizard-modal-content {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(136, 153, 166, 0.3) rgba(30, 30, 30, 0.3);
+  scroll-behavior: smooth;
+}
+
+/* WebKit browsers (Chrome, Safari, Edge) */
+.wizard-modal-content::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.wizard-modal-content::-webkit-scrollbar-track {
+  background: rgba(30, 30, 30, 0.4);
+  border-radius: 4px;
+}
+
+.wizard-modal-content::-webkit-scrollbar-thumb {
+  background: rgba(136, 153, 166, 0.3);
+  border-radius: 4px;
+  border: 1px solid rgba(30, 30, 30, 0.4);
+  transition: background-color 0.2s ease;
+}
+
+.wizard-modal-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(136, 153, 166, 0.5);
+}
+
+.wizard-modal-content::-webkit-scrollbar-thumb:active {
+  background: rgba(136, 153, 166, 0.6);
+}
+
+/* =====================================
+ * SCROLLBAR PARA OTROS CONTENEDORES
+ * =====================================*/
+
+/* Aplicar también a otros contenedores con overflow */
+.overflow-y-auto,
+.overflow-auto,
+[class*="overflow-y-auto"],
+[class*="overflow-auto"] {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(136, 153, 166, 0.3) rgba(30, 30, 30, 0.3);
+  scroll-behavior: smooth;
+}
+
+.overflow-y-auto::-webkit-scrollbar,
+.overflow-auto::-webkit-scrollbar,
+[class*="overflow-y-auto"]::-webkit-scrollbar,
+[class*="overflow-auto"]::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track,
+.overflow-auto::-webkit-scrollbar-track,
+[class*="overflow-y-auto"]::-webkit-scrollbar-track,
+[class*="overflow-auto"]::-webkit-scrollbar-track {
+  background: rgba(30, 30, 30, 0.4);
+  border-radius: 4px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb,
+.overflow-auto::-webkit-scrollbar-thumb,
+[class*="overflow-y-auto"]::-webkit-scrollbar-thumb,
+[class*="overflow-auto"]::-webkit-scrollbar-thumb {
+  background: rgba(136, 153, 166, 0.3);
+  border-radius: 4px;
+  border: 1px solid rgba(30, 30, 30, 0.4);
+  transition: background-color 0.2s ease;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover,
+.overflow-auto::-webkit-scrollbar-thumb:hover,
+[class*="overflow-y-auto"]::-webkit-scrollbar-thumb:hover,
+[class*="overflow-auto"]::-webkit-scrollbar-thumb:hover {
+  background: rgba(136, 153, 166, 0.5);
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:active,
+.overflow-auto::-webkit-scrollbar-thumb:active,
+[class*="overflow-y-auto"]::-webkit-scrollbar-thumb:active,
+[class*="overflow-auto"]::-webkit-scrollbar-thumb:active {
+  background: rgba(136, 153, 166, 0.6);
+}
+
+/* =====================================
+ * RESPONSIVE - MÓVILES
+ * =====================================*/
+
+/* Scrollbar más sutil en móviles */
+@media (max-width: 768px) {
+  .wizard-modal-content::-webkit-scrollbar,
+  .overflow-y-auto::-webkit-scrollbar,
+  .overflow-auto::-webkit-scrollbar,
+  [class*="overflow-y-auto"]::-webkit-scrollbar,
+  [class*="overflow-auto"]::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+  
+  .wizard-modal-content::-webkit-scrollbar-thumb,
+  .overflow-y-auto::-webkit-scrollbar-thumb,
+  .overflow-auto::-webkit-scrollbar-thumb,
+  [class*="overflow-y-auto"]::-webkit-scrollbar-thumb,
+  [class*="overflow-auto"]::-webkit-scrollbar-thumb {
+    border: none;
+    border-radius: 2.5px;
+  }
+  
+  .wizard-modal-content::-webkit-scrollbar-track,
+  .overflow-y-auto::-webkit-scrollbar-track,
+  .overflow-auto::-webkit-scrollbar-track,
+  [class*="overflow-y-auto"]::-webkit-scrollbar-track,
+  [class*="overflow-auto"]::-webkit-scrollbar-track {
+    border-radius: 2.5px;
+  }
+}
+
+/* =====================================
+ * CONTENEDORES ESPECÍFICOS DEL PROYECTO
+ * =====================================*/
+
+/* CashCounter content */
+.cash-counter-content {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(136, 153, 166, 0.3) rgba(30, 30, 30, 0.3);
+}
+
+.cash-counter-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.cash-counter-content::-webkit-scrollbar-track {
+  background: rgba(30, 30, 30, 0.4);
+  border-radius: 3px;
+}
+
+.cash-counter-content::-webkit-scrollbar-thumb {
+  background: rgba(136, 153, 166, 0.3);
+  border-radius: 3px;
+  transition: background-color 0.2s ease;
+}
+
+.cash-counter-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(136, 153, 166, 0.5);
+}
+
+/* =====================================
+ * ACCESIBILIDAD Y UX
+ * =====================================*/
+
+/* Reducir animaciones si el usuario prefiere menos movimiento */
+@media (prefers-reduced-motion: reduce) {
+  .wizard-modal-content,
+  .overflow-y-auto,
+  .overflow-auto,
+  [class*="overflow-y-auto"],
+  [class*="overflow-auto"],
+  .cash-counter-content {
+    scroll-behavior: auto;
+  }
+  
+  .wizard-modal-content::-webkit-scrollbar-thumb,
+  .overflow-y-auto::-webkit-scrollbar-thumb,
+  .overflow-auto::-webkit-scrollbar-thumb,
+  [class*="overflow-y-auto"]::-webkit-scrollbar-thumb,
+  [class*="overflow-auto"]::-webkit-scrollbar-thumb,
+  .cash-counter-content::-webkit-scrollbar-thumb {
+    transition: none;
+  }
+}
+
+/* Firefox scrollbar styling */
+@-moz-document url-prefix() {
+  .wizard-modal-content,
+  .overflow-y-auto,
+  .overflow-auto,
+  [class*="overflow-y-auto"],
+  [class*="overflow-auto"],
+  .cash-counter-content {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(136, 153, 166, 0.4) rgba(30, 30, 30, 0.3);
+  }
+}
