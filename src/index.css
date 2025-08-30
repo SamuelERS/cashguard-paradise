@@ -1642,22 +1642,10 @@
   }
 }
 
-.cash-counter-alert-action {
-  background: linear-gradient(135deg, #f4212e 0%, #ff4444 100%);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: var(--radius-md);
-  font-weight: 600;
-  font-size: var(--text-sm);
-  padding: var(--spacing-sm) var(--spacing-lg);
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-
-.cash-counter-alert-action:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(244, 33, 46, 0.3);
-}
+/* 🤖 [IA] - v1.2.24: cash-counter-alert-action migrado a archivo modular */
+/* Estilos movidos a src/styles/features/cash-counter-alert-buttons.css */
+/* Los estilos del botón Action ahora usan los colores EXACTOS del Alert Error */
+/* .cash-counter-alert-action { [MIGRADO A ARCHIVO MODULAR] } */
 
 .cash-counter-alert-cancel {
   background-color: transparent;
