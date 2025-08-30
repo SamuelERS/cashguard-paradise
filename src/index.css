@@ -1,6 +1,8 @@
+/* stylelint-disable at-rule-no-unknown */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* stylelint-enable at-rule-no-unknown */
 
 /* Paradise Aquarium Cash Control - Glass Morphism Design System */
 
@@ -1492,7 +1494,8 @@
   -webkit-backdrop-filter: var(--glass-blur);
   border: 1px solid var(--glass-border-primary);
   border-radius: var(--radius-xl);
-  padding: var(--spacing-md);
+  padding: clamp(10px, 2.5vw, 14px);
+  margin-bottom: var(--spacing-md);
   box-shadow: var(--glass-shadow);
   min-height: clamp(280px, 55vh, 380px);
   max-height: 90vh;
