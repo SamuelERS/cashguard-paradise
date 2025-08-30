@@ -2245,44 +2245,6 @@
   transform: none;
 }
 
-/* 🤖 [IA] - v1.2.18: Botón Cancelar - Colores exactos del Alert Error */
-.wizard-cancel-button {
-  /* Colores base del Alert Error */
-  background-color: #fef2f2; /* bg-red-100 */
-  border: 1px solid #ef4444; /* border-red-500 */
-  color: #7f1d1d; /* text-red-900 */
-  font-size: 14px;
-  font-weight: 600;
-  border-radius: 10px;
-  height: 36px;
-  padding: 0 12px;
-  transition: all 0.3s ease-in-out;
-  cursor: pointer;
-  /* Efecto hover similar al Alert */
-  transform: scale(1);
-}
-
-.wizard-cancel-button:hover {
-  /* Efecto hover del Alert: scale + opacity */
-  transform: scale(1.05);
-  background-color: rgba(254, 242, 242, 0.8); /* hover:bg-opacity-80 */
-  border-color: #dc2626; /* border-red-600 para mayor contraste */
-}
-
-/* Dark mode - Colores exactos del Alert Error */
-@media (prefers-color-scheme: dark) {
-  .wizard-cancel-button {
-    background-color: #7f1d1d; /* dark:bg-red-900 */
-    border-color: #b91c1c; /* dark:border-red-700 */
-    color: #fef2f2; /* dark:text-red-100 */
-  }
-  .wizard-cancel-button:hover {
-    background-color: rgba(127, 29, 29, 0.8); /* dark:hover:bg-opacity-80 */
-    border-color: #dc2626; /* dark:border-red-600 */
-    transform: scale(1.05);
-  }
-}
-
 /* Botón Anterior - Gris sutil con hover */
 .wizard-nav-previous-button {
   background-color: #1a1f26;
