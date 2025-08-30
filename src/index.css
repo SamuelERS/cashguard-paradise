@@ -2245,27 +2245,8 @@
   transform: none;
 }
 
-/* Botón Anterior - Gris sutil con hover */
-.wizard-nav-previous-button {
-  background-color: #1a1f26;
-  border: 1px solid #2a3441;
-  color: #ffffff;
-  font-size: 14px;
-  font-weight: 600;
-  border-radius: 10px;
-  height: 36px;
-  padding: 0 16px;
-  transition: all 0.3s ease;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.wizard-nav-previous-button:hover {
-  background-color: #202530;
-  transform: translateY(-1px);
-}
+/* Botón Anterior - Migrado a archivo modular */
+/* 🤖 [IA] - v1.2.18: Estilos movidos a src/styles/features/wizard-nav-previous-button.css */
 
 /* Botón Siguiente - Azul con estados enabled/disabled */
 .wizard-nav-next-button {
