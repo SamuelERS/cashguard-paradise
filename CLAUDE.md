@@ -1,10 +1,10 @@
-# CLAUDE.md v1.2.17
+# CLAUDE.md v1.2.18
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview
 
-CashGuard Paradise v1.2.16 is a cash management system for "Acuarios Paradise" retail stores, built with React, TypeScript, Vite, and shadcn/ui. The application implements **dual operation modes**: morning cash count (inicio de turno) and evening cash cut (fin de turno), with multi-phase protocols and anti-fraud measures.
+CashGuard Paradise v1.2.18 is a cash management system for "Acuarios Paradise" retail stores, built with React, TypeScript, Vite, and shadcn/ui. The application implements **dual operation modes**: morning cash count (inicio de turno) and evening cash cut (fin de turno), with multi-phase protocols and anti-fraud measures.
 
 ### 🧪 Testing Status - 100% Docker Containerized
 | Sector | Status | Coverage | Description |
@@ -49,6 +49,15 @@ CashGuard Paradise v1.2.16 is a cash management system for "Acuarios Paradise" r
 ## 📝 Recent Updates
 
 *Para historial completo v1.0.80 - v1.1.20, ver [CHANGELOG-DETALLADO.md](/Documentos%20MarkDown/CHANGELOG-DETALLADO.md)*
+
+### v1.2.18 - Arquitectura CSS Modular Incremental
+**DECISIÓN ARQUITECTÓNICA:** Mantener `index.css` estable (2,306 líneas) + modularización incremental para nuevas features.
+- **index.css CONGELADO:** No más adiciones, archivo marcado como frozen
+- **Estructura modular:** Creados directorios `src/styles/features/`, `components/`, `core/`
+- **Nuevas features:** Usar archivos CSS modulares en `styles/features/`
+- **Documentación:** README.md en `src/styles/` con guías de uso
+- **Beneficio:** Cero riesgo, modularización gradual, mejor mantenibilidad
+**Archivos:** `src/index.css`, `src/styles/README.md`, `CLAUDE.md`
 
 ### v1.2.16 - Rediseño Estético Modal + CSS Warnings Fix
 **REDISEÑO MODAL:** Mejora completa estética: badge progreso sutil, contraste dorado iconos, progress bar visible, input/botón unificado.

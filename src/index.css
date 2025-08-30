@@ -6,6 +6,24 @@
 @tailwind utilities;
 /* stylelint-enable at-rule-no-unknown */
 
+/* ============================================================================
+ * 🔒 ARCHIVO CONGELADO - NO AGREGAR MÁS ESTILOS AQUÍ
+ * ============================================================================
+ * IMPORTANTE: Este archivo index.css está CONGELADO con 2,306 líneas.
+ * 
+ * Para NUEVOS estilos y componentes:
+ * → Crear archivos en: src/styles/features/[nombre-feature].css
+ * → Importar en el componente correspondiente
+ * 
+ * Decisión arquitectónica v1.2.18: Mantener monolito estable + modularización 
+ * incremental para nuevas features sin riesgo de romper sistema existente.
+ * 
+ * Solo modificar este archivo para:
+ * - Correcciones críticas de bugs
+ * - Ajustes de variables CSS existentes
+ * ============================================================================
+ */
+
 /* Paradise Aquarium Cash Control - Glass Morphism Design System */
 
 @layer base {
