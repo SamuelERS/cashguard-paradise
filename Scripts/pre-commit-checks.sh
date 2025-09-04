@@ -26,7 +26,7 @@ echo "$STAGED_FILES"
 # TypeScript check for staged files only
 echo -e "${BLUE}Running TypeScript check...${NC}"
 docker run --rm \
-    -v $(pwd):/app \
+    -v "$(pwd)":/app \
     -w /app \
     node:20-alpine \
     sh -c "npm ci --silent && npx tsc --noEmit" || {

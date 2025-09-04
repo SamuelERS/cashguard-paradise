@@ -16,6 +16,7 @@ const buttonVariants = cva(
         ghost: "glass-card hover:bg-primary/10 hover:text-primary text-foreground",
         link: "text-primary underline-offset-4 hover:underline",
         success: "btn-success",
+        confirm: "shadow-none border-2 bg-[#dcfce7] border-[#22c55e] text-[#14532d] hover:bg-[#bbf7d0] hover:border-[#16a34a] dark:bg-[#14532d] dark:border-[#15803d] dark:text-[#dcfce7] dark:hover:bg-[#166534] disabled:bg-[#374151] disabled:border-[#4b5563]/30 disabled:text-[#6b7280]",
         glass: "glass-card hover:bg-primary/10 hover:border-primary/30 text-foreground",
         ready: "border-none text-white transition-all duration-300 shadow-md"
       },

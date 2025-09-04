@@ -1,9 +1,9 @@
 // 🤖 [IA] - InitialWizardModal v1.1.09 - Morning count visual identity
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Shield, AlertTriangle, CheckCircle, X, ArrowLeft, ArrowRight,
-  MapPin, Users, DollarSign, ChevronRight
+  MapPin, Users, DollarSign
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -47,15 +47,13 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
     goPrevious,
     updateWizardData,
     resetWizard,
-    getStepTitle,
-    getStepDescription
+    getStepTitle
   } = useWizardNavigation();
 
   const { createTimeoutWithCleanup } = useTimingConfig(); // 🤖 [IA] - Usar timing unificado v1.0.22
   const { validateInput, getPattern, getInputMode } = useInputValidation(); // 🤖 [IA] - v1.0.45: Validación de decimales
 
   // Control de animación del AlertTriangle (solo 3 segundos)
-  const [shouldPulse, setShouldPulse] = useState(true);
   // 🤖 [IA] - v1.0.38 - Simplificado: ya no hay validación de firma
   const [hasVibratedForError, setHasVibratedForError] = useState(false);
   // 🤖 [IA] - v1.2.13 - Estado para controlar el modal de confirmación al retroceder
@@ -66,14 +64,12 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
     let cleanup: (() => void) | undefined;
     
     if (currentStep === 1) {
-      setShouldPulse(true);
       // 🤖 [IA] - Migrado a timing unificado para animaciones consistentes v1.0.22
-      cleanup = createTimeoutWithCleanup(() => setShouldPulse(false), 'toast', 'wizard_pulse_animation');
+      cleanup = createTimeoutWithCleanup(() => {}, 'toast', 'wizard_pulse_animation');
     }
     
     return () => {
       cleanup?.();
-      setShouldPulse(false); // Asegurar reset al desmontar o cambiar de paso
     };
   }, [currentStep, createTimeoutWithCleanup]);
 
@@ -96,7 +92,6 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
   
   // 🤖 [IA] - v1.2.11 - Detección de viewport y escala proporcional
   const viewportScale = typeof window !== 'undefined' ? Math.min(window.innerWidth / 430, 1) : 1;
-  const isMobileDevice = typeof window !== 'undefined' && window.innerWidth < 768;
 
   // 🤖 [IA] - v1.0.39 - Simplificación de reglas del protocolo
   const protocolRules = [
@@ -161,7 +156,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
 
   // Calcular progreso basado en tareas completadas
   const totalTasks = Object.values(stepTasks).flat().length;
-  const completedTasks = Object.entries(wizardData).reduce((count, [key, value]) => {
+  const completedTasks = Object.entries(wizardData).reduce((count, [, value]) => {
     // Contar campos completados
     if (value !== '' && value !== false) {
       return count + 1;
@@ -627,8 +622,10 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                 <Button
                   onClick={handleComplete}
                   disabled={!isCompleted}
-                  className="wizard-confirm-button whitespace-nowrap"
+                  variant="confirm"
+                  className="wizard-confirm-button whitespace-nowrap w-full sm:w-auto flex-shrink-0"
                   aria-label="Confirmar venta esperada"
+                  type="button"
                   style={{
                     // Match input (clamp(2.25rem, 5vw, 2.75rem)) + wrapper vertical padding (2 * clamp(0.25rem, 0.5vw, 0.375rem))
                     height: 'calc(clamp(2.25rem, 5vw, 2.75rem) + 2 * clamp(0.25rem, 0.5vw, 0.375rem))',
@@ -638,7 +635,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                     borderRadius: 'clamp(0.375rem, 1.5vw, 0.5rem)'
                   }}
                 >
-                  <CheckCircle style={{ 
+                  <CheckCircle aria-hidden="true" style={{ 
                     width: 'clamp(1.25rem, 4vw, 1.5rem)',
                     height: 'clamp(1.25rem, 4vw, 1.5rem)',
                     marginRight: 'clamp(0.375rem, 1.5vw, 0.5rem)'
