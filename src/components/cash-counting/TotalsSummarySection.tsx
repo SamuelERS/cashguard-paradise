@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useTimingConfig } from "@/hooks/useTimingConfig";
+import "@/styles/features/gradient-dynamic-button.css";
 
 interface TotalsSummarySectionProps {
   totalCash: number;
@@ -217,16 +218,14 @@ export const TotalsSummarySection = ({
                   <Button
                     ref={confirmButtonRef}
                     onClick={handleConfirm}
+                    variant="gradient-dynamic"
                     size="lg"
-                    className="h-12 px-6 w-full sm:w-auto flex items-center justify-center gap-2"
+                    className="w-full sm:w-auto flex items-center justify-center gap-2"
                     style={{
-                      background: gradientBg,
-                      border: 'none',
-                      color: 'white',
-                      fontWeight: 600,
-                      fontSize: '16px',
-                      boxShadow: `0 4px 15px ${shadowColor}`
-                    }}
+                      '--gradient-from': primaryColor,
+                      '--gradient-to': secondaryColor,
+                      '--shadow-color': shadowColor
+                    } as React.CSSProperties}
                     onMouseDown={(e) => e.preventDefault()}
                     onTouchStart={(e) => e.preventDefault()}
                   >

@@ -23,7 +23,8 @@ const buttonVariants = cva(
         "wizard-nav-next": "bg-blue-500 text-white hover:bg-blue-600",
         "wizard-nav-previous": "bg-gray-200 text-gray-700 hover:bg-gray-300",
         "glass-alert-action": "bg-transparent border border-white text-white hover:bg-white hover:text-black",
-        "glass-alert-cancel": "bg-red-500 text-white hover:bg-red-600"
+        "glass-alert-cancel": "bg-red-500 text-white hover:bg-red-600",
+        "gradient-dynamic": "border-none text-white font-semibold transition-all duration-300"
       },
       size: {
         default: "h-12 px-6 py-3",

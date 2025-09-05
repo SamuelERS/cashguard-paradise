@@ -1,0 +1,28 @@
+/* 🤖 [IA] - v1.2.18: Gradient Dynamic Button Feature - Operación Botón Unificado Misión 1.1
+ * Archivo CSS modular para nueva variante gradient-dynamic en sistema button.tsx
+ * Elimina necesidad de style inline para gradientes dinámicos morning/evening
+ */
+
+.gradient-dynamic {
+  background: linear-gradient(135deg, var(--gradient-from, #0a84ff), var(--gradient-to, #5e5ce6)) !important;
+  box-shadow: 0 4px 15px var(--shadow-color, rgba(10, 132, 255, 0.3)) !important;
+  color: white !important;
+  font-weight: 600 !important;
+  font-size: 16px !important;
+  border: none !important;
+}
+
+.gradient-dynamic:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px var(--shadow-color, rgba(10, 132, 255, 0.4)) !important;
+}
+
+.gradient-dynamic:active {
+  transform: translateY(0px);
+}
+
+/* CSS Custom Properties para colores dinámicos:
+ * --gradient-from: Color inicial del gradiente
+ * --gradient-to: Color final del gradiente  
+ * --shadow-color: Color de la sombra
+ */
