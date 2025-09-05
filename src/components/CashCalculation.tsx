@@ -5,6 +5,8 @@ import { Calculator, AlertTriangle, CheckCircle, Share, Download, Copy } from "l
 import { Button } from "@/components/ui/button";
 // 🤖 [IA] - v1.1.08: Removidos Card components para coherencia con glass morphism
 // 🤖 [IA] - v1.1.08: Alert components removidos para coherencia con glass morphism
+// 🤖 [IA] - v1.3.0: Importación de CSS modular para el botón report-action
+import '@/styles/features/report-action-button.css';
 import { Badge } from "@/components/ui/badge";
 import { calculateCashTotal, calculateChange50, formatCurrency, generateDenominationSummary } from "@/utils/calculations";
 import { copyToClipboard } from "@/utils/clipboard"; // 🤖 [IA] - v1.1.09
@@ -678,26 +680,31 @@ Firma Digital: ${dataHash}`;
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[clamp(0.5rem,2vw,0.75rem)] lg:max-w-3xl mx-auto">
                 <Button
                   onClick={generateWhatsAppReport}
-                  className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold glass-card hover:scale-105 transform transition-all duration-300 text-[clamp(0.75rem,3vw,0.875rem)] px-[clamp(0.5rem,2vw,0.75rem)] py-[clamp(0.5rem,2vw,0.75rem)]"
+                  variant="report-action"
+                  aria-label="Compartir por WhatsApp"
                 >
-                  <Share className="w-[clamp(0.875rem,3.5vw,1rem)] h-[clamp(0.875rem,3.5vw,1rem)] mr-2" />
+                  <Share />
                   WhatsApp
                 </Button>
                 
                 <Button
                   onClick={handleCopyToClipboard}
-                  variant="secondary"
-                  className="border-warning/30 hover:bg-warning/10 glass-card hover:scale-105 transform transition-all duration-300 text-[clamp(0.75rem,3vw,0.875rem)] px-[clamp(0.5rem,2vw,0.75rem)] py-[clamp(0.5rem,2vw,0.75rem)]"
+                  variant="warning"
+                  size="sm"
+                  aria-label="Copiar reporte"
                 >
-                  <Copy className="w-[clamp(0.875rem,3.5vw,1rem)] h-[clamp(0.875rem,3.5vw,1rem)] mr-2" />
+                  <Copy />
                   Copiar
                 </Button>
                 
                 <Button
                   onClick={onComplete}
-                  className="bg-success hover:bg-success/90 text-success-foreground glass-card hover:scale-105 transform transition-all duration-300 text-[clamp(0.75rem,3vw,0.875rem)] px-[clamp(0.5rem,2vw,0.75rem)] py-[clamp(0.5rem,2vw,0.75rem)] sm:col-span-2 lg:col-span-1"
+                  variant="success"
+                  size="sm"
+                  className="sm:col-span-2 lg:col-span-1"
+                  aria-label="Finalizar proceso"
                 >
-                  <CheckCircle className="w-[clamp(0.875rem,3.5vw,1rem)] h-[clamp(0.875rem,3.5vw,1rem)] mr-2" />
+                  <CheckCircle />
                   Finalizar
                 </Button>
               </div>

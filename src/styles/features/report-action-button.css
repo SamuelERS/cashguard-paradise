@@ -1,0 +1,47 @@
+/* 
+ * Report Action Button Styles - WhatsApp
+ * Componente para botones de acción en informes y reportes
+ * Parte del sistema unificado de botones
+ */
+
+.btn-report-action {
+  /* Estilo base */
+  @apply text-white font-semibold;
+  
+  /* Tamaño responsivo */
+  font-size: clamp(0.75rem, 3vw, 0.875rem);
+  padding: clamp(0.5rem, 2vw, 0.75rem);
+  
+  /* Gradiente y efectos */
+  background: linear-gradient(to right, #25D366, #128C7E);
+  
+  /* Hover y transiciones */
+  transition: all 0.3s ease;
+}
+
+.btn-report-action:hover:not(:disabled) {
+  background: linear-gradient(to right, #128C7E, #075E54);
+  transform: translateY(-2px);
+}
+
+.btn-report-action:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-report-action:disabled {
+  opacity: 0.6;
+  background: linear-gradient(to right, #8ED1B4, #8EB8B4);
+  cursor: not-allowed;
+}
+
+/* Mejoras para accesibilidad */
+.btn-report-action:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* Estilos para los íconos internos */
+.btn-report-action svg {
+  width: clamp(0.875rem, 3.5vw, 1rem);
+  height: clamp(0.875rem, 3.5vw, 1rem);
+}

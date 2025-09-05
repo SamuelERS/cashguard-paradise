@@ -31,7 +31,8 @@ const buttonVariants = cva(
         "phase2-verify": "btn-phase2-verify",
         "phase2-confirm": "btn-phase2-confirm",
         "guided-confirm": "btn-guided-confirm",
-        "guided-start": "btn-guided-start"
+        "guided-start": "btn-guided-start",
+        "report-action": "btn-report-action"
       },
       size: {
         default: "h-12 px-6 py-3",
@@ -75,6 +76,7 @@ export interface ButtonProps
     | "phase2-confirm" 
     | "guided-confirm"
     | "guided-start"
+    | "report-action"
   size?: "default" | "sm" | "lg" | "icon" | "icon-sm"
 }
 
