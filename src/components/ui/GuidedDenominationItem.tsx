@@ -195,22 +195,12 @@ export const GuidedDenominationItem = ({
 
   return (
     <motion.div 
-      style={{
-        backgroundColor: isCompleted ? 'rgba(0, 186, 124, 0.05)' : 'rgba(36, 36, 36, 0.4)',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
-        border: isActive ? '2px solid rgba(10, 132, 255, 0.4)' : 
-               isCompleted ? '2px solid rgba(0, 186, 124, 0.6)' : 
-               '1px solid rgba(255, 255, 255, 0.15)',
-        borderRadius: '16px',
-        padding: '20px',
-        boxShadow: isActive ? '0 8px 24px rgba(10, 132, 255, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)' :
-                   '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-        opacity: !isAccessible ? '0.3' : '1',
-        cursor: !isAccessible ? 'not-allowed' : 'pointer',
-        transition: 'all 0.5s'
-      }}
-      className="space-y-3"
+      className={cn(
+        "guided-denomination-item",
+        isActive && "active",
+        isCompleted && "completed",
+        !isAccessible && "blocked"
+      )}
       whileHover={isAccessible ? { scale: 1.01, y: -1 } : {}}
       transition={{ duration: 0.3, type: "spring", stiffness: 300 }}
       onClick={handleClick}

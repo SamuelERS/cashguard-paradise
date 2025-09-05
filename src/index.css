@@ -2140,3 +2140,70 @@
 
 /* Botón Siguiente - Migrado a archivo modular */
 /* 🤖 [IA] - v1.2.18: Estilos movidos a src/styles/features/wizard-nav-next-button.css */
+
+/* 🤖 [IA] - v1.2.19: GuidedDenominationItem - Refactorización de estilos inline */
+/* Clases modulares para componente GuidedDenominationItem */
+.guided-denomination-item {
+  @apply rounded-2xl p-5 space-y-3 transition-all duration-500;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  background-color: rgba(36, 36, 36, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+}
+
+.guided-denomination-item.active {
+  border: 2px solid rgba(10, 132, 255, 0.4);
+  box-shadow: 0 8px 24px rgba(10, 132, 255, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.guided-denomination-item.completed {
+  background-color: rgba(0, 186, 124, 0.05);
+  border: 2px solid rgba(0, 186, 124, 0.6);
+}
+
+.guided-denomination-item.blocked {
+  @apply opacity-30 cursor-not-allowed;
+}
+
+/* 🤖 [IA] - v1.2.19: GlassAlertDialog - Refactorización de estilos inline */
+/* Clases modulares para componente GlassAlertDialog premium */
+.glass-alert-dialog-content {
+  background-color: rgba(36, 36, 36, 0.4) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  width: calc(100vw - 2rem);
+  max-width: clamp(320px, 90vw, 500px);
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.glass-alert-dialog-title {
+  color: #f4212e;
+  font-size: clamp(1.125rem, 4vw, 1.25rem);
+  font-weight: 600;
+  text-align: center;
+}
+
+.glass-alert-dialog-description {
+  color: #e1e8ed;
+  font-size: clamp(0.875rem, 3.5vw, 0.95rem);
+  text-align: center;
+  margin-top: 12px;
+}
+
+.glass-alert-dialog-warning {
+  display: block;
+  margin-top: 8px;
+  color: #f4a52a;
+  font-size: clamp(0.813rem, 3.25vw, 0.875rem);
+  font-weight: 500;
+}
+
+.glass-alert-dialog-footer {
+  margin-top: 16px;
+}
