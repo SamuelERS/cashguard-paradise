@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { AlertTriangle, Info, Shield, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
-import '@/styles/features/guided-instructions-start-button.css';
+import '@/styles/features/guided-start-button.css';
 
 interface GuidedInstructionsModalProps {
   isOpen: boolean;
@@ -235,30 +235,18 @@ export function GuidedInstructionsModal({
             </label>
           </div>
 
-          {/* Botón de confirmación - Responsive */}
+          {/* Botón de confirmación - Con variante guided-start y data attributes */}
           <Button
+            variant="guided-start"
             onClick={handleConfirm}
             disabled={!understood}
-            className="guided-instructions-start-button w-full font-bold shadow-lg transition-all duration-300"
-            style={{
-              height: `clamp(40px, ${48 * viewportScale}px, 48px)`,
-              fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
-              border: 'none',
-              opacity: understood ? 1 : 0.6,
-              transform: understood ? 'scale(1)' : 'scale(0.98)'
-            }}
+            data-state={understood ? "active" : "inactive"}
+            data-count-type={isMorningCount ? "morning" : "evening"}
+            aria-label="Comenzar conteo guiado"
           >
-            <span 
-              className="flex items-center"
-              style={{
-                gap: `clamp(6px, ${8 * viewportScale}px, 8px)`
-              }}
-            >
+            <span>
               Comenzar Conteo
-              <ArrowRight style={{ 
-                width: `clamp(16px, ${20 * viewportScale}px, 20px)`,
-                height: `clamp(16px, ${20 * viewportScale}px, 20px)`
-              }} />
+              <ArrowRight />
             </span>
           </Button>
         </div>

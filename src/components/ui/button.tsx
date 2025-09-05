@@ -30,7 +30,8 @@ const buttonVariants = cva(
         "phase2-back": "btn-phase2-back",
         "phase2-verify": "btn-phase2-verify",
         "phase2-confirm": "btn-phase2-confirm",
-        "guided-confirm": "btn-guided-confirm"
+        "guided-confirm": "btn-guided-confirm",
+        "guided-start": "btn-guided-start"
       },
       size: {
         default: "h-12 px-6 py-3",
@@ -48,9 +49,33 @@ const buttonVariants = cva(
 )
 
 export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   asChild?: boolean
+  variant?: 
+    | "default" 
+    | "destructive" 
+    | "secondary" 
+    | "ghost" 
+    | "link" 
+    | "success" 
+    | "info" 
+    | "warning" 
+    | "error" 
+    | "glass" 
+    | "ready" 
+    | "wizard-nav-next" 
+    | "wizard-nav-previous" 
+    | "glass-alert-action" 
+    | "glass-alert-cancel" 
+    | "gradient-dynamic" 
+    | "morning-gradient" 
+    | "phase2-tab" 
+    | "phase2-back" 
+    | "phase2-verify" 
+    | "phase2-confirm" 
+    | "guided-confirm"
+    | "guided-start"
+  size?: "default" | "sm" | "lg" | "icon" | "icon-sm"
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
