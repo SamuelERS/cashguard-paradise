@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { CreditCard, Building, ArrowLeftRight, Wallet } from "lucide-react";
 import { ElectronicPayments, CashCount } from "@/types/cash";
 import { calculateCashTotal } from "@/utils/calculations";
+import { Button } from "@/components/ui/button";
 
 interface GuidedElectronicSectionProps {
   electronicPayments: ElectronicPayments;
@@ -78,12 +79,14 @@ export const GuidedElectronicSection = ({
                 ${totalCash.toFixed(2)}
               </div>
               {isTotalCashActive && (
-                <button
+                <Button
                   onClick={handleTotalCashConfirm}
-                  className="mt-2 bg-accent-primary text-white px-4 py-1 rounded-full text-sm hover:bg-accent-primary/90 transition-colors"
+                  className="mt-2"
+                  variant="default"
+                  size="sm"
                 >
                   ✓ Confirmar
-                </button>
+                </Button>
               )}
               {isTotalCashCompleted && (
                 <div className="text-sm text-success">✓ Confirmado</div>
@@ -118,12 +121,14 @@ export const GuidedElectronicSection = ({
                 ${totalElectronic.toFixed(2)}
               </div>
               {isTotalElectronicActive && (
-                <button
+                <Button
                   onClick={handleTotalElectronicConfirm}
-                  className="mt-2 bg-accent-primary text-white px-4 py-1 rounded-full text-sm hover:bg-accent-primary/90 transition-colors"
+                  className="mt-2"
+                  variant="default"
+                  size="sm"
                 >
                   ✓ Confirmar
-                </button>
+                </Button>
               )}
               {isTotalElectronicCompleted && (
                 <div className="text-sm text-success">✓ Confirmado</div>

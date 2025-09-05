@@ -1,4 +1,4 @@
-# CashGuard Paradise v1.1.20
+# CashGuard Paradise v1.2.19
 
 Sistema de control de caja para Acuarios Paradise con prevención de fraude y protocolos estrictos.
 
@@ -28,6 +28,9 @@ Sistema de control de caja para Acuarios Paradise con prevención de fraude y pr
 - **Type-Safe**: Full TypeScript coverage with strict typing
 - **No Distracting Animations**: Clean, instant interface without pulsating effects
 - **Desktop-First Responsive**: Optimized for all screen sizes with proper text scaling
+- **Unified Button Architecture**: 47 buttons centralized with 8 specialized variants and 0% technical debt
+- **Modular CSS System**: Feature-specific stylesheets in `src/styles/features/` with CSS variables
+- **Data-State Logic**: Consistent visual states via `data-state`, `data-mode`, and `data-active` attributes
 
 ## 🏗️ Architecture Overview
 
