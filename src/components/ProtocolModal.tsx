@@ -159,7 +159,7 @@ const ProtocolModal = ({ isOpen, onClose, onAccept }: ProtocolModalProps) => {
           <div className="flex gap-3 pt-4">
             <Button
               onClick={onClose}
-              variant="outline"
+              variant="secondary"
               className="flex-1 border-muted hover:bg-muted/50"
             >
               <X className="w-4 h-4 mr-2" />

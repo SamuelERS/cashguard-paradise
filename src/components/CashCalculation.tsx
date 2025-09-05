@@ -686,7 +686,7 @@ Firma Digital: ${dataHash}`;
                 
                 <Button
                   onClick={handleCopyToClipboard}
-                  variant="outline"
+                  variant="secondary"
                   className="border-warning/30 hover:bg-warning/10 glass-card hover:scale-105 transform transition-all duration-300 text-[clamp(0.75rem,3vw,0.875rem)] px-[clamp(0.5rem,2vw,0.75rem)] py-[clamp(0.5rem,2vw,0.75rem)]"
                 >
                   <Copy className="w-[clamp(0.875rem,3.5vw,1rem)] h-[clamp(0.875rem,3.5vw,1rem)] mr-2" />

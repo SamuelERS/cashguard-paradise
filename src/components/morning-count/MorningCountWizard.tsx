@@ -541,7 +541,7 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
           {/* Botones de navegación */}
           <div className="flex items-center justify-between" style={{ marginTop: `clamp(28px, ${32 * viewportScale}px, 32px)` }}>
             <Button
-              variant="outline"
+              variant="secondary"
               size="sm"
               className="h-9 px-4"
               onClick={handlePrevious}

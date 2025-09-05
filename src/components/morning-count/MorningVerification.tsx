@@ -237,13 +237,8 @@ Sistema CashGuard Paradise v1.1.13
               Resultados del conteo matutino
             </p>
             <Badge 
-              variant="outline" 
+              variant="warning" 
               className="mt-2"
-              style={{ 
-                borderColor: '#f4a52a', 
-                color: '#f4a52a',
-                background: 'rgba(244, 165, 42, 0.1)'
-              }}
             >
               {verificationData.timestamp}
             </Badge>
@@ -453,7 +448,7 @@ Sistema CashGuard Paradise v1.1.13
                 
                 <Button
                   onClick={handleCopyToClipboard}
-                  variant="outline"
+                  variant="secondary"
                   className="border-warning/30 hover:bg-warning/10 hover:scale-105 transform transition-all duration-300 text-xs sm:text-sm px-2 py-2"
                 >
                   <Copy className="w-4 h-4 mr-2" />

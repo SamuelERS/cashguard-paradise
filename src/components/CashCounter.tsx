@@ -675,7 +675,7 @@ const CashCounter = ({
       >
         <Button
           onClick={onBack}
-          variant="outline"
+          variant="secondary"
           className="flex-1 h-11 text-xs sm:text-sm px-3 sm:px-4 flex items-center justify-center whitespace-nowrap"
           style={{
             backgroundColor: 'rgba(255, 255, 255, 0.05)',
