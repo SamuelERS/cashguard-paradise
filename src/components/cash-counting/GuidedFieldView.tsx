@@ -14,7 +14,7 @@ import { useTimingConfig } from '@/hooks/useTimingConfig';
 import { usePulseAnimation } from '@/hooks/useVisibleAnimation'; // 🤖 [IA] - v1.2.18: Optimización automática de animaciones
 import { cn } from '@/lib/utils';
 import '@/styles/features/guided-field-pulse.css';
-import '@/styles/features/guided-field-confirm-button.css';
+import '@/styles/features/guided-confirm-button.css';
 import '@/styles/features/guided-field-input-border.css';
 
 interface GuidedFieldViewProps {
@@ -73,7 +73,6 @@ export function GuidedFieldView({
   );
   const [showError, setShowError] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
   
   const { validateInput, getPattern, getInputMode } = useInputValidation();
   const { createTimeoutWithCleanup } = useTimingConfig();
@@ -163,23 +162,7 @@ export function GuidedFieldView({
     }
   }, [isActive, inputValue, onConfirm]);
 
-  // Configurar touchend event para prevenir cierre de teclado móvil
-  useEffect(() => {
-    if (isActive && buttonRef.current) {
-      const button = buttonRef.current;
-      
-      const handleTouchEnd = (e: TouchEvent) => {
-        e.preventDefault(); // 🤖 [IA] - v1.1.17: preventDefault crítico para mantener focus y teclado abierto
-        handleConfirm();
-      };
-
-      button.addEventListener('touchend', handleTouchEnd, { passive: false });
-      
-      return () => {
-        button.removeEventListener('touchend', handleTouchEnd);
-      };
-    }
-  }, [isActive, handleConfirm]);
+  // 🤖 [IA] - v1.3.0: Eliminado manejo manual de touchend event - ahora se maneja por el onTouchStart del Button
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
@@ -347,9 +330,8 @@ export function GuidedFieldView({
                   )}
                   <Input
                     ref={(node) => {
-                      // Combinar refs: inputRef + elementRef para IntersectionObserver
+                      // Asignar solo inputRef - elementRef es usado solo para observación, no modificación
                       if (inputRef && 'current' in inputRef) inputRef.current = node;
-                      if (elementRef && 'current' in elementRef) elementRef.current = node;
                     }}
                     type="tel"  // 🤖 [IA] - v1.1.15: Cambiado de "text" a "tel" para mejor activación del teclado numérico
                     inputMode={getInputMode(currentFieldType === 'electronic' ? 'currency' : 'integer')}
@@ -385,21 +367,12 @@ export function GuidedFieldView({
                   />
                 </div>
                 <Button
-                  ref={buttonRef}
+                  variant="guided-confirm"
                   onClick={handleConfirm}
                   disabled={!inputValue}
-                  style={{
-                    border: 'none',
-                    borderRadius: 'clamp(8px, 2vw, 12px)', // 🤖 [IA] - v1.2.18: Responsive border-radius
-                    height: 'clamp(48px, 12vw, 56px)', // 🤖 [IA] - v1.2.18: Responsive height to match input - vw mejor para móviles
-                    padding: '0 clamp(12px, 3vw, 24px)', // 🤖 [IA] - v1.2.18: Responsive padding - reducir mínimo para más espacio
-                    fontSize: 'clamp(14px, 3vw, 18px)', // 🤖 [IA] - v1.2.18: Responsive font-size - reducir de 3.5vw a 3vw
-                    fontWeight: 'bold',
-                    minWidth: 'clamp(100px, 25vw, 140px)', // 🤖 [IA] - v1.2.18: Min-width para evitar compresión en móviles
-                    transition: 'all 0.3s'
-                  }}
-                  className="guided-field-confirm-button text-white shadow-lg"
+                  data-size="default"
                   onTouchStart={(e) => e.preventDefault()} // 🤖 [IA] - v1.1.17: preventDefault para mantener focus
+                  aria-label="Confirmar cantidad ingresada"
                 >
                   Confirmar
                   <ChevronRight className="w-4 h-4 ml-1" />

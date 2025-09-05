@@ -29,7 +29,8 @@ const buttonVariants = cva(
         "phase2-tab": "btn-phase2-tab",
         "phase2-back": "btn-phase2-back",
         "phase2-verify": "btn-phase2-verify",
-        "phase2-confirm": "btn-phase2-confirm"
+        "phase2-confirm": "btn-phase2-confirm",
+        "guided-confirm": "btn-guided-confirm"
       },
       size: {
         default: "h-12 px-6 py-3",

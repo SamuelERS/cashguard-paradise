@@ -1,0 +1,96 @@
+/* 
+ * Guided Confirm Button Styles
+ * Componente para botones de confirmación en campos guiados
+ * Parte del sistema unificado de botones
+ */
+
+.btn-guided-confirm {
+  /* Base styles alineados con alerts success */
+  @apply bg-green-100 text-green-900 border-2 border-green-500;
+  
+  /* Mantener propiedades responsive existentes */
+  border-radius: clamp(8px, 2vw, 12px);
+  height: clamp(48px, 12vw, 56px);
+  padding: 0 clamp(12px, 3vw, 24px);
+  font-size: clamp(14px, 3vw, 18px);
+  font-weight: bold;
+  min-width: clamp(100px, 25vw, 140px);
+  
+  /* Estructura del botón */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+}
+
+/* Estado hover */
+.btn-guided-confirm:hover:not(:disabled) {
+  @apply bg-green-200 border-green-600 text-green-900;
+  transform: translateY(-1px) scale(1.02);
+}
+
+/* Estado active */
+.btn-guided-confirm:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+  @apply bg-green-200 text-green-900;
+}
+
+/* Estado disabled */
+.btn-guided-confirm:disabled {
+  background: rgba(128, 128, 128, 0.3) !important;
+  border: 1px solid rgba(128, 128, 128, 0.5) !important;
+  color: #6b7280 !important; /* text-gray-500 */
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: none;
+}
+
+/* Mejoras para accesibilidad */
+.btn-guided-confirm:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .btn-guided-confirm {
+    @apply bg-green-900 border-green-700 text-green-100;
+  }
+  
+  .btn-guided-confirm:hover:not(:disabled) {
+    @apply bg-green-800 border-green-600 text-green-100;
+  }
+  
+  .btn-guided-confirm:active:not(:disabled) {
+    @apply bg-green-800 text-green-100;
+  }
+}
+
+/* Compatibilidad con system sizes */
+.btn-guided-confirm[data-size="sm"] {
+  height: clamp(36px, 10vw, 40px);
+  padding: 0 clamp(10px, 2.5vw, 16px);
+  font-size: clamp(12px, 2.5vw, 14px);
+  min-width: clamp(80px, 20vw, 100px);
+}
+
+.btn-guided-confirm[data-size="lg"] {
+  height: clamp(56px, 14vw, 64px);
+  padding: 0 clamp(16px, 4vw, 32px);
+  font-size: clamp(16px, 4vw, 20px);
+  min-width: clamp(120px, 30vw, 160px);
+}
+
+/* Icon styling */
+.btn-guided-confirm svg {
+  flex-shrink: 0;
+}
+
+/* ChevronRight icon específico */
+.btn-guided-confirm .lucide-chevron-right {
+  width: 1rem; /* w-4 */
+  height: 1rem; /* h-4 */
+  margin-left: 0.25rem; /* ml-1 */
+}
