@@ -13,8 +13,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import '@/styles/features/glass-alert-cancel-button.css';
-import '@/styles/features/glass-alert-action-button.css';
+// 🤖 [IA] - v1.2.24: Importar Button component para migración al sistema centralizado
+import { Button } from "@/components/ui/button";
 
 // [IA] - Props tipadas para máxima flexibilidad y reutilización
 interface GlassAlertDialogProps {
@@ -29,14 +29,17 @@ interface GlassAlertDialogProps {
 }
 
 /**
- * GlassAlertDialog v1.2.13
+ * GlassAlertDialog v1.2.24
  * 
  * Componente de confirmación con Glass Morphism premium
- * Cumple con todas las especificaciones del sistema de diseño:
+ * 🤖 [IA] - v1.2.24: Migrado al sistema centralizado de botones
+ * 
+ * Especificaciones del sistema de diseño:
  * - Background: rgba(36, 36, 36, 0.4) con blur(20px)
  * - Border: rgba(255, 255, 255, 0.15)
  * - Tipografía responsive con clamp()
  * - Paleta de colores: Rojo #f4212e, Amarillo #f4a52a
+ * - Botones: Sistema centralizado con variants glass-alert-*
  * - Responsive automático mobile/desktop
  * 
  * @param {GlassAlertDialogProps} props - Propiedades del componente
@@ -114,18 +117,24 @@ export const GlassAlertDialog: React.FC<GlassAlertDialogProps> = ({
           className="flex flex-col-reverse sm:flex-row sm:justify-center gap-y-4 sm:gap-y-0 sm:gap-x-4"
           style={{ marginTop: '16px' }}
         >
-          <AlertDialogAction
-            onClick={onConfirm}
-            className="glass-alert-action-button hover:opacity-90 inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-semibold transition-all duration-300 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 btn-primary h-12 px-6 py-3 hover:bg-white/10"
-          >
-            {confirmText}
+          {/* 🤖 [IA] - v1.2.24: Migración a Button centralizado con variant glass-alert-action */}
+          <AlertDialogAction asChild>
+            <Button 
+              variant="glass-alert-action"
+              onClick={onConfirm}
+            >
+              {confirmText}
+            </Button>
           </AlertDialogAction>
           
-          <AlertDialogCancel
-            onClick={onCancel}
-            className="glass-alert-cancel-button hover:bg-white/10 inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-semibold transition-all duration-300 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 btn-secondary h-12 px-6 py-3 mt-2 sm:mt-0"
-          >
-            {cancelText}
+          {/* 🤖 [IA] - v1.2.24: Migración a Button centralizado con variant glass-alert-cancel */}
+          <AlertDialogCancel asChild>
+            <Button 
+              variant="glass-alert-cancel"
+              onClick={onCancel}
+            >
+              {cancelText}
+            </Button>
           </AlertDialogCancel>
         </AlertDialogFooter>
       </AlertDialogContent>

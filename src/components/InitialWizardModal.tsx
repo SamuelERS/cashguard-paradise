@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useWizardNavigation } from "@/hooks/useWizardNavigation";
 import { STORES, getEmployeesByStore } from "@/data/paradise";
 import '@/styles/features/modal-dark-scrollbar.css';
-import '@/styles/features/wizard-cancel-button.css';
+// 🤖 [IA] - v1.2.25: Removed wizard-cancel-button.css import (obsoleto - migrado a variant system)
 import '@/styles/features/wizard-nav-previous-button.css';
 import '@/styles/features/wizard-nav-next-button.css';
 import '@/styles/features/wizard-select-elements.css';
