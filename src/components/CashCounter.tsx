@@ -835,21 +835,21 @@ const CashCounter = ({
 
           {/* Sistema de navegación simplificado - 🤖 [IA] - v1.2.19: 2-Button Navigation System */}
           <div className="phase1-navigation">
-            {/* Botón Cancelar (izquierda) */}
+            {/* 🤖 [IA] - v1.2.23: Botón Cancelar migrado a variant="error" desde legacy CSS */}
             <Button
               onClick={handleCancelProcess}
-              className="phase1-cancel-button"
+              variant="error"
               aria-label="Cancelar proceso y volver al inicio"
             >
               <X className="phase1-nav-icon" />
               <span className="phase1-nav-text-hidden">Cancelar</span>
             </Button>
             
-            {/* Botón Anterior (derecha) */}
+            {/* 🤖 [IA] - v1.2.23: Botón Anterior migrado a variant="warning" desde legacy CSS */}
             <Button
               onClick={handlePreviousStep}
               disabled={!canGoPrevious()}
-              className="phase1-previous-button"
+              variant="warning"
               aria-label="Retroceder al campo anterior"
             >
               <ArrowLeft className="phase1-nav-icon" />
