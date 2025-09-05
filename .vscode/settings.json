@@ -24,5 +24,18 @@
   },
   "files.associations": {
     "*.css": "tailwindcss"
+  },
+  "typescript.preferences.exclude": ["e2e/**/*"],
+  "typescript.suggest.autoImports": false,
+  "typescript.tsc.autoDetect": "off",
+  "typescript.validate.enable": true,
+  "typescript.surveys.enabled": false,
+  "files.watcherExclude": {
+    "**/e2e/**": true,
+    "**/e2e/tests/**": true,
+    "**/e2e/node_modules/**": true
+  },
+  "search.exclude": {
+    "**/e2e/node_modules": true
   }
 }

@@ -33,8 +33,8 @@ COPY e2e/playwright.config.ts ./
 COPY e2e/tests ./tests
 
 # Install Node.js dependencies
-# 🤖 [IA] - v1.1.17: Install playwright dependencies properly
-RUN npm install @playwright/test
+# 🤖 [IA] - v1.2.20: Install all dependencies from package.json first, then playwright
+RUN npm install
 
 # Install Playwright browsers
 RUN npx playwright install chromium firefox webkit

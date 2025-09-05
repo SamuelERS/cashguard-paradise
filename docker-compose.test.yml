@@ -60,7 +60,6 @@ services:
       dockerfile: e2e/Dockerfile.e2e
     container_name: cashguard-e2e-runner
     volumes:
-      - ./e2e:/app
       - ./playwright-report:/app/playwright-report
       - playwright-cache:/ms-playwright
     environment:
@@ -76,7 +75,7 @@ services:
       sh -c "
         echo 'Waiting for app to be ready...' &&
         sleep 10 &&
-        node_modules/.bin/playwright test
+        npx playwright test
       "
 
 networks:

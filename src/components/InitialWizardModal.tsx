@@ -23,6 +23,7 @@ import { toast } from "sonner";
 import { useTimingConfig } from "@/hooks/useTimingConfig"; // 🤖 [IA] - Hook de timing unificado v1.0.22
 import { useInputValidation } from "@/hooks/useInputValidation"; // 🤖 [IA] - v1.0.45: Hook para validación de decimales
 import { GlassAlertDialog } from "@/components/ui/GlassAlertDialog"; // 🤖 [IA] - v1.2.13: Modal de confirmación Glass Morphism
+import type { CSSProperties } from "react";
 
 interface InitialWizardModalProps {
   isOpen: boolean;
@@ -578,11 +579,23 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               }}>
                 Monto ($)
               </Label>
-              {/* 🤖 [IA] - v1.2.9: Contenedor flex para input y botón confirmar */}
-              <div className="flex flex-col sm:flex-row" style={{ gap: 'clamp(0.375rem, 1.5vw, 0.5rem)', alignItems: 'stretch' }}>
+              {/* 🤖 [IA] - v1.2.9: Contenedor con grid y variables CSS compartidas para alturas iguales */}
+              <div
+                className="grid grid-cols-1 sm:grid-cols-[1fr_auto]"
+                style={{
+                  // Variables compartidas entre input wrapper y botón
+                  '--field-padding-y': 'clamp(0.25rem, 0.5vw, 0.375rem)',
+                  '--field-padding-x': 'clamp(0.5rem, 2vw, 0.75rem)',
+                  '--input-height': 'clamp(2.25rem, 5vw, 2.75rem)',
+                  '--control-radius': 'clamp(0.375rem, 1.5vw, 0.5rem)',
+                  '--field-height': 'calc(var(--input-height) + (2 * var(--field-padding-y)))',
+                  gap: 'clamp(0.375rem, 1.5vw, 0.5rem)',
+                  alignItems: 'stretch',
+                } as CSSProperties}
+              >
                 <div className="wizard-glass-element relative flex-1" style={{ 
-                  borderRadius: 'clamp(0.375rem, 1.5vw, 0.5rem)',
-                  padding: 'clamp(0.25rem, 0.5vw, 0.375rem) clamp(0.5rem, 2vw, 0.75rem)'
+                  borderRadius: 'var(--control-radius)',
+                  padding: 'var(--field-padding-y) var(--field-padding-x)'
                 }}>
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 font-bold" style={{ 
                     color: '#00ba7c',
@@ -612,7 +625,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                       border: 'none',
                       color: '#e1e8ed',
                       paddingLeft: 'clamp(1.75rem, 5vw, 2.25rem)',
-                      height: 'clamp(2.25rem, 5vw, 2.75rem)',
+                      height: 'var(--input-height)',
                       fontSize: 'clamp(1rem, 4vw, 1.125rem)'
                     }}
                   />
@@ -623,17 +636,10 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                   onClick={handleComplete}
                   disabled={!isCompleted}
                   variant="confirm"
-                  className="wizard-confirm-button whitespace-nowrap w-full sm:w-auto flex-shrink-0"
+                  className="wizard-confirm-button whitespace-nowrap w-full sm:w-auto h-full self-stretch"
                   aria-label="Confirmar venta esperada"
                   type="button"
-                  style={{
-                    // Match input (clamp(2.25rem, 5vw, 2.75rem)) + wrapper vertical padding (2 * clamp(0.25rem, 0.5vw, 0.375rem))
-                    height: 'calc(clamp(2.25rem, 5vw, 2.75rem) + 2 * clamp(0.25rem, 0.5vw, 0.375rem))',
-                    // Remove vertical padding to avoid exceeding height, keep horizontal padding responsive
-                    padding: '0 clamp(0.75rem, 3vw, 1rem)',
-                    // Match the glass element border radius for visual consistency
-                    borderRadius: 'clamp(0.375rem, 1.5vw, 0.5rem)'
-                  }}
+                  style={{ borderRadius: 'var(--control-radius)' }}
                 >
                   <CheckCircle aria-hidden="true" style={{ 
                     width: 'clamp(1.25rem, 4vw, 1.5rem)',
