@@ -348,7 +348,6 @@
   .wizard-success-feedback {
     background-color: rgba(36, 36, 36, 0.4);
     backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(0, 186, 124, 0.4);
     box-shadow: 0 0 15px rgba(0, 186, 124, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
     padding: clamp(0.75rem, 3vw, 1rem);
@@ -706,46 +705,8 @@
     color: #ffffff;
   }
 
-  /* Primary Button - iOS Blue */
-  .btn-primary {
-    background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
-    color: white;
-    padding: 1rem 2rem;
-    border-radius: 14px;
-    border: none;
-    font-size: 16px;
-    font-weight: 600;
-    box-shadow: 0 4px 15px var(--accent-glow);
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px var(--accent-glow);
-  }
-
-  .btn-primary:active {
-    transform: scale(0.98);
-  }
-
-  /* Success Button - iOS Green */
-  .btn-success {
-    background: linear-gradient(135deg, var(--success) 0%, #00b894 100%);
-    color: white;
-    padding: 1rem 2rem;
-    border-radius: 14px;
-    border: none;
-    font-weight: 600;
-    box-shadow: 0 4px 15px var(--success-glow);
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .btn-success:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px var(--success-glow);
-  }
+  /* Removed obsolete button styles as they are now managed by button variants in button.tsx */
+  /* .btn-primary, .btn-secondary, .btn-success, etc., are no longer needed */
 
   /* Gradient Aqua - Paradise Theme */
   .bg-gradient-aqua {
@@ -1330,7 +1291,7 @@
     font-size: 16px; /* Prevent zoom on iOS */
   }
 
-  .btn-primary, .btn-secondary, .btn-success {
+  .btn-gradient-aqua, .btn-secondary {
     padding: 12px 24px;
     font-size: 16px;
   }
@@ -1377,10 +1338,8 @@
   }
   
   /* Keep essential feedback but make transitions instant */
-  .btn-primary:hover,
-  .btn-secondary:hover,
-  .btn-success:hover,
-  .btn-gradient-aqua:hover {
+  .btn-gradient-aqua:hover:not(:disabled),
+  .btn-secondary:hover {
     transition: none !important;
     /* Allow subtle transform for hover feedback */
     transform: translateY(-1px) !important;

@@ -4,13 +4,8 @@
  * Botón Anterior con alta especificidad para sobrescribir btn-primary
  * Colores basados en el sistema de alerts de warning del proyecto
  */
-button.wizard-nav-previous-button {
-  /* Sobrescribir completamente el gradiente azul de btn-primary */
-  background: #fbbf24 !important; /* bg-yellow-400, vibrante */
-  border: 2px solid #f59e0b !important; /* border-amber-500 */
-  color: #78350f !important; /* text-amber-900, alto contraste */
-  
-  /* Mantener layout responsive */
+.wizard-nav-previous-button {
+  /* Retain only non-color styles if needed */
   font-size: 14px;
   font-weight: 600;
   border-radius: 10px;
@@ -21,67 +16,38 @@ button.wizard-nav-previous-button {
   transition: all 0.3s ease-in-out;
   transform: scale(1);
   cursor: pointer;
-  
-  /* Sombra sutil para mejor contraste */
-  box-shadow: 0 1px 2px rgba(245, 158, 11, 0.2) !important;
 }
 
 /* Hover state - Efecto igual que el alert warning */
-button.wizard-nav-previous-button:hover {
-  background: #f59e0b !important; /* hover:bg-amber-500, más intenso */
-  border-color: #d97706 !important; /* hover:border-amber-600 */
-  color: #78350f !important; /* text-amber-900, consistente */
-  
+.wizard-nav-previous-button:hover {
   /* Efecto scale del alert system */
   transform: scale(1.05) !important;
-  
-  /* Sobrescribir efectos de btn-primary */
-  box-shadow: 0 2px 4px rgba(245, 158, 11, 0.3) !important;
 }
 
 /* Active state */
-button.wizard-nav-previous-button:active {
+.wizard-nav-previous-button:active {
   transform: scale(0.98) !important;
-  background: #d97706 !important; /* active:bg-amber-600, más intenso */
 }
 
 /* Focus state - Mantener accesibilidad */
-button.wizard-nav-previous-button:focus-visible {
+.wizard-nav-previous-button:focus-visible {
   outline: 2px solid #f59e0b;
   outline-offset: 2px;
 }
 
 /* Dark mode - Colores exactos del alert warning dark */
 @media (prefers-color-scheme: dark) {
-  button.wizard-nav-previous-button {
-    background: #78350f !important; /* dark:bg-amber-900 */
-    border-color: #92400e !important; /* dark:border-amber-700 */
-    color: #fef3c7 !important; /* dark:text-amber-100 */
-  }
-  
-  button.wizard-nav-previous-button:hover {
-    background: #92400e !important; /* dark:hover:bg-amber-800 */
-    border-color: #d97706 !important; /* dark:hover:border-amber-600 */
-    color: #fef3c7 !important; /* dark:text-amber-100 */
-    transform: scale(1.05) !important;
-  }
-  
-  button.wizard-nav-previous-button:active {
-    background: #b45309 !important; /* dark:active:bg-amber-700 */
-    transform: scale(0.98) !important;
-  }
-  
-  button.wizard-nav-previous-button:focus-visible {
+  .wizard-nav-previous-button:focus-visible {
     outline-color: #92400e;
   }
 }
 
 /* Asegurar que el ícono arrow-left herede el color correcto */
-button.wizard-nav-previous-button svg {
+.wizard-nav-previous-button svg {
   color: inherit;
 }
 
 /* Asegurar que el texto span herede el color correcto */
-button.wizard-nav-previous-button span {
+.wizard-nav-previous-button span {
   color: inherit;
 }

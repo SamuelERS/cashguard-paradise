@@ -5,12 +5,8 @@
  * Colores basados en el sistema de alerts de success del proyecto
  * Incluye estados: base, hover, active, disabled, focus
  */
-button.wizard-nav-next-button {
-  /* Sobrescribir completamente el gradiente azul de btn-primary */
-  background: #10b981 !important; /* bg-green-500, vibrante */
-  border: 2px solid #059669 !important; /* border-green-600 */
-  color: #ffffff !important; /* text-white para contraste */
-  
+/* Removed obsolete button styles as they are now managed by button variants in button.tsx */
+.wizard-nav-next-button {
   /* Mantener layout responsive */
   font-size: 14px;
   font-weight: 600;
@@ -24,74 +20,39 @@ button.wizard-nav-next-button {
   display: flex;
   align-items: center;
   gap: 6px;
-  
-  /* Sombra Success */
-  box-shadow: 0 3px 12px rgba(16, 185, 129, 0.2) !important;
 }
 
 /* Hover state - Efecto igual que el alert success */
-button.wizard-nav-next-button:hover:not(:disabled) {
-  background: #059669 !important; /* hover:bg-green-600, más intenso */
-  border-color: #047857 !important; /* hover:border-green-700 */
-  color: #ffffff !important; /* text-white consistente */
-  
+.wizard-nav-next-button:hover:not(:disabled) {
   /* Efecto lift del sistema original */
   transform: translateY(-2px) !important;
-  
-  /* Sombra más intensa en hover */
-  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3) !important;
 }
 
 /* Active state */
-button.wizard-nav-next-button:active:not(:disabled) {
+.wizard-nav-next-button:active:not(:disabled) {
   transform: scale(0.98) !important;
-  background: #047857 !important; /* active:bg-green-700, más intenso */
 }
 
 /* Disabled state - Mantener grises originales */
-button.wizard-nav-next-button:disabled {
-  background: #242424 !important;
-  border: 1px solid rgba(51, 51, 51, 0.31) !important;
-  color: #4a5568 !important;
+.wizard-nav-next-button:disabled {
   cursor: not-allowed;
-  box-shadow: none !important;
   transform: none !important;
 }
 
 /* Focus state - Mantener accesibilidad */
-button.wizard-nav-next-button:focus-visible {
+.wizard-nav-next-button:focus-visible {
   outline: 2px solid #10b981;
   outline-offset: 2px;
 }
 
 /* Dark mode - Colores exactos del alert success dark */
 @media (prefers-color-scheme: dark) {
-  button.wizard-nav-next-button {
-    background: #065f46 !important; /* dark:bg-green-900 */
-    border-color: #047857 !important; /* dark:border-green-700 */
-    color: #d1fae5 !important; /* dark:text-green-100 */
-    box-shadow: 0 3px 12px rgba(6, 95, 70, 0.3) !important;
-  }
-  
-  button.wizard-nav-next-button:hover:not(:disabled) {
-    background: #047857 !important; /* dark:hover:bg-green-800 */
-    border-color: #059669 !important; /* dark:hover:border-green-600 */
-    color: #d1fae5 !important; /* dark:text-green-100 */
-    transform: translateY(-2px) !important;
-    box-shadow: 0 6px 20px rgba(4, 120, 87, 0.4) !important;
-  }
-  
-  button.wizard-nav-next-button:active:not(:disabled) {
-    background: #064e3b !important; /* dark:active:bg-green-900 */
-    transform: scale(0.98) !important;
-  }
-  
-  button.wizard-nav-next-button:focus-visible {
+  .wizard-nav-next-button:focus-visible {
     outline-color: #047857;
   }
   
   /* Disabled en dark mode */
-  button.wizard-nav-next-button:disabled {
+  .wizard-nav-next-button:disabled {
     background: #1f2937 !important; /* Gris oscuro consistente */
     border-color: rgba(75, 85, 99, 0.3) !important;
     color: #6b7280 !important;
@@ -99,11 +60,11 @@ button.wizard-nav-next-button:focus-visible {
 }
 
 /* Asegurar que el ícono arrow-right herede el color correcto */
-button.wizard-nav-next-button svg {
+.wizard-nav-next-button svg {
   color: inherit;
 }
 
 /* Asegurar que el texto span herede el color correcto */
-button.wizard-nav-next-button span {
+.wizard-nav-next-button span {
   color: inherit;
 }

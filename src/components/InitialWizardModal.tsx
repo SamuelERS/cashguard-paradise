@@ -635,7 +635,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                 <Button
                   onClick={handleComplete}
                   disabled={!isCompleted}
-                  variant="confirm"
+                  variant="success"
                   aria-label="Confirmar venta esperada"
                   type="button"
                   style={{ borderRadius: 'var(--control-radius)' }}
@@ -820,11 +820,9 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
             {/* 🤖 [IA] - v1.2.13: Cancel Button refactorizado + comportamiento corregido */}
             <Button
               onClick={handleClose}
-              variant="glass-alert-cancel"
-              aria-label="Cancelar proceso"
+              variant="error"
             >
-              <X className="w-4 h-4" />
-              <span className="hidden sm:inline ml-1.5">Cancelar</span>
+              Cancelar
             </Button>
             
             {/* Navigation Buttons - Right Side */}
@@ -833,11 +831,9 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               {canGoPrevious && (
                 <Button
                   onClick={() => setShowBackConfirmation(true)}
-                  variant="wizard-nav-previous"
-                  aria-label="Volver al paso anterior"
+                  variant="warning"
                 >
-                  <ArrowLeft className="w-4 h-4" />
-                  <span className="hidden sm:inline">Anterior</span>
+                  Anterior
                 </Button>
               )}
               
@@ -846,12 +842,9 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                 <Button
                   onClick={handleNext}
                   disabled={!canGoNext}
-                  variant="wizard-nav-next"
-                  aria-label="Continuar al siguiente paso"
-                  aria-describedby={!canGoNext ? "validation-feedback" : undefined}
+                  variant="success"
                 >
-                  <span className="mr-1.5">Siguiente</span>
-                  <ArrowRight className="w-4 h-4" />
+                  Siguiente
                 </Button>
               )}
             </div>

@@ -4,6 +4,7 @@
  * Botón Cancelar con alta especificidad para sobrescribir btn-primary
  * Colores basados en el sistema de alerts de error del proyecto
  */
+/* Removed obsolete button styles as they are now managed by button variants in button.tsx */
 button.wizard-cancel-button {
   /* Mantener layout responsive */
   font-size: 14px;
