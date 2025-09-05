@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { STORES, getEmployeesByStore } from '@/data/paradise';
 import { useTimingConfig } from '@/hooks/useTimingConfig';
+import '@/styles/features/morning-gradient-button.css';
 
 interface MorningCountWizardProps {
   isOpen: boolean;
@@ -485,14 +486,11 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
             </div>
             <Button
               variant="ghost"
-              size="sm"
+              size="icon-sm"
               onClick={onClose}
-              className="rounded-full h-9 w-9"
+              className="rounded-full"
             >
-              <X style={{ 
-                width: `clamp(18px, 4.5vw, 20px)`, 
-                height: `clamp(18px, 4.5vw, 20px)` 
-              }} />
+              <X className="icon-responsive-sm" />
             </Button>
           </div>
 
@@ -541,9 +539,8 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
           {/* Botones de navegación */}
           <div className="flex items-center justify-between" style={{ marginTop: `clamp(28px, ${32 * viewportScale}px, 32px)` }}>
             <Button
-              variant="secondary"
+              variant="wizard-nav-previous"
               size="sm"
-              className="h-9 px-4"
               onClick={handlePrevious}
               disabled={currentStep === 1}
             >
@@ -554,10 +551,8 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
               <Button
                 onClick={handleNext}
                 disabled={!canGoNext()}
-                variant={canGoNext() ? 'default' : 'outline'}
+                variant={canGoNext() ? 'morning-gradient' : 'outline'}
                 size="sm"
-                className="h-9 px-4"
-                style={canGoNext() ? { background: 'linear-gradient(135deg, #f4a52a 0%, #ffb84d 100%)' } : {}}
               >
                 Siguiente
               </Button>
@@ -565,10 +560,8 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
               <Button
                 onClick={handleComplete}
                 disabled={!canGoNext()}
-                variant={canGoNext() ? 'default' : 'outline'}
+                variant={canGoNext() ? 'morning-gradient' : 'outline'}
                 size="sm"
-                className="h-9 px-4"
-                style={canGoNext() ? { background: 'linear-gradient(135deg, #f4a52a 0%, #ffb84d 100%)' } : {}}
               >
                 Completar
               </Button>

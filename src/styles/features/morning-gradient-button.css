@@ -1,0 +1,64 @@
+/* 🤖 [IA] - v1.2.18: Morning Gradient Button Feature - Operación Botón Unificado Misión 1.2
+ * Archivo CSS modular para variante morning-gradient en sistema button.tsx
+ * Gradientes dinámicos condicionales para modo morning con colores naranja
+ * Consolidación de archivos wizard-nav-*.css existentes
+ */
+
+/* 
+ * Variante morning-gradient - Gradiente naranja condicional
+ * Utiliza CSS custom properties para activación dinámica
+ * Estados: activo (gradiente) vs inactivo (outline)
+ */
+.morning-gradient {
+  background: linear-gradient(135deg, #f4a52a, #ffb84d) !important;
+  box-shadow: 0 4px 15px rgba(244, 165, 42, 0.3) !important;
+  color: white !important;
+  border: none !important;
+}
+
+.morning-gradient:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(244, 165, 42, 0.4) !important;
+}
+
+.morning-gradient:active {
+  transform: translateY(0px);
+}
+
+/* 
+ * Clase para iconos responsive en wizards
+ * Remplaza clamp() inline por CSS modular
+ * Tamaños: sm (18-20px), md (20-24px), lg (24-28px)
+ */
+.icon-responsive-sm {
+  width: clamp(18px, 4.5vw, 20px) !important;
+  height: clamp(18px, 4.5vw, 20px) !important;
+}
+
+.icon-responsive-md {
+  width: clamp(20px, 5vw, 24px) !important;
+  height: clamp(20px, 5vw, 24px) !important;
+}
+
+.icon-responsive-lg {
+  width: clamp(24px, 6vw, 28px) !important;
+  height: clamp(24px, 6vw, 28px) !important;
+}
+
+/* 
+ * Estado disabled para morning-gradient
+ * Mantiene consistencia visual con otros botones
+ */
+.morning-gradient:disabled {
+  background: #1f2937 !important;
+  box-shadow: none !important;
+  color: #6b7280 !important;
+  transform: none !important;
+}
+
+/* 
+ * Nota de consolidación:
+ * Este archivo centraliza estilos de botones wizard que antes estaban
+ * duplicados en wizard-nav-next-button.css y wizard-nav-previous-button.css
+ * para mejorar mantenibilidad según directriz #2 de consolidación
+ */

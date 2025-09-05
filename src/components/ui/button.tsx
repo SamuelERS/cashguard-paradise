@@ -24,13 +24,15 @@ const buttonVariants = cva(
         "wizard-nav-previous": "bg-gray-200 text-gray-700 hover:bg-gray-300",
         "glass-alert-action": "bg-transparent border border-white text-white hover:bg-white hover:text-black",
         "glass-alert-cancel": "bg-red-500 text-white hover:bg-red-600",
-        "gradient-dynamic": "border-none text-white font-semibold transition-all duration-300"
+        "gradient-dynamic": "border-none text-white font-semibold transition-all duration-300",
+        "morning-gradient": "border-none text-white font-semibold transition-all duration-300"
       },
       size: {
         default: "h-12 px-6 py-3",
-        sm: "h-10 rounded-lg px-4 py-2 text-sm",
+        sm: "h-9 rounded-lg px-4 py-2 text-sm",
         lg: "h-14 rounded-xl px-8 py-4 text-lg",
         icon: "h-12 w-12",
+        "icon-sm": "h-9 w-9",
       },
     },
     defaultVariants: {
