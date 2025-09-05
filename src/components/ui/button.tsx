@@ -25,7 +25,10 @@ const buttonVariants = cva(
         "glass-alert-action": "bg-transparent border border-white text-white hover:bg-white hover:text-black",
         "glass-alert-cancel": "bg-red-500 text-white hover:bg-red-600",
         "gradient-dynamic": "border-none text-white font-semibold transition-all duration-300",
-        "morning-gradient": "border-none text-white font-semibold transition-all duration-300"
+        "morning-gradient": "border-none text-white font-semibold transition-all duration-300",
+        "phase2-tab": "btn-phase2-tab",
+        "phase2-back": "btn-phase2-back",
+        "phase2-verify": "btn-phase2-verify"
       },
       size: {
         default: "h-12 px-6 py-3",

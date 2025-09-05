@@ -13,7 +13,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-// 🤖 [IA] - Eliminado imports de componentes UI para usar estilos inline v1.0.74
+// 🤖 [IA] - v1.3.0: Reemplazado botones nativos con componentes Button para estandarización
+import { Button } from "@/components/ui/button";
+// 🤖 [IA] - v1.3.0: Importado CSS modular para botones de Phase2
+import "@/styles/features/phase2-buttons.css";
 import { Phase2DeliverySection } from './Phase2DeliverySection';
 import { Phase2VerificationSection } from './Phase2VerificationSection';
 import { DeliveryCalculation } from '@/types/phases';
@@ -202,38 +205,38 @@ export function Phase2Manager({
         
         {/* Botones de navegación */}
         <div className="flex items-center gap-[clamp(0.375rem,1.5vw,0.5rem)]">
-          <button
+          <Button
+            variant="phase2-tab"
+            className="px-[clamp(0.75rem,3vw,1rem)] py-[clamp(0.375rem,1.5vw,0.5rem)] rounded-[clamp(0.375rem,1.5vw,0.5rem)] text-[clamp(0.875rem,3.5vw,1rem)]"
+            data-active={currentSection === 'delivery' ? "true" : "false"}
+            data-state="delivery"
+            data-completed={deliveryCompleted ? "true" : "false"}
             onClick={() => currentSection !== 'delivery' && !verificationCompleted && setCurrentSection('delivery')}
-            className="flex-1 px-[clamp(0.75rem,3vw,1rem)] py-[clamp(0.375rem,1.5vw,0.5rem)] rounded-[clamp(0.375rem,1.5vw,0.5rem)] transition-all duration-300 font-medium flex items-center justify-center gap-[clamp(0.375rem,1.5vw,0.5rem)] text-[clamp(0.875rem,3.5vw,1rem)]"
-            style={{
-              backgroundColor: currentSection === 'delivery' ? 'rgba(10, 132, 255, 0.2)' : 'transparent',
-              color: currentSection === 'delivery' ? '#1d9bf0' : '#8899a6',
-              border: currentSection === 'delivery' ? '2px solid #1d9bf0' : '2px solid rgba(255, 255, 255, 0.1)',
-              cursor: currentSection === 'delivery' ? 'default' : 'pointer',
-            }}
+            aria-pressed={currentSection === 'delivery'}
+            aria-label="Sección de entrega"
           >
             {deliveryCompleted && (
-              <span style={{ color: '#00ba7c' }}>✓</span>
+              <span>✓</span>
             )}
             Entrega
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="phase2-tab"
+            className="px-[clamp(0.75rem,3vw,1rem)] py-[clamp(0.375rem,1.5vw,0.5rem)] rounded-[clamp(0.375rem,1.5vw,0.5rem)] text-[clamp(0.875rem,3.5vw,1rem)]"
+            data-active={currentSection === 'verification' ? "true" : "false"}
+            data-state="verification"
+            data-completed={verificationCompleted ? "true" : "false"}
+            data-disabled={!deliveryCompleted ? "true" : "false"}
             onClick={() => deliveryCompleted && currentSection !== 'verification' && setCurrentSection('verification')}
-            className="flex-1 px-[clamp(0.75rem,3vw,1rem)] py-[clamp(0.375rem,1.5vw,0.5rem)] rounded-[clamp(0.375rem,1.5vw,0.5rem)] transition-all duration-300 font-medium flex items-center justify-center gap-[clamp(0.375rem,1.5vw,0.5rem)] text-[clamp(0.875rem,3.5vw,1rem)]"
-            style={{
-              backgroundColor: currentSection === 'verification' ? 'rgba(0, 186, 124, 0.2)' : 'transparent',
-              color: currentSection === 'verification' ? '#00ba7c' : deliveryCompleted ? '#8899a6' : '#657786',
-              border: currentSection === 'verification' ? '2px solid #00ba7c' : '2px solid rgba(255, 255, 255, 0.1)',
-              cursor: !deliveryCompleted ? 'not-allowed' : currentSection === 'verification' ? 'default' : 'pointer',
-              opacity: !deliveryCompleted ? 0.5 : 1,
-            }}
             disabled={!deliveryCompleted}
+            aria-pressed={currentSection === 'verification'}
+            aria-label="Sección de verificación"
           >
             {verificationCompleted && (
-              <span style={{ color: '#00ba7c' }}>✓</span>
+              <span>✓</span>
             )}
             Verificar
-          </button>
+          </Button>
         </div>
       </motion.div>
 
@@ -272,57 +275,28 @@ export function Phase2Manager({
         )}
       </AnimatePresence>
 
-      {/* Navigation Buttons - 🤖 [IA] - v1.0.97: Responsive desktop */}
-      {/* 🤖 [IA] - v1.2.5: Botones con texto responsivo y mejor alineación */}
+      {/* Navigation Buttons - 🤖 [IA] - v1.3.0: Estandarización con Button component */}
       <div className="flex gap-[clamp(0.5rem,2vw,0.75rem)] lg:max-w-lg lg:mx-auto">
-        <button
+        <Button
+          variant="phase2-back"
           onClick={() => setShowExitConfirmation(true)}
-          className="flex-1 h-[clamp(2.5rem,8vw,2.75rem)] px-[clamp(0.5rem,2vw,0.75rem)] rounded-[clamp(0.375rem,1.5vw,0.5rem)] font-medium transition-all duration-300 text-[clamp(0.75rem,3vw,0.875rem)] flex items-center justify-center whitespace-nowrap"
-          style={{
-            backgroundColor: 'rgba(36, 36, 36, 0.4)',
-            backdropFilter: `blur(clamp(12px, 4vw, 20px))`,
-            WebkitBackdropFilter: `blur(clamp(12px, 4vw, 20px))`,
-            border: '1px solid rgba(255, 255, 255, 0.15)',
-            color: '#e1e8ed',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = 'rgba(36, 36, 36, 0.5)';
-            e.currentTarget.style.transform = 'translateY(-2px)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = 'rgba(36, 36, 36, 0.4)';
-            e.currentTarget.style.transform = 'translateY(0)';
-          }}
+          aria-label="Volver al inicio"
         >
           <ArrowLeft className="w-[clamp(0.875rem,3.5vw,1rem)] h-[clamp(0.875rem,3.5vw,1rem)] mr-[clamp(0.25rem,1vw,0.375rem)] flex-shrink-0" />
           <span>Volver al inicio</span>
-        </button>
+        </Button>
         
         {/* Manual section switch (only when delivery is complete) */}
         {deliveryCompleted && currentSection === 'delivery' && !verificationCompleted && (
-          <button
+          <Button
+            variant="phase2-verify"
             onClick={() => setCurrentSection('verification')}
-            className="flex-1 h-[clamp(2.5rem,8vw,2.75rem)] px-[clamp(0.5rem,2vw,0.75rem)] rounded-[clamp(0.375rem,1.5vw,0.5rem)] font-medium transition-all duration-300 text-[clamp(0.75rem,3vw,0.875rem)] flex items-center justify-center whitespace-nowrap"
-            style={{
-              background: 'linear-gradient(135deg, #00ba7c 0%, #06d6a0 100%)',
-              color: '#ffffff',
-              border: '1px solid rgba(0, 186, 124, 0.4)',
-              borderRadius: `clamp(6px, 2.5vw, 10px)`,
-              boxShadow: '0 3px 12px rgba(0, 186, 124, 0.2)',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 186, 124, 0.3)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '0 3px 12px rgba(0, 186, 124, 0.2)';
-            }}
+            aria-label="Verificar efectivo y continuar"
           >
             <span>Verificar</span>
             <span className="hidden sm:inline ml-1">Efectivo</span>
             <ArrowRight className="w-[clamp(0.875rem,3.5vw,1rem)] h-[clamp(0.875rem,3.5vw,1rem)] ml-[clamp(0.25rem,1vw,0.375rem)] flex-shrink-0" />
-          </button>
+          </Button>
         )}
       </div>
       
@@ -349,31 +323,22 @@ export function Phase2Manager({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel 
-            style={{
-              backgroundColor: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.3)',
-              color: '#e1e8ed',
-              borderRadius: `clamp(6px, 2.5vw, 10px)`,
-              padding: `clamp(0.5rem, 2vw, 0.75rem) clamp(0.75rem, 3vw, 1rem)`,
-              fontSize: `clamp(0.875rem, 3.5vw, 1rem)`
-            }}
-          >
-            Cancelar
+          <AlertDialogCancel asChild>
+            <Button 
+              variant="secondary" 
+              className="border border-border/30 rounded-[clamp(6px,2.5vw,10px)] text-[clamp(0.875rem,3.5vw,1rem)]"
+            >
+              Cancelar
+            </Button>
           </AlertDialogCancel>
-          <AlertDialogAction 
-            onClick={onBack}
-            style={{
-              background: 'linear-gradient(135deg, #f4212e 0%, #ff4444 100%)',
-              color: 'white',
-              border: 'none',
-              borderRadius: `clamp(6px, 2.5vw, 10px)`,
-              fontWeight: '600',
-              padding: `clamp(0.5rem, 2vw, 0.75rem) clamp(0.75rem, 3vw, 1rem)`,
-              fontSize: `clamp(0.875rem, 3.5vw, 1rem)`
-            }}
-          >
-            Sí, volver al inicio
+          <AlertDialogAction asChild>
+            <Button 
+              variant="destructive" 
+              className="rounded-[clamp(6px,2.5vw,10px)] text-[clamp(0.875rem,3.5vw,1rem)]" 
+              onClick={onBack}
+            >
+              Sí, volver al inicio
+            </Button>
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
@@ -644,40 +609,15 @@ export function Phase2Manager({
         </div>
 
         <AlertDialogFooter style={{ flexShrink: 0, paddingTop: `clamp(0.5rem, 2vw, 0.75rem)` }}>
-          <AlertDialogAction 
-            onClick={() => setShowInstructionsModal(false)}
-            disabled={!allItemsChecked}
-            style={{
-              background: allItemsChecked 
-                ? 'linear-gradient(135deg, #0a84ff 0%, #5e5ce6 100%)' 
-                : 'rgba(255, 255, 255, 0.1)',
-              color: 'white',
-              border: allItemsChecked 
-                ? 'none' 
-                : '1px solid rgba(255, 255, 255, 0.2)',
-              borderRadius: `clamp(5px, 2vw, 10px)`,
-              fontWeight: '600',
-              cursor: allItemsChecked ? 'pointer' : 'not-allowed',
-              opacity: allItemsChecked ? 1 : 0.5,
-              transition: 'all 0.3s ease',
-              padding: `clamp(0.5rem, 2vw, 0.75rem) clamp(1rem, 4vw, 1.5rem)`,
-              fontSize: `clamp(0.8rem, 3.2vw, 0.9rem)`,
-              boxShadow: allItemsChecked ? '0 4px 12px rgba(10, 132, 255, 0.3)' : 'none'
-            }}
-            onMouseEnter={(e) => {
-              if (allItemsChecked) {
-                e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = '0 6px 20px rgba(10, 132, 255, 0.4)';
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (allItemsChecked) {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 4px 12px rgba(10, 132, 255, 0.3)';
-              }
-            }}
-          >
-            {allItemsChecked ? '✓ Todo listo, continuar' : 'Marque todos los items para continuar'}
+          <AlertDialogAction asChild>
+            <Button 
+              variant="default" 
+              onClick={() => setShowInstructionsModal(false)} 
+              disabled={!allItemsChecked}
+              className="rounded-[clamp(5px,2vw,10px)] text-[clamp(0.8rem,3.2vw,0.9rem)] font-semibold transition-all duration-300"
+            >
+              {allItemsChecked ? '✓ Todo listo, continuar' : 'Marque todos los items para continuar'}
+            </Button>
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

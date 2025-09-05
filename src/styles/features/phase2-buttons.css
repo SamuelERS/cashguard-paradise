@@ -1,0 +1,45 @@
+/* 
+ * Phase 2 Button Styles
+ * Specific button variants for Phase2Manager.tsx
+ * Part of the Button Unification project
+ */
+
+/* Tab Button - Used for Entrega/Verificar tabs */
+.btn-phase2-tab {
+  @apply flex-1 px-[clamp(0.75rem,3vw,1rem)] py-[clamp(0.375rem,1.5vw,0.5rem)] rounded-[clamp(0.375rem,1.5vw,0.5rem)] transition-all duration-300 font-medium flex items-center justify-center gap-[clamp(0.375rem,1.5vw,0.5rem)] text-[clamp(0.875rem,3.5vw,1rem)];
+}
+
+.btn-phase2-tab[data-active="true"] {
+  @apply bg-primary/20 text-primary border-2 border-primary cursor-default;
+}
+
+.btn-phase2-tab[data-active="false"] {
+  @apply bg-transparent text-muted-foreground border-2 border-border cursor-pointer;
+}
+
+.btn-phase2-tab[data-active="true"][data-state="delivery"] {
+  @apply bg-primary/20 text-primary border-2 border-primary;
+}
+
+.btn-phase2-tab[data-active="true"][data-state="verification"] {
+  @apply bg-success/20 text-success border-2 border-success;
+}
+
+.btn-phase2-tab[data-completed="true"] span {
+  @apply text-success;
+}
+
+.btn-phase2-tab[data-disabled="true"] {
+  @apply opacity-50 cursor-not-allowed;
+}
+
+/* Back Button - Used for "Volver al inicio" */
+.btn-phase2-back {
+  @apply flex-1 h-[clamp(2.5rem,8vw,2.75rem)] px-[clamp(0.5rem,2vw,0.75rem)] rounded-[clamp(0.375rem,1.5vw,0.5rem)] font-medium transition-all duration-300 text-[clamp(0.75rem,3vw,0.875rem)] flex items-center justify-center whitespace-nowrap text-foreground bg-background/40 backdrop-blur-[clamp(12px,4vw,20px)] border border-border hover:bg-background/50 hover:translate-y-[-2px];
+}
+
+/* Verify Button - Used for "Verificar Efectivo" */
+.btn-phase2-verify {
+  @apply flex-1 h-[clamp(2.5rem,8vw,2.75rem)] px-[clamp(0.5rem,2vw,0.75rem)] rounded-[clamp(0.375rem,1.5vw,0.5rem)] font-medium transition-all duration-300 text-[clamp(0.75rem,3vw,0.875rem)] flex items-center justify-center whitespace-nowrap text-white border-success shadow-sm hover:shadow-md hover:translate-y-[-2px];
+  background: linear-gradient(135deg, var(--success) 0%, #00b894 100%);
+}
