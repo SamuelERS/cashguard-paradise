@@ -1,9 +1,12 @@
+// 🤖 [IA] - v1.3.1 - Refactorizado botones de confirmación con Button component unificado
 // 🤖 [IA] - v1.2.11 - Sistema anti-fraude: indicadores visuales sin montos
 // 🤖 [IA] - v1.2.5 - Mejoras de visibilidad y espaciado en Android
 // 🤖 [IA] - v1.1.14 - Reorganización de flujo vertical y eliminación de redundancias
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { UserCheck, ChevronRight, Check, Banknote, User, Coins } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import '@/styles/features/phase2-confirm-button.css';
 import { DeliveryCalculation } from '@/types/phases';
 import { formatCurrency } from '@/utils/calculations';
 import { useTimingConfig } from '@/hooks/useTimingConfig'; // 🤖 [IA] - Hook de timing unificado v1.0.22
@@ -286,34 +289,21 @@ export function Phase2DeliverySection({
                 autoFocus
               />
               
-              <button
+              <Button
+                variant="phase2-confirm"
+                data-state={parseInt(inputValue) === currentStep.quantity ? "valid" : "invalid"}
+                data-mode="delivery"
                 onClick={handleConfirmStep}
                 disabled={parseInt(inputValue) !== currentStep.quantity}
-                className="btn-primary font-bold flex items-center justify-center flex-shrink-0"
-                style={{
-                  background: parseInt(inputValue) === currentStep.quantity
-                    ? 'linear-gradient(135deg, #0a84ff 0%, #5e5ce6 100%)'
-                    : 'rgba(60, 60, 60, 0.6)',
-                  border: '2px solid rgba(10, 132, 255, 0.5)',
-                  color: '#ffffff',
-                  cursor: parseInt(inputValue) !== currentStep.quantity ? 'not-allowed' : 'pointer',
-                  opacity: parseInt(inputValue) !== currentStep.quantity ? 0.6 : 1,
-                  borderRadius: `clamp(8px, 3vw, 16px)`,
-                  transition: 'all 0.3s',
-                  boxShadow: parseInt(inputValue) === currentStep.quantity 
-                    ? '0 4px 12px rgba(10, 132, 255, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2)' 
-                    : 'inset 0 1px 2px rgba(0, 0, 0, 0.3)',
-                  width: `clamp(3rem, 12vw, 3.5rem)`,
-                  height: `clamp(2.5rem, 10vw, 3rem)`,
-                  padding: `clamp(0.5rem, 2vw, 0.75rem)`
-                }}
                 onMouseDown={(e) => e.preventDefault()}
                 onTouchStart={(e) => e.preventDefault()}
+                aria-label="Confirmar cantidad"
               >
-                <Check className="w-[clamp(1.25rem,5vw,1.5rem)] h-[clamp(1.25rem,5vw,1.5rem)]" style={{
-                  filter: parseInt(inputValue) === currentStep.quantity ? 'drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3))' : 'none'
-                }} />
-              </button>
+                <Check 
+                  className="w-[clamp(1.25rem,5vw,1.5rem)] h-[clamp(1.25rem,5vw,1.5rem)]"
+                  data-icon="true"
+                />
+              </Button>
             </div>
           </motion.div>
         );

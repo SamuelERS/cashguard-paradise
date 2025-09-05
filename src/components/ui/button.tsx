@@ -28,7 +28,8 @@ const buttonVariants = cva(
         "morning-gradient": "border-none text-white font-semibold transition-all duration-300",
         "phase2-tab": "btn-phase2-tab",
         "phase2-back": "btn-phase2-back",
-        "phase2-verify": "btn-phase2-verify"
+        "phase2-verify": "btn-phase2-verify",
+        "phase2-confirm": "btn-phase2-confirm"
       },
       size: {
         default: "h-12 px-6 py-3",

@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Building, ChevronRight, Check, Banknote, Target, CheckCircle, Coins } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import '@/styles/features/phase2-confirm-button.css';
 // 🤖 [IA] - Eliminado imports de componentes UI para usar estilos inline v1.0.74
 import { DeliveryCalculation } from '@/types/phases';
 import { formatCurrency, calculateCashTotal } from '@/utils/calculations';
@@ -327,29 +329,18 @@ export function Phase2VerificationSection({
                   autoFocus
                 />
                 
-                <button
+                <Button
+                  variant="phase2-confirm"
+                  data-state={parseInt(inputValue) === currentStep.quantity ? "valid" : "invalid"}
+                  data-mode="verification"
                   onClick={handleConfirmStep}
                   disabled={parseInt(inputValue) !== currentStep.quantity}
-                  className="btn-primary px-[clamp(0.375rem,1.5vw,0.5rem)] py-[clamp(0.25rem,1vw,0.375rem)] text-[clamp(0.875rem,3.5vw,1rem)] h-[clamp(2.5rem,10vw,3rem)] w-[clamp(2.5rem,10vw,3rem)] font-bold flex items-center justify-center shrink-0"
-                  style={{
-                    background: parseInt(inputValue) === currentStep.quantity
-                      ? 'linear-gradient(135deg, #00ba7c 0%, #06d6a0 100%)'
-                      : 'rgba(36, 36, 36, 0.4)',
-                    border: '2px solid rgba(0, 186, 124, 0.4)',
-                    color: '#ffffff',
-                    cursor: parseInt(inputValue) !== currentStep.quantity ? 'not-allowed' : 'pointer',
-                    opacity: parseInt(inputValue) !== currentStep.quantity ? 0.5 : 1,
-                    borderRadius: `clamp(8px, 3vw, 16px)`,
-                    transition: 'all 0.3s',
-                    boxShadow: parseInt(inputValue) === currentStep.quantity 
-                      ? '0 2px 8px rgba(0, 186, 124, 0.3)' 
-                      : 'none'
-                  }}
                   onMouseDown={(e) => e.preventDefault()}
                   onTouchStart={(e) => e.preventDefault()}
+                  aria-label="Confirmar verificación"
                 >
                   ⏎
-                </button>
+                </Button>
               </div>
               
               {/* Mensaje de error mejorado */}

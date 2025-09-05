@@ -1,0 +1,52 @@
+/* 
+ * Phase2 Confirmation Button Styles
+ * Unificación de botones de confirmación para Phase2
+ */
+
+.btn-phase2-confirm {
+  @apply h-[clamp(2.5rem,10vw,3rem)] w-[clamp(2.5rem,10vw,3rem)] font-bold flex items-center justify-center shrink-0 rounded-[clamp(8px,3vw,16px)] transition-all duration-300;
+}
+
+/* Estado válido - Modo entrega (azul) */
+.btn-phase2-confirm[data-state="valid"][data-mode="delivery"] {
+  @apply border-2 border-primary/50;
+  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+  box-shadow: 0 4px 12px var(--accent-glow), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* Estado válido - Modo verificación (verde) */
+.btn-phase2-confirm[data-state="valid"][data-mode="verification"] {
+  @apply border-2 border-success/40;
+  background: linear-gradient(135deg, var(--success) 0%, #00b894 100%);
+  box-shadow: 0 2px 8px var(--success-glow);
+}
+
+/* Estado inválido - Común para ambos modos */
+.btn-phase2-confirm[data-state="invalid"] {
+  @apply opacity-50 cursor-not-allowed;
+  background: rgba(36, 36, 36, 0.4);
+}
+
+/* Estado inválido - Modo entrega */
+.btn-phase2-confirm[data-state="invalid"][data-mode="delivery"] {
+  @apply border-2 border-primary/50;
+}
+
+/* Estado inválido - Modo verificación */
+.btn-phase2-confirm[data-state="invalid"][data-mode="verification"] {
+  @apply border-2 border-success/40;
+}
+
+/* Efecto hover para estados válidos */
+.btn-phase2-confirm[data-state="valid"]:hover {
+  transform: translateY(-2px);
+}
+
+/* Efecto de iconos */
+.btn-phase2-confirm[data-state="valid"] [data-icon="true"] {
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+}
+
+.btn-phase2-confirm[data-state="invalid"] [data-icon="true"] {
+  opacity: 0.6;
+}
