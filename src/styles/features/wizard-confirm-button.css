@@ -4,7 +4,7 @@
  * Colores EXACTOS del sistema Alert Success - Sin box-shadow
  */
 
-/* Botón Confirmar - Visual geometry only — colors are provided by Button variant="confirm" (Tailwind dark:class) */
+/* Botón Confirmar - Visual geometry only — colors are provided by Button variant="success" (Tailwind dark:class) */
 .wizard-confirm-button {
   display: inline-flex;
   align-items: center;
@@ -19,7 +19,7 @@
   font-weight: 600;
   font-size: clamp(0.875rem, 3.5vw, 1rem);
   
-  /* Visual geometry only — colors are provided by Button variant="confirm" (Tailwind dark:class) */
+  /* Visual geometry only — colors are provided by Button variant="success" (Tailwind dark:class) */
   box-shadow: none;
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
