@@ -18,7 +18,11 @@ const buttonVariants = cva(
         success: "btn-success",
         confirm: "shadow-none border-2 bg-[#dcfce7] border-[#22c55e] text-[#14532d] hover:bg-[#bbf7d0] hover:border-[#16a34a] dark:bg-[#14532d] dark:border-[#15803d] dark:text-[#dcfce7] dark:hover:bg-[#166534] disabled:bg-[#374151] disabled:border-[#4b5563]/30 disabled:text-[#6b7280]",
         glass: "glass-card hover:bg-primary/10 hover:border-primary/30 text-foreground",
-        ready: "border-none text-white transition-all duration-300 shadow-md"
+        ready: "border-none text-white transition-all duration-300 shadow-md",
+        "wizard-nav-next": "bg-blue-500 text-white hover:bg-blue-600",
+        "wizard-nav-previous": "bg-gray-200 text-gray-700 hover:bg-gray-300",
+        "glass-alert-action": "bg-transparent border border-white text-white hover:bg-white hover:text-black",
+        "glass-alert-cancel": "bg-red-500 text-white hover:bg-red-600"
       },
       size: {
         default: "h-12 px-6 py-3",

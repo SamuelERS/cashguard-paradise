@@ -1,18 +1,12 @@
 /* 
- * 🤖 [IA] - v1.2.21: Glass Alert Cancel Button - Success Alert Colors
+ * [IA] - v1.2.21: Glass Alert Cancel Button - Success Alert Colors
  * Nuevo archivo modular siguiendo v1.2.18 architecture (index.css CONGELADO)
  * Colores EXACTOS del sistema Alert Success - Sin box-shadow
  */
 
 /* Glass Alert Cancel Button - Colores EXACTOS Alert Success */
 .glass-alert-cancel-button {
-  /* Flat Style - Colores EXACTOS Alert Success */
-  background: #dcfce7 !important; /* bg-green-100 EXACTO - Override btn-secondary */
-  border: 2px solid #22c55e !important; /* border-green-500 EXACTO - Override btn-secondary */
-  box-shadow: none !important; /* Remove btn-secondary shadow completely */
-  
-  color: #14532d !important; /* text-green-900 EXACTO - Override btn-secondary */
-  
+  /* Removed conflicting color styles as these are now managed by button variants in button.tsx */
   /* Maintain existing layout properties */
   display: inline-flex;
   align-items: center;
@@ -30,54 +24,17 @@
 }
 
 .glass-alert-cancel-button:hover {
-  background: #bbf7d0 !important; /* hover:bg-green-200 EXACTO - Override btn-secondary */
-  border-color: #16a34a !important; /* hover:border-green-600 - Override btn-secondary */
-  color: #14532d !important; /* text-green-900 EXACTO - Override btn-secondary */
-  box-shadow: none !important; /* Remove btn-secondary:hover shadow completely */
   transform: translateY(-1px) scale(1.02); /* Efecto sutil de escala */
 }
 
 .glass-alert-cancel-button:active {
   transform: translateY(0) scale(0.98); /* Efecto de presión */
-  background: #bbf7d0 !important; /* Consistente con hover - green-200 - Override btn-secondary */
-  color: #14532d !important; /* text-green-900 EXACTO - Override btn-secondary */
-  box-shadow: none !important; /* Remove any active state shadows */
 }
 
 .glass-alert-cancel-button:disabled {
-  background: #374151 !important; /* Disabled state - gray */
-  border: 1px solid rgba(51, 51, 51, 0.3) !important;
-  color: #6b7280 !important; /* text-gray-500 */
   cursor: not-allowed;
-  box-shadow: none !important;
   transform: none;
   opacity: 0.6;
-}
-
-/* Dark mode - Colores EXACTOS Alert Success */
-@media (prefers-color-scheme: dark) {
-  .glass-alert-cancel-button {
-    background: #14532d !important; /* dark:bg-green-900 EXACTO - Override btn-secondary */
-    border-color: #15803d !important; /* dark:border-green-700 EXACTO - Override btn-secondary */
-    color: #dcfce7 !important; /* dark:text-green-100 EXACTO - Override btn-secondary */
-  }
-  
-  .glass-alert-cancel-button:hover {
-    background: #166534 !important; /* dark:hover:bg-green-800 EXACTO - Override btn-secondary */
-    border-color: #16a34a !important; /* Override btn-secondary */
-    color: #dcfce7 !important; /* Override btn-secondary */
-  }
-  
-  .glass-alert-cancel-button:active {
-    background: #166534 !important; /* Consistente con hover en dark - Override btn-secondary */
-    color: #dcfce7 !important; /* Override btn-secondary */
-  }
-  
-  .glass-alert-cancel-button:disabled {
-    background: #1f2937 !important; /* dark disabled */
-    border-color: rgba(75, 85, 99, 0.3) !important;
-    color: #6b7280 !important;
-  }
 }
 
 /* Mejoras para accesibilidad */

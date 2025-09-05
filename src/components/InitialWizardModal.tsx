@@ -636,7 +636,6 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                   onClick={handleComplete}
                   disabled={!isCompleted}
                   variant="confirm"
-                  className="wizard-confirm-button whitespace-nowrap w-full sm:w-auto h-full self-stretch"
                   aria-label="Confirmar venta esperada"
                   type="button"
                   style={{ borderRadius: 'var(--control-radius)' }}
@@ -821,7 +820,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
             {/* 🤖 [IA] - v1.2.13: Cancel Button refactorizado + comportamiento corregido */}
             <Button
               onClick={handleClose}
-              className="wizard-cancel-button"
+              variant="glass-alert-cancel"
               aria-label="Cancelar proceso"
             >
               <X className="w-4 h-4" />
@@ -834,7 +833,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               {canGoPrevious && (
                 <Button
                   onClick={() => setShowBackConfirmation(true)}
-                  className="wizard-nav-previous-button"
+                  variant="wizard-nav-previous"
                   aria-label="Volver al paso anterior"
                 >
                   <ArrowLeft className="w-4 h-4" />
@@ -847,7 +846,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                 <Button
                   onClick={handleNext}
                   disabled={!canGoNext}
-                  className="wizard-nav-next-button"
+                  variant="wizard-nav-next"
                   aria-label="Continuar al siguiente paso"
                   aria-describedby={!canGoNext ? "validation-feedback" : undefined}
                 >

@@ -5,11 +5,6 @@
  * Colores basados en el sistema de alerts de error del proyecto
  */
 button.wizard-cancel-button {
-  /* Sobrescribir completamente el gradiente azul de btn-primary */
-  background: #fca5a5 !important; /* bg-red-300, más saturado */
-  border: 2px solid #ef4444 !important; /* border-red-500, más grueso */
-  color: #991b1b !important; /* text-red-800, más oscuro y legible */
-  
   /* Mantener layout responsive */
   font-size: 14px;
   font-weight: 600;
@@ -21,59 +16,23 @@ button.wizard-cancel-button {
   transition: all 0.3s ease-in-out;
   transform: scale(1);
   cursor: pointer;
-  
-  /* Sombra sutil para mejor contraste */
-  box-shadow: 0 1px 2px rgba(239, 68, 68, 0.2) !important;
 }
 
 /* Hover state - Efecto igual que el alert error */
 button.wizard-cancel-button:hover {
-  background: #f87171 !important; /* hover:bg-red-400, más intenso */
-  border-color: #dc2626 !important; /* hover:border-red-600 */
-  color: #991b1b !important; /* text-red-800, consistente con el estado base */
-  
   /* Efecto scale del alert system */
   transform: scale(1.05) !important;
-  
-  /* Sobrescribir efectos de btn-primary */
-  box-shadow: none !important;
 }
 
 /* Active state */
 button.wizard-cancel-button:active {
   transform: scale(0.98) !important;
-  background: #dc2626 !important; /* active:bg-red-600, más intenso */
 }
 
 /* Focus state - Mantener accesibilidad */
 button.wizard-cancel-button:focus-visible {
-  outline: 2px solid #ef4444;
+  outline: 2px solid;
   outline-offset: 2px;
-}
-
-/* Dark mode - Colores exactos del alert error dark */
-@media (prefers-color-scheme: dark) {
-  button.wizard-cancel-button {
-    background: #7f1d1d !important; /* dark:bg-red-900 */
-    border-color: #b91c1c !important; /* dark:border-red-700 */
-    color: #fef2f2 !important; /* dark:text-red-100 */
-  }
-  
-  button.wizard-cancel-button:hover {
-    background: #991b1b !important; /* dark:hover:bg-red-800 */
-    border-color: #dc2626 !important; /* dark:hover:border-red-600 */
-    color: #fef2f2 !important; /* dark:text-red-100 */
-    transform: scale(1.05) !important;
-  }
-  
-  button.wizard-cancel-button:active {
-    background: #b91c1c !important; /* dark:active:bg-red-700 */
-    transform: scale(0.98) !important;
-  }
-  
-  button.wizard-cancel-button:focus-visible {
-    outline-color: #b91c1c;
-  }
 }
 
 /* Asegurar que el ícono X herede el color correcto */
