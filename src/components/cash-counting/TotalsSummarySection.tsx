@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useTimingConfig } from "@/hooks/useTimingConfig";
 import "@/styles/features/gradient-dynamic-button.css";
+import "@/styles/features/totals-confirm-button.css";
 
 interface TotalsSummarySectionProps {
   totalCash: number;
@@ -79,7 +80,7 @@ export const TotalsSummarySection = ({
       setShowCelebration(true);
       createTimeoutWithCleanup(() => {
         setShowCelebration(false);
-      }, 'celebration', 'totals_celebration');
+      }, 'confirmation', 'totals_celebration');
     }
   }, [isCashActive, isElectronicActive, isCashCompleted, isElectronicCompleted, onConfirmTotal, createTimeoutWithCleanup]);
 
@@ -218,14 +219,9 @@ export const TotalsSummarySection = ({
                   <Button
                     ref={confirmButtonRef}
                     onClick={handleConfirm}
-                    variant="gradient-dynamic"
+                    variant="totals-confirm"
+                    data-context={isMorningCount ? "morning" : "evening"}
                     size="lg"
-                    className="w-full sm:w-auto flex items-center justify-center gap-2"
-                    style={{
-                      '--gradient-from': primaryColor,
-                      '--gradient-to': secondaryColor,
-                      '--shadow-color': shadowColor
-                    } as React.CSSProperties}
                     onMouseDown={(e) => e.preventDefault()}
                     onTouchStart={(e) => e.preventDefault()}
                   >

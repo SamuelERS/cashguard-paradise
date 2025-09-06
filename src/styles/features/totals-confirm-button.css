@@ -1,0 +1,68 @@
+/*
+ * Totals Confirm Button System
+ * Context-aware single variant for morning/evening with no inline styles.
+ */
+
+/* Base geometry and layout moved into the variant to avoid className visuals in usage */
+.btn-totals-confirm {
+  /* Width behavior equivalent to w-full sm:w-auto */
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem; /* gap-2 */
+  border: none;
+  color: #ffffff;
+  font-weight: 700;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+@media (min-width: 640px) {
+  .btn-totals-confirm { width: auto; }
+}
+
+/* Morning (orange) */
+.btn-totals-confirm[data-context="morning"] {
+  background: linear-gradient(135deg, #f4a52a 0%, #ffb84d 100%);
+  box-shadow: 0 6px 16px rgba(244, 165, 42, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+.btn-totals-confirm[data-context="morning"]:hover {
+  background: linear-gradient(135deg, #e5941e 0%, #f7ad44 100%);
+  transform: translateY(-1px) scale(1.02);
+}
+.btn-totals-confirm[data-context="morning"]:active {
+  transform: translateY(0) scale(0.98);
+  background: linear-gradient(135deg, #d38415 0%, #e6a03e 100%);
+}
+
+/* Evening (blue) */
+.btn-totals-confirm[data-context="evening"] {
+  background: linear-gradient(135deg, #0a84ff 0%, #5e5ce6 100%);
+  box-shadow: 0 6px 16px rgba(10, 132, 255, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+.btn-totals-confirm[data-context="evening"]:hover {
+  background: linear-gradient(135deg, #0a74df 0%, #5250d2 100%);
+  transform: translateY(-1px) scale(1.02);
+}
+.btn-totals-confirm[data-context="evening"]:active {
+  transform: translateY(0) scale(0.98);
+  background: linear-gradient(135deg, #095fba 0%, #4947bd 100%);
+}
+
+/* Disabled (consistency) */
+.btn-totals-confirm:disabled {
+  background: rgba(128, 128, 128, 0.3) !important;
+  border: 1px solid rgba(128, 128, 128, 0.5) !important;
+  color: #6b7280 !important;
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Focus visible */
+.btn-totals-confirm:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}

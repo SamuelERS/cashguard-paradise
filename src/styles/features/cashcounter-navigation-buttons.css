@@ -5,8 +5,9 @@
  * Misión 6.0 - Arquitectura modular CSS siguiendo v1.2.18
  */
 
-/* Base común para botones de navegación CashCounter */
-.btn-cashcounter-nav-base {
+/* Base compartida aplicada a ambas variantes */
+.btn-cashcounter-nav-back,
+.btn-cashcounter-nav-start {
   /* Geometría responsive - absorbe className violations */
   flex: 1;
   height: clamp(2.75rem, 5vw, 2.75rem); /* h-11 responsive */
@@ -31,9 +32,6 @@
 
 /* Variante: Botón Volver (izquierda) */
 .btn-cashcounter-nav-back {
-  /* Hereda base */
-  @apply btn-cashcounter-nav-base;
-  
   /* Absorbe style={{ backgroundColor, border, color }} - líneas 680-684 */
   background-color: rgba(255, 255, 255, 0.05) !important; /* Override variants */
   border: 1px solid rgba(255, 255, 255, 0.3) !important; /* Override variants */
@@ -59,8 +57,6 @@
 
 /* Variante: Botón Iniciar (derecha) - Estados condicionales */
 .btn-cashcounter-nav-start {
-  /* Hereda base */
-  @apply btn-cashcounter-nav-base;
 }
 
 /* Estado: Listo para proceder (canProceedToPhase1 = true) */
@@ -118,7 +114,8 @@
 
 /* Responsividad móviles */
 @media (max-width: 640px) {
-  .btn-cashcounter-nav-base {
+  .btn-cashcounter-nav-back,
+  .btn-cashcounter-nav-start {
     height: 2.75rem; /* Fijo en móviles */
     padding: 0.75rem;
     font-size: 0.75rem; /* text-xs */
@@ -132,7 +129,8 @@
 
 /* Desktop optimizations */
 @media (min-width: 641px) {
-  .btn-cashcounter-nav-base {
+  .btn-cashcounter-nav-back,
+  .btn-cashcounter-nav-start {
     font-size: 0.875rem; /* sm:text-sm */
   }
   

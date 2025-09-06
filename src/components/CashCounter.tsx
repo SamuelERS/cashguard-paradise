@@ -14,6 +14,7 @@ import '../styles/features/glass-morphism-coherence.css';
 import '../styles/features/responsive-verification.css';
 import '../styles/features/cash-counter-alert-buttons.css';
 import '../styles/features/cash-counter-alert-dialog.css';
+import '../styles/features/cashcounter-navigation-buttons.css';
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -166,7 +167,7 @@ const CashCounter = ({
         height: document.body.style.height,
         overflow: document.body.style.overflow,
         overscrollBehavior: document.body.style.overscrollBehavior,
-        webkitOverflowScrolling: document.body.style.webkitOverflowScrolling,
+        webkitOverflowScrolling: (document.body.style as any).webkitOverflowScrolling,
         touchAction: document.body.style.touchAction
       };
 
@@ -176,7 +177,7 @@ const CashCounter = ({
       document.body.style.height = '100%';
       document.body.style.overflow = 'hidden';
       document.body.style.overscrollBehavior = 'none';
-      document.body.style.webkitOverflowScrolling = 'touch';
+      (document.body.style as any).webkitOverflowScrolling = 'touch';
       document.body.style.touchAction = 'none';
 
       // Prevenir touchmove
@@ -198,7 +199,7 @@ const CashCounter = ({
         document.body.style.height = originalStyles.height;
         document.body.style.overflow = originalStyles.overflow;
         document.body.style.overscrollBehavior = originalStyles.overscrollBehavior;
-        document.body.style.webkitOverflowScrolling = originalStyles.webkitOverflowScrolling;
+        (document.body.style as any).webkitOverflowScrolling = originalStyles.webkitOverflowScrolling;
         document.body.style.touchAction = originalStyles.touchAction;
 
         document.removeEventListener('touchmove', handleTouchMove);
@@ -906,6 +907,7 @@ const CashCounter = ({
         deliveryCalculation={deliveryCalculation}
         phaseState={phaseState}
         onComplete={handleCompleteCalculation}
+        onBack={handleBackToStart}
       />
     );
   }

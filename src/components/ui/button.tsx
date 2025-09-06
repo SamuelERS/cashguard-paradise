@@ -1,6 +1,6 @@
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
-import { cva, type VariantProps } from "class-variance-authority"
+import { cva } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
 
@@ -41,7 +41,8 @@ const buttonVariants = cva(
         "protocol-accept": "btn-protocol-accept",
         "cashcounter-nav-back": "btn-cashcounter-nav-back",
         "cashcounter-nav-start": "btn-cashcounter-nav-start",
-        "guided-numeric-confirm": "btn-guided-numeric-confirm"
+        "guided-numeric-confirm": "btn-guided-numeric-confirm",
+        "totals-confirm": "btn-totals-confirm"
       },
       size: {
         default: "h-12 px-6 py-3",
@@ -95,6 +96,7 @@ export interface ButtonProps
     | "cashcounter-nav-back"
     | "cashcounter-nav-start"
     | "guided-numeric-confirm"
+    | "totals-confirm"
   size?: "default" | "sm" | "lg" | "icon" | "icon-sm"
 }
 

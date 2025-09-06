@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { useFieldNavigation } from "@/hooks/useFieldNavigation";
 import { useInputValidation } from "@/hooks/useInputValidation";
 import { useTimingConfig } from "@/hooks/useTimingConfig";
+import "@/styles/features/guided-numeric-confirm-button.css";
 
 interface GuidedElectronicPaymentItemProps {
   paymentMethod: {
@@ -45,7 +46,7 @@ export const GuidedElectronicPaymentItem = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const inputValueRef = useRef(inputValue);
-  const navigationTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const navigationTimeoutRef = useRef<(() => void) | undefined>(); // 🤖 [IA] - Ref para cancelar cleanup function v1.2.20
   
   const Icon = paymentMethod.icon;
   
@@ -74,9 +75,9 @@ export const GuidedElectronicPaymentItem = ({
     onConfirm(confirmValue);
     setInputValue("");
     
-    // 🤖 [IA] - Cancelar timeout anterior si existe
+    // 🤖 [IA] - Cancelar cleanup anterior si existe v1.2.20
     if (navigationTimeoutRef.current) {
-      clearTimeout(navigationTimeoutRef.current);
+      navigationTimeoutRef.current();
     }
     
     // 🤖 [IA] - Navegación automática al siguiente campo si está definido
@@ -103,11 +104,11 @@ export const GuidedElectronicPaymentItem = ({
     }
   }, [isActive, paymentMethod.key, createTimeoutWithCleanup]);
 
-  // 🤖 [IA] - Cleanup del timeout de navegación
+  // 🤖 [IA] - Cleanup de la navegación cuando se desmonta el componente v1.2.20
   useEffect(() => {
     return () => {
       if (navigationTimeoutRef.current) {
-        clearTimeout(navigationTimeoutRef.current);
+        navigationTimeoutRef.current();
       }
     };
   }, []);
@@ -228,7 +229,7 @@ export const GuidedElectronicPaymentItem = ({
             min="0"
             value={isCompleted ? value.toFixed(2) : inputValue}
             onChange={(e) => handleInputChange(e.target.value)}
-            onKeyPress={handleKeyPress}
+            onKeyDown={handleKeyPress}
             onBlur={handleBlur}
             placeholder={isActive ? "0.00" : "0.00"}
             disabled={!isActive}

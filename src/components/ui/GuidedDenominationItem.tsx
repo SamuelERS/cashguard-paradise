@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { useFieldNavigation } from "@/hooks/useFieldNavigation";
 import { useInputValidation } from "@/hooks/useInputValidation"; // 🤖 [IA] - Hook de validación unificada
 import { useTimingConfig } from "@/hooks/useTimingConfig"; // 🤖 [IA] - BUG #6 Fix: Timing unificado
+import "@/styles/features/guided-numeric-confirm-button.css";
 
 interface GuidedDenominationItemProps {
   denomination: {
@@ -42,7 +43,7 @@ export const GuidedDenominationItem = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const inputValueRef = useRef(inputValue); // 🤖 [IA] - Fix stale closure con useRef v1.0.23
-  const navigationTimeoutRef = useRef<ReturnType<typeof setTimeout>>(); // 🤖 [IA] - Ref para cancelar timeouts previos v1.0.23
+  const navigationTimeoutRef = useRef<(() => void) | undefined>(); // 🤖 [IA] - Ref para cancelar cleanup function v1.2.20
   const total = quantity * denomination.value;
   
   // 🤖 [IA] - v1.1.16: Detectar si la app está en modo PWA standalone
@@ -85,9 +86,9 @@ export const GuidedDenominationItem = ({
       onConfirm(inputValue);
       setInputValue("");
       
-      // 🤖 [IA] - Cancelar timeout anterior si existe v1.0.23
+      // 🤖 [IA] - Cancelar cleanup anterior si existe v1.2.20
       if (navigationTimeoutRef.current) {
-        clearTimeout(navigationTimeoutRef.current);
+        navigationTimeoutRef.current();
       }
       
       // 🤖 [IA] - v1.0.44: Fix navegación completa incluyendo bill100 → credomatic
@@ -142,11 +143,11 @@ export const GuidedDenominationItem = ({
     }
   }, [isActive, fieldName, createTimeoutWithCleanup, isStandalone]);
 
-  // 🤖 [IA] - Cleanup del timeout de navegación cuando se desmonta el componente v1.0.23
+  // 🤖 [IA] - Cleanup de la navegación cuando se desmonta el componente v1.2.20
   useEffect(() => {
     return () => {
       if (navigationTimeoutRef.current) {
-        clearTimeout(navigationTimeoutRef.current);
+        navigationTimeoutRef.current();
       }
     };
   }, []);
@@ -266,7 +267,7 @@ export const GuidedDenominationItem = ({
           min="0"
           value={isCompleted ? quantity.toString() : inputValue}
           onChange={(e) => handleInputChange(e.target.value)}
-          onKeyPress={handleKeyPress}
+          onKeyDown={handleKeyPress}
           onBlur={handleBlur} // 🤖 [IA] - Auto-confirmar al navegar con flechas
           // 🤖 [IA] - v1.1.16: Handlers adicionales para PWA standalone
           onClick={(e) => {
