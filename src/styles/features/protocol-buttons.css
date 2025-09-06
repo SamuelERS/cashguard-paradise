@@ -1,0 +1,25 @@
+/* 
+ * Protocol Modal Button Styles
+ * Specific button variants for ProtocolModal.tsx
+ * Part of the Button Unification project
+ */
+
+/* Cancel button - Neutral muted action */
+.btn-protocol-cancel {
+  @apply border-muted hover:bg-muted/50;
+}
+
+/* Accept button - Primary action with aqua gradient */
+.btn-protocol-accept {
+  @apply bg-gradient-aqua hover:scale-105 transform transition-all duration-300 text-white font-semibold;
+}
+
+/* Define the aqua gradient that was previously inline */
+.bg-gradient-aqua {
+  background: linear-gradient(135deg, #0ea5e9 0%, #22d3ee 100%);
+}
+
+/* Disabled state adjustments */
+.btn-protocol-accept:disabled {
+  @apply opacity-50 cursor-not-allowed transform-none;
+}

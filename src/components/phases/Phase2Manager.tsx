@@ -207,7 +207,6 @@ export function Phase2Manager({
         <div className="flex items-center gap-[clamp(0.375rem,1.5vw,0.5rem)]">
           <Button
             variant="phase2-tab"
-            className="px-[clamp(0.75rem,3vw,1rem)] py-[clamp(0.375rem,1.5vw,0.5rem)] rounded-[clamp(0.375rem,1.5vw,0.5rem)] text-[clamp(0.875rem,3.5vw,1rem)]"
             data-active={currentSection === 'delivery' ? "true" : "false"}
             data-state="delivery"
             data-completed={deliveryCompleted ? "true" : "false"}
@@ -222,7 +221,6 @@ export function Phase2Manager({
           </Button>
           <Button
             variant="phase2-tab"
-            className="px-[clamp(0.75rem,3vw,1rem)] py-[clamp(0.375rem,1.5vw,0.5rem)] rounded-[clamp(0.375rem,1.5vw,0.5rem)] text-[clamp(0.875rem,3.5vw,1rem)]"
             data-active={currentSection === 'verification' ? "true" : "false"}
             data-state="verification"
             data-completed={verificationCompleted ? "true" : "false"}
@@ -325,16 +323,14 @@ export function Phase2Manager({
         <AlertDialogFooter>
           <AlertDialogCancel asChild>
             <Button 
-              variant="secondary" 
-              className="border border-border/30 rounded-[clamp(6px,2.5vw,10px)] text-[clamp(0.875rem,3.5vw,1rem)]"
+              variant="phase2-alert-cancel" 
             >
               Cancelar
             </Button>
           </AlertDialogCancel>
           <AlertDialogAction asChild>
             <Button 
-              variant="destructive" 
-              className="rounded-[clamp(6px,2.5vw,10px)] text-[clamp(0.875rem,3.5vw,1rem)]" 
+              variant="phase2-alert-action" 
               onClick={onBack}
             >
               Sí, volver al inicio
@@ -611,10 +607,9 @@ export function Phase2Manager({
         <AlertDialogFooter style={{ flexShrink: 0, paddingTop: `clamp(0.5rem, 2vw, 0.75rem)` }}>
           <AlertDialogAction asChild>
             <Button 
-              variant="default" 
+              variant="phase2-instruction" 
               onClick={() => setShowInstructionsModal(false)} 
               disabled={!allItemsChecked}
-              className="rounded-[clamp(5px,2vw,10px)] text-[clamp(0.8rem,3.2vw,0.9rem)] font-semibold transition-all duration-300"
             >
               {allItemsChecked ? '✓ Todo listo, continuar' : 'Marque todos los items para continuar'}
             </Button>

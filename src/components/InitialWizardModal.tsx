@@ -635,10 +635,9 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                 <Button
                   onClick={handleComplete}
                   disabled={!isCompleted}
-                  variant="success"
+                  variant="wizard-confirm"
                   aria-label="Confirmar venta esperada"
                   type="button"
-                  style={{ borderRadius: 'var(--control-radius)' }}
                 >
                   <CheckCircle aria-hidden="true" style={{ 
                     width: 'clamp(1.25rem, 4vw, 1.5rem)',

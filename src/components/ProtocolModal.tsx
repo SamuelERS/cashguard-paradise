@@ -7,6 +7,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+// 🤖 [IA] - v1.3.0: Importado CSS modular para botones de protocol
+import "@/styles/features/protocol-buttons.css";
 
 interface ProtocolModalProps {
   isOpen: boolean;
@@ -159,8 +161,8 @@ const ProtocolModal = ({ isOpen, onClose, onAccept }: ProtocolModalProps) => {
           <div className="flex gap-3 pt-4">
             <Button
               onClick={onClose}
-              variant="secondary"
-              className="flex-1 border-muted hover:bg-muted/50"
+              variant="protocol-cancel"
+              className="flex-1"
             >
               <X className="w-4 h-4 mr-2" />
               Cancelar
@@ -168,7 +170,8 @@ const ProtocolModal = ({ isOpen, onClose, onAccept }: ProtocolModalProps) => {
             <Button
               onClick={handleAccept}
               disabled={!rulesAccepted || !signature.trim()}
-              className="flex-1 bg-gradient-aqua hover:scale-105 transform transition-all duration-300 text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              variant="protocol-accept"
+              className="flex-1"
             >
               <CheckCircle className="w-4 h-4 mr-2" />
               Aceptar y Continuar

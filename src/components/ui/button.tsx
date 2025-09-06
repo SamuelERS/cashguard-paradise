@@ -30,9 +30,15 @@ const buttonVariants = cva(
         "phase2-back": "btn-phase2-back",
         "phase2-verify": "btn-phase2-verify",
         "phase2-confirm": "btn-phase2-confirm",
+        "phase2-alert-cancel": "btn-phase2-alert-cancel",
+        "phase2-alert-action": "btn-phase2-alert-action",
+        "phase2-instruction": "btn-phase2-instruction",
         "guided-confirm": "btn-guided-confirm",
         "guided-start": "btn-guided-start",
-        "report-action": "btn-report-action"
+        "report-action": "btn-report-action",
+        "wizard-confirm": "bg-green-100 text-green-900 border border-green-500 hover:bg-green-200 dark:bg-green-900 dark:text-green-100 dark:border-green-700 dark:hover:bg-green-200 wizard-confirm-button",
+        "protocol-cancel": "btn-protocol-cancel",
+        "protocol-accept": "btn-protocol-accept"
       },
       size: {
         default: "h-12 px-6 py-3",
@@ -74,9 +80,15 @@ export interface ButtonProps
     | "phase2-back" 
     | "phase2-verify" 
     | "phase2-confirm" 
+    | "phase2-alert-cancel"
+    | "phase2-alert-action"
+    | "phase2-instruction"
     | "guided-confirm"
     | "guided-start"
     | "report-action"
+    | "wizard-confirm"
+    | "protocol-cancel"
+    | "protocol-accept"
   size?: "default" | "sm" | "lg" | "icon" | "icon-sm"
 }
 
