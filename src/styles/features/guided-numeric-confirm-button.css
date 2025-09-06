@@ -1,0 +1,171 @@
+/* 
+ * 🤖 [IA] - v1.2.20: Guided Numeric Confirmation Button System
+ * Purga total de violaciones N3 identificadas por auditoría GPT-5
+ * Absorción de geometría visual y eliminación dependencia btn-primary
+ * Misión 6.0 - Arquitectura modular CSS siguiendo v1.2.18
+ */
+
+/* Variante específica para confirmación numérica en campos guiados */
+.btn-guided-numeric-confirm {
+  /* Absorbe geometría específica - px-6 py-2 text-lg h-12 min-w-[48px] md:h-10 */
+  padding: 0.5rem 1.5rem; /* py-2 px-6 */
+  font-size: 1.125rem; /* text-lg */
+  height: 3rem; /* h-12 - móvil */
+  min-width: 48px; /* min-w-[48px] */
+  
+  /* Layout y estructura */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+  border-radius: clamp(0.5rem, 2vw, 0.75rem);
+  font-weight: 700;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  
+  /* Reemplaza btn-primary con estilos específicos para confirmación numérica */
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); /* Success gradient */
+  border: 2px solid #16a34a;
+  color: white;
+  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  
+  /* Mobile-first approach */
+  flex-shrink: 0;
+  position: relative;
+}
+
+/* Responsive - Desktop optimizations (md:h-10) */
+@media (min-width: 768px) {
+  .btn-guided-numeric-confirm {
+    height: 2.5rem; /* md:h-10 - desktop */
+    padding: 0.375rem 1.5rem; /* Ajuste proporcional */
+    font-size: 1rem; /* Ajuste proporcional para desktop */
+  }
+}
+
+/* Estados interactivos */
+.btn-guided-numeric-confirm:hover:not(:disabled) {
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  border-color: #15803d;
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.btn-guided-numeric-confirm:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+  background: linear-gradient(135deg, #15803d 0%, #166534 100%);
+  border-color: #166534;
+  box-shadow: 0 2px 6px rgba(34, 197, 94, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Estado disabled - consistente con sistema */
+.btn-guided-numeric-confirm:disabled {
+  background: rgba(128, 128, 128, 0.3) !important;
+  border: 1px solid rgba(128, 128, 128, 0.5) !important;
+  color: #6b7280 !important; /* text-gray-500 */
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Icono específico - símbolo ⏎ */
+.btn-guided-numeric-confirm::before {
+  content: '⏎';
+  font-size: 1.2em;
+  font-weight: bold;
+  line-height: 1;
+}
+
+/* Optimizaciones táctiles móvil */
+@media (max-width: 767px) {
+  .btn-guided-numeric-confirm {
+    /* Botón más grande en móviles para mejor accesibilidad táctil */
+    min-width: 56px; /* Mayor que 48px */
+    height: 3rem; /* h-12 fijo */
+    padding: 0.5rem 1.25rem; /* Más compacto lateralmente */
+    
+    /* Mejorar área táctil */
+    position: relative;
+  }
+  
+  .btn-guided-numeric-confirm::after {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    right: -8px;
+    bottom: -8px;
+    pointer-events: none;
+  }
+}
+
+/* Estados específicos para contexto de denominaciones vs pagos */
+.btn-guided-numeric-confirm[data-context="denomination"] {
+  /* Variación sutil para denominaciones físicas */
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  border-color: #16a34a;
+}
+
+.btn-guided-numeric-confirm[data-context="electronic"] {
+  /* Variación sutil para pagos electrónicos */
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  border-color: #2563eb;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.btn-guided-numeric-confirm[data-context="electronic"]:hover:not(:disabled) {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  border-color: #1d4ed8;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.btn-guided-numeric-confirm[data-context="electronic"]:active:not(:disabled) {
+  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+  border-color: #1e40af;
+  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Mejoras para accesibilidad */
+.btn-guided-numeric-confirm:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* Animación sutil de entrada */
+@keyframes guided-confirm-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.btn-guided-numeric-confirm {
+  animation: guided-confirm-enter 0.2s ease-out;
+}
+
+/* Dark mode adaptations */
+@media (prefers-color-scheme: dark) {
+  .btn-guided-numeric-confirm {
+    /* Mantener colors base en dark mode para contraste */
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    border-color: #16a34a;
+    color: white;
+  }
+  
+  .btn-guided-numeric-confirm[data-context="electronic"] {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    border-color: #2563eb;
+  }
+  
+  .btn-guided-numeric-confirm:disabled {
+    background: rgba(100, 100, 100, 0.2) !important;
+    border: 1px solid rgba(100, 100, 100, 0.4) !important;
+    color: #64748b !important;
+  }
+}

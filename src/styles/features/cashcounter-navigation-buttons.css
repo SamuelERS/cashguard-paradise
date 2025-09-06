@@ -1,0 +1,169 @@
+/* 
+ * 🤖 [IA] - v1.2.20: CashCounter Navigation Buttons System
+ * Purga total de violaciones N2/N3 identificadas por auditoría GPT-5
+ * Absorción de estilos inline complejos y geometría visual
+ * Misión 6.0 - Arquitectura modular CSS siguiendo v1.2.18
+ */
+
+/* Base común para botones de navegación CashCounter */
+.btn-cashcounter-nav-base {
+  /* Geometría responsive - absorbe className violations */
+  flex: 1;
+  height: clamp(2.75rem, 5vw, 2.75rem); /* h-11 responsive */
+  padding: clamp(0.75rem, 3vw, 1rem) clamp(0.75rem, 3vw, 1rem); /* px-3 sm:px-4 */
+  
+  /* Layout - absorbe flex, justify-center, items-center */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.375rem, 1.5vw, 0.5rem);
+  white-space: nowrap;
+  
+  /* Tipografía responsive - absorbe text-xs sm:text-sm */
+  font-size: clamp(0.75rem, 3.5vw, 0.875rem); /* text-xs sm:text-sm */
+  font-weight: 600;
+  
+  /* Transiciones suaves */
+  transition: all 0.3s ease;
+  border-radius: clamp(0.5rem, 2vw, 0.75rem);
+  cursor: pointer;
+}
+
+/* Variante: Botón Volver (izquierda) */
+.btn-cashcounter-nav-back {
+  /* Hereda base */
+  @apply btn-cashcounter-nav-base;
+  
+  /* Absorbe style={{ backgroundColor, border, color }} - líneas 680-684 */
+  background-color: rgba(255, 255, 255, 0.05) !important; /* Override variants */
+  border: 1px solid rgba(255, 255, 255, 0.3) !important; /* Override variants */
+  color: #e1e8ed !important; /* Override variants */
+  
+  /* Glass morphism sutil */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.btn-cashcounter-nav-back:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  color: #ffffff !important;
+  transform: translateY(-1px) scale(1.02);
+}
+
+.btn-cashcounter-nav-back:active {
+  transform: translateY(0) scale(0.98);
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Variante: Botón Iniciar (derecha) - Estados condicionales */
+.btn-cashcounter-nav-start {
+  /* Hereda base */
+  @apply btn-cashcounter-nav-base;
+}
+
+/* Estado: Listo para proceder (canProceedToPhase1 = true) */
+.btn-cashcounter-nav-start[data-state="ready"] {
+  /* Absorbe gradient - líneas 695-697 */
+  background: linear-gradient(135deg, #00ba7c 0%, #06d6a0 100%) !important; /* Override variants */
+  border: none !important; /* Override variants */
+  color: white !important; /* Override variants */
+  
+  /* Sombra success premium */
+  box-shadow: 0 4px 12px rgba(0, 186, 124, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.btn-cashcounter-nav-start[data-state="ready"]:hover:not(:disabled) {
+  background: linear-gradient(135deg, #009a68 0%, #05c490 100%) !important;
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 6px 16px rgba(0, 186, 124, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.btn-cashcounter-nav-start[data-state="ready"]:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+  background: linear-gradient(135deg, #008a5a 0%, #04b380 100%) !important;
+}
+
+/* Estado: No listo (canProceedToPhase1 = false) */
+.btn-cashcounter-nav-start[data-state="disabled"] {
+  /* Absorbe styles else - líneas 699-702 */
+  background-color: rgba(255, 255, 255, 0.05) !important; /* Override variants */
+  border: 1px solid rgba(255, 255, 255, 0.3) !important; /* Override variants */
+  color: #8899a6 !important; /* Override variants */
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.btn-cashcounter-nav-start[data-state="disabled"]:hover {
+  /* Sin efectos hover cuando disabled */
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  color: #8899a6 !important;
+  transform: none;
+}
+
+/* Iconos responsivos */
+.btn-cashcounter-nav-back svg,
+.btn-cashcounter-nav-start svg {
+  width: clamp(0.875rem, 3vw, 1rem); /* w-3.5 h-3.5 sm:w-4 sm:h-4 */
+  height: clamp(0.875rem, 3vw, 1rem);
+  flex-shrink: 0;
+}
+
+/* Margin específico para ArrowLeft icon */
+.btn-cashcounter-nav-back svg {
+  margin-right: clamp(0.375rem, 1.5vw, 0.5rem); /* mr-1.5 sm:mr-2 */
+}
+
+/* Responsividad móviles */
+@media (max-width: 640px) {
+  .btn-cashcounter-nav-base {
+    height: 2.75rem; /* Fijo en móviles */
+    padding: 0.75rem;
+    font-size: 0.75rem; /* text-xs */
+    gap: 0.375rem;
+  }
+  
+  .btn-cashcounter-nav-back svg {
+    margin-right: 0.375rem; /* mr-1.5 */
+  }
+}
+
+/* Desktop optimizations */
+@media (min-width: 641px) {
+  .btn-cashcounter-nav-base {
+    font-size: 0.875rem; /* sm:text-sm */
+  }
+  
+  .btn-cashcounter-nav-back svg {
+    margin-right: 0.5rem; /* sm:mr-2 */
+  }
+}
+
+/* Mejoras para accesibilidad */
+.btn-cashcounter-nav-back:focus-visible,
+.btn-cashcounter-nav-start:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* Dark mode adaptations */
+@media (prefers-color-scheme: dark) {
+  .btn-cashcounter-nav-back {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+    color: #f1f5f9 !important;
+  }
+  
+  .btn-cashcounter-nav-back:hover {
+    background-color: rgba(255, 255, 255, 0.15) !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+  }
+  
+  .btn-cashcounter-nav-start[data-state="disabled"] {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+    color: #64748b !important;
+  }
+}

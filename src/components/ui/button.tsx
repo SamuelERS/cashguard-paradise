@@ -38,7 +38,10 @@ const buttonVariants = cva(
         "report-action": "btn-report-action",
         "wizard-confirm": "bg-green-100 text-green-900 border border-green-500 hover:bg-green-200 dark:bg-green-900 dark:text-green-100 dark:border-green-700 dark:hover:bg-green-200 wizard-confirm-button",
         "protocol-cancel": "btn-protocol-cancel",
-        "protocol-accept": "btn-protocol-accept"
+        "protocol-accept": "btn-protocol-accept",
+        "cashcounter-nav-back": "btn-cashcounter-nav-back",
+        "cashcounter-nav-start": "btn-cashcounter-nav-start",
+        "guided-numeric-confirm": "btn-guided-numeric-confirm"
       },
       size: {
         default: "h-12 px-6 py-3",
@@ -89,6 +92,9 @@ export interface ButtonProps
     | "wizard-confirm"
     | "protocol-cancel"
     | "protocol-accept"
+    | "cashcounter-nav-back"
+    | "cashcounter-nav-start"
+    | "guided-numeric-confirm"
   size?: "default" | "sm" | "lg" | "icon" | "icon-sm"
 }
 

@@ -250,7 +250,8 @@ export const GuidedElectronicPaymentItem = ({
             onClick={handleConfirm}
             disabled={!inputValue && inputValue !== "0"}
             size="sm"
-            className="btn-primary px-6 py-2 text-lg h-12 min-w-[48px] md:h-10"
+            variant="guided-numeric-confirm"
+            data-context="electronic"
             onMouseDown={(e) => e.preventDefault()}
             onTouchStart={(e) => e.preventDefault()}
           >

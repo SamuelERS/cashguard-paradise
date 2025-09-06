@@ -675,13 +675,7 @@ const CashCounter = ({
       >
         <Button
           onClick={onBack}
-          variant="secondary"
-          className="flex-1 h-11 text-xs sm:text-sm px-3 sm:px-4 flex items-center justify-center whitespace-nowrap"
-          style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.05)',
-            border: '1px solid rgba(255, 255, 255, 0.3)',
-            color: '#e1e8ed'
-          }}
+          variant="cashcounter-nav-back"
         >
           <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2 flex-shrink-0" />
           Volver
@@ -689,17 +683,8 @@ const CashCounter = ({
         <Button
           onClick={startPhase1}
           disabled={!canProceedToPhase1}
-          className="flex-1 h-11 text-xs sm:text-sm px-3 sm:px-4 flex items-center justify-center whitespace-nowrap"
-          variant={canProceedToPhase1 ? "ready" : "outline"}
-          style={canProceedToPhase1 ? {
-            background: 'linear-gradient(135deg, #00ba7c 0%, #06d6a0 100%)',
-            border: 'none',
-            color: 'white'
-          } : {
-            backgroundColor: 'rgba(255, 255, 255, 0.05)',
-            border: '1px solid rgba(255, 255, 255, 0.3)',
-            color: '#8899a6'
-          }}
+          variant="cashcounter-nav-start"
+          data-state={canProceedToPhase1 ? "ready" : "disabled"}
         >
           <span>Iniciar</span>
           <span className="hidden sm:inline ml-1">Fase 1</span>

@@ -306,7 +306,8 @@ export const GuidedDenominationItem = ({
             onClick={handleConfirm}
             disabled={!inputValue}
             size="sm"
-            className="btn-primary px-6 py-2 text-lg h-12 min-w-[48px] md:h-10"
+            variant="guided-numeric-confirm"
+            data-context="denomination"
             // 🤖 [IA] - v1.1.15: Removidos preventDefaults que bloqueaban el teclado móvil
             // 🤖 [IA] - Botón más grande en móviles (48px) para mejor accesibilidad
           >
