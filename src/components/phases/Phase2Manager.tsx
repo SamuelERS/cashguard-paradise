@@ -349,14 +349,12 @@ export function Phase2Manager({
         border: '1px solid rgba(244, 33, 46, 0.3)',
         borderRadius: `clamp(8px, 3vw, 16px)`,
         boxShadow: '0 4px 24px rgba(0, 0, 0, 0.8), 0 0 20px rgba(244, 33, 46, 0.2)',
-        width: `clamp(calc(100% - 1rem), 90vw, 500px)`,
         maxWidth: `clamp(300px, 90vw, 500px)`,
         maxHeight: `clamp(400px, 85vh, 90vh)`,
         position: 'fixed',
-        left: `clamp(0.5rem, 5vw, 1rem)`,
-        right: `clamp(0.5rem, 5vw, 1rem)`,
+        left: '50%',
         top: '50%',
-        transform: 'translateY(-50%)',
+        transform: 'translateX(-50%) translateY(-50%)',
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column'
@@ -364,7 +362,7 @@ export function Phase2Manager({
         <AlertDialogHeader style={{ flexShrink: 0 }}>
           <AlertDialogTitle style={{ 
             color: '#1d9bf0', 
-            fontSize: `clamp(1rem, 4vw, 1.25rem)`, 
+            fontSize: `clamp(1rem, 4.5vw, 1.25rem)`, 
             display: 'flex', 
             alignItems: 'center', 
             gap: `clamp(0.375rem, 1.5vw, 0.5rem)` 
