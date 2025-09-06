@@ -411,14 +411,32 @@ Firma Digital: ${dataHash}`;
               <style>
                 body { font-family: 'Courier New', monospace; margin: 20px; }
                 pre { white-space: pre-wrap; font-size: 12px; }
+                .print-message { 
+                  text-align: center; 
+                  color: #555; 
+                  background-color: #f8f8f8; 
+                  padding: 10px; 
+                  margin-bottom: 20px; 
+                  border-radius: 4px; 
+                  border: 1px solid #ddd; 
+                }
                 @media print { 
                   body { margin: 0; }
                   .no-print { display: none; }
                 }
               </style>
+              <script>
+                window.onload = function() {
+                  // Dar tiempo para que el contenido se renderice correctamente
+                  setTimeout(() => window.print(), 500);
+                }
+              </script>
             </head>
             <body>
-              <button class="no-print" onclick="window.print()">🖨️ Imprimir</button>
+              <div class="print-message no-print">
+                📄 Imprimiendo automáticamente...<br>
+                <small>Cierre esta ventana cuando termine la impresión</small>
+              </div>
               <pre>${report}</pre>
             </body>
           </html>
@@ -426,7 +444,7 @@ Firma Digital: ${dataHash}`;
         printWindow.document.close();
         
         toast.success("📄 Reporte generado", {
-          description: "Vista de impresión preparada"
+          description: "Imprimiendo automáticamente..."
         });
       }
     } catch (error) {
