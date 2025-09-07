@@ -17,6 +17,9 @@ import {
 import { Button } from "@/components/ui/button";
 // 🤖 [IA] - v1.2.19: Agregado PrimaryActionButton para botón principal "Todo listo, continuar"
 import { PrimaryActionButton } from "@/components/ui/primary-action-button";
+// 🤖 [IA] - v1.2.19: Agregados botones de acción para modal de confirmación ROJO/VERDE
+import { DestructiveActionButton } from "@/components/ui/destructive-action-button";
+import { ConstructiveActionButton } from "@/components/ui/constructive-action-button";
 // 🤖 [IA] - v1.3.0: Importado CSS modular para botones de Phase2
 import "@/styles/features/phase2-buttons.css";
 import { Phase2DeliverySection } from './Phase2DeliverySection';
@@ -310,7 +313,7 @@ export function Phase2Manager({
         borderRadius: `clamp(8px, 3vw, 16px)`,
         boxShadow: '0 4px 24px rgba(0, 0, 0, 0.8)'
       }}>
-        <AlertDialogHeader>
+        <AlertDialogHeader className="text-center sm:text-center">
           <AlertDialogTitle style={{ color: '#f4212e', fontSize: `clamp(1rem, 4.5vw, 1.25rem)` }}>
             ⚠️ ¿Confirmar salida?
           </AlertDialogTitle>
@@ -322,21 +325,21 @@ export function Phase2Manager({
             </span>
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter>
+        <AlertDialogFooter className="justify-center sm:justify-center">
           <AlertDialogCancel asChild>
-            <Button 
-              variant="phase2-alert-cancel" 
+            <ConstructiveActionButton
+              className="btn-phase2-alert-cancel"
             >
-              Cancelar
-            </Button>
+              Continuar aquí
+            </ConstructiveActionButton>
           </AlertDialogCancel>
           <AlertDialogAction asChild>
-            <Button 
-              variant="phase2-alert-action" 
+            <DestructiveActionButton
               onClick={onBack}
+              className="btn-phase2-alert-action"
             >
               Sí, volver al inicio
-            </Button>
+            </DestructiveActionButton>
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
