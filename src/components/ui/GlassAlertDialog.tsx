@@ -2,7 +2,6 @@
 // Componente reutilizable para confirmaciones con diseño premium
 // Implementa especificaciones exactas del sistema de diseño v1.2.13
 
-import React from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -48,7 +47,7 @@ interface GlassAlertDialogProps {
  * 
  * @param {GlassAlertDialogProps} props - Propiedades del componente
  */
-export const GlassAlertDialog: React.FC<GlassAlertDialogProps> = ({
+export const GlassAlertDialog = ({
   open,
   onConfirm,
   onCancel,
