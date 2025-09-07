@@ -24,6 +24,7 @@ import { useTimingConfig } from "@/hooks/useTimingConfig"; // 🤖 [IA] - Hook d
 import { useInputValidation } from "@/hooks/useInputValidation"; // 🤖 [IA] - v1.0.45: Hook para validación de decimales
 import { GlassAlertDialog } from "@/components/ui/GlassAlertDialog"; // 🤖 [IA] - v1.2.13: Modal de confirmación Glass Morphism
 import { DestructiveActionButton } from "@/components/ui/destructive-action-button"; // 🤖 [IA] - v1.2.26: Botón destructivo estándar
+import { NeutralActionButton } from "@/components/ui/neutral-action-button"; // 🤖 [IA] - v1.2.27: Botón neutral estándar
 import type { CSSProperties } from "react";
 
 interface InitialWizardModalProps {
@@ -826,12 +827,9 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
             <div className="flex items-center gap-1">
               {/* 🤖 [IA] - v1.2.13: Botón Anterior con confirmación para evitar pérdida accidental */}
               {canGoPrevious && (
-                <Button
-                  onClick={() => setShowBackConfirmation(true)}
-                  variant="warning"
-                >
+                <NeutralActionButton onClick={() => setShowBackConfirmation(true)}>
                   Anterior
-                </Button>
+                </NeutralActionButton>
               )}
               
               {/* 🤖 [IA] - v1.2.13: Botón Siguiente refactorizado */}
