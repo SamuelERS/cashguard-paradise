@@ -10,6 +10,7 @@ import '@/styles/features/report-action-button.css';
 import { Badge } from "@/components/ui/badge";
 import { PrimaryActionButton } from "@/components/ui/primary-action-button"; // 🤖 [IA] - v2.0.0: Botón de acción primaria estándar
 import { NeutralActionButton } from "@/components/ui/neutral-action-button"; // 🤖 [IA] - v2.0.0: Botón de acción neutral estándar
+import { ConstructiveActionButton } from "@/components/ui/constructive-action-button"; // 🤖 [IA] - v2.0.0: Botón de acción constructiva estándar
 import { calculateCashTotal, calculateChange50, formatCurrency, generateDenominationSummary } from "@/utils/calculations";
 import { copyToClipboard } from "@/utils/clipboard"; // 🤖 [IA] - v1.1.09
 import { toast } from "sonner"; // 🤖 [IA] - v1.1.15 - Migrated to Sonner for consistency
@@ -698,14 +699,13 @@ Firma Digital: ${dataHash}`;
               {/* 🤖 [IA] - v1.1.01: Responsive buttons para desktop */}
               {/* 🤖 [IA] - v1.2.8: Removido botón Reporte, grid ajustado a 3 columnas */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[clamp(0.5rem,2vw,0.75rem)] lg:max-w-3xl mx-auto">
-                <Button
+                <ConstructiveActionButton
                   onClick={generateWhatsAppReport}
-                  variant="report-action"
                   aria-label="Compartir por WhatsApp"
                 >
                   <Share />
                   WhatsApp
-                </Button>
+                </ConstructiveActionButton>
                 
                 <NeutralActionButton
                   onClick={handleCopyToClipboard}
