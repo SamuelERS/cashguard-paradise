@@ -508,11 +508,8 @@
     color: hsl(var(--foreground));
   }
   
-  .glass-input:hover {
-    border-color: hsl(var(--border) / 0.5);
-    background: var(--glass-hover);
-  }
-  
+  /* PURGED: Removed .glass-input:hover as part of M-20250907-19 */
+
   .glass-input:focus {
     outline: none;
     border-color: hsl(var(--primary) / 0.6);
@@ -563,10 +560,7 @@
     box-shadow: 0 0 20px rgba(48, 209, 88, 0.25);
   }
 
-  .input-field:hover {
-    border-color: rgba(10, 132, 255, 0.15);
-    background: rgba(10, 132, 255, 0.02);
-  }
+  /* PURGED: Removed .input-field:hover as part of M-20250907-19 */
 
   /* Active Field - Luminous Border with Glow */
   .input-field:focus,
