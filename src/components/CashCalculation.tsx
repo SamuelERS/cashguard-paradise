@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import '@/styles/features/report-action-button.css';
 import { Badge } from "@/components/ui/badge";
 import { PrimaryActionButton } from "@/components/ui/primary-action-button"; // 🤖 [IA] - v2.0.0: Botón de acción primaria estándar
-import { NeutralActionButton } from "@/components/ui/neutral-action-button"; // 🤖 [IA] - v1.2.19: Botón de acción neutral para "Copiar"
 import { calculateCashTotal, calculateChange50, formatCurrency, generateDenominationSummary } from "@/utils/calculations";
 import { copyToClipboard } from "@/utils/clipboard"; // 🤖 [IA] - v1.1.09
 import { toast } from "sonner"; // 🤖 [IA] - v1.1.15 - Migrated to Sonner for consistency
@@ -707,14 +706,15 @@ Firma Digital: ${dataHash}`;
                   WhatsApp
                 </Button>
                 
-                <NeutralActionButton
+                <Button
                   onClick={handleCopyToClipboard}
+                  variant="warning"
                   size="sm"
                   aria-label="Copiar reporte"
                 >
                   <Copy />
                   Copiar
-                </NeutralActionButton>
+                </Button>
                 
                 <PrimaryActionButton
                   onClick={onComplete}
