@@ -13,6 +13,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+// 🤖 [IA] - v1.2.19: Importado ConfirmationModal estandarizado para modal de confirmación
+import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 // 🤖 [IA] - v1.3.0: Reemplazado botones nativos con componentes Button para estandarización
 import { Button } from "@/components/ui/button";
 // 🤖 [IA] - v1.2.19: Agregado PrimaryActionButton para botón principal "Todo listo, continuar"
@@ -303,47 +305,18 @@ export function Phase2Manager({
         )}
       </div>
       
-      {/* 🤖 [IA] - v1.2.10: Diálogo de confirmación para prevenir pérdida accidental de datos */}
-      <AlertDialog open={showExitConfirmation} onOpenChange={setShowExitConfirmation}>
-      <AlertDialogContent style={{
-        backgroundColor: 'rgba(36, 36, 36, 0.95)',
-        backdropFilter: `blur(clamp(12px, 4vw, 20px))`,
-        WebkitBackdropFilter: `blur(clamp(12px, 4vw, 20px))`,
-        border: '1px solid rgba(255, 255, 255, 0.15)',
-        borderRadius: `clamp(8px, 3vw, 16px)`,
-        boxShadow: '0 4px 24px rgba(0, 0, 0, 0.8)'
-      }}>
-        <AlertDialogHeader className="text-center sm:text-center">
-          <AlertDialogTitle style={{ color: '#f4212e', fontSize: `clamp(1rem, 4.5vw, 1.25rem)` }}>
-            ⚠️ ¿Confirmar salida?
-          </AlertDialogTitle>
-          <AlertDialogDescription style={{ color: '#e1e8ed', fontSize: `clamp(0.875rem, 3.5vw, 0.95rem)`, lineHeight: '1.5' }}>
-            Se perderá todo el progreso del conteo actual. 
-            <br />
-            <span style={{ color: '#f4a52a', fontWeight: '500' }}>
-              Esta acción no se puede deshacer.
-            </span>
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter className="justify-center sm:justify-center">
-          <AlertDialogAction asChild>
-            <DestructiveActionButton
-              onClick={onBack}
-              className="btn-phase2-alert-action"
-            >
-              Sí, volver al inicio
-            </DestructiveActionButton>
-          </AlertDialogAction>
-          <AlertDialogCancel asChild>
-            <ConstructiveActionButton
-              className="btn-phase2-alert-cancel"
-            >
-              Continuar aquí
-            </ConstructiveActionButton>
-          </AlertDialogCancel>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+      {/* 🤖 [IA] - v1.2.19: Modal de confirmación migrado a ConfirmationModal estandarizado */}
+      <ConfirmationModal
+        open={showExitConfirmation}
+        onOpenChange={setShowExitConfirmation}
+        title="¿Confirmar salida?"
+        description="Se perderá todo el progreso del conteo actual."
+        warningText="Esta acción no se puede deshacer."
+        confirmText="Sí, volver al inicio"
+        cancelText="Continuar aquí"
+        onConfirm={onBack}
+        onCancel={() => setShowExitConfirmation(false)}
+      />
 
     {/* 🤖 [IA] - v1.2.10: Modal de instrucciones con checklist para preparación - Colores de corte nocturno */}
     <AlertDialog open={showInstructionsModal} onOpenChange={setShowInstructionsModal}>
