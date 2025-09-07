@@ -17,6 +17,8 @@ import {
 import { Button } from "@/components/ui/button";
 // 🤖 [IA] - v2.0.0: Importar DestructiveActionButton para la doctrina SOLID RED
 import { DestructiveActionButton } from "@/components/ui/destructive-action-button";
+// 🤖 [IA] - v2.0.0: Importar ConstructiveActionButton para la doctrina SOLID GREEN
+import { ConstructiveActionButton } from "@/components/ui/constructive-action-button";
 
 // [IA] - Props tipadas para máxima flexibilidad y reutilización
 interface GlassAlertDialogProps {
@@ -93,14 +95,14 @@ export const GlassAlertDialog: React.FC<GlassAlertDialogProps> = ({
             </DestructiveActionButton>
           </AlertDialogAction>
           
-          {/* 🤖 [IA] - v1.2.24: Migración a Button centralizado con variant glass-alert-cancel */}
+          {/* 🤖 [IA] - v2.0.0: Migración a ConstructiveActionButton siguiendo la SOLID GREEN DOCTRINE */}
           <AlertDialogCancel asChild>
-            <Button 
-              variant="glass-alert-cancel"
+            <ConstructiveActionButton
               onClick={onCancel}
+              className="mt-2 sm:mt-0"
             >
               {cancelText}
-            </Button>
+            </ConstructiveActionButton>
           </AlertDialogCancel>
         </AlertDialogFooter>
       </AlertDialogContent>

@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/alert-dialog";
 // 🤖 [IA] - v1.3.0: Reemplazado botones nativos con componentes Button para estandarización
 import { Button } from "@/components/ui/button";
+// 🤖 [IA] - v1.2.19: Agregado PrimaryActionButton para botón principal "Todo listo, continuar"
+import { PrimaryActionButton } from "@/components/ui/primary-action-button";
 // 🤖 [IA] - v1.3.0: Importado CSS modular para botones de Phase2
 import "@/styles/features/phase2-buttons.css";
 import { Phase2DeliverySection } from './Phase2DeliverySection';
@@ -604,13 +606,13 @@ export function Phase2Manager({
 
         <AlertDialogFooter style={{ flexShrink: 0, paddingTop: `clamp(0.5rem, 2vw, 0.75rem)` }}>
           <AlertDialogAction asChild>
-            <Button 
-              variant="phase2-instruction" 
+            <PrimaryActionButton 
               onClick={() => setShowInstructionsModal(false)} 
               disabled={!allItemsChecked}
+              className="btn-phase2-instruction"
             >
               {allItemsChecked ? '✓ Todo listo, continuar' : 'Marque todos los items para continuar'}
-            </Button>
+            </PrimaryActionButton>
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
