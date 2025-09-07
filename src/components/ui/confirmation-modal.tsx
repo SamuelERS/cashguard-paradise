@@ -96,14 +96,14 @@ export function ConfirmationModal({
       >
         <AlertDialogHeader>
           <AlertDialogTitle
-            className="text-[clamp(1rem,4.5vw,1.25rem)] font-bold text-white"
+            className="text-[clamp(1rem,4.5vw,1.25rem)] font-bold text-destructive text-center"
           >
-            {title}
+            ⚠️ {title}
           </AlertDialogTitle>
           
           {description && (
             <AlertDialogDescription 
-              className="text-[clamp(0.875rem,3.5vw,1rem)] text-gray-300 mt-2"
+              className="text-[clamp(0.875rem,3.5vw,1rem)] text-gray-300 mt-2 text-center"
             >
               {description}
             </AlertDialogDescription>
@@ -111,7 +111,7 @@ export function ConfirmationModal({
           
           {warningText && (
             <div 
-              className="mt-3 p-[clamp(0.5rem,2vw,0.75rem)] rounded-[clamp(0.375rem,1.5vw,0.5rem)] text-[clamp(0.75rem,3vw,0.875rem)] font-medium"
+              className="mt-3 p-[clamp(0.5rem,2vw,0.75rem)] rounded-[clamp(0.375rem,1.5vw,0.5rem)] text-[clamp(0.75rem,3vw,0.875rem)] font-medium text-center"
               style={{
                 background: "rgba(244, 165, 42, 0.1)",
                 border: "1px solid rgba(244, 165, 42, 0.3)",
