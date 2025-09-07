@@ -86,13 +86,9 @@ export function ConfirmationModal({
       
       <AlertDialogContent
         style={{
-          background: "rgba(36, 36, 36, 0.4)",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
-          border: "1px solid rgba(255, 255, 255, 0.15)",
-          borderRadius: "clamp(0.5rem, 2vw, 0.75rem)"
+          maxWidth: "min(calc(100vw - 2rem), 32rem)" // Responsive constraint only
         }}
-        className={className}
+        className={`glass-morphism-panel w-full ${className || ''}`}
       >
         <AlertDialogHeader>
           <AlertDialogTitle
