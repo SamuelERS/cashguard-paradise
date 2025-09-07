@@ -25,6 +25,7 @@ import { useInputValidation } from "@/hooks/useInputValidation"; // 🤖 [IA] - 
 import { GlassAlertDialog } from "@/components/ui/GlassAlertDialog"; // 🤖 [IA] - v1.2.13: Modal de confirmación Glass Morphism
 import { DestructiveActionButton } from "@/components/ui/destructive-action-button"; // 🤖 [IA] - v1.2.26: Botón destructivo estándar
 import { NeutralActionButton } from "@/components/ui/neutral-action-button"; // 🤖 [IA] - v1.2.27: Botón neutral estándar
+import { ConstructiveActionButton } from "@/components/ui/constructive-action-button"; // 🤖 [IA] - v1.2.29: Botón constructivo estándar
 import type { CSSProperties } from "react";
 
 interface InitialWizardModalProps {
@@ -832,15 +833,14 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                 </NeutralActionButton>
               )}
               
-              {/* 🤖 [IA] - v1.2.13: Botón Siguiente refactorizado */}
+              {/* 🤖 [IA] - v1.2.29: Botón Siguiente migrado a ConstructiveActionButton estándar */}
               {currentStep < totalSteps && (
-                <Button
+                <ConstructiveActionButton
                   onClick={handleNext}
                   disabled={!canGoNext}
-                  variant="success"
                 >
                   Siguiente
-                </Button>
+                </ConstructiveActionButton>
               )}
             </div>
           </div>
