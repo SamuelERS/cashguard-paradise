@@ -31,6 +31,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"; // 🤖 [IA] - v1.2.9: Diálogo de confirmación
 import { GlassAlertDialog } from "@/components/ui/GlassAlertDialog"; // 🤖 [IA] - v1.2.19: Modal confirmación retroceso
+import { DestructiveActionButton } from "@/components/ui/destructive-action-button"; // 🤖 [IA] - v2.0.0: Botón destructivo estándar
 import CashCalculation from "@/components/CashCalculation";
 import { GuidedProgressIndicator } from "@/components/ui/GuidedProgressIndicator";
 import { GuidedCoinSection } from "@/components/cash-counting/GuidedCoinSection";
@@ -822,14 +823,13 @@ const CashCounter = ({
           {/* Sistema de navegación simplificado - 🤖 [IA] - v1.2.19: 2-Button Navigation System */}
           <div className="phase1-navigation">
             {/* 🤖 [IA] - v1.2.23: Botón Cancelar migrado a variant="error" desde legacy CSS */}
-            <Button
+            <DestructiveActionButton
               onClick={handleCancelProcess}
-              variant="error"
               aria-label="Cancelar proceso y volver al inicio"
             >
               <X className="phase1-nav-icon" />
               <span className="phase1-nav-text-hidden">Cancelar</span>
-            </Button>
+            </DestructiveActionButton>
             
             {/* 🤖 [IA] - v1.2.23: Botón Anterior migrado a variant="warning" desde legacy CSS */}
             <Button
