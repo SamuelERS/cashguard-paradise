@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/alert-dialog"; // 🤖 [IA] - v1.2.9: Diálogo de confirmación
 import { GlassAlertDialog } from "@/components/ui/GlassAlertDialog"; // 🤖 [IA] - v1.2.19: Modal confirmación retroceso
 import { DestructiveActionButton } from "@/components/ui/destructive-action-button"; // 🤖 [IA] - v2.0.0: Botón destructivo estándar
+import { NeutralActionButton } from "@/components/ui/neutral-action-button"; // 🤖 [IA] - v1.2.28: Botón neutral estándar
 import CashCalculation from "@/components/CashCalculation";
 import { GuidedProgressIndicator } from "@/components/ui/GuidedProgressIndicator";
 import { GuidedCoinSection } from "@/components/cash-counting/GuidedCoinSection";
@@ -831,16 +832,15 @@ const CashCounter = ({
               <span className="phase1-nav-text-hidden">Cancelar</span>
             </DestructiveActionButton>
             
-            {/* 🤖 [IA] - v1.2.23: Botón Anterior migrado a variant="warning" desde legacy CSS */}
-            <Button
+            {/* 🤖 [IA] - v1.2.28: Botón Anterior migrado a NeutralActionButton estándar */}
+            <NeutralActionButton
               onClick={handlePreviousStep}
               disabled={!canGoPrevious()}
-              variant="warning"
               aria-label="Retroceder al campo anterior"
             >
               <ArrowLeft className="phase1-nav-icon" />
               <span className="phase1-nav-text-hidden">Anterior</span>
-            </Button>
+            </NeutralActionButton>
           </div>
 
           {/* 🤖 [IA] - v1.2.25: Glass AlertDialog con diseño coherente y Glass Morphism funcional */}
