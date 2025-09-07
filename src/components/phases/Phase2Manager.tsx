@@ -326,13 +326,6 @@ export function Phase2Manager({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter className="justify-center sm:justify-center">
-          <AlertDialogCancel asChild>
-            <ConstructiveActionButton
-              className="btn-phase2-alert-cancel"
-            >
-              Continuar aquí
-            </ConstructiveActionButton>
-          </AlertDialogCancel>
           <AlertDialogAction asChild>
             <DestructiveActionButton
               onClick={onBack}
@@ -341,6 +334,13 @@ export function Phase2Manager({
               Sí, volver al inicio
             </DestructiveActionButton>
           </AlertDialogAction>
+          <AlertDialogCancel asChild>
+            <ConstructiveActionButton
+              className="btn-phase2-alert-cancel"
+            >
+              Continuar aquí
+            </ConstructiveActionButton>
+          </AlertDialogCancel>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
