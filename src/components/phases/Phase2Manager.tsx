@@ -22,6 +22,8 @@ import { PrimaryActionButton } from "@/components/ui/primary-action-button";
 // 🤖 [IA] - v1.2.19: Agregados botones de acción para modal de confirmación ROJO/VERDE
 import { DestructiveActionButton } from "@/components/ui/destructive-action-button";
 import { ConstructiveActionButton } from "@/components/ui/constructive-action-button";
+// 🤖 [IA] - v2.0.0: Agregado NeutralActionButton para botón "Volver al inicio"
+import { NeutralActionButton } from "@/components/ui/neutral-action-button";
 // 🤖 [IA] - v1.3.0: Importado CSS modular para botones de Phase2
 import "@/styles/features/phase2-buttons.css";
 import { Phase2DeliverySection } from './Phase2DeliverySection';
@@ -280,16 +282,16 @@ export function Phase2Manager({
         )}
       </AnimatePresence>
 
-      {/* Navigation Buttons - 🤖 [IA] - v1.3.0: Estandarización con Button component */}
+      {/* Navigation Buttons - 🤖 [IA] - v2.0.0: Estandarización con NeutralActionButton */}
       <div className="flex gap-[clamp(0.5rem,2vw,0.75rem)] lg:max-w-lg lg:mx-auto">
-        <Button
-          variant="phase2-back"
+        <NeutralActionButton
           onClick={() => setShowExitConfirmation(true)}
           aria-label="Volver al inicio"
+          className="btn-phase2-back"
         >
           <ArrowLeft className="w-[clamp(0.875rem,3.5vw,1rem)] h-[clamp(0.875rem,3.5vw,1rem)] mr-[clamp(0.25rem,1vw,0.375rem)] flex-shrink-0" />
           <span>Volver al inicio</span>
-        </Button>
+        </NeutralActionButton>
         
         {/* Manual section switch (only when delivery is complete) */}
         {deliveryCompleted && currentSection === 'delivery' && !verificationCompleted && (
