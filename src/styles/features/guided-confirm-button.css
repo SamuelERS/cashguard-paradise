@@ -27,7 +27,7 @@
 
 /* Estado hover */
 .btn-guided-confirm:hover:not(:disabled) {
-  @apply border-green-600 text-green-900;
+  @apply border-green-600 text-white;
   transform: translateY(-1px) scale(1.02);
 }
 
@@ -60,7 +60,7 @@
   }
   
   .btn-guided-confirm:hover:not(:disabled) {
-    @apply bg-green-800 border-green-600 text-green-100;
+    @apply bg-green-800 border-green-600 text-white;
   }
   
   .btn-guided-confirm:active:not(:disabled) {
