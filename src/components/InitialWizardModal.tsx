@@ -23,6 +23,7 @@ import { toast } from "sonner";
 import { useTimingConfig } from "@/hooks/useTimingConfig"; // 🤖 [IA] - Hook de timing unificado v1.0.22
 import { useInputValidation } from "@/hooks/useInputValidation"; // 🤖 [IA] - v1.0.45: Hook para validación de decimales
 import { GlassAlertDialog } from "@/components/ui/GlassAlertDialog"; // 🤖 [IA] - v1.2.13: Modal de confirmación Glass Morphism
+import { DestructiveActionButton } from "@/components/ui/destructive-action-button"; // 🤖 [IA] - v1.2.26: Botón destructivo estándar
 import type { CSSProperties } from "react";
 
 interface InitialWizardModalProps {
@@ -817,12 +818,9 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
           {/* Navigation Buttons - Single Row Layout */}
           <div className="flex items-center justify-between mt-6 pt-4" style={{ borderTop: '1px solid #2a3441' }}>
             {/* 🤖 [IA] - v1.2.13: Cancel Button refactorizado + comportamiento corregido */}
-            <Button
-              onClick={handleClose}
-              variant="error"
-            >
+            <DestructiveActionButton onClick={handleClose}>
               Cancelar
-            </Button>
+            </DestructiveActionButton>
             
             {/* Navigation Buttons - Right Side */}
             <div className="flex items-center gap-1">

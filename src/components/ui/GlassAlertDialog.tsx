@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/alert-dialog";
 // 🤖 [IA] - v1.2.24: Importar Button component para migración al sistema centralizado
 import { Button } from "@/components/ui/button";
+// 🤖 [IA] - v2.0.0: Importar DestructiveActionButton para la doctrina SOLID RED
+import { DestructiveActionButton } from "@/components/ui/destructive-action-button";
 
 // [IA] - Props tipadas para máxima flexibilidad y reutilización
 interface GlassAlertDialogProps {
@@ -82,14 +84,13 @@ export const GlassAlertDialog: React.FC<GlassAlertDialogProps> = ({
         <AlertDialogFooter 
           className="glass-alert-dialog-footer flex flex-col-reverse sm:flex-row sm:justify-center gap-y-4 sm:gap-y-0 sm:gap-x-4"
         >
-          {/* 🤖 [IA] - v1.2.24: Migración a Button centralizado con variant glass-alert-action */}
+          {/* 🤖 [IA] - v2.0.0: Migración a DestructiveActionButton siguiendo la SOLID RED DOCTRINE */}
           <AlertDialogAction asChild>
-            <Button 
-              variant="glass-alert-action"
+            <DestructiveActionButton 
               onClick={onConfirm}
             >
               {confirmText}
-            </Button>
+            </DestructiveActionButton>
           </AlertDialogAction>
           
           {/* 🤖 [IA] - v1.2.24: Migración a Button centralizado con variant glass-alert-cancel */}
