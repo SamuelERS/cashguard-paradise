@@ -1,7 +1,7 @@
 // 🤖 [IA] - v1.2.13: Modal con Glass Morphism coherente del proyecto
 import React, { useState, useEffect, useMemo } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
+import { PrimaryActionButton } from '@/components/ui/primary-action-button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { AlertTriangle, Info, Shield, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -236,10 +236,10 @@ export function GuidedInstructionsModal({
           </div>
 
           {/* Botón de confirmación - Con variante guided-start y data attributes */}
-          <Button
-            variant="guided-start"
+          <PrimaryActionButton
             onClick={handleConfirm}
             disabled={!understood}
+            className="btn-guided-start"
             data-state={understood ? "active" : "inactive"}
             data-count-type={isMorningCount ? "morning" : "evening"}
             aria-label="Comenzar conteo guiado"
@@ -248,7 +248,7 @@ export function GuidedInstructionsModal({
               Comenzar Conteo
               <ArrowRight />
             </span>
-          </Button>
+          </PrimaryActionButton>
         </div>
       </DialogContent>
     </Dialog>
