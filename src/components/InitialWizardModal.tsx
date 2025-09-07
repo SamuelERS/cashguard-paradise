@@ -634,13 +634,13 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                   />
                 </div>
                 {/* Botón Confirmar al lado del input */}
-                {/* 🤖 [IA] - v1.2.13: Botón refactorizado con clase CSS */}
-                <Button
+                {/* 🤖 [IA] - v1.2.30: Botón migrado a ConstructiveActionButton estándar */}
+                <ConstructiveActionButton
                   onClick={handleComplete}
                   disabled={!isCompleted}
-                  variant="wizard-confirm"
                   aria-label="Confirmar venta esperada"
                   type="button"
+                  className="wizard-confirm-button"
                 >
                   <CheckCircle aria-hidden="true" style={{ 
                     width: 'clamp(1.25rem, 4vw, 1.5rem)',
@@ -648,7 +648,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                     marginRight: 'clamp(0.375rem, 1.5vw, 0.5rem)'
                   }} />
                   <span>Confirmar</span>
-                </Button>
+                </ConstructiveActionButton>
               </div>
               {wizardData.expectedSales && parseFloat(wizardData.expectedSales) <= 0 && (
                 <p className="text-xs" style={{ color: '#f4212e' }}>
