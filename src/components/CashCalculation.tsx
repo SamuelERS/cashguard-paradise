@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 // 🤖 [IA] - v1.3.0: Importación de CSS modular para el botón report-action
 import '@/styles/features/report-action-button.css';
 import { Badge } from "@/components/ui/badge";
+import { PrimaryActionButton } from "@/components/ui/primary-action-button"; // 🤖 [IA] - v2.0.0: Botón de acción primaria estándar
 import { calculateCashTotal, calculateChange50, formatCurrency, generateDenominationSummary } from "@/utils/calculations";
 import { copyToClipboard } from "@/utils/clipboard"; // 🤖 [IA] - v1.1.09
 import { toast } from "sonner"; // 🤖 [IA] - v1.1.15 - Migrated to Sonner for consistency
@@ -715,16 +716,13 @@ Firma Digital: ${dataHash}`;
                   Copiar
                 </Button>
                 
-                <Button
+                <PrimaryActionButton
                   onClick={onComplete}
-                  variant="success"
-                  size="sm"
-                  className="sm:col-span-2 lg:col-span-1"
                   aria-label="Finalizar proceso"
                 >
                   <CheckCircle />
                   Finalizar
-                </Button>
+                </PrimaryActionButton>
               </div>
             </div>
           </div>
