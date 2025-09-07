@@ -2,6 +2,20 @@
 // Componente reutilizable para confirmaciones con diseño premium
 // Implementa especificaciones exactas del sistema de diseño v1.2.13
 
+// 🤖 [IA] - v2.0.0 - DEPRECATED COMPONENT
+// ⚠️ ADVERTENCIA: Este componente está DEPRECADO
+// Este componente ha sido reemplazado por el nuevo ConfirmationModal (@/components/ui/confirmation-modal)
+// que implementa un diseño más abstracto y flexible según la doctrina v2.0.0
+//
+// RAZONES DE DEPRECACIÓN:
+// - No implementa una abstracción suficiente
+// - Contiene estilos inline y clases dispersas
+// - La lógica está acoplada a la implementación
+//
+// PLAN DE MIGRACIÓN:
+// 1. Usar ConfirmationModal en lugar de GlassAlertDialog en todos los componentes
+// 2. Este archivo será eliminado en la próxima actualización mayor
+
 import {
   AlertDialog,
   AlertDialogAction,

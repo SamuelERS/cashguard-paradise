@@ -30,7 +30,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"; // 🤖 [IA] - v1.2.9: Diálogo de confirmación
-import { GlassAlertDialog } from "@/components/ui/GlassAlertDialog"; // 🤖 [IA] - v1.2.19: Modal confirmación retroceso
+import { ConfirmationModal } from "@/components/ui/confirmation-modal"; // 🤖 [IA] - v2.0.0: Modal de confirmación abstracto
 import { DestructiveActionButton } from "@/components/ui/destructive-action-button"; // 🤖 [IA] - v2.0.0: Botón destructivo estándar
 import { NeutralActionButton } from "@/components/ui/neutral-action-button"; // 🤖 [IA] - v1.2.28: Botón neutral estándar
 import CashCalculation from "@/components/CashCalculation";
@@ -240,7 +240,7 @@ const CashCounter = ({
     }
   };
 
-  // 🤖 [IA] - v1.2.8 - Sistema Ciego Anti-Fraude: Auto-confirmar todos los totales sin mostrar valores
+  // 🤖 [IA] - v1.2.8: Sistema Ciego Anti-Fraude: Auto-confirmar todos los totales sin mostrar valores
   useEffect(() => {
     // Auto-confirmar totalCash y totalElectronic para mantener sistema ciego
     if ((currentField === 'totalCash' || currentField === 'totalElectronic') && 
@@ -843,28 +843,30 @@ const CashCounter = ({
             </NeutralActionButton>
           </div>
 
-          {/* 🤖 [IA] - v1.2.25: Glass AlertDialog con diseño coherente y Glass Morphism funcional */}
-          <GlassAlertDialog
+          {/* 🤖 [IA] - v2.0.0: Modal de confirmación abstracto para salida */}
+          <ConfirmationModal
             open={showExitConfirmation}
-            onConfirm={handleBackToStart}
-            onCancel={() => setShowExitConfirmation(false)}
-            title="⚠️ ¿Confirmar salida?"
+            onOpenChange={setShowExitConfirmation}
+            title="¿Confirmar salida?"
             description="Se perderá todo el progreso del conteo actual."
-            warning="Esta acción no se puede deshacer."
+            warningText="Esta acción no se puede deshacer."
             confirmText="Sí, volver al inicio"
             cancelText="Continuar aquí"
+            onConfirm={handleBackToStart}
+            onCancel={() => setShowExitConfirmation(false)}
           />
 
-          {/* 🤖 [IA] - v1.2.19: Modal de confirmación para retroceso con Glass Morphism */}
-          <GlassAlertDialog
+          {/* 🤖 [IA] - v2.0.0: Modal de confirmación abstracto para retroceso */}
+          <ConfirmationModal
             open={showBackConfirmation}
-            onConfirm={handleConfirmPrevious}
-            onCancel={() => setShowBackConfirmation(false)}
-            title="⬅️ ¿Retroceder al campo anterior?"
+            onOpenChange={setShowBackConfirmation}
+            title="¿Retroceder al campo anterior?"
             description="Todos los valores ingresados se mantendrán guardados."
-            warning="Podrás revisar y editar campos anteriores sin perder datos."
+            warningText="Podrás revisar y editar campos anteriores sin perder datos."
             confirmText="Sí, retroceder"
             cancelText="Continuar aquí"
+            onConfirm={handleConfirmPrevious}
+            onCancel={() => setShowBackConfirmation(false)}
           />
 
         </div>

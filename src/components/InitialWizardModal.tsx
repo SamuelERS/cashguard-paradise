@@ -22,7 +22,7 @@ import '@/styles/features/wizard-confirm-button.css';
 import { toast } from "sonner";
 import { useTimingConfig } from "@/hooks/useTimingConfig"; // 🤖 [IA] - Hook de timing unificado v1.0.22
 import { useInputValidation } from "@/hooks/useInputValidation"; // 🤖 [IA] - v1.0.45: Hook para validación de decimales
-import { GlassAlertDialog } from "@/components/ui/GlassAlertDialog"; // 🤖 [IA] - v1.2.13: Modal de confirmación Glass Morphism
+import { ConfirmationModal } from "@/components/ui/confirmation-modal"; // 🤖 [IA] - v2.0.0: Modal de confirmación abstracto
 import { DestructiveActionButton } from "@/components/ui/destructive-action-button"; // 🤖 [IA] - v1.2.26: Botón destructivo estándar
 import { NeutralActionButton } from "@/components/ui/neutral-action-button"; // 🤖 [IA] - v1.2.27: Botón neutral estándar
 import { ConstructiveActionButton } from "@/components/ui/constructive-action-button"; // 🤖 [IA] - v1.2.29: Botón constructivo estándar
@@ -847,19 +847,20 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
         </div>
       </DialogContent>
       
-      {/* 🤖 [IA] - v1.2.13: Modal de confirmación Glass Morphism para prevenir retrocesos accidentales */}
-      <GlassAlertDialog
+      {/* 🤖 [IA] - v2.0.0: Modal de confirmación abstracto para prevenir retrocesos accidentales */}
+      <ConfirmationModal
         open={showBackConfirmation}
+        onOpenChange={setShowBackConfirmation}
+        title="¿Retroceder al paso anterior?"
+        description="Los datos ingresados se mantendrán."
+        warningText="Retrocede si quieres corregir información."
+        confirmText="Sí, retroceder"
+        cancelText="Continuar aquí"
         onConfirm={() => {
           goPrevious();
           setShowBackConfirmation(false);
         }}
         onCancel={() => setShowBackConfirmation(false)}
-        title="⚠️ ¿Retroceder al paso anterior?"
-        description="Los datos ingresados se mantendrán."
-        warning="Retrocede si quieres corregir información."
-        confirmText="Sí, retroceder"
-        cancelText="Continuar aquí"
       />
     </Dialog>
   );
