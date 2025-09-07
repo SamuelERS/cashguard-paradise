@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Banknote, Coins, CreditCard, ChevronRight, Check } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { ConstructiveActionButton } from '@/components/ui/constructive-action-button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { DENOMINATIONS } from '@/types/cash';
@@ -366,17 +367,20 @@ export function GuidedFieldView({
                     autoFocus // 🤖 [IA] - v1.1.17: autoFocus necesario para mantener teclado entre campos
                   />
                 </div>
-                <Button
-                  variant="guided-confirm"
+                <ConstructiveActionButton
                   onClick={handleConfirm}
                   disabled={!inputValue}
                   data-size="default"
                   onTouchStart={(e) => e.preventDefault()} // 🤖 [IA] - v1.1.17: preventDefault para mantener focus
                   aria-label="Confirmar cantidad ingresada"
+                  className="btn-guided-confirm"
+                  style={{
+                    height: 'clamp(48px, 12vw, 56px)' // 🤖 [IA] - v1.2.19: Contextual height matching input for perfect alignment
+                  }}
                 >
                   Confirmar
                   <ChevronRight className="w-4 h-4 ml-1" />
-                </Button>
+                </ConstructiveActionButton>
               </div>
 
               {/* 🤖 [IA] - v1.2.7: Indicador minimalista sin valores monetarios (anti-fraude) */}
