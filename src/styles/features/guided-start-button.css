@@ -36,14 +36,14 @@
 
 /* Estado hover */
 .btn-guided-start:hover:not(:disabled) {
-  @apply bg-green-200 border-green-600 text-green-900;
+  @apply border-green-600 text-green-900;
   transform: translateY(-1px) scale(1.02);
 }
 
 /* Estado active */
 .btn-guided-start:active:not(:disabled) {
   transform: translateY(0) scale(0.98);
-  @apply bg-green-200 text-green-900;
+  @apply text-green-900;
 }
 
 /* Estado disabled */

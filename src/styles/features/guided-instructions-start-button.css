@@ -28,7 +28,6 @@
 }
 
 .guided-instructions-start-button:hover:not(:disabled) {
-  background: #bbf7d0 !important; /* hover:bg-green-200 EXACTO - Override btn-primary */
   border-color: #16a34a !important; /* hover:border-green-600 - Override btn-primary */
   color: #14532d !important; /* text-green-900 EXACTO - Override btn-primary */
   box-shadow: none !important; /* Remove btn-primary:hover shadow completely */
@@ -37,7 +36,6 @@
 
 .guided-instructions-start-button:active:not(:disabled) {
   transform: translateY(0) scale(0.98); /* Efecto de presión */
-  background: #bbf7d0 !important; /* Consistente con hover - green-200 - Override btn-primary */
   color: #14532d !important; /* text-green-900 EXACTO - Override btn-primary */
   box-shadow: none !important; /* Remove any active state shadows */
 }
@@ -62,13 +60,11 @@
   }
   
   .guided-instructions-start-button:hover:not(:disabled) {
-    background: #166534 !important; /* dark:hover:bg-green-800 EXACTO - Override btn-primary */
     border-color: #16a34a !important; /* Override btn-primary */
     color: #dcfce7 !important; /* Override btn-primary */
   }
   
   .guided-instructions-start-button:active:not(:disabled) {
-    background: #166534 !important; /* Consistente con hover en dark - Override btn-primary */
     color: #dcfce7 !important; /* Override btn-primary */
   }
   
