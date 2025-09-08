@@ -6,6 +6,7 @@ import {
   MapPin, Users, DollarSign
 } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -200,7 +201,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               </p>
             </div>
 
-            <div className="flex flex-col gap-3 md:gap-4">
+            <div className="flex flex-col gap-4">
               <h3 className="font-semibold text-primary-foreground text-base md:text-lg">
                 Protocolo obligatorio:
               </h3>
@@ -208,22 +209,22 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               {protocolRules.map((rule, index) => (
                 <div
                   key={index}
-                  className="flex items-start premium-rule-card"
-                  className={`${rule.critical ? 'border-l-4 border-l-red-500' : 'border-l-4 border-l-orange-400'} gap-3 md:gap-4 p-3 md:p-4`}
+                  className={`flex items-start ${rule.critical ? 'border-l-4 border-l-red-500' : 'border-l-4 border-l-orange-400'} gap-4 p-4 rounded-md bg-card/50 border border-border/50`}
                   role="listitem"
                   aria-label={`Regla ${index + 1}: ${rule.text}`}
                 >
                   <div className="flex-shrink-0">{rule.icon}</div>
-                  <span className="flex-1 leading-relaxed text-primary-foreground text-xs md:text-sm">{rule.text}</span>
-                  {/* 🤖 [IA] - v1.2.12 - Badge premium con efectos shimmer */}
+                  <span className="flex-1 leading-relaxed text-primary-foreground text-sm md:text-base">{rule.text}</span>
+                  {/* 🤖 [IA] - v1.2.20 - Badge migrado a componente shadcn/ui */}
                   {(rule.critical || rule.isAlert) && (
-                    <span 
-                      className={rule.isAlert ? "wizard-alert-badge" : "wizard-critical-badge"}
+                    <Badge 
+                      variant={rule.isAlert ? "warning" : "destructive"}
                       aria-label={rule.isAlert ? "Alerta informativa" : "Regla crítica de cumplimiento obligatorio"}
                       role="status"
+                      className="shrink-0"
                     >
                       {rule.isAlert ? "ALERTA" : "CRÍTICO"}
-                    </span>
+                    </Badge>
                   )}
                 </div>
               ))}
@@ -231,9 +232,9 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
 
             {/* 🤖 [IA] - v1.0.59: Checkbox con glass effect */}
             {/* 🤖 [IA] - v1.2.12 - Responsividad mejorada y textos concisos */}
-            <div className="border-t border-white/10 pt-3 md:pt-4 flex flex-col gap-3 md:gap-4">
+            <div className="border-t border-white/10 pt-4 flex flex-col gap-4">
               <motion.div 
-                className={`wizard-glass-element flex items-start gap-3 md:gap-4 p-3 md:p-4 rounded-lg md:rounded-xl transition-all duration-300 ${
+                className={`wizard-glass-element flex items-start gap-4 p-4 rounded-lg md:rounded-xl transition-all duration-300 ${
                   wizardData.rulesAccepted 
                     ? 'border-2 border-green-400/60 shadow-lg shadow-green-400/20' 
                     : 'border-2 border-blue-400/60 shadow-lg shadow-blue-400/20'
