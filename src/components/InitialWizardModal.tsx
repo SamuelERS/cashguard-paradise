@@ -26,6 +26,7 @@ import { ConfirmationModal } from "@/components/ui/confirmation-modal"; // 🤖 
 import { DestructiveActionButton } from "@/components/ui/destructive-action-button"; // 🤖 [IA] - v1.2.26: Botón destructivo estándar
 import { NeutralActionButton } from "@/components/ui/neutral-action-button"; // 🤖 [IA] - v1.2.27: Botón neutral estándar
 import { ConstructiveActionButton } from "@/components/ui/constructive-action-button"; // 🤖 [IA] - v1.2.29: Botón constructivo estándar
+import { cn } from "@/lib/utils"; // 🤖 [IA] - v1.2.23: Utilidad para manejo seguro de clases
 
 interface InitialWizardModalProps {
   isOpen: boolean;
@@ -285,7 +286,13 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               aria-label="Selección de sucursal para corte de caja"
               aria-required="true"
             >
-              <SelectTrigger className="wizard-select-trigger w-full">
+              <SelectTrigger 
+                className={cn(
+                  "wizard-select-trigger w-full",
+                  "shadow-none border-input transition-all duration-300 ease-in-out",
+                  "focus:neon-glow-primary data-[state=open]:neon-glow-primary"
+                )}
+              >
                 <SelectValue placeholder="Elegir sucursal" />
               </SelectTrigger>
               <SelectContent className="wizard-select-content">

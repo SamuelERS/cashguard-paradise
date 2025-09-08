@@ -2201,3 +2201,26 @@
 .glass-alert-dialog-footer {
   margin-top: 16px;
 }
+
+/* === DOCTRINA OFICIAL DE NEON GLOW - PARADISE UI V1.0 === */
+/* Misión: M-20250907-53 */
+
+@layer utilities {
+  .neon-glow-primary {
+    --glow-color: theme('colors.blue.500');
+    box-shadow:
+      0 0 5px hsl(var(--glow-color) / 0.5),
+      0 0 15px hsl(var(--glow-color) / 0.3),
+      0 0 25px hsl(var(--glow-color) / 0.2);
+    border-color: hsl(var(--glow-color) / 0.8);
+  }
+
+  .neon-glow-morning {
+    --glow-color: theme('colors.orange.500');
+    box-shadow:
+      0 0 5px hsl(var(--glow-color) / 0.5),
+      0 0 15px hsl(var(--glow-color) / 0.3),
+      0 0 25px hsl(var(--glow-color) / 0.2);
+    border-color: hsl(var(--glow-color) / 0.8);
+  }
+}
