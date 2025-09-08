@@ -2,10 +2,9 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
-  Shield, AlertTriangle, CheckCircle, X, ArrowLeft, ArrowRight,
+  Shield, AlertTriangle, CheckCircle,
   MapPin, Users, DollarSign
 } from "lucide-react";
-import { Button, buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -27,7 +26,6 @@ import { ConfirmationModal } from "@/components/ui/confirmation-modal"; // 🤖 
 import { DestructiveActionButton } from "@/components/ui/destructive-action-button"; // 🤖 [IA] - v1.2.26: Botón destructivo estándar
 import { NeutralActionButton } from "@/components/ui/neutral-action-button"; // 🤖 [IA] - v1.2.27: Botón neutral estándar
 import { ConstructiveActionButton } from "@/components/ui/constructive-action-button"; // 🤖 [IA] - v1.2.29: Botón constructivo estándar
-import type { CSSProperties } from "react";
 
 interface InitialWizardModalProps {
   isOpen: boolean;
@@ -95,8 +93,6 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
     ? getEmployeesByStore(wizardData.selectedStore) 
     : [];
   
-  // 🤖 [IA] - v1.2.11 - Detección de viewport y escala proporcional
-  const viewportScale = typeof window !== 'undefined' ? Math.min(window.innerWidth / 430, 1) : 1;
 
   // 🤖 [IA] - v1.0.39 - Simplificación de reglas del protocolo
   const protocolRules = [
@@ -624,32 +620,26 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
             </motion.div>
           )}
 
-          {/* Navigation Buttons - Single Row Layout */}
-          <div className="flex items-center justify-between mt-6 pt-4 border-t border-slate-600">
-            {/* 🤖 [IA] - v1.2.13: Cancel Button refactorizado + comportamiento corregido */}
+          {/* 🤖 [IA] - v1.2.22: Footer centrado - botones agrupados centro con espaciado consistente */}
+          <div className="flex items-center justify-center mt-6 pt-4 border-t border-slate-600 gap-2">
             <DestructiveActionButton onClick={handleClose}>
               Cancelar
             </DestructiveActionButton>
             
-            {/* Navigation Buttons - Right Side */}
-            <div className="flex items-center gap-1">
-              {/* 🤖 [IA] - v1.2.13: Botón Anterior con confirmación para evitar pérdida accidental */}
-              {canGoPrevious && (
-                <NeutralActionButton onClick={() => setShowBackConfirmation(true)}>
-                  Anterior
-                </NeutralActionButton>
-              )}
-              
-              {/* 🤖 [IA] - v1.2.29: Botón Siguiente migrado a ConstructiveActionButton estándar */}
-              {currentStep < totalSteps && (
-                <ConstructiveActionButton
-                  onClick={handleNext}
-                  disabled={!canGoNext}
-                >
-                  Siguiente
-                </ConstructiveActionButton>
-              )}
-            </div>
+            {canGoPrevious && (
+              <NeutralActionButton onClick={() => setShowBackConfirmation(true)}>
+                Anterior
+              </NeutralActionButton>
+            )}
+            
+            {currentStep < totalSteps && (
+              <ConstructiveActionButton
+                onClick={handleNext}
+                disabled={!canGoNext}
+              >
+                Siguiente
+              </ConstructiveActionButton>
+            )}
           </div>
         </div>
       </DialogContent>
