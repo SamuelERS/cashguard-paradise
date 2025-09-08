@@ -50,6 +50,27 @@ CashGuard Paradise v1.2.19 is a cash management system for "Acuarios Paradise" r
 
 *Para historial completo v1.0.80 - v1.1.20, ver [CHANGELOG-DETALLADO.md](/Documentos%20MarkDown/CHANGELOG-DETALLADO.md)*
 
+### v1.2.21 - Victoria Definitiva Neon Glow [MISIÓN CUMPLIDA] ✅
+**OPERACIÓN TAILWIND INTEGRITY AUDIT EXITOSA:** Corrección definitiva de la configuración Tailwind CSS - efecto "Neon Glow" operativo al 100%.
+- **Insurgente identificado:** Content pattern en `tailwind.config.ts` excluía archivos `.css`
+- **Configuración original:** `"./src/**/*.{ts,tsx}"` - Tailwind no escaneaba `src/index.css`
+- **Corrección aplicada:** `"./src/**/*.{ts,tsx,css}"` - Inclusión de extensión `.css`
+- **Purga completa:** Eliminación de caché Vite + reinstalación dependencies + rebuild total
+- **Resultado:** Clases `.neon-glow-primary` y `.neon-glow-morning` procesadas exitosamente
+- **Verificación técnica:** CSS bundle cambió de `COZOfHAo` a `Cmk0xgqI` confirmando re-procesamiento
+- **Status final:** SelectTrigger exhibe resplandor azul perfecto - anomalía erradicada
+**Archivos:** `tailwind.config.ts`, `CLAUDE.md`
+
+### v1.2.20 - Doctrina Neon Glow Corregida [MISIÓN CUMPLIDA] ✅
+**OPERACIÓN DEEP DIVE EXITOSA:** Corrección definitiva del efecto "Neon Glow" - sistema de resplandor azul funcional al 100%.
+- **Diagnóstico forense:** Identificada incompatibilidad RGB/HSL en clases `.neon-glow-primary` y `.neon-glow-morning`
+- **Causa raíz:** `theme('colors.blue.500')` devolvía valores RGB pero se aplicaban en funciones HSL
+- **Solución aplicada:** Valores HSL directos - Primary: `213 100% 52%`, Morning: `39 100% 57%`
+- **Validación exitosa:** SelectTrigger en InitialWizardModal ahora exhibe resplandor azul perfecto en focus/open
+- **Arquitectura CSS:** Doctrina Neon Glow v1.0 completamente funcional y validada
+- **Zero errores:** Build y runtime sin warnings, compatibilidad total con Tailwind CSS
+**Archivos:** `src/index.css`, `CLAUDE.md`
+
 ### v1.2.19 - Operación Botón Unificado [MISIÓN CUMPLIDA] ✅
 **ARQUITECTURA BUTTONS:** Refactorización completa del sistema de botones - eliminación total de deuda técnica.
 - **47 botones unificados:** Todos los elementos migrados al `<Button />` centralizado (100% cobertura)

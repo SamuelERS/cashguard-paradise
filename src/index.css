@@ -2207,7 +2207,7 @@
 
 @layer utilities {
   .neon-glow-primary {
-    --glow-color: theme('colors.blue.500');
+    --glow-color: 213 100% 52%;
     box-shadow:
       0 0 5px hsl(var(--glow-color) / 0.5),
       0 0 15px hsl(var(--glow-color) / 0.3),
@@ -2216,7 +2216,7 @@
   }
 
   .neon-glow-morning {
-    --glow-color: theme('colors.orange.500');
+    --glow-color: 39 100% 57%;
     box-shadow:
       0 0 5px hsl(var(--glow-color) / 0.5),
       0 0 15px hsl(var(--glow-color) / 0.3),
