@@ -186,7 +186,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                 className="relative"
               >
                 {/* 🤖 [IA] - v1.2.11: Gradiente premium + escala responsive */}
-                <Shield className="w-15 md:w-20 h-15 md:h-20 bg-gradient-to-br from-blue-500 to-purple-500 bg-clip-text text-transparent" />
+                <Shield className="w-15 md:w-20 h-15 md:h-20 text-primary" />
               </motion.div>
             </div>
 
@@ -371,7 +371,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
           <div className="wizard-step-container">
             {/* 🤖 [IA] - v1.2.12: Header section Testigo optimizado */}
             <div className="wizard-header-section">
-              <Shield className="flex-shrink-0 w-6 md:w-8 h-6 md:h-8 bg-gradient-to-br from-blue-500 to-purple-500 bg-clip-text text-transparent" />
+              <Shield className="flex-shrink-0 w-6 md:w-8 h-6 md:h-8 text-primary" />
               <div className="flex-1 min-w-0">
                 <h3 className="font-semibold text-primary-foreground text-lg md:text-xl">Testigo</h3>
                 <p className="text-muted-foreground text-xs md:text-sm mt-1">
