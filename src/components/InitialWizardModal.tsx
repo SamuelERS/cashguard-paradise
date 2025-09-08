@@ -182,7 +182,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                 className="relative"
               >
                 {/* 🤖 [IA] - v1.2.11: Gradiente premium + escala responsive */}
-                <Shield className="w-15 md:w-20 h-15 md:h-20 text-primary" />
+                <Shield className="w-12 md:w-16 h-12 md:h-16 text-primary" />
               </motion.div>
             </div>
 
