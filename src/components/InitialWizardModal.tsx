@@ -100,22 +100,22 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
   // 🤖 [IA] - v1.0.39 - Simplificación de reglas del protocolo
   const protocolRules = [
     {
-      icon: <AlertTriangle className="w-5 h-5" style={{ color: '#f4212e' }} />,
+      icon: <AlertTriangle className="w-5 h-5 text-red-500" />,
       text: "Sin dispositivos electrónicos (conteo 100% manual)",
       critical: true,
     },
     {
-      icon: <Shield className="w-5 h-5" style={{ color: '#f4212e' }} />,
+      icon: <Shield className="w-5 h-5 text-red-500" />,
       text: "Conteo único — sin recuentos (verifica bien antes)",
       critical: true,
     },
     {
-      icon: <CheckCircle className="w-5 h-5" style={{ color: '#f4212e' }} />,
+      icon: <CheckCircle className="w-5 h-5 text-red-500" />,
       text: "Cajero ≠ Testigo (doble verificación)",
       critical: true,
     },
     {
-      icon: <AlertTriangle className="w-5 h-5" style={{ color: '#f4a52a' }} />,
+      icon: <AlertTriangle className="w-5 h-5 text-orange-400" />,
       text: "Sistema activo para cualquier diferencia",
       critical: false,
       isAlert: true, // 🤖 [IA] - v1.0.30 - Flag para mostrar badge ALERTA
@@ -185,52 +185,23 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                 className="relative"
               >
                 {/* 🤖 [IA] - v1.2.11: Gradiente premium + escala responsive */}
-                <Shield style={{
-                  width: `clamp(60px, 15vw, 80px)`,
-                  height: `clamp(60px, 15vw, 80px)`,
-                  background: 'linear-gradient(135deg, #0a84ff 0%, #5e5ce6 100%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text'
-                }} />
+                <Shield className="w-15 md:w-20 h-15 md:h-20 bg-gradient-to-br from-blue-500 to-purple-500 bg-clip-text text-transparent" />
               </motion.div>
             </div>
 
             {/* 🤖 [IA] - v1.0.59: Card transparente con glass effect */}
-            <div className="rounded-lg" style={{ 
-              backgroundColor: 'rgba(36, 36, 36, 0.4)',
-              backdropFilter: 'blur(clamp(12px, 4vw, 20px))',
-              WebkitBackdropFilter: 'blur(clamp(12px, 4vw, 20px))',
-              border: '1px solid rgba(244, 165, 42, 0.3)',
-              borderLeft: '3px solid #f4a52a',
-              boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-              padding: 'clamp(0.75rem, 3vw, 1rem)',
-              borderRadius: 'clamp(0.5rem, 2vw, 0.75rem)'
-            }}>
-              <div className="flex items-center" style={{ gap: 'clamp(0.375rem, 1.5vw, 0.5rem)', marginBottom: 'clamp(0.375rem, 1.5vw, 0.5rem)' }}>
-                <AlertTriangle style={{ 
-                  width: 'clamp(1rem, 3vw, 1.25rem)',
-                  height: 'clamp(1rem, 3vw, 1.25rem)',
-                  color: '#f4a52a' 
-                }} />
-                <h3 className="font-semibold" style={{ 
-                  color: '#f4a52a',
-                  fontSize: 'clamp(0.875rem, 3.5vw, 1rem)'
-                }}>IMPORTANTE</h3>
+            <div className="wizard-glass-element rounded-lg md:rounded-xl border border-orange-400/30 border-l-4 border-l-orange-400 p-3 md:p-4">
+              <div className="flex items-center gap-2 md:gap-3 mb-2 md:mb-3">
+                <AlertTriangle className="w-4 md:w-5 h-4 md:h-5 text-orange-400" />
+                <h3 className="font-semibold text-orange-400 text-sm md:text-base">IMPORTANTE</h3>
               </div>
-              <p style={{
-                color: '#e1e8ed',
-                fontSize: 'clamp(0.75rem, 3vw, 0.875rem)'
-              }}>
+              <p className="text-primary-foreground text-xs md:text-sm">
                 Sistema de protección de efectivo. Todo queda registrado.
               </p>
             </div>
 
-            <div style={{ gap: 'clamp(0.75rem, 3vw, 1rem)', display: 'flex', flexDirection: 'column' }}>
-              <h3 className="font-semibold" style={{
-                color: '#e1e8ed',
-                fontSize: 'clamp(1rem, 4vw, 1.125rem)'
-              }}>
+            <div className="flex flex-col gap-3 md:gap-4">
+              <h3 className="font-semibold text-primary-foreground text-base md:text-lg">
                 Protocolo obligatorio:
               </h3>
               
@@ -238,19 +209,12 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                 <div
                   key={index}
                   className="flex items-start premium-rule-card"
-                  style={{
-                    borderLeft: rule.critical ? '4px solid #f4212e' : '4px solid #f4a52a',
-                    gap: 'clamp(0.75rem, 3vw, 1rem)',
-                    padding: 'clamp(0.75rem, 3vw, 1rem)'
-                  }}
+                  className={`${rule.critical ? 'border-l-4 border-l-red-500' : 'border-l-4 border-l-orange-400'} gap-3 md:gap-4 p-3 md:p-4`}
                   role="listitem"
                   aria-label={`Regla ${index + 1}: ${rule.text}`}
                 >
                   <div className="flex-shrink-0">{rule.icon}</div>
-                  <span className="flex-1 leading-relaxed" style={{
-                    color: '#e1e8ed',
-                    fontSize: 'clamp(0.75rem, 3vw, 0.875rem)'
-                  }}>{rule.text}</span>
+                  <span className="flex-1 leading-relaxed text-primary-foreground text-xs md:text-sm">{rule.text}</span>
                   {/* 🤖 [IA] - v1.2.12 - Badge premium con efectos shimmer */}
                   {(rule.critical || rule.isAlert) && (
                     <span 
@@ -267,26 +231,13 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
 
             {/* 🤖 [IA] - v1.0.59: Checkbox con glass effect */}
             {/* 🤖 [IA] - v1.2.12 - Responsividad mejorada y textos concisos */}
-            <div style={{ 
-              borderTop: '1px solid rgba(255, 255, 255, 0.1)',
-              paddingTop: 'clamp(0.75rem, 3vw, 1rem)',
-              gap: 'clamp(0.75rem, 3vw, 1rem)',
-              display: 'flex',
-              flexDirection: 'column'
-            }}>
+            <div className="border-t border-white/10 pt-3 md:pt-4 flex flex-col gap-3 md:gap-4">
               <motion.div 
-                className="flex items-start"
-                style={{ 
-                  backgroundColor: 'rgba(36, 36, 36, 0.4)',
-                  backdropFilter: 'blur(clamp(12px, 4vw, 20px))',
-                  WebkitBackdropFilter: 'blur(clamp(12px, 4vw, 20px))',
-                  border: wizardData.rulesAccepted ? '2px solid rgba(0, 186, 124, 0.6)' : '2px solid rgba(29, 155, 240, 0.6)',
-                  boxShadow: wizardData.rulesAccepted ? '0 0 15px rgba(0, 186, 124, 0.2)' : '0 0 15px rgba(29, 155, 240, 0.2)',
-                  transition: 'all 0.3s ease',
-                  gap: 'clamp(0.75rem, 3vw, 1rem)',
-                  padding: 'clamp(0.75rem, 3vw, 1rem)',
-                  borderRadius: 'clamp(0.5rem, 2vw, 0.75rem)'
-                }}
+                className={`wizard-glass-element flex items-start gap-3 md:gap-4 p-3 md:p-4 rounded-lg md:rounded-xl transition-all duration-300 ${
+                  wizardData.rulesAccepted 
+                    ? 'border-2 border-green-400/60 shadow-lg shadow-green-400/20' 
+                    : 'border-2 border-blue-400/60 shadow-lg shadow-blue-400/20'
+                }`}
               >
                 <motion.div
                   animate={wizardData.rulesAccepted ? { scale: [1, 1.2, 1] } : {}}
@@ -298,23 +249,19 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                     onCheckedChange={(checked) => 
                       updateWizardData({ rulesAccepted: checked as boolean })
                     }
-                    className="mt-0.5 border-2"
-                    style={{ 
-                      borderColor: wizardData.rulesAccepted ? '#00ba7c' : '#1d9bf0',
-                      backgroundColor: wizardData.rulesAccepted ? '#00ba7c' : 'transparent'
-                    }}
+                    className={`mt-0.5 border-2 ${
+                      wizardData.rulesAccepted 
+                        ? 'border-green-400 bg-green-400' 
+                        : 'border-blue-400 bg-transparent'
+                    }`}
                     aria-describedby={!wizardData.rulesAccepted ? "rules-error" : undefined}
                     aria-invalid={!wizardData.rulesAccepted}
                   />
                 </motion.div>
                 <Label 
                   htmlFor="rules-accepted" 
-                  className="font-medium cursor-pointer leading-relaxed"
+                  className="font-medium cursor-pointer leading-relaxed text-primary-foreground text-sm md:text-base"
                   id="rules-description"
-                  style={{ 
-                    color: '#e1e8ed',
-                    fontSize: 'clamp(0.875rem, 3.5vw, 1rem)'
-                  }}
                 >
                   Acepto el protocolo de seguridad
                 </Label>
@@ -328,24 +275,10 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
           <div className="wizard-step-container">
             {/* 🤖 [IA] - v1.2.12: Header section optimizado */}
             <div className="wizard-header-section">
-              <MapPin className="flex-shrink-0" style={{ 
-                width: 'clamp(1.5rem, 4vw, 2rem)',
-                height: 'clamp(1.5rem, 4vw, 2rem)',
-                background: 'linear-gradient(135deg, #0a84ff 0%, #5e5ce6 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text'
-              }} />
+              <MapPin className="flex-shrink-0 w-6 md:w-8 h-6 md:h-8 bg-gradient-to-br from-blue-500 to-purple-500 bg-clip-text text-transparent" />
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold" style={{ 
-                  color: '#e1e8ed',
-                  fontSize: 'clamp(1.125rem, 4.5vw, 1.25rem)'
-                }}>Ubicación</h3>
-                <p style={{ 
-                  color: '#8899a6',
-                  fontSize: 'clamp(0.75rem, 3vw, 0.875rem)',
-                  marginTop: 'clamp(0.125rem, 0.5vw, 0.25rem)'
-                }}>Sucursal del corte</p>
+                <h3 className="font-semibold text-primary-foreground text-lg md:text-xl">Ubicación</h3>
+                <p className="text-muted-foreground text-xs md:text-sm mt-1">Sucursal del corte</p>
               </div>
             </div>
 
@@ -373,16 +306,9 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                 animate={{ opacity: 1, y: 0 }}
                 className="wizard-success-feedback"
               >
-                <div className="flex items-center" style={{ gap: 'clamp(0.375rem, 1.5vw, 0.5rem)' }}>
-                  <CheckCircle className="flex-shrink-0" style={{ 
-                    color: '#00ba7c',
-                    width: 'clamp(1rem, 3vw, 1.25rem)',
-                    height: 'clamp(1rem, 3vw, 1.25rem)'
-                  }} />
-                  <span className="font-medium" style={{ 
-                    color: '#e1e8ed',
-                    fontSize: 'clamp(0.875rem, 3.5vw, 1rem)'
-                  }}>✓ Seleccionada</span>
+                <div className="flex items-center gap-2 md:gap-3">
+                  <CheckCircle className="flex-shrink-0 text-green-400 w-4 md:w-5 h-4 md:h-5" />
+                  <span className="font-medium text-primary-foreground text-sm md:text-base">✓ Seleccionada</span>
                 </div>
               </motion.div>
             )}
@@ -395,28 +321,13 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
             {/* 🤖 [IA] - v1.2.12: Header section Cajero optimizado */}
             <div className="wizard-header-section">
               <Users 
-                className="flex-shrink-0" 
-                style={{ 
-                  width: 'clamp(1.5rem,4vw,2rem)',
-                  height: 'clamp(1.5rem,4vw,2rem)',
-                  background: 'linear-gradient(135deg, #0a84ff 0%, #5e5ce6 100%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text'
-                }} 
+                className="flex-shrink-0 w-6 md:w-8 h-6 md:h-8 bg-gradient-to-br from-blue-500 to-purple-500 bg-clip-text text-transparent" 
                 aria-label="Icono de cajero responsable"
                 role="img"
               />
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold" style={{ 
-                  color: '#e1e8ed',
-                  fontSize: 'clamp(1.125rem,4.5vw,1.25rem)'
-                }}>Cajero</h3>
-                <p style={{ 
-                  color: '#8899a6',
-                  fontSize: 'clamp(0.75rem,3vw,0.875rem)',
-                  marginTop: 'clamp(0.125rem,0.5vw,0.25rem)'
-                }}>¿Quién Cobró este día?</p>
+                <h3 className="font-semibold text-primary-foreground text-lg md:text-xl">Cajero</h3>
+                <p className="text-muted-foreground text-xs md:text-sm mt-1">¿Quién Cobró este día?</p>
               </div>
             </div>
 
@@ -442,20 +353,12 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                 animate={{ opacity: 1, y: 0 }}
                 className="wizard-success-feedback"
               >
-                <div className="flex items-center" style={{ gap: 'clamp(0.375rem,1.5vw,0.5rem)' }}>
+                <div className="flex items-center gap-2 md:gap-3">
                   <CheckCircle 
-                    className="flex-shrink-0" 
-                    style={{ 
-                      color: '#00ba7c',
-                      width: 'clamp(1rem,3vw,1.25rem)',
-                      height: 'clamp(1rem,3vw,1.25rem)'
-                    }} 
+                    className="flex-shrink-0 text-green-400 w-4 md:w-5 h-4 md:h-5" 
                     aria-label="Cajero seleccionado correctamente"
                   />
-                  <span className="font-medium" style={{ 
-                    color: '#e1e8ed',
-                    fontSize: 'clamp(0.875rem,3.5vw,1rem)'
-                  }}>✓ Cajero seleccionado</span>
+                  <span className="font-medium text-primary-foreground text-sm md:text-base">✓ Cajero seleccionado</span>
                 </div>
               </motion.div>
             )}
@@ -467,24 +370,10 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
           <div className="wizard-step-container">
             {/* 🤖 [IA] - v1.2.12: Header section Testigo optimizado */}
             <div className="wizard-header-section">
-              <Shield className="flex-shrink-0" style={{ 
-                width: 'clamp(1.5rem, 4vw, 2rem)',
-                height: 'clamp(1.5rem, 4vw, 2rem)',
-                background: 'linear-gradient(135deg, #0a84ff 0%, #5e5ce6 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text'
-              }} />
+              <Shield className="flex-shrink-0 w-6 md:w-8 h-6 md:h-8 bg-gradient-to-br from-blue-500 to-purple-500 bg-clip-text text-transparent" />
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold" style={{ 
-                  color: '#e1e8ed',
-                  fontSize: 'clamp(1.125rem, 4.5vw, 1.25rem)'
-                }}>Testigo</h3>
-                <p style={{ 
-                  color: '#8899a6',
-                  fontSize: 'clamp(0.75rem, 3vw, 0.875rem)',
-                  marginTop: 'clamp(0.125rem, 0.5vw, 0.25rem)'
-                }}>
+                <h3 className="font-semibold text-primary-foreground text-lg md:text-xl">Testigo</h3>
+                <p className="text-muted-foreground text-xs md:text-sm mt-1">
                   Selecciona quien Ayudara
                 </p>
               </div>
@@ -515,16 +404,9 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                 animate={{ opacity: 1, scale: 1 }}
                 className="wizard-error-feedback"
               >
-                <div className="flex items-center" style={{ gap: 'clamp(0.375rem, 1.5vw, 0.5rem)' }}>
-                  <AlertTriangle className="flex-shrink-0" style={{ 
-                    color: '#f4212e',
-                    width: 'clamp(1rem, 3vw, 1.25rem)',
-                    height: 'clamp(1rem, 3vw, 1.25rem)'
-                  }} />
-                  <span className="font-medium" style={{ 
-                    color: '#f4212e',
-                    fontSize: 'clamp(0.875rem, 3.5vw, 1rem)'
-                  }}>
+                <div className="flex items-center gap-2 md:gap-3">
+                  <AlertTriangle className="flex-shrink-0 text-red-500 w-4 md:w-5 h-4 md:h-5" />
+                  <span className="font-medium text-red-500 text-sm md:text-base">
                     El cajero y el testigo deben ser personas diferentes
                   </span>
                 </div>
@@ -538,16 +420,9 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                 animate={{ opacity: 1, y: 0 }}
                 className="wizard-success-feedback"
               >
-                <div className="flex items-center" style={{ gap: 'clamp(0.375rem, 1.5vw, 0.5rem)' }}>
-                  <CheckCircle className="flex-shrink-0" style={{ 
-                    color: '#00ba7c',
-                    width: 'clamp(1rem, 3vw, 1.25rem)',
-                    height: 'clamp(1rem, 3vw, 1.25rem)'
-                  }} />
-                  <span className="font-medium" style={{ 
-                    color: '#e1e8ed',
-                    fontSize: 'clamp(0.875rem, 3.5vw, 1rem)'
-                  }}>Testigo seleccionado correctamente</span>
+                <div className="flex items-center gap-2 md:gap-3">
+                  <CheckCircle className="flex-shrink-0 text-green-400 w-4 md:w-5 h-4 md:h-5" />
+                  <span className="font-medium text-primary-foreground text-sm md:text-base">Testigo seleccionado correctamente</span>
                 </div>
               </motion.div>
             )}
@@ -559,51 +434,20 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
           <div className="wizard-step-container">
             {/* 🤖 [IA] - v1.2.12: Header section Venta Esperada optimizado */}
             <div className="wizard-header-section">
-              <DollarSign className="flex-shrink-0" style={{ 
-                width: 'clamp(1.25rem, 4vw, 1.5rem)',
-                height: 'clamp(1.25rem, 4vw, 1.5rem)',
-                background: 'linear-gradient(135deg, #00ba7c 0%, #06d6a0 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text'
-              }} />
+              <DollarSign className="flex-shrink-0 w-5 md:w-6 h-5 md:h-6 bg-gradient-to-br from-green-400 to-emerald-400 bg-clip-text text-transparent" />
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold" style={{ 
-                  color: '#e1e8ed',
-                  fontSize: 'clamp(1.125rem, 4.5vw, 1.25rem)'
-                }}>Ingresa Total Vendido</h3>
+                <h3 className="font-semibold text-primary-foreground text-lg md:text-xl">Ingresa Total Vendido</h3>
               </div>
             </div>
 
-            <div style={{ gap: 'clamp(0.375rem, 1.5vw, 0.5rem)', display: 'flex', flexDirection: 'column' }}>
-              <Label htmlFor="expected-sales" className="font-medium" style={{ 
-                color: '#e1e8ed',
-                fontSize: 'clamp(0.875rem, 3.5vw, 1rem)'
-              }}>
+            <div className="flex flex-col gap-2 md:gap-3">
+              <Label htmlFor="expected-sales" className="font-medium text-primary-foreground text-sm md:text-base">
                 Monto ($)
               </Label>
               {/* 🤖 [IA] - v1.2.9: Contenedor con grid y variables CSS compartidas para alturas iguales */}
-              <div
-                className="grid grid-cols-1 sm:grid-cols-[1fr_auto]"
-                style={{
-                  // Variables compartidas entre input wrapper y botón
-                  '--field-padding-y': 'clamp(0.25rem, 0.5vw, 0.375rem)',
-                  '--field-padding-x': 'clamp(0.5rem, 2vw, 0.75rem)',
-                  '--input-height': 'clamp(2.25rem, 5vw, 2.75rem)',
-                  '--control-radius': 'clamp(0.375rem, 1.5vw, 0.5rem)',
-                  '--field-height': 'calc(var(--input-height) + (2 * var(--field-padding-y)))',
-                  gap: 'clamp(0.375rem, 1.5vw, 0.5rem)',
-                  alignItems: 'stretch',
-                } as CSSProperties}
-              >
-                <div className="wizard-glass-element relative flex-1" style={{ 
-                  borderRadius: 'var(--control-radius)',
-                  padding: 'var(--field-padding-y) var(--field-padding-x)'
-                }}>
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 font-bold" style={{ 
-                    color: '#00ba7c',
-                    fontSize: 'clamp(1rem, 4vw, 1.125rem)'
-                  }}>
+              <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-2 md:gap-3 items-stretch">
+                <div className="wizard-glass-element relative flex-1 rounded-md md:rounded-lg p-2 md:p-3">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-green-400 text-base md:text-lg">
                     $
                   </span>
                   <Input
@@ -622,15 +466,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                       }
                     }}
                     placeholder="0.00"
-                    className="font-semibold"
-                    style={{ 
-                      backgroundColor: 'transparent',
-                      border: 'none',
-                      color: '#e1e8ed',
-                      paddingLeft: 'clamp(1.75rem, 5vw, 2.25rem)',
-                      height: 'var(--input-height)',
-                      fontSize: 'clamp(1rem, 4vw, 1.125rem)'
-                    }}
+                    className="font-semibold bg-transparent border-none text-primary-foreground pl-7 md:pl-9 h-9 md:h-11 text-base md:text-lg"
                   />
                 </div>
                 {/* Botón Confirmar al lado del input */}
@@ -642,16 +478,12 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                   type="button"
                   className="wizard-confirm-button"
                 >
-                  <CheckCircle aria-hidden="true" style={{ 
-                    width: 'clamp(1.25rem, 4vw, 1.5rem)',
-                    height: 'clamp(1.25rem, 4vw, 1.5rem)',
-                    marginRight: 'clamp(0.375rem, 1.5vw, 0.5rem)'
-                  }} />
+                  <CheckCircle aria-hidden="true" className="w-5 md:w-6 h-5 md:h-6 mr-2 md:mr-3" />
                   <span>Confirmar</span>
                 </ConstructiveActionButton>
               </div>
               {wizardData.expectedSales && parseFloat(wizardData.expectedSales) <= 0 && (
-                <p className="text-xs" style={{ color: '#f4212e' }}>
+                <p className="text-xs text-red-500">
                   El monto debe ser mayor a $0.00
                 </p>
               )}
@@ -663,52 +495,33 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                 animate={{ opacity: 1, y: 0 }}
                 className="wizard-success-feedback"
               >
-                <div className="flex items-center" style={{ gap: 'clamp(0.375rem, 1.5vw, 0.5rem)' }}>
-                  <CheckCircle className="flex-shrink-0" style={{ 
-                    color: '#00ba7c',
-                    width: 'clamp(1.25rem, 4vw, 1.5rem)',
-                    height: 'clamp(1.25rem, 4vw, 1.5rem)'
-                  }} />
-                  <span className="font-medium" style={{ 
-                    color: '#e1e8ed',
-                    fontSize: 'clamp(0.875rem, 3.5vw, 1rem)'
-                  }}>
+                <div className="flex items-center gap-2 md:gap-3">
+                  <CheckCircle className="flex-shrink-0 text-green-400 w-5 md:w-6 h-5 md:h-6" />
+                  <span className="font-medium text-primary-foreground text-sm md:text-base">
                     Venta esperada: ${parseFloat(wizardData.expectedSales).toFixed(2)}
                   </span>
                 </div>
               </motion.div>
             )}
 
-            <div className="wizard-glass-element" style={{ 
-              borderLeft: '3px solid #0a84ff',
-              boxShadow: '0 4px 24px rgba(0, 0, 0, 0.2), 0 0 15px rgba(10, 132, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
-            }}>
-              <h4 className="font-semibold" style={{ 
-                color: '#0a84ff',
-                fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
-                marginBottom: 'clamp(0.375rem, 1.5vw, 0.5rem)'
-              }}>Resumen de Información:</h4>
-              <div style={{ 
-                gap: 'clamp(0.25rem, 1vw, 0.375rem)',
-                display: 'flex',
-                flexDirection: 'column',
-                fontSize: 'clamp(0.75rem, 3vw, 0.875rem)'
-              }}>
-                <div className="flex justify-between" style={{ gap: 'clamp(0.375rem, 1.5vw, 0.5rem)' }}>
-                  <span className="min-w-0" style={{ color: '#8899a6' }}>Sucursal:</span>
-                  <span className="font-medium text-right truncate" style={{ color: '#e1e8ed' }}>
+            <div className="wizard-glass-element border-l-4 border-l-blue-500 shadow-lg shadow-blue-500/20">
+              <h4 className="font-semibold text-blue-500 text-sm md:text-base mb-2 md:mb-3">Resumen de Información:</h4>
+              <div className="flex flex-col gap-1 md:gap-2 text-xs md:text-sm">
+                <div className="flex justify-between gap-2 md:gap-3">
+                  <span className="min-w-0 text-muted-foreground">Sucursal:</span>
+                  <span className="font-medium text-right truncate text-primary-foreground">
                     {STORES.find(s => s.id === wizardData.selectedStore)?.name}
                   </span>
                 </div>
-                <div className="flex justify-between" style={{ gap: 'clamp(0.375rem, 1.5vw, 0.5rem)' }}>
-                  <span className="min-w-0" style={{ color: '#8899a6' }}>Cajero:</span>
-                  <span className="font-medium text-right truncate" style={{ color: '#e1e8ed' }}>
+                <div className="flex justify-between gap-2 md:gap-3">
+                  <span className="min-w-0 text-muted-foreground">Cajero:</span>
+                  <span className="font-medium text-right truncate text-primary-foreground">
                     {availableEmployees.find(e => e.id === wizardData.selectedCashier)?.name}
                   </span>
                 </div>
-                <div className="flex justify-between" style={{ gap: 'clamp(0.375rem, 1.5vw, 0.5rem)' }}>
-                  <span className="min-w-0" style={{ color: '#8899a6' }}>Testigo:</span>
-                  <span className="font-medium text-right truncate" style={{ color: '#e1e8ed' }}>
+                <div className="flex justify-between gap-2 md:gap-3">
+                  <span className="min-w-0 text-muted-foreground">Testigo:</span>
+                  <span className="font-medium text-right truncate text-primary-foreground">
                     {availableEmployees.find(e => e.id === wizardData.selectedWitness)?.name}
                   </span>
                 </div>
@@ -734,11 +547,9 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
       <DialogContent 
         className="wizard-modal-content w-[95vw] max-w-[95vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] sm:max-h-[85vh] overflow-y-auto overflow-x-hidden p-0 [&>button]:hidden"
       >
-        <div style={{ padding: `clamp(16px, ${24 * viewportScale}px, 24px)` }}>
+        <div className="p-4 md:p-6">
           <DialogHeader>
-            <DialogTitle className="text-primary mb-2" style={{
-              fontSize: `clamp(1.125rem, 5vw, 1.5rem)`
-            }}>
+            <DialogTitle className="text-primary mb-2 text-lg md:text-xl lg:text-2xl">
               {getStepTitle()}
             </DialogTitle>
             <DialogDescription className="sr-only">
@@ -782,11 +593,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="rounded-lg p-3 mt-4"
-              style={{
-                backgroundColor: '#f4a52a10',
-                border: '1px solid #f4a52a30'
-              }}
+              className="rounded-lg p-3 mt-4 bg-orange-400/10 border border-orange-400/30"
               id="validation-feedback"
               role="alert"
               aria-live="polite"
@@ -795,14 +602,13 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
             >
               <div className="flex items-start gap-2">
                 <AlertTriangle 
-                  className="w-4 h-4 mt-0.5 flex-shrink-0"
-                  style={{ color: '#f4a52a' }}
+                  className="w-4 h-4 mt-0.5 flex-shrink-0 text-orange-400"
                   aria-label="Advertencia"
                   role="img"
                 />
                 <div className="text-sm">
-                  <p className="font-medium mb-1" style={{ color: '#f4a52a' }}>Para continuar, complete:</p>
-                  <ul className="space-y-1 text-xs list-none" role="list" style={{ color: '#f4a52a' }}>
+                  <p className="font-medium mb-1 text-orange-400">Para continuar, complete:</p>
+                  <ul className="space-y-1 text-xs list-none text-orange-400" role="list">
                     {!wizardData.rulesAccepted && (
                       <li 
                         className="flex items-center gap-1 before:content-['•'] before:text-destructive before:mr-1"
@@ -818,7 +624,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
           )}
 
           {/* Navigation Buttons - Single Row Layout */}
-          <div className="flex items-center justify-between mt-6 pt-4" style={{ borderTop: '1px solid #2a3441' }}>
+          <div className="flex items-center justify-between mt-6 pt-4 border-t border-slate-600">
             {/* 🤖 [IA] - v1.2.13: Cancel Button refactorizado + comportamiento corregido */}
             <DestructiveActionButton onClick={handleClose}>
               Cancelar
