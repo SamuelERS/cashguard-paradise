@@ -15,7 +15,8 @@ Sistema de control de caja para Acuarios Paradise con prevención de fraude y pr
 - **Anti-Fraud Protocol**: Witness validation and single-count restrictions with simplified rules
 - **Mobile-First Design**: Optimized for iOS Safari and Android Chrome with persistent keyboards
 - **Zoom Prevention**: Disabled pinch-to-zoom for stable counting experience
-- **Frosted Glass Premium UI**: Modern 65% opacity modals with saturate effects
+- **Premium Glass Morphism UI**: Contextual layer system with depth-based visual hierarchy
+- **Semantic Action System**: Four-level button hierarchy for intuitive user interaction patterns
 - **Corporate Identity**: Integrated company logos and motivational messaging
 - **Offline-First**: 100% functional without internet connection
 - **PWA Support**: Installable progressive web app with service workers
@@ -31,6 +32,13 @@ Sistema de control de caja para Acuarios Paradise con prevención de fraude y pr
 - **Unified Button Architecture**: 47 buttons centralized with 8 specialized variants and 0% technical debt
 - **Modular CSS System**: Feature-specific stylesheets in `src/styles/features/` with CSS variables
 - **Data-State Logic**: Consistent visual states via `data-state`, `data-mode`, and `data-active` attributes
+
+### Advanced Component Architecture
+- **Four-Level Action Hierarchy**: Semantic button system (Primary/Constructive/Neutral/Destructive) with specialized ActionButton components
+- **Depth & Layer Doctrine**: Glass Morphism for contextual layers, solid opacity for base interface
+- **Fluid Responsive Design**: CSS clamp() prioritized over discrete breakpoints for perfect device adaptation
+- **Neon Glow Focus Standards**: Premium focus effects with HSL-based glow for enhanced UX
+- **Abstract Component Library**: Reusable components like ConfirmationModal for consistent patterns
 
 ## 🏗️ Architecture Overview
 
