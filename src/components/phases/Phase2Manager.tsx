@@ -323,9 +323,13 @@ export function Phase2Manager({
     {/* 🤖 [IA] - v1.2.10: Modal de instrucciones con checklist para preparación - Colores de corte nocturno */}
     <AlertDialog open={showInstructionsModal} onOpenChange={setShowInstructionsModal}>
       <AlertDialogContent style={{
+        /* Removido según Doctrina D.2 - Componente debe ser opaco (Nivel 0 Base):
         backgroundColor: 'rgba(36, 36, 36, 0.95)',
         backdropFilter: `blur(clamp(12px, 4vw, 20px))`,
         WebkitBackdropFilter: `blur(clamp(12px, 4vw, 20px))`,
+        */
+        /* Usando color de fondo sólido según design system */
+        backgroundColor: 'hsl(var(--background))',
         border: '1px solid rgba(244, 33, 46, 0.3)',
         borderRadius: `clamp(8px, 3vw, 16px)`,
         boxShadow: '0 4px 24px rgba(0, 0, 0, 0.8), 0 0 20px rgba(244, 33, 46, 0.2)',
@@ -582,7 +586,13 @@ export function Phase2Manager({
           </div>
         </div>
 
-        <AlertDialogFooter style={{ flexShrink: 0, paddingTop: `clamp(0.5rem, 2vw, 0.75rem)` }}>
+        <AlertDialogFooter style={{ 
+          flexShrink: 0, 
+          paddingTop: `clamp(0.5rem, 2vw, 0.75rem)`,
+          display: 'flex',
+          justifyContent: 'center', 
+          width: '100%' 
+        }}>
           <AlertDialogAction asChild>
             <PrimaryActionButton 
               onClick={() => setShowInstructionsModal(false)} 
