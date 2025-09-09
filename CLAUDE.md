@@ -236,34 +236,7 @@ src/
 9. **🎯 Versionado:** Consistente en todos los archivos relevantes
 10. **🧪 Tests:** Funciones financieras con 100% cobertura
 
-**ARQUITECTÓNICAS - Doctrinas Inquebrantables:**
-11. **🎨 Jerarquía Visual Estricta:** Acciones clasificadas en 4 niveles semánticos (Primary/Constructive/Neutral/Destructive) - OBLIGATORIO usar ActionButton correspondiente
-12. **🔍 Doctrina de Capas:** Modales/overlays = Glass Morphism; base interface = opacidad sólida - NO mezclar
-13. **📐 Responsividad Fluida:** CSS clamp() sobre breakpoints discretos para componentes complejos - PRIORIDAD ABSOLUTA
-14. **✨ Estándar Neon Glow:** Efectos de foco HSL-based obligatorios - NO usar RGB/HEX en box-shadow
-
 ### 🧭 Metodología: `Reviso → Planifico → Ejecuto → Documento → Valido`
-
-### 🎨 Control de Calidad Específico UI/UX
-
-**ConfirmationModal Standards:**
-- Glass Morphism background: `rgba(36, 36, 36, 0.4)` + `blur(20px)`
-- Border: `rgba(255, 255, 255, 0.15)`
-- Neon Glow: `box-shadow` HSL format obligatorio
-- Z-index hierarchy: Modal overlay > base interface
-
-**ActionButton Requirements (Doctrina SOLID COLOR):**
-- **Primary**: `bg-blue-900` + hover states definidos
-- **Constructive**: `bg-green-900` + hover states definidos  
-- **Neutral**: `bg-gray-700` con transparencia controlada
-- **Destructive**: `bg-red-900` + warning system integration
-- **PROHIBIDO**: Gradientes, transparencias variables, RGB/HEX en shadows
-
-**Responsive Fluid Standards:**
-- Componentes complejos: CSS `clamp()` obligatorio
-- Breakpoints discretos: Solo para layouts básicos
-- Viewport units: `vw/vh` para proporción golden ratio
-- Mobile-first: Siempre prioridad en diseño
 
 ---
 
