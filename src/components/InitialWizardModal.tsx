@@ -445,9 +445,6 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
             </div>
 
             <div className="flex flex-col gap-2 md:gap-3">
-              <Label htmlFor="expected-sales" className="font-medium text-primary-foreground text-sm md:text-base">
-                Monto ($)
-              </Label>
               {/* 🤖 [IA] - v1.2.9: Contenedor con grid y variables CSS compartidas para alturas iguales */}
               <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-2 md:gap-3 items-stretch">
                 <div className="wizard-glass-element relative flex-1 rounded-md md:rounded-lg p-2 md:p-3">
@@ -470,6 +467,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                       }
                     }}
                     placeholder="0.00"
+                    aria-label="Ingrese el monto de la venta esperada"
                     className="font-semibold bg-transparent border-none text-primary-foreground pl-7 md:pl-9 h-9 md:h-11 text-base md:text-lg"
                   />
                 </div>
