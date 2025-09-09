@@ -54,18 +54,23 @@ export function GuidedInstructionsModal({
   const instructions = [
     {
       icon: <Info className="w-5 h-5" />,
-      title: "Proceso Secuencial",
-      description: "Complete cada campo en orden. No podrá retroceder ni modificar valores confirmados."
+      title: "💰 Paquetes de Monedas",
+      description: "Agrupe en paquetes de 10 monedas de $0.01, $0.05, $0.10, $0.25 y $1.00."
     },
     {
       icon: <Shield className="w-5 h-5" />,
-      title: "Sin Modificaciones",
-      description: "Una vez confirmado un valor, quedará bloqueado permanentemente."
+      title: "📦 Caja Ordenada",
+      description: "Coloque cada moneda, paquete y billete en su depósito: $1, $5, $10, $20, $50, $100."
     },
     {
       icon: <AlertTriangle className="w-5 h-5" />,
-      title: "No Abandone la Página",
-      description: "Si abandona la página, deberá reiniciar el conteo desde el principio."
+      title: "🔢 Conteo Seguro",
+      description: "Cuente cada denominación uno por uno, sin tapar la cámara de seguridad."
+    },
+    {
+      icon: <Info className="w-5 h-5" />,
+      title: "✅ Confirmación Final",
+      description: "Una vez confirmado, el valor queda registrado y no podrá modificarse."
     }
   ];
 
@@ -96,12 +101,12 @@ export function GuidedInstructionsModal({
             <DialogTitle 
               className="font-bold text-white flex items-center justify-center"
               style={{
-                fontSize: 'clamp(1.25rem, 5vw, 1.5rem)',
+                fontSize: 'clamp(1.125rem, 4.5vw, 1.375rem)',
                 gap: 'clamp(6px, 1.5vw, 8px)'
               }}
             >
               <Shield style={{ width: 'clamp(20px, 5vw, 24px)', height: 'clamp(20px, 5vw, 24px)' }} />
-              Instrucciones del Conteo Guiado
+              Instrucciones del Corte de Caja
             </DialogTitle>
             <DialogDescription 
               className="text-white/80"
@@ -110,7 +115,6 @@ export function GuidedInstructionsModal({
                 marginTop: 'clamp(6px, 1.5vw, 8px)'
               }}
             >
-              Por favor lea atentamente antes de continuar
             </DialogDescription>
           </DialogHeader>
         </div>
@@ -221,7 +225,7 @@ export function GuidedInstructionsModal({
                   fontSize: 'clamp(0.813rem, 3.25vw, 0.938rem)'
                 }}
               >
-                Entiendo las reglas del conteo guiado
+                Comprendemos y Realizamos las Reglas
               </span>
               <p 
                 className="text-gray-400"
@@ -230,7 +234,7 @@ export function GuidedInstructionsModal({
                   marginTop: `clamp(2px, ${4 * viewportScale}px, 4px)`
                 }}
               >
-                No podré modificar valores una vez confirmados
+                No podremos modificar valores ya confirmados
               </p>
             </label>
           </div>

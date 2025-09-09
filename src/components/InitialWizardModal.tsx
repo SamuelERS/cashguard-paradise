@@ -188,7 +188,6 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                 <h3 className="font-semibold text-orange-400 text-sm md:text-base">IMPORTANTE</h3>
               </div>
               <p className="text-primary-foreground text-sm md:text-base font-bold">
-                Protocolo Obligatorio
               </p>
             </div>
 

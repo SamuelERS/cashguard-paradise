@@ -348,7 +348,7 @@ export function Phase2Manager({
             gap: `clamp(0.375rem, 1.5vw, 0.5rem)` 
           }}>
             <AlertCircle className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)]" />
-            📋 Preparación para Entrega a Gerencia
+            💵 Preparar Dinero a Entregar
           </AlertDialogTitle>
         </AlertDialogHeader>
         
@@ -368,7 +368,7 @@ export function Phase2Manager({
             textAlign: 'center'
           }}>
             <p style={{ 
-              color: '#5e5ce6', 
+              color: '#F4212E', 
               fontSize: `clamp(0.875rem, 3.5vw, 1.1rem)`, 
               fontWeight: '700',
               marginBottom: `clamp(0.375rem, 1.5vw, 0.5rem)`
@@ -380,14 +380,14 @@ export function Phase2Manager({
               fontSize: `clamp(0.875rem, 3.5vw, 1rem)`, 
               fontWeight: '600' 
             }}>
-              Este dinero es para <span style={{ color: '#f4212e', textDecoration: 'underline' }}>ENTREGAR A GERENCIA</span>
+              El sistema dirá cuántas monedas y billetes tomar para entregar, solo debes colocar lo que diga en la bolsa.
             </p>
             <p style={{ 
               color: '#e1e8ed', 
               fontSize: `clamp(0.75rem, 3vw, 0.9rem)`, 
               marginTop: `clamp(0.375rem, 1.5vw, 0.5rem)` 
             }}>
-              NO es para dejar en caja
+              
             </p>
           </div>
 
@@ -397,7 +397,7 @@ export function Phase2Manager({
               marginBottom: `clamp(0.5rem, 2vw, 0.75rem)`, 
               fontSize: `clamp(0.8rem, 3.2vw, 0.95rem)` 
             }}>
-              Antes de continuar, confirme que tiene todo listo:
+              Antes de continuar, confirme lo siguiente:
             </p>
             
             {/* 🤖 [IA] - v1.1.24: Mensaje de activación secuencial */}
@@ -418,7 +418,7 @@ export function Phase2Manager({
                 justifyContent: 'center',
                 gap: `clamp(0.375rem, 1.5vw, 0.5rem)`
               }}>
-                {!enabledItems.bolsa ? '⏱️ Preparando checklist...' : '📋 Lea cada item conforme se activa'}
+                {!enabledItems.bolsa ? '⏱️ Preparando checklist...' : '📋 Verifiquen estemos Listos'}
               </p>
             </div>
             
@@ -457,7 +457,7 @@ export function Phase2Manager({
                   flex: 1,
                   fontSize: `clamp(0.8rem, 3.2vw, 0.9rem)`
                 }}>
-                  Tengo la <strong>bolsa de depósito</strong> lista
+                  Tengo la bolsa lista para entregar
                   {!enabledItems.bolsa && <span style={{ color: '#8899a6', fontSize: `clamp(0.7rem, 2.8vw, 0.85rem)`, marginLeft: `clamp(0.375rem, 1.5vw, 0.5rem)` }}>(activando...)</span>}
                 </span>
               </label>
@@ -492,7 +492,7 @@ export function Phase2Manager({
                   flex: 1,
                   fontSize: `clamp(0.8rem, 3.2vw, 0.9rem)`
                 }}>
-                  Tengo <strong>tirro/cinta adhesiva</strong> para rotular
+                  Tengo cinta y plumon para rotular
                   {!enabledItems.tirro && (
                     <span style={{ color: '#8899a6', fontSize: `clamp(0.7rem, 2.8vw, 0.85rem)`, marginLeft: `clamp(0.375rem, 1.5vw, 0.5rem)` }}>
                       {checkedItems.bolsa ? '(activando...)' : '(marque el anterior)'}
@@ -531,7 +531,7 @@ export function Phase2Manager({
                   flex: 1,
                   fontSize: `clamp(0.8rem, 3.2vw, 0.9rem)`
                 }}>
-                  Tengo <strong>espacio limpio</strong> para separar denominaciones
+                  Tomare cantidad que sistema diga
                   {!enabledItems.espacio && (
                     <span style={{ color: '#8899a6', fontSize: `clamp(0.7rem, 2.8vw, 0.85rem)`, marginLeft: `clamp(0.375rem, 1.5vw, 0.5rem)` }}>
                       {checkedItems.tirro ? '(activando...)' : '(marque el anterior)'}
@@ -570,7 +570,7 @@ export function Phase2Manager({
                   flex: 1,
                   fontSize: `clamp(0.8rem, 3.2vw, 0.9rem)`
                 }}>
-                  <strong>Entiendo</strong> que este dinero es para entregar a gerencia
+                  Estamos listos para continuar
                   {!enabledItems.entendido && (
                     <span style={{ color: '#8899a6', fontSize: `clamp(0.7rem, 2.8vw, 0.85rem)`, marginLeft: `clamp(0.375rem, 1.5vw, 0.5rem)` }}>
                       {checkedItems.espacio ? '(activando...)' : '(marque el anterior)'}
@@ -589,7 +589,7 @@ export function Phase2Manager({
               disabled={!allItemsChecked}
               className="btn-phase2-instruction"
             >
-              {allItemsChecked ? '✓ Todo listo, continuar' : 'Marque todos los items para continuar'}
+              {allItemsChecked ? '✓ Continuar' : '☑️ Marque todos los ítems para continuar'}
             </PrimaryActionButton>
           </AlertDialogAction>
         </AlertDialogFooter>
