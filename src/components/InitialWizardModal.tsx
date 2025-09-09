@@ -438,7 +438,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
           <div className="wizard-step-container">
             {/* 🤖 [IA] - v1.2.12: Header section Venta Esperada optimizado */}
             <div className="wizard-header-section">
-              <DollarSign className="flex-shrink-0 w-5 md:w-6 h-5 md:h-6 bg-gradient-to-br from-green-400 to-emerald-400 bg-clip-text text-transparent" />
+              <DollarSign className="flex-shrink-0 w-[clamp(1.25rem,1rem+0.5vw,1.5rem)] h-[clamp(1.25rem,1rem+0.5vw,1.5rem)] text-primary" />
               <div className="flex-1 min-w-0">
                 <h3 className="font-semibold text-primary-foreground text-lg md:text-xl">Ingresa Total Vendido</h3>
               </div>
@@ -450,8 +450,8 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               </Label>
               {/* 🤖 [IA] - v1.2.9: Contenedor con grid y variables CSS compartidas para alturas iguales */}
               <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-2 md:gap-3 items-stretch">
-                <div className="wizard-glass-element relative flex-1 rounded-md md:rounded-lg p-2 md:p-3">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-green-400 text-base md:text-lg">
+                <div className="wizard-glass-element relative flex-1 rounded-[clamp(0.375rem,0.25rem+0.25vw,0.5rem)] p-[clamp(0.5rem,0.375rem+0.25vw,0.75rem)]">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-green-400 text-[clamp(1rem,0.875rem+0.25vw,1.125rem)]">
                     $
                   </span>
                   <Input
@@ -470,21 +470,21 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                       }
                     }}
                     placeholder="0.00"
-                    className="font-semibold bg-transparent border-none text-primary-foreground pl-7 md:pl-9 h-9 md:h-11 text-base md:text-lg"
+                    className="font-semibold bg-transparent border-none text-primary-foreground pl-[clamp(1.75rem,1.5rem+0.5vw,2.25rem)] h-[clamp(2.25rem,2rem+0.5vw,2.75rem)] text-[clamp(1rem,0.875rem+0.25vw,1.125rem)]"
                   />
                 </div>
                 {/* Botón Confirmar al lado del input */}
-                {/* 🤖 [IA] - v1.2.30: Botón migrado a ConstructiveActionButton estándar */}
-                <ConstructiveActionButton
+                {/* 🤖 [IA] - v1.2.22: Botón refactorizado a ghost/icon - jerarquía visual corregida */}
+                <Button 
+                  variant="ghost" 
+                  size="icon"
                   onClick={handleComplete}
                   disabled={!isCompleted}
                   aria-label="Confirmar venta esperada"
-                  type="button"
-                  className="wizard-confirm-button"
+                  className="h-[clamp(2.25rem,2rem+1vw,2.75rem)] w-[clamp(2.25rem,2rem+1vw,2.75rem)]"
                 >
-                  <CheckCircle aria-hidden="true" className="w-5 md:w-6 h-5 md:h-6 mr-2 md:mr-3" />
-                  <span>Confirmar</span>
-                </ConstructiveActionButton>
+                  <CheckCircle className="w-[clamp(1.25rem,1rem+0.5vw,1.5rem)] h-[clamp(1.25rem,1rem+0.5vw,1.5rem)]" />
+                </Button>
               </div>
               {wizardData.expectedSales && parseFloat(wizardData.expectedSales) <= 0 && (
                 <p className="text-xs text-red-500">
