@@ -182,21 +182,21 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
             {/* 🤖 [IA] - v1.2.34 - Shield azul eliminado: AlertTriangle + "IMPORTANTE" comunican severidad suficientemente */}
             {/* 🤖 [IA] - v1.0.59: Card transparente con glass effect */}
             {/* 🤖 [IA] - v1.2.36 - Card IMPORTANTE centrado para elegancia visual */}
-            <div className="wizard-glass-element rounded-lg md:rounded-xl border border-orange-400/30 border-l-4 border-l-orange-400 p-3 md:p-4 text-center">
-              <div className="flex items-center justify-center gap-2 md:gap-3 mb-2 md:mb-3">
-                <AlertTriangle className="w-4 md:w-5 h-4 md:h-5 text-orange-400" />
-                <h3 className="font-semibold text-orange-400 text-sm md:text-base">IMPORTANTE</h3>
+            <div className="wizard-glass-element rounded-[clamp(0.5rem,2vw,0.75rem)] border border-orange-400/30 border-l-4 border-l-orange-400 p-[clamp(0.75rem,3vw,1rem)] text-center">
+              <div className="flex items-center justify-center gap-[clamp(0.5rem,2vw,0.75rem)] mb-[clamp(0.5rem,2vw,0.75rem)]">
+                <AlertTriangle className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)] text-orange-400" />
+                <h3 className="font-semibold text-orange-400 text-[clamp(0.875rem,3.5vw,1rem)]">IMPORTANTE</h3>
               </div>
-              <p className="text-primary-foreground text-sm md:text-base font-bold">
+              <p className="text-primary-foreground text-[clamp(0.875rem,3.5vw,1rem)] font-bold">
               </p>
             </div>
 
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-[clamp(1rem,4vw,1.25rem)]">
               {/* 🤖 [IA] - v1.2.35 - Header "Protocolo obligatorio" eliminado: ya está en card IMPORTANTE */}
               {protocolRules.map((rule, index) => (
                 <div
                   key={index}
-                  className={`flex items-start border-l-4 ${rule.borderColor} gap-4 p-4 rounded-md bg-card/50 border border-border/50`}
+                  className={`flex items-start border-l-4 ${rule.borderColor} gap-[clamp(1rem,4vw,1.25rem)] p-[clamp(0.75rem,3vw,1rem)] rounded-[clamp(0.375rem,1.5vw,0.5rem)] bg-card/50 border border-border/50`}
                   role="listitem"
                   aria-label={`Regla ${index + 1}: ${rule.title} - ${rule.subtitle}`}
                 >
@@ -204,10 +204,10 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                   {/* 🤖 [IA] - v1.2.31 - Estructura jerárquica: título + subtítulo */}
                   {/* 🤖 [IA] - v1.2.32 - Badges eliminados: iconos SVG comunican severidad suficientemente */}
                   <div className="flex-1 min-w-0">
-                    <div className="font-semibold text-primary-foreground text-sm md:text-base leading-tight">
+                    <div className="font-semibold text-primary-foreground text-[clamp(0.875rem,3.5vw,1rem)] leading-tight">
                       {rule.title}
                     </div>
-                    <div className="text-muted-foreground text-xs md:text-sm mt-1 leading-relaxed">
+                    <div className="text-muted-foreground text-[clamp(0.625rem,2.5vw,0.75rem)] mt-[clamp(0.25rem,1vw,0.375rem)] leading-relaxed">
                       {rule.subtitle}
                     </div>
                   </div>
@@ -218,9 +218,9 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
             {/* 🤖 [IA] - v1.0.59: Checkbox con glass effect */}
             {/* 🤖 [IA] - v1.2.12 - Responsividad mejorada y textos concisos */}
             {/* 🤖 [IA] - v1.2.36 - Checkbox centrado para elegancia y foco en acción principal */}
-            <div className="border-t border-white/10 pt-4 flex flex-col gap-4">
+            <div className="border-t border-white/10 pt-[clamp(0.75rem,3vw,1rem)] flex flex-col gap-[clamp(1rem,4vw,1.25rem)]">
               <motion.div 
-                className={`wizard-glass-element flex items-center justify-center gap-4 p-4 rounded-lg md:rounded-xl transition-all duration-300 ${
+                className={`wizard-glass-element flex items-center justify-center gap-[clamp(1rem,4vw,1.25rem)] p-[clamp(0.75rem,3vw,1rem)] rounded-[clamp(0.5rem,2vw,0.75rem)] transition-all duration-300 ${
                   wizardData.rulesAccepted 
                     ? 'border-2 border-green-400/60 shadow-lg shadow-green-400/20' 
                     : 'border-2 border-blue-400/60 shadow-lg shadow-blue-400/20'
@@ -236,7 +236,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                     onCheckedChange={(checked) => 
                       updateWizardData({ rulesAccepted: checked as boolean })
                     }
-                    className={`mt-0.5 border-2 ${
+                    className={`mt-[clamp(0.25rem,1vw,0.375rem)] border-2 ${
                       wizardData.rulesAccepted 
                         ? 'border-green-400 bg-green-400' 
                         : 'border-blue-400 bg-transparent'
@@ -247,7 +247,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                 </motion.div>
                 <Label 
                   htmlFor="rules-accepted" 
-                  className="font-medium cursor-pointer leading-relaxed text-primary-foreground text-sm md:text-base"
+                  className="font-medium cursor-pointer leading-relaxed text-primary-foreground text-[clamp(0.875rem,3.5vw,1rem)]"
                   id="rules-description"
                 >
                   Aceptamos el Protocolo
