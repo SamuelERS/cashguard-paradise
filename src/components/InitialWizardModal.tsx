@@ -498,22 +498,22 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
 
             <div className="wizard-glass-element border-l-4 border-l-blue-500 shadow-lg shadow-blue-500/20">
               <h4 className="font-semibold text-blue-500 text-sm md:text-base mb-2 md:mb-3">Resumen de Información:</h4>
-              <div className="flex flex-col gap-1 md:gap-2 text-xs md:text-sm">
-                <div className="flex justify-between gap-2 md:gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-1 md:gap-2 text-xs md:text-sm">
+                <div className="flex justify-between sm:flex-col gap-1 md:gap-2">
                   <span className="min-w-0 text-muted-foreground">Sucursal:</span>
-                  <span className="font-medium text-right truncate text-primary-foreground">
+                  <span className="font-medium text-right sm:text-left truncate text-primary-foreground">
                     {STORES.find(s => s.id === wizardData.selectedStore)?.name}
                   </span>
                 </div>
-                <div className="flex justify-between gap-2 md:gap-3">
+                <div className="flex justify-between sm:flex-col gap-1 md:gap-2">
                   <span className="min-w-0 text-muted-foreground">Cajero:</span>
-                  <span className="font-medium text-right truncate text-primary-foreground">
+                  <span className="font-medium text-right sm:text-left truncate text-primary-foreground">
                     {availableEmployees.find(e => e.id === wizardData.selectedCashier)?.name}
                   </span>
                 </div>
-                <div className="flex justify-between gap-2 md:gap-3">
+                <div className="flex justify-between sm:flex-col gap-1 md:gap-2">
                   <span className="min-w-0 text-muted-foreground">Testigo:</span>
-                  <span className="font-medium text-right truncate text-primary-foreground">
+                  <span className="font-medium text-right sm:text-left truncate text-primary-foreground">
                     {availableEmployees.find(e => e.id === wizardData.selectedWitness)?.name}
                   </span>
                 </div>
@@ -522,7 +522,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
           </div>
         );
 
-      default:
+// ...
         return null;
     }
   };
