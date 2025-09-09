@@ -5,11 +5,23 @@
 echo "🚀 Running pre-push validation..."
 echo "This will run complete test suite to ensure code quality"
 
-# Run unit tests in Docker
+# Run unit tests with Docker fallback
 echo "Running unit tests..."
-./Scripts/docker-test-commands.sh test:unit || {
-    echo "❌ Unit tests failed! Push aborted."
-    exit 1
-}
+
+# 🤖 [IA] - v1.2.21: Docker fallback - Use local tests if Docker unavailable
+if docker info >/dev/null 2>&1; then
+    # Docker available - use containerized tests (original behavior)
+    ./Scripts/docker-test-commands.sh test:unit || {
+        echo "❌ Unit tests failed! Push aborted."
+        exit 1
+    }
+else
+    # Docker not available - fallback to local unit tests
+    echo "🐳 Docker not available, running local unit tests..."
+    npm run test:unit || {
+        echo "❌ Unit tests failed! Push aborted."
+        exit 1
+    }
+fi
 
 echo "✅ All pre-push checks passed! Pushing to remote..."
