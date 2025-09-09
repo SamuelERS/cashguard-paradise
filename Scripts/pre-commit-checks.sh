@@ -25,14 +25,26 @@ echo "$STAGED_FILES"
 
 # TypeScript check for staged files only
 echo -e "${BLUE}Running TypeScript check...${NC}"
-docker run --rm \
-    -v "$(pwd)":/app \
-    -w /app \
-    node:20-alpine \
-    sh -c "npm ci --silent && npx tsc --noEmit" || {
-    echo -e "${RED}❌ TypeScript errors found! Please fix before committing.${NC}"
-    exit 1
-}
+
+# 🤖 [IA] - v1.2.21: Docker fallback - Use local validation if Docker unavailable
+if docker info >/dev/null 2>&1; then
+    # Docker available - use containerized check (original behavior)
+    docker run --rm \
+        -v "$(pwd)":/app \
+        -w /app \
+        node:20-alpine \
+        sh -c "npm ci --silent && npx tsc --noEmit" || {
+        echo -e "${RED}❌ TypeScript errors found! Please fix before committing.${NC}"
+        exit 1
+    }
+else
+    # Docker not available - fallback to local TypeScript check
+    echo -e "${YELLOW}🐳 Docker not available, using local TypeScript check...${NC}"
+    npx tsc --noEmit || {
+        echo -e "${RED}❌ TypeScript errors found! Please fix before committing.${NC}"
+        exit 1
+    }
+fi
 
 # Quick unit test for modified files (if test files exist)
 TEST_FILES=$(echo "$STAGED_FILES" | grep -E '\.test\.(ts|tsx)$' || true)

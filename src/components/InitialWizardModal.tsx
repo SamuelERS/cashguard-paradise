@@ -551,9 +551,9 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
       <DialogContent 
         className="wizard-modal-content w-[95vw] max-w-[95vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] sm:max-h-[85vh] overflow-y-auto overflow-x-hidden p-0 [&>button]:hidden"
       >
-        <div className="p-4 md:p-6">
+        <div className="p-[clamp(1rem,4vw,1.5rem)]">
           <DialogHeader>
-            <DialogTitle className="text-primary mb-2 text-lg md:text-xl lg:text-2xl">
+            <DialogTitle className="text-primary mb-[clamp(0.5rem,2vw,0.75rem)] text-[clamp(1.125rem,4.5vw,1.5rem)]">
               {getStepTitle()}
             </DialogTitle>
             <DialogDescription className="sr-only">
@@ -562,7 +562,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
           </DialogHeader>
 
           {/* Progress Bar Section */}
-          <div className="mt-3 mb-4 sm:mt-4 sm:mb-6">
+          <div className="mt-[clamp(0.75rem,3vw,1rem)] mb-[clamp(1rem,4vw,1.5rem)]">
             <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
               <motion.div
                 className="h-full bg-gradient-to-r from-primary to-secondary rounded-full"
@@ -628,13 +628,19 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
           )}
 
           {/* 🤖 [IA] - v1.2.22: Footer centrado - botones agrupados centro con espaciado consistente */}
-          <div className="flex items-center justify-center mt-6 pt-4 border-t border-slate-600 gap-2">
-            <DestructiveActionButton onClick={handleClose}>
+          <div className="flex items-center justify-center mt-[clamp(1.5rem,6vw,2rem)] pt-[clamp(1rem,4vw,1.5rem)] border-t border-slate-600 gap-[clamp(0.5rem,2vw,0.75rem)]">
+            <DestructiveActionButton 
+              onClick={handleClose}
+              className="h-[clamp(2.5rem,10vw,3rem)] px-[clamp(1rem,4vw,1.5rem)]"
+            >
               Cancelar
             </DestructiveActionButton>
             
             {canGoPrevious && (
-              <NeutralActionButton onClick={() => setShowBackConfirmation(true)}>
+              <NeutralActionButton 
+                onClick={() => setShowBackConfirmation(true)}
+                className="h-[clamp(2.5rem,10vw,3rem)] px-[clamp(1rem,4vw,1.5rem)]"
+              >
                 Anterior
               </NeutralActionButton>
             )}
@@ -643,6 +649,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               <ConstructiveActionButton
                 onClick={handleNext}
                 disabled={!canGoNext}
+                className="h-[clamp(2.5rem,10vw,3rem)] px-[clamp(1rem,4vw,1.5rem)]"
               >
                 Siguiente
               </ConstructiveActionButton>
