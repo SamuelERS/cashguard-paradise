@@ -96,27 +96,32 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
   
 
   // 🤖 [IA] - v1.0.39 - Simplificación de reglas del protocolo
+  // 🤖 [IA] - v1.2.31 - Rediseño jerárquico: título + subtítulo para mayor compactación
+  // 🤖 [IA] - v1.2.32 - Propiedades critical/isAlert eliminadas: iconos SVG comunican severidad
   const protocolRules = [
     {
       icon: <AlertTriangle className="w-5 h-5 text-red-500" />,
-      text: "Sin dispositivos electrónicos (conteo 100% manual)",
-      critical: true,
+      title: "Sin dispositivos electrónicos",
+      subtitle: "Conteo 100% manual",
+      borderColor: "border-l-red-500", // 🤖 [IA] - Borde rojo = crítico
     },
     {
       icon: <Shield className="w-5 h-5 text-red-500" />,
-      text: "Conteo único — sin recuentos (verifica bien antes)",
-      critical: true,
+      title: "Conteo único",
+      subtitle: "Sin recuentos - verifica antes",
+      borderColor: "border-l-red-500", // 🤖 [IA] - Borde rojo = crítico
     },
     {
       icon: <CheckCircle className="w-5 h-5 text-red-500" />,
-      text: "Cajero ≠ Testigo (doble verificación)",
-      critical: true,
+      title: "Cajero ≠ Testigo",
+      subtitle: "Doble verificación",
+      borderColor: "border-l-red-500", // 🤖 [IA] - Borde rojo = crítico
     },
     {
       icon: <AlertTriangle className="w-5 h-5 text-orange-400" />,
-      text: "Sistema activo para cualquier diferencia",
-      critical: false,
-      isAlert: true, // 🤖 [IA] - v1.0.30 - Flag para mostrar badge ALERTA
+      title: "Sistema activo",
+      subtitle: "Detecta diferencias",
+      borderColor: "border-l-orange-400", // 🤖 [IA] - Borde naranja = alerta
     },
   ];
 
@@ -174,19 +179,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
       case 1: // Protocolo Anti-Fraude
         return (
           <div className="wizard-step-container">
-            {/* Header con Icono de Escudo */}
-            <div className="flex items-center justify-center mb-4">
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, ease: "easeOut" }}
-                className="relative"
-              >
-                {/* 🤖 [IA] - v1.2.11: Gradiente premium + escala responsive */}
-                <Shield className="w-12 md:w-16 h-12 md:h-16 text-primary" />
-              </motion.div>
-            </div>
-
+            {/* 🤖 [IA] - v1.2.34 - Shield azul eliminado: AlertTriangle + "IMPORTANTE" comunican severidad suficientemente */}
             {/* 🤖 [IA] - v1.0.59: Card transparente con glass effect */}
             <div className="wizard-glass-element rounded-lg md:rounded-xl border border-orange-400/30 border-l-4 border-l-orange-400 p-3 md:p-4">
               <div className="flex items-center gap-2 md:gap-3 mb-2 md:mb-3">
@@ -206,23 +199,21 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               {protocolRules.map((rule, index) => (
                 <div
                   key={index}
-                  className={`flex items-start ${rule.critical ? 'border-l-4 border-l-red-500' : 'border-l-4 border-l-orange-400'} gap-4 p-4 rounded-md bg-card/50 border border-border/50`}
+                  className={`flex items-start border-l-4 ${rule.borderColor} gap-4 p-4 rounded-md bg-card/50 border border-border/50`}
                   role="listitem"
-                  aria-label={`Regla ${index + 1}: ${rule.text}`}
+                  aria-label={`Regla ${index + 1}: ${rule.title} - ${rule.subtitle}`}
                 >
                   <div className="flex-shrink-0">{rule.icon}</div>
-                  <span className="flex-1 leading-relaxed text-primary-foreground text-sm md:text-base">{rule.text}</span>
-                  {/* 🤖 [IA] - v1.2.20 - Badge migrado a componente shadcn/ui */}
-                  {(rule.critical || rule.isAlert) && (
-                    <Badge 
-                      variant={rule.isAlert ? "warning" : "destructive"}
-                      aria-label={rule.isAlert ? "Alerta informativa" : "Regla crítica de cumplimiento obligatorio"}
-                      role="status"
-                      className="shrink-0"
-                    >
-                      {rule.isAlert ? "ALERTA" : "CRÍTICO"}
-                    </Badge>
-                  )}
+                  {/* 🤖 [IA] - v1.2.31 - Estructura jerárquica: título + subtítulo */}
+                  {/* 🤖 [IA] - v1.2.32 - Badges eliminados: iconos SVG comunican severidad suficientemente */}
+                  <div className="flex-1 min-w-0">
+                    <div className="font-semibold text-primary-foreground text-sm md:text-base leading-tight">
+                      {rule.title}
+                    </div>
+                    <div className="text-muted-foreground text-xs md:text-sm mt-1 leading-relaxed">
+                      {rule.subtitle}
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
@@ -591,6 +582,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
           </AnimatePresence>
 
           {/* Validation Feedback */}
+          {/* 🤖 [IA] - v1.2.33 - Mensaje simplificado: eliminada redundancia textual "continuar" */}
           {currentStep === 1 && !canGoNext && (
             <motion.div
               initial={{ opacity: 0, y: -10 }}
@@ -600,28 +592,15 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               role="alert"
               aria-live="polite"
               aria-atomic="true"
-              aria-label="Validaciones pendientes para continuar"
+              aria-label="Validación pendiente para continuar"
             >
-              <div className="flex items-start gap-2">
+              <p className="font-medium text-orange-400 text-sm flex items-center">
                 <AlertTriangle 
-                  className="w-4 h-4 mt-0.5 flex-shrink-0 text-orange-400"
-                  aria-label="Advertencia"
-                  role="img"
+                  className="w-4 h-4 mr-2 flex-shrink-0"
+                  aria-hidden="true"
                 />
-                <div className="text-sm">
-                  <p className="font-medium mb-1 text-orange-400">Para continuar, complete:</p>
-                  <ul className="space-y-1 text-xs list-none text-orange-400" role="list">
-                    {!wizardData.rulesAccepted && (
-                      <li 
-                        className="flex items-center gap-1 before:content-['•'] before:text-destructive before:mr-1"
-                        id="rules-error"
-                      >
-                        Debe aceptar las reglas del protocolo para continuar
-                      </li>
-                    )}
-                  </ul>
-                </div>
-              </div>
+                Aceptar reglas para continuar
+              </p>
             </motion.div>
           )}
 
