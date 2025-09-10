@@ -112,6 +112,14 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
     }
   }, [isFlowCompleted, currentStep, hasVibratedForError]);
 
+  // 🤖 [IA] - v1.3.1: Sincroniza el estado del nuevo flujo guiado con el campo wizardData.rulesAccepted del sistema de validación legado para mantener la compatibilidad
+  useEffect(() => {
+    const rulesCompleted = isFlowCompleted();
+    if (rulesCompleted && !wizardData.rulesAccepted) {
+      updateWizardData({ rulesAccepted: true });
+    }
+  }, [isFlowCompleted, wizardData.rulesAccepted, updateWizardData]);
+
   // Empleados disponibles basados en la sucursal seleccionada
   const availableEmployees = wizardData.selectedStore 
     ? getEmployeesByStore(wizardData.selectedStore) 
