@@ -1,6 +1,7 @@
-// 🤖 [IA] - Componente ProtocolRule - Arquitectura Guiada Basada en Datos v1.0
+// 🤖 [IA] - Componente ProtocolRule - Arquitectura Guiada Basada en Datos v1.0 + Performance Optimized
 import { motion } from 'framer-motion';
 import { CheckCircle, Eye } from 'lucide-react';
+import { memo, useMemo, useCallback } from 'react';
 import { ProtocolRule as ProtocolRuleType, RuleState } from '@/config/flows/initialWizardFlow';
 import { cn } from '@/lib/utils';
 
@@ -13,21 +14,20 @@ interface ProtocolRuleProps {
 
 // 🤖 [IA] - Componente individual para cada regla del protocolo
 // Encapsula toda la lógica visual y de interacción de una regla
-export const ProtocolRule = ({ rule, state, isCurrent, onAcknowledge }: ProtocolRuleProps) => {
+// Performance optimized: React.memo + useMemo para evitar re-renders innecesarios
+const ProtocolRuleComponent = ({ rule, state, isCurrent, onAcknowledge }: ProtocolRuleProps) => {
   const { Icon, colors, title, subtitle } = rule;
 
-  // 🤖 [IA] - Determinar el estado visual de la regla
-  const getVisualState = () => {
+  // 🤖 [IA] - Determinar el estado visual de la regla (memoizado para performance)
+  const visualState = useMemo(() => {
     if (state.isChecked) return 'checked';
     if (state.isBeingReviewed) return 'reviewing';
     if (state.isEnabled) return 'enabled';
     return 'disabled';
-  };
+  }, [state.isChecked, state.isBeingReviewed, state.isEnabled]);
 
-  const visualState = getVisualState();
-
-  // 🤖 [IA] - Configuración de estilos basada en estado
-  const getStateStyles = () => {
+  // 🤖 [IA] - Configuración de estilos basada en estado (memoizado para performance)
+  const styles = useMemo(() => {
     switch (visualState) {
       case 'checked':
         return {
@@ -58,26 +58,26 @@ export const ProtocolRule = ({ rule, state, isCurrent, onAcknowledge }: Protocol
           cursor: 'cursor-not-allowed'
         };
     }
-  };
+  }, [visualState, rule.colors]);
 
-  const styles = getStateStyles();
-
-  // 🤖 [IA] - Manejar click en la regla
-  const handleClick = () => {
+  // 🤖 [IA] - Manejar click en la regla (memoizado para performance)
+  const handleClick = useCallback(() => {
     if (state.isEnabled && !state.isChecked) {
       onAcknowledge();
     }
-  };
+  }, [state.isEnabled, state.isChecked, onAcknowledge]);
 
-  // 🤖 [IA] - Animaciones de pulso para regla actual habilitada
-  const pulseAnimation = isCurrent && state.isEnabled && !state.isChecked ? {
-    scale: [1, 1.02, 1],
-    transition: {
-      duration: 2,
-      repeat: Infinity,
-      repeatType: "reverse" as const
-    }
-  } : {};
+  // 🤖 [IA] - Animaciones optimizadas para GPU (transform + opacity only)
+  const pulseAnimation = useMemo(() => {
+    return isCurrent && state.isEnabled && !state.isChecked ? {
+      scale: [1, 1.02, 1],
+      transition: {
+        duration: 2,
+        repeat: Infinity,
+        repeatType: "reverse" as const
+      }
+    } : {};
+  }, [isCurrent, state.isEnabled, state.isChecked]);
 
   return (
     <motion.div
@@ -147,16 +147,18 @@ export const ProtocolRule = ({ rule, state, isCurrent, onAcknowledge }: Protocol
         </div>
       </div>
 
-      {/* 🤖 [IA] - Indicador de interactividad para reglas habilitadas */}
+      {/* 🤖 [IA] - Indicador de interactividad optimizado para GPU (scale + opacity) */}
       {state.isEnabled && !state.isChecked && (
         <motion.div
           className="absolute inset-0 rounded-[clamp(0.375rem,1.5vw,0.5rem)] pointer-events-none"
+          style={{
+            willChange: 'transform, opacity',
+            border: `2px solid ${colors.border.includes('red') ? 'rgba(239, 68, 68, 0.3)' : 'rgba(251, 146, 60, 0.3)'}`,
+            backgroundColor: colors.border.includes('red') ? 'rgba(239, 68, 68, 0.05)' : 'rgba(251, 146, 60, 0.05)'
+          }}
           animate={{
-            boxShadow: [
-              `0 0 0 0 ${colors.border.includes('red') ? 'rgba(239, 68, 68, 0.4)' : 'rgba(251, 146, 60, 0.4)'}`,
-              `0 0 0 4px ${colors.border.includes('red') ? 'rgba(239, 68, 68, 0.1)' : 'rgba(251, 146, 60, 0.1)'}`,
-              `0 0 0 0 ${colors.border.includes('red') ? 'rgba(239, 68, 68, 0.4)' : 'rgba(251, 146, 60, 0.4)'}`
-            ]
+            scale: [1, 1.01, 1],
+            opacity: [0.6, 1, 0.6]
           }}
           transition={{
             duration: 2,
@@ -180,3 +182,14 @@ export const ProtocolRule = ({ rule, state, isCurrent, onAcknowledge }: Protocol
     </motion.div>
   );
 };
+
+// 🤖 [IA] - Exportar componente memoizado para prevenir re-renders innecesarios
+export const ProtocolRule = memo(ProtocolRuleComponent, (prevProps, nextProps) => {
+  return (
+    prevProps.rule.id === nextProps.rule.id &&
+    prevProps.state.isChecked === nextProps.state.isChecked &&
+    prevProps.state.isBeingReviewed === nextProps.state.isBeingReviewed &&
+    prevProps.state.isEnabled === nextProps.state.isEnabled &&
+    prevProps.isCurrent === nextProps.isCurrent
+  );
+});
