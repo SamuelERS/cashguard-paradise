@@ -536,10 +536,10 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
       }
     }}>
       <DialogContent 
-        className="wizard-modal-content w-[95vw] max-w-[95vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] sm:max-h-[85vh] overflow-y-auto overflow-x-hidden p-0 [&>button]:hidden"
+        className="wizard-modal-content w-[clamp(90vw,95vw,95vw)] max-w-[clamp(300px,90vw,540px)] max-h-[clamp(85vh,90vh,90vh)] overflow-y-auto overflow-x-hidden p-0 [&>button]:hidden"
       >
         <div className="p-[clamp(1rem,4vw,1.5rem)]">
-          <DialogHeader>
+          <DialogHeader className="text-center">
             <DialogTitle className="text-primary mb-[clamp(0.5rem,2vw,0.75rem)] text-[clamp(1.125rem,4.5vw,1.5rem)]">
               {getStepTitle()}
             </DialogTitle>
