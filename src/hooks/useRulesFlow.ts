@@ -1,0 +1,178 @@
+// 🤖 [IA] - Hook para gestión del flujo guiado de reglas del protocolo v1.0
+import { useReducer, useCallback } from 'react';
+import { useTimingConfig } from './useTimingConfig';
+import { 
+  RulesFlowState, 
+  createInitialRulesState, 
+  protocolRules,
+  RULES_FLOW_TIMING 
+} from '@/config/flows/initialWizardFlow';
+
+// 🤖 [IA] - Acciones del reducer para el flujo de reglas
+type RulesFlowAction =
+  | { type: 'INITIALIZE_RULES' }
+  | { type: 'ACKNOWLEDGE_RULE'; payload: { ruleId: string; index: number } }
+  | { type: 'ENABLE_NEXT_RULE'; payload: { nextIndex: number } }
+  | { type: 'SET_RULE_REVIEWING'; payload: { ruleId: string; isReviewing: boolean } }
+  | { type: 'COMPLETE_FLOW' }
+  | { type: 'RESET_FLOW' };
+
+// 🤖 [IA] - Reducer para gestión de estado del flujo de reglas
+const rulesFlowReducer = (state: RulesFlowState, action: RulesFlowAction): RulesFlowState => {
+  switch (action.type) {
+    case 'INITIALIZE_RULES':
+      return createInitialRulesState();
+
+    case 'ACKNOWLEDGE_RULE': {
+      const { ruleId } = action.payload;
+      return {
+        ...state,
+        rules: {
+          ...state.rules,
+          [ruleId]: {
+            ...state.rules[ruleId],
+            isChecked: true,
+            isBeingReviewed: true
+          }
+        }
+      };
+    }
+
+    case 'ENABLE_NEXT_RULE': {
+      const { nextIndex } = action.payload;
+      const currentRule = protocolRules[state.currentRuleIndex];
+      
+      // Si no hay siguiente regla, completar flujo
+      if (nextIndex >= protocolRules.length) {
+        return {
+          ...state,
+          rules: {
+            ...state.rules,
+            [currentRule.id]: {
+              ...state.rules[currentRule.id],
+              isBeingReviewed: false
+            }
+          },
+          isFlowComplete: true
+        };
+      }
+
+      const nextRule = protocolRules[nextIndex];
+      return {
+        ...state,
+        rules: {
+          ...state.rules,
+          [currentRule.id]: {
+            ...state.rules[currentRule.id],
+            isBeingReviewed: false
+          },
+          [nextRule.id]: {
+            ...state.rules[nextRule.id],
+            isEnabled: true
+          }
+        },
+        currentRuleIndex: nextIndex
+      };
+    }
+
+    case 'SET_RULE_REVIEWING': {
+      const { ruleId, isReviewing } = action.payload;
+      return {
+        ...state,
+        rules: {
+          ...state.rules,
+          [ruleId]: {
+            ...state.rules[ruleId],
+            isBeingReviewed: isReviewing
+          }
+        }
+      };
+    }
+
+    case 'COMPLETE_FLOW':
+      return {
+        ...state,
+        isFlowComplete: true
+      };
+
+    case 'RESET_FLOW':
+      return createInitialRulesState();
+
+    default:
+      return state;
+  }
+};
+
+// 🤖 [IA] - Hook principal para el flujo guiado de reglas
+export const useRulesFlow = () => {
+  const [state, dispatch] = useReducer(rulesFlowReducer, createInitialRulesState());
+  const { createTimeoutWithCleanup } = useTimingConfig();
+
+  // 🤖 [IA] - Inicializar el flujo
+  const initializeFlow = useCallback(() => {
+    dispatch({ type: 'INITIALIZE_RULES' });
+  }, []);
+
+  // 🤖 [IA] - Manejar reconocimiento de una regla
+  const acknowledgeRule = useCallback((ruleId: string, index: number) => {
+    // Solo permitir si la regla está habilitada
+    if (!state.rules[ruleId]?.isEnabled) return;
+
+    // Marcar regla como reconocida
+    dispatch({ type: 'ACKNOWLEDGE_RULE', payload: { ruleId, index } });
+
+    // Después del tiempo de revisión, habilitar siguiente regla
+    const cleanup = createTimeoutWithCleanup(
+      () => {
+        const nextIndex = index + 1;
+        dispatch({ type: 'ENABLE_NEXT_RULE', payload: { nextIndex } });
+      },
+      'transition',
+      `rule_transition_${ruleId}`,
+      RULES_FLOW_TIMING.ruleReview
+    );
+
+    return cleanup;
+  }, [state.rules, createTimeoutWithCleanup]);
+
+  // 🤖 [IA] - Verificar si el flujo está completo
+  const isFlowCompleted = useCallback(() => {
+    return state.isFlowComplete;
+  }, [state.isFlowComplete]);
+
+  // 🤖 [IA] - Obtener estado de una regla específica
+  const getRuleState = useCallback((ruleId: string) => {
+    return state.rules[ruleId];
+  }, [state.rules]);
+
+  // 🤖 [IA] - Verificar si una regla puede ser interactuada
+  const canInteractWithRule = useCallback((ruleId: string) => {
+    const ruleState = state.rules[ruleId];
+    return ruleState?.isEnabled && !ruleState?.isChecked;
+  }, [state.rules]);
+
+  // 🤖 [IA] - Reset del flujo
+  const resetFlow = useCallback(() => {
+    dispatch({ type: 'RESET_FLOW' });
+  }, []);
+
+  // 🤖 [IA] - Obtener progreso del flujo (0-100%)
+  const getFlowProgress = useCallback(() => {
+    const totalRules = protocolRules.length;
+    const checkedRules = Object.values(state.rules).filter(rule => rule.isChecked).length;
+    return Math.round((checkedRules / totalRules) * 100);
+  }, [state.rules]);
+
+  return {
+    state,
+    initializeFlow,
+    acknowledgeRule,
+    isFlowCompleted,
+    getRuleState,
+    canInteractWithRule,
+    resetFlow,
+    getFlowProgress,
+    currentRuleIndex: state.currentRuleIndex,
+    totalRules: protocolRules.length
+  };
+};

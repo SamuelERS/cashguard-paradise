@@ -1,0 +1,182 @@
+// 🤖 [IA] - Componente ProtocolRule - Arquitectura Guiada Basada en Datos v1.0
+import { motion } from 'framer-motion';
+import { CheckCircle, Eye } from 'lucide-react';
+import { ProtocolRule as ProtocolRuleType, RuleState } from '@/config/flows/initialWizardFlow';
+import { cn } from '@/lib/utils';
+
+interface ProtocolRuleProps {
+  rule: ProtocolRuleType;
+  state: RuleState;
+  isCurrent: boolean;
+  onAcknowledge: () => void;
+}
+
+// 🤖 [IA] - Componente individual para cada regla del protocolo
+// Encapsula toda la lógica visual y de interacción de una regla
+export const ProtocolRule = ({ rule, state, isCurrent, onAcknowledge }: ProtocolRuleProps) => {
+  const { Icon, colors, title, subtitle } = rule;
+
+  // 🤖 [IA] - Determinar el estado visual de la regla
+  const getVisualState = () => {
+    if (state.isChecked) return 'checked';
+    if (state.isBeingReviewed) return 'reviewing';
+    if (state.isEnabled) return 'enabled';
+    return 'disabled';
+  };
+
+  const visualState = getVisualState();
+
+  // 🤖 [IA] - Configuración de estilos basada en estado
+  const getStateStyles = () => {
+    switch (visualState) {
+      case 'checked':
+        return {
+          container: 'border-green-400/60 bg-green-400/10 shadow-lg shadow-green-400/20',
+          border: 'border-l-green-400',
+          icon: 'text-green-400',
+          cursor: 'cursor-default'
+        };
+      case 'reviewing':
+        return {
+          container: 'border-blue-400/60 bg-blue-400/10 shadow-lg shadow-blue-400/20',
+          border: 'border-l-blue-400',
+          icon: 'text-blue-400',
+          cursor: 'cursor-default'
+        };
+      case 'enabled':
+        return {
+          container: `border-${colors.border.split('-')[2]}/60 bg-${colors.border.split('-')[2]}/5 shadow-lg ${colors.glow} cursor-pointer hover:bg-${colors.border.split('-')[2]}/10 transition-all duration-300`,
+          border: colors.border,
+          icon: colors.text,
+          cursor: 'cursor-pointer'
+        };
+      default:
+        return {
+          container: 'border-muted/30 bg-muted/5 opacity-50',
+          border: 'border-l-muted',
+          icon: 'text-muted-foreground',
+          cursor: 'cursor-not-allowed'
+        };
+    }
+  };
+
+  const styles = getStateStyles();
+
+  // 🤖 [IA] - Manejar click en la regla
+  const handleClick = () => {
+    if (state.isEnabled && !state.isChecked) {
+      onAcknowledge();
+    }
+  };
+
+  // 🤖 [IA] - Animaciones de pulso para regla actual habilitada
+  const pulseAnimation = isCurrent && state.isEnabled && !state.isChecked ? {
+    scale: [1, 1.02, 1],
+    transition: {
+      duration: 2,
+      repeat: Infinity,
+      repeatType: "reverse" as const
+    }
+  } : {};
+
+  return (
+    <motion.div
+      className={cn(
+        "flex items-start border-l-4 gap-[clamp(1rem,4vw,1.25rem)] p-[clamp(0.75rem,3vw,1rem)] rounded-[clamp(0.375rem,1.5vw,0.5rem)] border border-border/50 relative",
+        styles.container,
+        styles.border,
+        styles.cursor
+      )}
+      onClick={handleClick}
+      animate={pulseAnimation}
+      role="button"
+      tabIndex={state.isEnabled && !state.isChecked ? 0 : -1}
+      aria-label={`Regla: ${title} - ${subtitle}${state.isChecked ? ' - Revisada' : state.isEnabled ? ' - Presionar para revisar' : ' - No disponible'}`}
+      aria-pressed={state.isChecked}
+      aria-disabled={!state.isEnabled}
+      onKeyDown={(e) => {
+        if ((e.key === 'Enter' || e.key === ' ') && state.isEnabled && !state.isChecked) {
+          e.preventDefault();
+          onAcknowledge();
+        }
+      }}
+    >
+      {/* 🤖 [IA] - Contenedor del icono con estado dinámico */}
+      <div className="flex-shrink-0 relative">
+        <motion.div
+          animate={state.isBeingReviewed ? { rotate: [0, 360] } : {}}
+          transition={{ duration: 1, ease: "easeInOut" }}
+        >
+          <Icon className={cn("w-5 h-5", styles.icon)} />
+        </motion.div>
+        
+        {/* 🤖 [IA] - Indicador visual de estado */}
+        {state.isChecked && (
+          <motion.div
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.3, delay: 0.2 }}
+            className="absolute -top-1 -right-1"
+          >
+            <CheckCircle className="w-4 h-4 text-green-400 bg-background rounded-full" />
+          </motion.div>
+        )}
+        
+        {state.isBeingReviewed && (
+          <motion.div
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="absolute -top-1 -right-1"
+          >
+            <Eye className="w-4 h-4 text-blue-400 bg-background rounded-full" />
+          </motion.div>
+        )}
+      </div>
+
+      {/* 🤖 [IA] - Contenido textual de la regla */}
+      <div className="flex-1 min-w-0">
+        <motion.div 
+          className="font-semibold text-primary-foreground text-[clamp(0.875rem,3.5vw,1rem)] leading-tight"
+          animate={state.isBeingReviewed ? { opacity: [1, 0.7, 1] } : {}}
+          transition={{ duration: 1, repeat: state.isBeingReviewed ? Infinity : 0 }}
+        >
+          {title}
+        </motion.div>
+        <div className="text-muted-foreground text-[clamp(0.625rem,2.5vw,0.75rem)] mt-[clamp(0.25rem,1vw,0.375rem)] leading-relaxed">
+          {subtitle}
+        </div>
+      </div>
+
+      {/* 🤖 [IA] - Indicador de interactividad para reglas habilitadas */}
+      {state.isEnabled && !state.isChecked && (
+        <motion.div
+          className="absolute inset-0 rounded-[clamp(0.375rem,1.5vw,0.5rem)] pointer-events-none"
+          animate={{
+            boxShadow: [
+              `0 0 0 0 ${colors.border.includes('red') ? 'rgba(239, 68, 68, 0.4)' : 'rgba(251, 146, 60, 0.4)'}`,
+              `0 0 0 4px ${colors.border.includes('red') ? 'rgba(239, 68, 68, 0.1)' : 'rgba(251, 146, 60, 0.1)'}`,
+              `0 0 0 0 ${colors.border.includes('red') ? 'rgba(239, 68, 68, 0.4)' : 'rgba(251, 146, 60, 0.4)'}`
+            ]
+          }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            repeatType: "reverse"
+          }}
+        />
+      )}
+
+      {/* 🤖 [IA] - Tooltip/hint para regla activa */}
+      {isCurrent && state.isEnabled && !state.isChecked && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.5 }}
+          className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs px-2 py-1 rounded-full shadow-lg"
+        >
+          Toca para revisar
+        </motion.div>
+      )}
+    </motion.div>
+  );
+};

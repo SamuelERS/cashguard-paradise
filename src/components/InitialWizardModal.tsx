@@ -1,4 +1,4 @@
-// 🤖 [IA] - InitialWizardModal v1.1.09 - Morning count visual identity
+// 🤖 [IA] - InitialWizardModal v1.3.0 - Arquitectura Guiada Basada en Datos
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -6,12 +6,14 @@ import {
   MapPin, Users, DollarSign
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useWizardNavigation } from "@/hooks/useWizardNavigation";
+import { useRulesFlow } from "@/hooks/useRulesFlow"; // 🤖 [IA] - Hook para flujo guiado v1.0
+import { protocolRules } from "@/config/flows/initialWizardFlow"; // 🤖 [IA] - Configuración de datos v1.0
+import { ProtocolRule } from "@/components/wizards/ProtocolRule"; // 🤖 [IA] - Componente reutilizable v1.0
 import { STORES, getEmployeesByStore } from "@/data/paradise";
 import '@/styles/features/modal-dark-scrollbar.css';
 // 🤖 [IA] - v1.2.25: Removed wizard-cancel-button.css import (obsoleto - migrado a variant system)
@@ -54,6 +56,17 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
     getStepTitle
   } = useWizardNavigation();
 
+  // 🤖 [IA] - v1.3.0: Hook para flujo guiado de reglas del protocolo
+  const {
+    state: rulesFlowState,
+    initializeFlow,
+    acknowledgeRule,
+    isFlowCompleted,
+    getRuleState,
+    canInteractWithRule,
+    resetFlow
+  } = useRulesFlow();
+
   const { createTimeoutWithCleanup } = useTimingConfig(); // 🤖 [IA] - Usar timing unificado v1.0.22
   const { validateInput, getPattern, getInputMode } = useInputValidation(); // 🤖 [IA] - v1.0.45: Validación de decimales
 
@@ -62,6 +75,13 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
   const [hasVibratedForError, setHasVibratedForError] = useState(false);
   // 🤖 [IA] - v1.2.13 - Estado para controlar el modal de confirmación al retroceder
   const [showBackConfirmation, setShowBackConfirmation] = useState(false);
+  
+  // 🤖 [IA] - v1.3.0: Inicializar flujo de reglas cuando se abre el modal
+  useEffect(() => {
+    if (isOpen) {
+      initializeFlow();
+    }
+  }, [isOpen, initializeFlow]);
   
   // 🤖 [IA] - v1.0.29 - Fix memory leak con cleanup mejorado
   useEffect(() => {
@@ -77,56 +97,38 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
     };
   }, [currentStep, createTimeoutWithCleanup]);
 
-  // 🤖 [IA] - v1.0.29 - Feedback háptico optimizado (vibra solo una vez por error)
+  // 🤖 [IA] - v1.3.0: Feedback háptico optimizado - usa estado del flujo guiado
   useEffect(() => {
-    if (!canGoNext && currentStep === 1 && !hasVibratedForError && 'vibrate' in navigator) {
+    const rulesCompleted = isFlowCompleted();
+    const shouldVibrate = !rulesCompleted && currentStep === 1 && !hasVibratedForError && 'vibrate' in navigator;
+    
+    if (shouldVibrate) {
       // Vibración suave solo cuando el estado cambia a error
       navigator.vibrate(50);
       setHasVibratedForError(true);
-    } else if (canGoNext && hasVibratedForError) {
+    } else if (rulesCompleted && hasVibratedForError) {
       // Reset cuando el error se corrige
       setHasVibratedForError(false);
     }
-  }, [canGoNext, currentStep, hasVibratedForError]);
+  }, [isFlowCompleted, currentStep, hasVibratedForError]);
 
   // Empleados disponibles basados en la sucursal seleccionada
   const availableEmployees = wizardData.selectedStore 
     ? getEmployeesByStore(wizardData.selectedStore) 
     : [];
   
+  // 🤖 [IA] - v1.3.0: Manejar reconocimiento de una regla del protocolo
+  const handleRuleAcknowledge = (ruleId: string, index: number) => {
+    acknowledgeRule(ruleId, index);
+  };
 
-  // 🤖 [IA] - v1.0.39 - Simplificación de reglas del protocolo
-  // 🤖 [IA] - v1.2.31 - Rediseño jerárquico: título + subtítulo para mayor compactación
-  // 🤖 [IA] - v1.2.32 - Propiedades critical/isAlert eliminadas: iconos SVG comunican severidad
-  const protocolRules = [
-    {
-      icon: <AlertTriangle className="w-5 h-5 text-red-500" />,
-      title: "Sin dispositivos electrónicos",
-      subtitle: "Conteo 100% manual",
-      borderColor: "border-l-red-500", // 🤖 [IA] - Borde rojo = crítico
-    },
-    {
-      icon: <Shield className="w-5 h-5 text-red-500" />,
-      title: "Conteo único",
-      subtitle: "Sin recuentos - verifica antes",
-      borderColor: "border-l-red-500", // 🤖 [IA] - Borde rojo = crítico
-    },
-    {
-      icon: <CheckCircle className="w-5 h-5 text-red-500" />,
-      title: "Cajero ≠ Testigo",
-      subtitle: "Doble verificación",
-      borderColor: "border-l-red-500", // 🤖 [IA] - Borde rojo = crítico
-    },
-    {
-      icon: <AlertTriangle className="w-5 h-5 text-orange-400" />,
-      title: "Sistema activo",
-      subtitle: "Detecta diferencias",
-      borderColor: "border-l-orange-400", // 🤖 [IA] - Borde naranja = alerta
-    },
-  ];
-
-  // Manejar el siguiente paso
+  // 🤖 [IA] - v1.3.0: Manejar siguiente paso - verificar flujo de reglas en paso 1
   const handleNext = () => {
+    if (currentStep === 1 && !isFlowCompleted()) {
+      toast.error("Debe revisar todas las reglas del protocolo");
+      return;
+    }
+    
     const success = goNext();
     if (!success) {
       toast.error("Complete todos los campos para continuar");
@@ -146,114 +148,79 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
     }
   };
 
-  // Reset al cerrar
+  // 🤖 [IA] - v1.3.0: Reset al cerrar - incluye reset del flujo de reglas
   const handleClose = () => {
     resetWizard();
+    resetFlow();
     onClose();
   };
 
-  // Definir tareas específicas para cada paso
+  // 🤖 [IA] - v1.3.0: Definir tareas específicas para cada paso - paso 1 usa flujo guiado
   const stepTasks = {
-    1: ['rulesAccepted'],                // Protocolo de Seguridad
-    2: ['selectedStore'],                // Selección de Sucursal
-    3: ['selectedCashier'],              // Selección de Cajero
-    4: ['selectedWitness'],              // Selección de Testigo
-    5: ['expectedSales']                 // Venta Esperada
+    1: ['rulesFlowCompleted'],           // Protocolo de Seguridad (flujo guiado)
+    2: ['selectedStore'],               // Selección de Sucursal
+    3: ['selectedCashier'],             // Selección de Cajero
+    4: ['selectedWitness'],             // Selección de Testigo
+    5: ['expectedSales']                // Venta Esperada
   };
 
-  // Calcular progreso basado en tareas completadas
+  // 🤖 [IA] - v1.3.0: Calcular progreso basado en tareas completadas - incluye flujo guiado
   const totalTasks = Object.values(stepTasks).flat().length;
-  const completedTasks = Object.entries(wizardData).reduce((count, [, value]) => {
+  const completedTasks = Object.entries(wizardData).reduce((count, [key, value]) => {
     // Contar campos completados
     if (value !== '' && value !== false) {
       return count + 1;
     }
     return count;
-  }, 0);
+  }, 0) + (isFlowCompleted() ? 1 : 0); // Agregar 1 si el flujo de reglas está completo
 
   const progressValue = Math.round((completedTasks / totalTasks) * 100);
 
   // Renderizar contenido según el paso actual
   const renderStepContent = () => {
     switch (currentStep) {
-      case 1: // Protocolo Anti-Fraude
+      case 1: // Protocolo Anti-Fraude - Flujo Guiado
         return (
           <div className="wizard-step-container">
-            {/* 🤖 [IA] - v1.2.34 - Shield azul eliminado: AlertTriangle + "IMPORTANTE" comunican severidad suficientemente */}
-            {/* 🤖 [IA] - v1.0.59: Card transparente con glass effect */}
-            {/* 🤖 [IA] - v1.2.36 - Card IMPORTANTE centrado para elegancia visual */}
+            {/* 🤖 [IA] - v1.3.0: Card IMPORTANTE con información del flujo guiado */}
             <div className="wizard-glass-element rounded-[clamp(0.5rem,2vw,0.75rem)] border border-orange-400/30 border-l-4 border-l-orange-400 p-[clamp(0.75rem,3vw,1rem)] text-center">
               <div className="flex items-center justify-center gap-[clamp(0.5rem,2vw,0.75rem)] mb-[clamp(0.5rem,2vw,0.75rem)]">
                 <AlertTriangle className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)] text-orange-400" />
-                <h3 className="font-semibold text-orange-400 text-[clamp(0.875rem,3.5vw,1rem)]">IMPORTANTE</h3>
+                <h3 className="font-semibold text-orange-400 text-[clamp(0.875rem,3.5vw,1rem)]">PROTOCOLO OBLIGATORIO</h3>
               </div>
-              <p className="text-primary-foreground text-[clamp(0.875rem,3.5vw,1rem)] font-bold">
+              <p className="text-primary-foreground text-[clamp(0.875rem,3.5vw,1rem)] font-medium">
+                Revisa cada regla individualmente
               </p>
             </div>
 
+            {/* 🤖 [IA] - v1.3.0: Flujo guiado de reglas usando componentes ProtocolRule */}
             <div className="flex flex-col gap-[clamp(1rem,4vw,1.25rem)]">
-              {/* 🤖 [IA] - v1.2.35 - Header "Protocolo obligatorio" eliminado: ya está en card IMPORTANTE */}
               {protocolRules.map((rule, index) => (
-                <div
-                  key={index}
-                  className={`flex items-start border-l-4 ${rule.borderColor} gap-[clamp(1rem,4vw,1.25rem)] p-[clamp(0.75rem,3vw,1rem)] rounded-[clamp(0.375rem,1.5vw,0.5rem)] bg-card/50 border border-border/50`}
-                  role="listitem"
-                  aria-label={`Regla ${index + 1}: ${rule.title} - ${rule.subtitle}`}
-                >
-                  <div className="flex-shrink-0">{rule.icon}</div>
-                  {/* 🤖 [IA] - v1.2.31 - Estructura jerárquica: título + subtítulo */}
-                  {/* 🤖 [IA] - v1.2.32 - Badges eliminados: iconos SVG comunican severidad suficientemente */}
-                  <div className="flex-1 min-w-0">
-                    <div className="font-semibold text-primary-foreground text-[clamp(0.875rem,3.5vw,1rem)] leading-tight">
-                      {rule.title}
-                    </div>
-                    <div className="text-muted-foreground text-[clamp(0.625rem,2.5vw,0.75rem)] mt-[clamp(0.25rem,1vw,0.375rem)] leading-relaxed">
-                      {rule.subtitle}
-                    </div>
-                  </div>
-                </div>
+                <ProtocolRule
+                  key={rule.id}
+                  rule={rule}
+                  state={getRuleState(rule.id)}
+                  isCurrent={index === rulesFlowState.currentRuleIndex}
+                  onAcknowledge={() => handleRuleAcknowledge(rule.id, index)}
+                />
               ))}
             </div>
 
-            {/* 🤖 [IA] - v1.0.59: Checkbox con glass effect */}
-            {/* 🤖 [IA] - v1.2.12 - Responsividad mejorada y textos concisos */}
-            {/* 🤖 [IA] - v1.2.36 - Checkbox centrado para elegancia y foco en acción principal */}
-            <div className="border-t border-white/10 pt-[clamp(0.75rem,3vw,1rem)] flex flex-col gap-[clamp(1rem,4vw,1.25rem)]">
-              <motion.div 
-                className={`wizard-glass-element flex items-center justify-center gap-[clamp(1rem,4vw,1.25rem)] p-[clamp(0.75rem,3vw,1rem)] rounded-[clamp(0.5rem,2vw,0.75rem)] transition-all duration-300 ${
-                  wizardData.rulesAccepted 
-                    ? 'border-2 border-green-400/60 shadow-lg shadow-green-400/20' 
-                    : 'border-2 border-blue-400/60 shadow-lg shadow-blue-400/20'
-                }`}
+            {/* 🤖 [IA] - v1.3.0: Indicador de progreso del flujo */}
+            {isFlowCompleted() && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="wizard-glass-element border-2 border-green-400/60 shadow-lg shadow-green-400/20 rounded-[clamp(0.5rem,2vw,0.75rem)] p-[clamp(0.75rem,3vw,1rem)] text-center"
               >
-                <motion.div
-                  animate={wizardData.rulesAccepted ? { scale: [1, 1.2, 1] } : {}}
-                  transition={{ duration: 0.3 }}
-                >
-                  <Checkbox
-                    id="rules-accepted"
-                    checked={wizardData.rulesAccepted}
-                    onCheckedChange={(checked) => 
-                      updateWizardData({ rulesAccepted: checked as boolean })
-                    }
-                    className={`mt-[clamp(0.25rem,1vw,0.375rem)] border-2 ${
-                      wizardData.rulesAccepted 
-                        ? 'border-green-400 bg-green-400' 
-                        : 'border-blue-400 bg-transparent'
-                    }`}
-                    aria-describedby={!wizardData.rulesAccepted ? "rules-error" : undefined}
-                    aria-invalid={!wizardData.rulesAccepted}
-                  />
-                </motion.div>
-                <Label 
-                  htmlFor="rules-accepted" 
-                  className="font-medium cursor-pointer leading-relaxed text-primary-foreground text-[clamp(0.875rem,3.5vw,1rem)]"
-                  id="rules-description"
-                >
-                  Aceptamos el Protocolo
-                </Label>
+                <div className="flex items-center justify-center gap-[clamp(0.5rem,2vw,0.75rem)]">
+                  <CheckCircle className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)] text-green-400" />
+                  <span className="font-semibold text-green-400 text-[clamp(0.875rem,3.5vw,1rem)]">
+                    ✓ Protocolo Revisado Completamente
+                  </span>
+                </div>
               </motion.div>
-            </div>
+            )}
           </div>
         );
 
@@ -579,9 +546,8 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
             </motion.div>
           </AnimatePresence>
 
-          {/* Validation Feedback */}
-          {/* 🤖 [IA] - v1.2.33 - Mensaje simplificado: eliminada redundancia textual "continuar" */}
-          {currentStep === 1 && !canGoNext && (
+          {/* 🤖 [IA] - v1.3.0: Validation Feedback - mensaje específico para flujo guiado */}
+          {currentStep === 1 && !isFlowCompleted() && (
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -598,7 +564,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                     className="w-4 h-4 mr-2 flex-shrink-0"
                     aria-hidden="true"
                   />
-                  Aceptar reglas para continuar
+                  Revisar todas las reglas para continuar
                 </p>
               </div>
             </motion.div>
@@ -625,7 +591,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
             {currentStep < totalSteps && (
               <ConstructiveActionButton
                 onClick={handleNext}
-                disabled={!canGoNext}
+                disabled={currentStep === 1 ? !isFlowCompleted() : !canGoNext}
                 className="h-[clamp(2.5rem,10vw,3rem)] px-[clamp(1rem,4vw,1.5rem)]"
               >
                 Siguiente
