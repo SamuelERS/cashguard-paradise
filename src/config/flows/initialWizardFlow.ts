@@ -95,7 +95,7 @@ export const createInitialRulesState = (): RulesFlowState => ({
 
 // 🤖 [IA] - Configuración de timing específica para el flujo guiado
 export const RULES_FLOW_TIMING = {
-  ruleReview: 800,      // Tiempo para mostrar estado "being reviewed"
+  ruleReview: 3000,     // Tiempo para lectura obligatoria de cada regla (3s para asegurar comprensión)
   nextRuleDelay: 300,   // Delay antes de habilitar siguiente regla
   pulseAnimation: 2000, // Duración de la animación de pulso
   completionDelay: 500  // Delay antes de marcar flujo como completo
