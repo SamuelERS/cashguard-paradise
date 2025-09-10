@@ -88,20 +88,20 @@ const ProtocolRuleComponent = ({ rule, state, isCurrent, onAcknowledge }: Protoc
     } : {};
   }, [isCurrent, state.isEnabled, state.isChecked]);
 
-  // 🤖 [IA] - v3.0.0: Animación de revelación progresiva elegante
+  // 🤖 [IA] - v3.0.0: Animación de revelación progresiva elegante - timing dramático
   const revealAnimation = useMemo(() => {
     if (visualState === 'hidden') {
       return {
         opacity: 0.6,
-        scale: 0.98
+        scale: 0.95
       };
     }
     return {
       opacity: 1,
       scale: 1,
       transition: {
-        duration: 0.5,
-        ease: "easeOut"
+        duration: 0.7,
+        ease: [0.23, 1, 0.32, 1] // cubic-bezier personalizado para suavidad premium
       }
     };
   }, [visualState]);
