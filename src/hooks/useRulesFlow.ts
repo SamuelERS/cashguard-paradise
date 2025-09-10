@@ -68,7 +68,8 @@ const rulesFlowReducer = (state: RulesFlowState, action: RulesFlowAction): Rules
           },
           [nextRule.id]: {
             ...state.rules[nextRule.id],
-            isEnabled: true
+            isEnabled: true,
+            isHidden: false // 🤖 [IA] - Revelar regla al habilitarse
           }
         },
         currentRuleIndex: nextIndex

@@ -19,12 +19,14 @@ const ProtocolRuleComponent = ({ rule, state, isCurrent, onAcknowledge }: Protoc
   const { Icon, colors, title, subtitle } = rule;
 
   // 🤖 [IA] - Determinar el estado visual de la regla (memoizado para performance)
+  // Incluye nuevo estado 'hidden' para revelación progresiva elegante
   const visualState = useMemo(() => {
     if (state.isChecked) return 'checked';
     if (state.isBeingReviewed) return 'reviewing';
     if (state.isEnabled) return 'enabled';
+    if (state.isHidden) return 'hidden';
     return 'disabled';
-  }, [state.isChecked, state.isBeingReviewed, state.isEnabled]);
+  }, [state.isChecked, state.isBeingReviewed, state.isEnabled, state.isHidden]);
 
   // 🤖 [IA] - Configuración de estilos basada en estado (memoizado para performance)
   const styles = useMemo(() => {
@@ -49,6 +51,13 @@ const ProtocolRuleComponent = ({ rule, state, isCurrent, onAcknowledge }: Protoc
           border: colors.border,
           icon: colors.text,
           cursor: 'cursor-pointer'
+        };
+      case 'hidden':
+        return {
+          container: 'border-muted/20 bg-muted/3 protocol-rule-hidden',
+          border: 'border-l-muted',
+          icon: 'text-muted-foreground',
+          cursor: 'cursor-not-allowed'
         };
       default:
         return {
@@ -79,6 +88,24 @@ const ProtocolRuleComponent = ({ rule, state, isCurrent, onAcknowledge }: Protoc
     } : {};
   }, [isCurrent, state.isEnabled, state.isChecked]);
 
+  // 🤖 [IA] - v3.0.0: Animación de revelación progresiva elegante
+  const revealAnimation = useMemo(() => {
+    if (visualState === 'hidden') {
+      return {
+        opacity: 0.6,
+        scale: 0.98
+      };
+    }
+    return {
+      opacity: 1,
+      scale: 1,
+      transition: {
+        duration: 0.5,
+        ease: "easeOut"
+      }
+    };
+  }, [visualState]);
+
   return (
     <motion.div
       className={cn(
@@ -88,7 +115,7 @@ const ProtocolRuleComponent = ({ rule, state, isCurrent, onAcknowledge }: Protoc
         styles.cursor
       )}
       onClick={handleClick}
-      animate={pulseAnimation}
+      animate={{ ...pulseAnimation, ...revealAnimation }}
       role="button"
       tabIndex={state.isEnabled && !state.isChecked ? 0 : -1}
       aria-label={`Regla: ${title} - ${subtitle}${state.isChecked ? ' - Revisada' : state.isEnabled ? ' - Presionar para revisar' : ' - No disponible'}`}

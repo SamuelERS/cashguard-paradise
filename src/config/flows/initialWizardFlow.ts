@@ -18,6 +18,7 @@ export interface RuleState {
   isChecked: boolean;
   isEnabled: boolean;
   isBeingReviewed: boolean;
+  isHidden?: boolean; // 🤖 [IA] - Estado para revelación progresiva elegante
 }
 
 export interface RulesFlowState {
@@ -91,14 +92,15 @@ export const protocolRules: ProtocolRule[] = [
   }
 ];
 
-// 🤖 [IA] - Estados iniciales del flujo
+// 🤖 [IA] - Estados iniciales del flujo con revelación progresiva
 export const createInitialRulesState = (): RulesFlowState => ({
   rules: protocolRules.reduce((acc, rule, index) => ({
     ...acc,
     [rule.id]: {
       isChecked: false,
       isEnabled: index === 0, // Solo la primera regla está habilitada inicialmente
-      isBeingReviewed: false
+      isBeingReviewed: false,
+      isHidden: index > 0 // Reglas futuras ocultas para revelación progresiva
     }
   }), {}),
   currentRuleIndex: 0,
