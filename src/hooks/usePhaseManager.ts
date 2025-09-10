@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { PhaseState, Phase2State } from '@/types/phases';
+import { PhaseState, Phase2State, DeliveryCalculation } from '@/types/phases';
 import { CashCount } from '@/types/cash';
 import { calculateCashValue, calculateDeliveryDistribution } from '@/utils/deliveryCalculation';
 import { OperationMode } from '@/types/operation-mode'; // 🤖 [IA] - v1.0.82
@@ -33,7 +33,7 @@ const INITIAL_PHASE2_STATE: Phase2State = {
 export function usePhaseManager(operationMode?: OperationMode) { // 🤖 [IA] - v1.0.82
   const [phaseState, setPhaseState] = useState<PhaseState>(INITIAL_PHASE_STATE);
   const [phase2State, setPhase2State] = useState<Phase2State>(INITIAL_PHASE2_STATE);
-  const [deliveryCalculation, setDeliveryCalculation] = useState<any>(null);
+  const [deliveryCalculation, setDeliveryCalculation] = useState<DeliveryCalculation | null>(null); // 🤖 [IA] - v1.2.22: Fixed any type violation
 
   const startPhase1 = useCallback(() => {
     setPhaseState(prev => ({

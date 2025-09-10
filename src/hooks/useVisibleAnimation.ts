@@ -119,19 +119,50 @@ export function useVisibleAnimation(options: UseVisibleAnimationOptions = {}): U
  * Versión simplificada del hook para casos donde solo necesitas el estado de visibilidad
  * 
  * @param elementRef - Ref del elemento a observar
+ * @param options - Opciones del IntersectionObserver
  * @returns boolean indicando si el elemento está visible
  */
-export function useIsVisible(elementRef: React.RefObject<HTMLElement>): boolean {
-  const { isVisible } = useVisibleAnimation();
+export function useIsVisible(
+  elementRef: React.RefObject<HTMLElement>, 
+  options: UseVisibleAnimationOptions = {}
+): boolean {
+  const [isVisible, setIsVisible] = useState(false);
+  const observerRef = useRef<IntersectionObserver | null>(null);
   
+  const {
+    rootMargin = '50px',
+    threshold = 0.1,
+    enabled = true
+  } = options;
+
   useEffect(() => {
-    if (elementRef.current && (useVisibleAnimation as any).elementRef) {
-      (useVisibleAnimation as any).elementRef.current = elementRef.current;
+    if (!enabled || typeof IntersectionObserver === 'undefined') {
+      setIsVisible(true);
+      return;
     }
-  }, [elementRef]);
+
+    const element = elementRef.current;
+    if (!element) return;
+
+    observerRef.current = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+      },
+      { rootMargin, threshold }
+    );
+
+    observerRef.current.observe(element);
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+        observerRef.current = null;
+      }
+    };
+  }, [elementRef, rootMargin, threshold, enabled]);
 
   return isVisible;
-}
+} // 🤖 [IA] - v1.2.22: Fixed any type casting - proper implementation
 
 /**
  * Hook especializado para animaciones de pulso que se pausan automáticamente

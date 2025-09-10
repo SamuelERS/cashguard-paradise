@@ -53,6 +53,11 @@ import { useTimingConfig } from "@/hooks/useTimingConfig"; // 🤖 [IA] - Hook d
 import { OperationMode, OPERATION_MODES } from "@/types/operation-mode"; // 🤖 [IA] - v1.0.81
 import { calculateCashTotal } from "@/utils/calculations"; // 🤖 [IA] - v1.0.84
 
+// 🤖 [IA] - v1.2.22: Interface for webkit-specific CSS properties
+interface ExtendedCSSStyleDeclaration extends CSSStyleDeclaration {
+  webkitOverflowScrolling?: string;
+}
+
 // 🤖 [IA] - v1.0.81 - Props con modo de operación
 interface CashCounterProps {
   operationMode?: OperationMode; // 🤖 [IA] - v1.0.81
@@ -169,7 +174,7 @@ const CashCounter = ({
         height: document.body.style.height,
         overflow: document.body.style.overflow,
         overscrollBehavior: document.body.style.overscrollBehavior,
-        webkitOverflowScrolling: (document.body.style as any).webkitOverflowScrolling,
+        webkitOverflowScrolling: (document.body.style as ExtendedCSSStyleDeclaration).webkitOverflowScrolling, // 🤖 [IA] - v1.2.22: Fixed any type
         touchAction: document.body.style.touchAction
       };
 
@@ -179,7 +184,7 @@ const CashCounter = ({
       document.body.style.height = '100%';
       document.body.style.overflow = 'hidden';
       document.body.style.overscrollBehavior = 'none';
-      (document.body.style as any).webkitOverflowScrolling = 'touch';
+      (document.body.style as ExtendedCSSStyleDeclaration).webkitOverflowScrolling = 'touch'; // 🤖 [IA] - v1.2.22: Fixed any type
       document.body.style.touchAction = 'none';
 
       // Prevenir touchmove
@@ -201,7 +206,7 @@ const CashCounter = ({
         document.body.style.height = originalStyles.height;
         document.body.style.overflow = originalStyles.overflow;
         document.body.style.overscrollBehavior = originalStyles.overscrollBehavior;
-        (document.body.style as any).webkitOverflowScrolling = originalStyles.webkitOverflowScrolling;
+        (document.body.style as ExtendedCSSStyleDeclaration).webkitOverflowScrolling = originalStyles.webkitOverflowScrolling; // 🤖 [IA] - v1.2.22: Fixed any type
         document.body.style.touchAction = originalStyles.touchAction;
 
         document.removeEventListener('touchmove', handleTouchMove);

@@ -15,8 +15,30 @@ import { calculateCashTotal, calculateChange50, formatCurrency, generateDenomina
 import { copyToClipboard } from "@/utils/clipboard"; // 🤖 [IA] - v1.1.09
 import { toast } from "sonner"; // 🤖 [IA] - v1.1.15 - Migrated to Sonner for consistency
 import { CashCount, ElectronicPayments } from "@/types/cash";
-import { PhaseState } from "@/types/phases";
+import { PhaseState, DeliveryCalculation } from "@/types/phases";
 import { getStoreById, getEmployeeById } from "@/data/paradise";
+
+// 🤖 [IA] - v1.2.22: TypeScript interface for calculation results
+interface CalculationData {
+  totalCash: number;
+  totalElectronic: number;
+  totalGeneral: number;
+  difference: number;
+  changeResult: {
+    canMakeChange: boolean;
+    message: string;
+  };
+  hasAlert: boolean;
+  timestamp: string;
+}
+
+// 🤖 [IA] - v1.2.22: Type for delivery steps  
+type DeliveryStep = {
+  key: keyof CashCount;
+  quantity: number;
+  label: string;
+  value: number;
+};
 
 interface CashCalculationProps {
   storeId: string;
@@ -25,7 +47,7 @@ interface CashCalculationProps {
   expectedSales: number;
   cashCount: CashCount;
   electronicPayments: ElectronicPayments;
-  deliveryCalculation?: any;
+  deliveryCalculation?: DeliveryCalculation;
   phaseState?: PhaseState;
   onBack: () => void;
   onComplete: () => void;
@@ -44,7 +66,7 @@ const CashCalculation = ({
   onComplete
 }: CashCalculationProps) => {
   const [isCalculated, setIsCalculated] = useState(false);
-  const [calculationData, setCalculationData] = useState<any>(null);
+  const [calculationData, setCalculationData] = useState<CalculationData | null>(null); // 🤖 [IA] - v1.2.22: Fixed any type violation
 
   const store = getStoreById(storeId);
   const cashier = getEmployeeById(cashierId);
@@ -351,7 +373,7 @@ Dejado en Caja: $50.00
 
 ${deliveryCalculation?.deliverySteps ? 
 `DETALLE ENTREGADO:
-${deliveryCalculation.deliverySteps.map((step: any) => 
+${deliveryCalculation.deliverySteps.map((step: DeliveryStep) => // 🤖 [IA] - v1.2.22: Fixed any type 
   `${step.label} × ${step.quantity} = ${formatCurrency(step.value * step.quantity)}`
 ).join('\n')}` : ''}
 
