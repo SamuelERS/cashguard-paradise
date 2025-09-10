@@ -31,8 +31,8 @@ export interface RulesFlowState {
 export const protocolRules: ProtocolRule[] = [
   {
     id: 'noDevices',
-    title: 'Sin dispositivos electrónicos',
-    subtitle: 'Conteo 100% manual',
+    title: '🧾 Gastos Anotados',
+    subtitle: '¿Ya Revisaron todas las salidas?',
     Icon: AlertTriangle,
     colors: {
       text: 'text-red-500',
@@ -43,8 +43,8 @@ export const protocolRules: ProtocolRule[] = [
   },
   {
     id: 'singleCount',
-    title: 'Conteo único',
-    subtitle: 'Sin recuentos - verifica antes',
+    title: '💳 Cierres de POS',
+    subtitle: '¿Credomatic y Promerica?',
     Icon: Shield,
     colors: {
       text: 'text-red-500',
@@ -55,8 +55,8 @@ export const protocolRules: ProtocolRule[] = [
   },
   {
     id: 'differentCashier',
-    title: 'Cajero ≠ Testigo',
-    subtitle: 'Doble verificación',
+    title: '🔄 Transferencias Revisadas',
+    subtitle: '¿Hay Transferecias por Procesar?',
     Icon: CheckCircle,
     colors: {
       text: 'text-red-500',
@@ -67,8 +67,8 @@ export const protocolRules: ProtocolRule[] = [
   },
   {
     id: 'activeSystem',
-    title: 'Sistema activo',
-    subtitle: 'Detecta diferencias',
+    title: '👥 Doble Verificación',
+    subtitle: '¿Cajero + Testigo estan Presentes?',
     Icon: AlertTriangle,
     colors: {
       text: 'text-orange-400',

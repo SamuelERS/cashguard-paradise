@@ -1,5 +1,5 @@
-// 🤖 [IA] - InitialWizardModal v1.3.0 - Arquitectura Guiada Basada en Datos
-import { useState, useEffect } from "react";
+// 🤖 [IA] - InitialWizardModal v1.3.0 - Arquitectura Guiada Basada en Datos + Performance Optimized
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Shield, AlertTriangle, CheckCircle,
@@ -125,10 +125,10 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
     ? getEmployeesByStore(wizardData.selectedStore) 
     : [];
   
-  // 🤖 [IA] - v1.3.0: Manejar reconocimiento de una regla del protocolo
-  const handleRuleAcknowledge = (ruleId: string, index: number) => {
+  // 🤖 [IA] - v1.3.0: Manejar reconocimiento de una regla del protocolo (memoizado para performance)
+  const handleRuleAcknowledge = useCallback((ruleId: string, index: number) => {
     acknowledgeRule(ruleId, index);
-  };
+  }, [acknowledgeRule]);
 
   // 🤖 [IA] - v1.3.0: Manejar siguiente paso - verificar flujo de reglas en paso 1
   const handleNext = () => {

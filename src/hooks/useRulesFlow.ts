@@ -1,5 +1,5 @@
-// 🤖 [IA] - Hook para gestión del flujo guiado de reglas del protocolo v1.0
-import { useReducer, useCallback } from 'react';
+// 🤖 [IA] - Hook para gestión del flujo guiado de reglas del protocolo v1.0 + Performance Optimized
+import { useReducer, useCallback, useRef } from 'react';
 import { useTimingConfig } from './useTimingConfig';
 import { 
   RulesFlowState, 
@@ -113,10 +113,22 @@ export const useRulesFlow = () => {
     dispatch({ type: 'INITIALIZE_RULES' });
   }, []);
 
-  // 🤖 [IA] - Manejar reconocimiento de una regla
+  // 🤖 [IA] - Debouncing ref para prevenir múltiples clicks accidentales
+  const debounceRef = useRef<{ [key: string]: boolean }>({});
+
+  // 🤖 [IA] - Manejar reconocimiento de una regla (con debouncing optimizado)
   const acknowledgeRule = useCallback((ruleId: string, index: number) => {
     // Solo permitir si la regla está habilitada
     if (!state.rules[ruleId]?.isEnabled) return;
+    
+    // Debouncing: prevenir múltiples clicks en 300ms
+    if (debounceRef.current[ruleId]) return;
+    debounceRef.current[ruleId] = true;
+    
+    // Reset debouncing después de 300ms
+    setTimeout(() => {
+      debounceRef.current[ruleId] = false;
+    }, 300);
 
     // Marcar regla como reconocida
     dispatch({ type: 'ACKNOWLEDGE_RULE', payload: { ruleId, index } });
@@ -140,7 +152,7 @@ export const useRulesFlow = () => {
     return state.isFlowComplete;
   }, [state.isFlowComplete]);
 
-  // 🤖 [IA] - Obtener estado de una regla específica
+  // 🤖 [IA] - Obtener estado de una regla específica (memoizado para performance)
   const getRuleState = useCallback((ruleId: string) => {
     return state.rules[ruleId];
   }, [state.rules]);
@@ -156,7 +168,7 @@ export const useRulesFlow = () => {
     dispatch({ type: 'RESET_FLOW' });
   }, []);
 
-  // 🤖 [IA] - Obtener progreso del flujo (0-100%)
+  // 🤖 [IA] - Obtener progreso del flujo (0-100%) - optimizado para evitar recálculos
   const getFlowProgress = useCallback(() => {
     const totalRules = protocolRules.length;
     const checkedRules = Object.values(state.rules).filter(rule => rule.isChecked).length;

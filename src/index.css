@@ -474,12 +474,52 @@
       transparent);
   }
   
-  /* 🤖 [IA] - Optimización de modal para móviles */
-  @media (max-width: 640px) {
+  /* 🤖 [IA] - v1.2.24: Mobile performance optimizations - reduced backdrop-filter for GPU efficiency */
+  @media (max-width: 768px) {
+    /* Primary modal content optimization */
+    .wizard-modal-content {
+      backdrop-filter: blur(20px) saturate(150%) !important;
+      -webkit-backdrop-filter: blur(20px) saturate(150%) !important;
+    }
+    
+    /* Glass modal optimization */
     .glass-modal {
-      backdrop-filter: blur(40px) saturate(120%);
-      -webkit-backdrop-filter: blur(40px) saturate(120%);
+      backdrop-filter: blur(25px) saturate(120%) !important;
+      -webkit-backdrop-filter: blur(25px) saturate(120%) !important;
       border-radius: 16px;
+    }
+
+    /* Glass card optimization */
+    .glass-card {
+      backdrop-filter: blur(15px) saturate(120%) !important;
+      -webkit-backdrop-filter: blur(15px) saturate(120%) !important;
+      border-radius: 16px;
+    }
+    
+    /* Premium rule card optimization */
+    .premium-rule-card {
+      backdrop-filter: blur(12px) saturate(110%) !important;
+      -webkit-backdrop-filter: blur(12px) saturate(110%) !important;
+    }
+    
+    /* Additional glass elements */
+    .wizard-glass-element,
+    .wizard-header-section,
+    .wizard-success-feedback,
+    .wizard-error-feedback {
+      backdrop-filter: blur(15px) !important;
+      -webkit-backdrop-filter: blur(15px) !important;
+    }
+    
+    /* Dropdown and form elements */
+    .glass-dropdown {
+      backdrop-filter: blur(20px) saturate(130%) !important;
+    }
+    
+    /* Guided denomination items */
+    .guided-denomination-item {
+      backdrop-filter: blur(15px) !important;
+      -webkit-backdrop-filter: blur(15px) !important;
     }
   }
 
@@ -1270,9 +1310,9 @@
     margin: 10px;
     padding: 20px;
     border-radius: 16px;
-    /* Reduced blur for better mobile performance */
-    backdrop-filter: blur(10px) !important;
-    -webkit-backdrop-filter: blur(10px) !important;
+    /* Mobile performance: Unified with global mobile optimization */
+    backdrop-filter: blur(15px) !important;
+    -webkit-backdrop-filter: blur(15px) !important;
   }
   
   .grid {
