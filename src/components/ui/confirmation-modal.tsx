@@ -1,6 +1,7 @@
-// 🤖 [IA] - v2.0.0 - Abstract Confirmation Modal Component
+// 🤖 [IA] - v3.0.0 - Abstract Confirmation Modal Component
 // Componente abstracto para confirmaciones con diseño premium
-// Implementa especificaciones exactas del sistema de diseño v2.0.0
+// Implementa especificaciones exactas del sistema de diseño v3.0.0 (Paradise UI v3.0)
+// Evolución a Responsividad Fluida: clamp() puro, sin breakpoints discretos
 
 import React, { ReactNode } from "react";
 import {
@@ -44,17 +45,18 @@ interface ConfirmationModalProps {
 }
 
 /**
- * ConfirmationModal v2.0.0
+ * ConfirmationModal v3.0.0 - Paradise UI v3.0
  * 
  * Componente abstracto de confirmación con Glass Morphism premium
  * 
- * Especificaciones del sistema de diseño:
+ * Especificaciones del sistema de diseño v3.0:
  * - Background: rgba(36, 36, 36, 0.4) con blur(20px)
  * - Border: rgba(255, 255, 255, 0.15)
- * - Tipografía responsive con clamp()
+ * - Tipografía responsive con clamp() puro
  * - Estructura: Botones estandarizados con doctrina SOLID
  * - Botones: DestructiveActionButton (rojo) y ConstructiveActionButton (verde)
- * - Responsive automático mobile/desktop
+ * - Responsividad Fluida: sin breakpoints discretos (sm:, md:)
+ * - Dimensiones fluidas: clamp() para altura de botones
  * 
  * @param {ConfirmationModalProps} props - Propiedades del componente
  */
@@ -120,11 +122,12 @@ export function ConfirmationModal({
         </AlertDialogHeader>
         
         <AlertDialogFooter 
-          className="flex flex-col-reverse sm:flex-row sm:justify-center gap-y-4 sm:gap-y-0 sm:gap-x-4 mt-[clamp(1rem,4vw,1.5rem)]"
+          className="flex flex-col gap-[clamp(0.75rem,3vw,1rem)] mt-[clamp(1rem,4vw,1.5rem)]"
         >
           <AlertDialogAction asChild>
             <DestructiveActionButton 
               onClick={onConfirm}
+              className="h-[clamp(2.5rem,10vw,3rem)] px-[clamp(1rem,4vw,1.5rem)]"
             >
               {confirmText}
             </DestructiveActionButton>
@@ -133,7 +136,7 @@ export function ConfirmationModal({
           <AlertDialogCancel asChild>
             <ConstructiveActionButton
               onClick={onCancel}
-              className="mt-2 sm:mt-0"
+              className="h-[clamp(2.5rem,10vw,3rem)] px-[clamp(1rem,4vw,1.5rem)]"
             >
               {cancelText}
             </ConstructiveActionButton>

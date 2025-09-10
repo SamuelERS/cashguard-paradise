@@ -75,6 +75,8 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
   const [hasVibratedForError, setHasVibratedForError] = useState(false);
   // 🤖 [IA] - v1.2.13 - Estado para controlar el modal de confirmación al retroceder
   const [showBackConfirmation, setShowBackConfirmation] = useState(false);
+  // 🤖 [IA] - v3.0.0 - Estado para controlar el modal de confirmación al cancelar
+  const [showCancelConfirmation, setShowCancelConfirmation] = useState(false);
   
   // 🤖 [IA] - v1.3.0: Inicializar flujo de reglas cuando se abre el modal
   useEffect(() => {
@@ -156,12 +158,23 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
     }
   };
 
-  // 🤖 [IA] - v1.3.0: Reset al cerrar - incluye reset del flujo de reglas
-  const handleClose = () => {
+  // 🤖 [IA] - v3.0.0: Manejar solicitud de cancelación - abre modal de confirmación
+  const handleCancelRequest = useCallback(() => {
+    setShowCancelConfirmation(true);
+  }, []);
+
+  // 🤖 [IA] - v3.0.0: Manejar cierre confirmado - ejecuta reset y cierre real
+  const handleConfirmedClose = useCallback(() => {
     resetWizard();
     resetFlow();
+    setShowCancelConfirmation(false);
     onClose();
-  };
+  }, [resetWizard, resetFlow, onClose]);
+
+  // 🤖 [IA] - v3.0.0: Manejar cancelación de cierre - continúa en wizard
+  const handleCancelClose = useCallback(() => {
+    setShowCancelConfirmation(false);
+  }, []);
 
   // 🤖 [IA] - v1.3.0: Definir tareas específicas para cada paso - paso 1 usa flujo guiado
   const stepTasks = {
@@ -581,7 +594,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
           {/* 🤖 [IA] - v1.2.22: Footer centrado - botones agrupados centro con espaciado consistente */}
           <div className="flex items-center justify-center mt-[clamp(1.5rem,6vw,2rem)] pt-[clamp(1rem,4vw,1.5rem)] border-t border-slate-600 gap-[clamp(0.5rem,2vw,0.75rem)]">
             <DestructiveActionButton 
-              onClick={handleClose}
+              onClick={handleCancelRequest}
               className="h-[clamp(2.5rem,10vw,3rem)] px-[clamp(1rem,4vw,1.5rem)]"
             >
               Cancelar
@@ -623,6 +636,19 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
           setShowBackConfirmation(false);
         }}
         onCancel={() => setShowBackConfirmation(false)}
+      />
+
+      {/* 🤖 [IA] - v3.0.0: Modal de confirmación para cancelar - Paradise UI v3.0 */}
+      <ConfirmationModal
+        open={showCancelConfirmation}
+        onOpenChange={setShowCancelConfirmation}
+        title="Cancelar Configuración"
+        description="Se perderá todo el progreso del protocolo de seguridad"
+        warningText="Esta acción no se puede deshacer"
+        confirmText="Sí, Cancelar"
+        cancelText="Continuar"
+        onConfirm={handleConfirmedClose}
+        onCancel={handleCancelClose}
       />
     </Dialog>
   );
