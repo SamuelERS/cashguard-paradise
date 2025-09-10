@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useWizardNavigation } from "@/hooks/useWizardNavigation";
 import { useRulesFlow } from "@/hooks/useRulesFlow"; // 🤖 [IA] - Hook para flujo guiado v1.0
-import { protocolRules } from "@/config/flows/initialWizardFlow"; // 🤖 [IA] - Configuración de datos v1.0
+import { currentProtocolRules } from "@/config/flows/initialWizardFlow"; // 🤖 [IA] - Configuración de datos v1.0 + randomización v3.0
 import { ProtocolRule } from "@/components/wizards/ProtocolRule"; // 🤖 [IA] - Componente reutilizable v1.0
 import { STORES, getEmployeesByStore } from "@/data/paradise";
 import '@/styles/features/modal-dark-scrollbar.css';
@@ -216,7 +216,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
 
             {/* 🤖 [IA] - v1.3.0: Flujo guiado de reglas usando componentes ProtocolRule */}
             <div className="flex flex-col gap-[clamp(1rem,4vw,1.25rem)]">
-              {protocolRules.map((rule, index) => (
+              {currentProtocolRules.map((rule, index) => (
                 <ProtocolRule
                   key={rule.id}
                   rule={rule}

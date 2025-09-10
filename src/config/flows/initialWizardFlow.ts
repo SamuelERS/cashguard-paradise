@@ -29,7 +29,7 @@ export interface RulesFlowState {
 
 // 🤖 [IA] - Configuración de datos del flujo de reglas del protocolo
 // Fuente única de verdad para el flujo guiado secuencial
-export const protocolRules: ProtocolRule[] = [
+const protocolRules: ProtocolRule[] = [
   {
     id: 'noDevices',
     title: '🧾 Gastos Anotados',
@@ -92,9 +92,33 @@ export const protocolRules: ProtocolRule[] = [
   }
 ];
 
-// 🤖 [IA] - Estados iniciales del flujo con revelación progresiva
+// 🤖 [IA] - v3.0.0: Array dinámico para randomización elegante
+export let currentProtocolRules: ProtocolRule[] = [...protocolRules];
+
+// 🤖 [IA] - v3.0.0: Función shuffle Fisher-Yates para aleatoriedad real
+const shuffleRules = (rules: ProtocolRule[]): ProtocolRule[] => {
+  const shuffled = [...rules];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+};
+
+// 🤖 [IA] - v3.0.0: Función pública para shuffle + factor sorpresa máximo
+export const shuffleProtocolRules = (): ProtocolRule[] => {
+  currentProtocolRules = shuffleRules(protocolRules);
+  // 🤖 [IA] - Debug: Console log para verificar orden aleatorio
+  console.log('🎲 [Protocolo] Nuevo orden aleatorio:', currentProtocolRules.map(r => r.title));
+  return currentProtocolRules;
+};
+
+// 🤖 [IA] - v3.0.0: Export de reglas originales para compatibilidad
+export const getOriginalProtocolRules = (): ProtocolRule[] => [...protocolRules];
+
+// 🤖 [IA] - Estados iniciales del flujo con revelación progresiva + randomización
 export const createInitialRulesState = (): RulesFlowState => ({
-  rules: protocolRules.reduce((acc, rule, index) => ({
+  rules: currentProtocolRules.reduce((acc, rule, index) => ({
     ...acc,
     [rule.id]: {
       isChecked: false,

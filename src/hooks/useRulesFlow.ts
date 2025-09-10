@@ -4,7 +4,8 @@ import { useTimingConfig } from './useTimingConfig';
 import { 
   RulesFlowState, 
   createInitialRulesState, 
-  protocolRules,
+  currentProtocolRules,
+  shuffleProtocolRules,
   RULES_FLOW_TIMING 
 } from '@/config/flows/initialWizardFlow';
 
@@ -40,10 +41,10 @@ const rulesFlowReducer = (state: RulesFlowState, action: RulesFlowAction): Rules
 
     case 'ENABLE_NEXT_RULE': {
       const { nextIndex } = action.payload;
-      const currentRule = protocolRules[state.currentRuleIndex];
+      const currentRule = currentProtocolRules[state.currentRuleIndex];
       
       // Si no hay siguiente regla, completar flujo
-      if (nextIndex >= protocolRules.length) {
+      if (nextIndex >= currentProtocolRules.length) {
         return {
           ...state,
           rules: {
@@ -57,7 +58,7 @@ const rulesFlowReducer = (state: RulesFlowState, action: RulesFlowAction): Rules
         };
       }
 
-      const nextRule = protocolRules[nextIndex];
+      const nextRule = currentProtocolRules[nextIndex];
       return {
         ...state,
         rules: {
@@ -109,8 +110,9 @@ export const useRulesFlow = () => {
   const [state, dispatch] = useReducer(rulesFlowReducer, createInitialRulesState());
   const { createTimeoutWithCleanup } = useTimingConfig();
 
-  // 🤖 [IA] - Inicializar el flujo
+  // 🤖 [IA] - v3.0.0: Inicializar el flujo con randomización para factor sorpresa
   const initializeFlow = useCallback(() => {
+    shuffleProtocolRules(); // 🎲 Nuevo orden aleatorio cada vez
     dispatch({ type: 'INITIALIZE_RULES' });
   }, []);
 
@@ -171,8 +173,8 @@ export const useRulesFlow = () => {
 
   // 🤖 [IA] - Obtener progreso del flujo (0-100%) - optimizado para evitar recálculos
   const getFlowProgress = useCallback(() => {
-    const totalRules = protocolRules.length;
-    const checkedRules = Object.values(state.rules).filter(rule => rule.isChecked).length;
+    const totalRules = currentProtocolRules.length;
+    const checkedRules = (Object.values(state.rules) as RuleState[]).filter(rule => rule.isChecked).length;
     return Math.round((checkedRules / totalRules) * 100);
   }, [state.rules]);
 
@@ -186,6 +188,6 @@ export const useRulesFlow = () => {
     resetFlow,
     getFlowProgress,
     currentRuleIndex: state.currentRuleIndex,
-    totalRules: protocolRules.length
+    totalRules: currentProtocolRules.length
   };
 };
