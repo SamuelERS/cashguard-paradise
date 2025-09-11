@@ -522,20 +522,9 @@
       -webkit-backdrop-filter: blur(15px) !important;
     }
     
-    /* Protocol rule hidden state - mobile optimized distortion */
-    .protocol-rule-hidden {
-      filter: blur(6px) contrast(0.4) brightness(0.5) !important;
-      transform: scale(0.97) !important;
-    }
-    .protocol-rule-hidden::after {
-      background: rgba(36, 36, 36, 0.94) !important;
-      backdrop-filter: blur(6px) saturate(110%) !important;
-      -webkit-backdrop-filter: blur(6px) saturate(110%) !important;
-      font-size: clamp(0.625rem, 2.5vw, 0.75rem) !important;
-      font-weight: 600 !important;
-      color: rgba(255, 255, 255, 0.9) !important;
-      padding: clamp(0.25rem, 1vw, 0.375rem) clamp(0.5rem, 2vw, 0.75rem) !important;
-      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4) !important;
+    /* Protocol rule hidden state - Desktop (sin propiedades conflictivas) */
+    .wizard-step-container .protocol-rule-hidden {
+      cursor: not-allowed;
     }
   }
 
@@ -2226,32 +2215,30 @@
   border: 1px solid rgba(255, 255, 255, 0.15) !important;
   border-radius: 16px;
 
-/* 🤖 [IA] - v3.0.0: Protocol Rule Hidden State - Distorsión Intensa Elegante */
-.protocol-rule-hidden {
-  filter: blur(8px) contrast(0.3) brightness(0.4);
-  transform: scale(0.95);
+/* 🤖 [IA] - v3.0.0: Protocol Rule Hidden State - Solo propiedades no conflictivas */
+.wizard-step-container .protocol-rule-hidden {
+  cursor: not-allowed;
   position: relative;
-  transition: all 0.7s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .protocol-rule-hidden::after {
   content: "🔒 Completa la regla anterior";
   position: absolute;
   inset: 0;
-  background: rgba(36, 36, 36, 0.92);
+  background: rgba(36, 36, 36, 0.75);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: clamp(0.75rem, 3vw, 0.875rem);
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(255, 255, 255, 0.95);
   border-radius: clamp(0.375rem, 1.5vw, 0.5rem);
-  backdrop-filter: blur(8px) saturate(120%);
-  -webkit-backdrop-filter: blur(8px) saturate(120%);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   text-align: center;
   padding: clamp(0.5rem, 2vw, 0.75rem);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   transition: all 0.7s cubic-bezier(0.23, 1, 0.32, 1);
 }
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);

@@ -91,10 +91,7 @@ const ProtocolRuleComponent = ({ rule, state, isCurrent, onAcknowledge }: Protoc
   // 🤖 [IA] - v3.0.0: Animación de revelación progresiva elegante - timing dramático
   const revealAnimation = useMemo(() => {
     if (visualState === 'hidden') {
-      return {
-        opacity: 0.6,
-        scale: 0.95
-      };
+      return {}; // 🎯 DELEGACIÓN CSS: Eliminación de override inline, responsabilidad transferida al CSS
     }
     return {
       opacity: 1,
@@ -109,13 +106,41 @@ const ProtocolRuleComponent = ({ rule, state, isCurrent, onAcknowledge }: Protoc
   return (
     <motion.div
       className={cn(
-        "flex items-start border-l-4 gap-[clamp(1rem,4vw,1.25rem)] p-[clamp(0.75rem,3vw,1rem)] rounded-[clamp(0.375rem,1.5vw,0.5rem)] border border-border/50 relative",
+        "flex items-start border-l-4 gap-[clamp(0.75rem,3vw,1rem)] p-[clamp(0.625rem,2.5vw,0.875rem)] rounded-[clamp(0.375rem,1.5vw,0.5rem)] border border-border/50 relative",
         styles.container,
         styles.border,
         styles.cursor
       )}
       onClick={handleClick}
-      animate={{ ...pulseAnimation, ...revealAnimation }}
+      animate={
+        visualState === 'hidden'
+          ? { // ESTADO OCULTO - FORZADO
+              opacity: 0.5,
+              scale: 0.95,
+              filter: 'blur(8px)', // Aplicamos el blur directamente aquí
+            }
+          : visualState === 'enabled' && isCurrent
+          ? { // ESTADO ACTIVO - ANIMACIÓN DE PULSO
+              opacity: 1,
+              scale: [1, 1.02, 1],
+              filter: 'blur(0px)',
+              transition: { 
+                scale: { duration: 2, repeat: Infinity, repeatType: "reverse" as const },
+                // Transición suave para opacity y filter al revelarse
+                opacity: { duration: 0.5, ease: "easeOut" }, 
+                filter: { duration: 0.5, ease: "easeOut" }
+              }
+            }
+          : { // ESTADO POR DEFECTO (COMPLETADO, REVISANDO, ETC.)
+              opacity: 1,
+              scale: 1,
+              filter: 'blur(0px)',
+              transition: { 
+                opacity: { duration: 0.5, ease: "easeOut" }, 
+                filter: { duration: 0.5, ease: "easeOut" }
+              }
+            }
+      }
       role="button"
       tabIndex={state.isEnabled && !state.isChecked ? 0 : -1}
       aria-label={`Regla: ${title} - ${subtitle}${state.isChecked ? ' - Revisada' : state.isEnabled ? ' - Presionar para revisar' : ' - No disponible'}`}

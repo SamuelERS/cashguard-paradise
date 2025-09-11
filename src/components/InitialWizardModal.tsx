@@ -204,7 +204,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
         return (
           <div className="wizard-step-container">
             {/* 🤖 [IA] - v1.3.0: Card IMPORTANTE con información del flujo guiado */}
-            <div className="wizard-glass-element rounded-[clamp(0.5rem,2vw,0.75rem)] border border-orange-400/30 border-l-4 border-l-orange-400 p-[clamp(0.75rem,3vw,1rem)] text-center">
+            <div className="wizard-glass-element rounded-[clamp(0.5rem,2vw,0.75rem)] border border-orange-400/40 border-l-4 border-l-orange-400 p-[clamp(0.75rem,3vw,1rem)] text-center shadow-lg shadow-orange-400/10">
               <div className="flex items-center justify-center gap-[clamp(0.5rem,2vw,0.75rem)] mb-[clamp(0.5rem,2vw,0.75rem)]">
                 <AlertTriangle className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)] text-orange-400" />
                 <h3 className="font-semibold text-orange-400 text-[clamp(0.875rem,3.5vw,1rem)]">PROTOCOLO OBLIGATORIO</h3>
@@ -215,7 +215,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
             </div>
 
             {/* 🤖 [IA] - v1.3.0: Flujo guiado de reglas usando componentes ProtocolRule */}
-            <div className="flex flex-col gap-[clamp(1rem,4vw,1.25rem)]">
+            <div className="flex flex-col gap-[clamp(0.75rem,3vw,1rem)]">
               {currentProtocolRules.map((rule, index) => (
                 <ProtocolRule
                   key={rule.id}
