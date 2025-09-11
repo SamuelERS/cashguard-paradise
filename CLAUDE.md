@@ -1,10 +1,10 @@
-# CLAUDE.md v1.2.19
+# CLAUDE.md v1.2.22
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview
 
-CashGuard Paradise v1.2.19 is a cash management system for "Acuarios Paradise" retail stores, built with React, TypeScript, Vite, and shadcn/ui. The application implements **dual operation modes**: morning cash count (inicio de turno) and evening cash cut (fin de turno), with multi-phase protocols and anti-fraud measures.
+CashGuard Paradise v1.2.22 is a cash management system for "Acuarios Paradise" retail stores, built with React, TypeScript, Vite, and shadcn/ui. The application implements **dual operation modes**: morning cash count (inicio de turno) and evening cash cut (fin de turno), with multi-phase protocols and anti-fraud measures.
 
 ### 🧪 Testing Status - 100% Docker Containerized
 | Sector | Status | Coverage | Description |
@@ -49,6 +49,16 @@ CashGuard Paradise v1.2.19 is a cash management system for "Acuarios Paradise" r
 ## 📝 Recent Updates
 
 *Para historial completo v1.0.80 - v1.1.20, ver [CHANGELOG-DETALLADO.md](/Documentos%20MarkDown/CHANGELOG-DETALLADO.md)*
+
+### v1.2.22 - Operación Cirugía Quirúrgica Focus Ring [MISIÓN CUMPLIDA] ✅
+**NEUTRALIZACIÓN CSS GLOBAL ANÁRQUICA:** Cirugía precisa del selector `.flex.gap-2 button:focus-visible` que aplicaba outline azul a ConstructiveActionButton - restauración total de autonomía canónica.
+- **Criminal identificado:** Selector genérico en `cash-counter-desktop-alignment.css:570-574` con `!important` agresivo
+- **Cirugía aplicada:** Contención con `.cash-counter-container` prefix + eliminación de `!important`
+- **Autonomía restaurada:** ConstructiveActionButton recupera `focus-visible:ring-green-500` canónico sin interferencia
+- **Arquitectura reparada:** CSS contenido a su contexto específico, sin contaminación global
+- **Principios respetados:** Zero CSS global nuevo, sin `!important`, sin modificación de componentes
+- **Resultado:** Botón "Confirmar" exhibe anillo verde perfecto según SOLID GREEN DOCTRINE
+**Archivos:** `src/styles/features/cash-counter-desktop-alignment.css`, `CLAUDE.md`
 
 ### v1.2.21 - Victoria Definitiva Neon Glow [MISIÓN CUMPLIDA] ✅
 **OPERACIÓN TAILWIND INTEGRITY AUDIT EXITOSA:** Corrección definitiva de la configuración Tailwind CSS - efecto "Neon Glow" operativo al 100%.

@@ -20,7 +20,6 @@ import '@/styles/features/modal-dark-scrollbar.css';
 import '@/styles/features/wizard-nav-previous-button.css';
 import '@/styles/features/wizard-nav-next-button.css';
 import '@/styles/features/wizard-select-elements.css';
-import '@/styles/features/wizard-confirm-button.css';
 import { toast } from "sonner";
 import { useTimingConfig } from "@/hooks/useTimingConfig"; // 🤖 [IA] - Hook de timing unificado v1.0.22
 import { useInputValidation } from "@/hooks/useInputValidation"; // 🤖 [IA] - v1.0.45: Hook para validación de decimales
@@ -456,7 +455,6 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                   disabled={!isCompleted}
                   aria-label="Confirmar venta esperada"
                   type="button"
-                  className="wizard-confirm-button"
                 >
                   <CheckCircle aria-hidden="true" className="w-5 md:w-6 h-5 md:h-6 mr-2 md:mr-3" />
                   <span>Confirmar</span>
