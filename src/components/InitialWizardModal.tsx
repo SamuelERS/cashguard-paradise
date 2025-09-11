@@ -446,6 +446,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                     placeholder="0.00"
                     aria-label="Ingrese el monto de la venta esperada"
                     className="font-semibold bg-transparent border-none text-primary-foreground pl-7 md:pl-9 h-9 md:h-11 text-base md:text-lg"
+                    autoComplete="off" // 🤖 [IA] - Desactiva autocompletado del navegador
                   />
                 </div>
                 {/* Botón Confirmar al lado del input */}
