@@ -122,7 +122,7 @@ export function ConfirmationModal({
         </AlertDialogHeader>
         
         <AlertDialogFooter 
-          className="flex flex-col gap-[clamp(0.75rem,3vw,1rem)] mt-[clamp(1rem,4vw,1.5rem)]"
+          className="flex flex-col gap-[clamp(0.75rem,3vw,1rem)] mt-[clamp(1rem,4vw,1.5rem)] sm:justify-center"
         >
           <AlertDialogAction asChild>
             <DestructiveActionButton 
