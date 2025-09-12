@@ -1,0 +1,204 @@
+/* 🤖 [IA] - v1.2.24: CSS para imágenes circulares profesionales de monedas */
+
+/* Container principal para monedas circulares */
+.coin-icon-container {
+  overflow: visible; /* Permitir sombra flotante */
+  position: relative;
+}
+
+/* Wrapper para imágenes circulares reales de monedas */
+.coin-image-wrapper {
+  border-radius: 50%;
+  overflow: hidden;
+  position: relative;
+  /* Efecto flotante con sombra profesional */
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.25));
+}
+
+/* Estilos para imágenes reales de monedas - FORMA CIRCULAR PROFESIONAL */
+.coin-real-image {
+  /* 🎯 RECORTE CIRCULAR PERFECTO */
+  border-radius: 50%;
+  
+  /* 🎨 ELIMINACIÓN INTELIGENTE DE FONDO */
+  background: transparent;
+  mix-blend-mode: multiply; /* Elimina fondo blanco manteniendo detalles */
+  
+  /* ✨ TRANSICIONES SUAVES */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* 🔥 FILTROS PROFESIONALES PARA ARMONIZACIÓN */
+  filter: 
+    brightness(1.05)     /* Brillo sutil */
+    contrast(1.1)        /* Contraste mejorado */
+    saturate(1.15)       /* Colores más ricos */
+    hue-rotate(2deg);    /* Ajuste tonal muy sutil */
+  
+  /* 🚀 OPTIMIZACIONES DE PERFORMANCE */
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translateZ(0); /* Hardware acceleration */
+  
+  /* 🎭 ANTI-ALIASING PARA BORDES SUAVES */
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+/* Efecto hover para monedas circulares */
+.coin-icon-container:hover .coin-real-image {
+  transform: scale(1.05) translateZ(0);
+  filter: 
+    brightness(1.15)
+    contrast(1.15)
+    saturate(1.25)
+    hue-rotate(3deg)
+    drop-shadow(0 6px 20px rgba(0, 0, 0, 0.3));
+}
+
+/* Overlay gradiente que se integra con la forma circular */
+.coin-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 50%; /* CRÍTICO: Overlay también circular */
+  pointer-events: none;
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, 
+    rgba(244, 165, 42, 0.08) 0%, 
+    rgba(255, 184, 77, 0.08) 100%
+  );
+}
+
+/* Overlay más prominente en hover - también circular */
+.coin-icon-container:hover .coin-overlay {
+  background: linear-gradient(135deg, 
+    rgba(244, 165, 42, 0.2) 0%, 
+    rgba(255, 184, 77, 0.2) 100%
+  ) !important;
+}
+
+/* Variantes para diferentes modos con forma circular */
+.coin-icon-container.morning-mode .coin-overlay {
+  background: linear-gradient(135deg, 
+    rgba(244, 165, 42, 0.12) 0%, 
+    rgba(255, 184, 77, 0.12) 100%
+  );
+}
+
+.coin-icon-container.evening-mode .coin-overlay {
+  background: linear-gradient(135deg, 
+    rgba(10, 132, 255, 0.12) 0%, 
+    rgba(94, 92, 230, 0.12) 100%
+  );
+}
+
+/* Estados de carga - forma circular */
+.coin-image-wrapper.loading {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 50%; /* Loading también circular */
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Animation de aparición circular */
+@keyframes coinCircularFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8) rotateY(90deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotateY(0deg);
+  }
+}
+
+.coin-real-image {
+  animation: coinCircularFadeIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Responsive adjustments para forma circular */
+@media (max-width: 640px) {
+  .coin-real-image {
+    filter: 
+      brightness(1.03)
+      contrast(1.08)
+      saturate(1.1);
+  }
+  
+  .coin-icon-container:hover .coin-real-image {
+    transform: scale(1.02) translateZ(0); /* Hover más sutil en móviles */
+  }
+  
+  .coin-image-wrapper {
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.2)); /* Sombra más sutil */
+  }
+}
+
+/* Dark mode adjustments - manteniendo forma circular */
+@media (prefers-color-scheme: dark) {
+  .coin-real-image {
+    filter: 
+      brightness(1.1)
+      contrast(1.15)
+      saturate(1.2);
+  }
+  
+  .coin-overlay {
+    opacity: 0.7;
+  }
+  
+  .coin-image-wrapper {
+    filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.4)); /* Sombra más intensa en dark */
+  }
+}
+
+/* Print styles */
+@media print {
+  .coin-real-image {
+    filter: none;
+    print-color-adjust: exact;
+  }
+  
+  .coin-overlay {
+    display: none;
+  }
+  
+  .coin-image-wrapper {
+    filter: none;
+  }
+}
+
+/* Accessibility */
+.coin-real-image[alt] {
+  /* Asegurar que el alt text esté disponible para screen readers */
+}
+
+/* Estados especiales para monedas flotantes */
+.coin-real-image.floating {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+  }
+  50% {
+    transform: translateY(-2px) scale(1.02);
+  }
+}

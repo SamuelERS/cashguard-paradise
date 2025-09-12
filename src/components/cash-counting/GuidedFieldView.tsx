@@ -2,14 +2,12 @@
 // 🤖 [IA] - v1.0.96: Optimización responsive - Vista guiada con anchos adaptativos
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Banknote, Coins, CreditCard, ChevronRight, Check, X, ArrowLeft } from 'lucide-react';
+import { Banknote, CreditCard, ChevronRight, Check, X, ArrowLeft } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { ConstructiveActionButton } from '@/components/ui/constructive-action-button';
 import { DestructiveActionButton } from '@/components/ui/destructive-action-button';
 import { NeutralActionButton } from '@/components/ui/neutral-action-button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import { DENOMINATIONS } from '@/types/cash';
 import { formatCurrency } from '@/utils/calculations';
 import { useInputValidation } from '@/hooks/useInputValidation';
@@ -19,6 +17,7 @@ import { cn } from '@/lib/utils';
 import '@/styles/features/guided-field-pulse.css';
 import '@/styles/features/guided-confirm-button.css';
 import '@/styles/features/guided-field-input-border.css';
+import '@/styles/features/circular-coin-images.css';
 
 interface GuidedFieldViewProps {
   currentFieldName: string;
@@ -28,9 +27,6 @@ interface GuidedFieldViewProps {
   isActive: boolean;
   isCompleted: boolean;
   onConfirm: (value: string) => void;
-  currentStep: number;
-  totalSteps: number;
-  completedFields: Array<{ name: string; quantity: number; total: number }>;
   isMorningCount?: boolean;
   // 🤖 [IA] - v1.2.23: Navigation functions moved inside modal for mobile space optimization
   onCancel?: () => void;
@@ -46,37 +42,22 @@ export function GuidedFieldView({
   isActive,
   isCompleted,
   onConfirm,
-  currentStep,
-  totalSteps,
-  completedFields,
   isMorningCount = false,
   // 🤖 [IA] - v1.2.23: Navigation functions moved inside modal
   onCancel,
   onPrevious,
   canGoPrevious = false
 }: GuidedFieldViewProps) {
-  // 🤖 [IA] - v1.1.18: Paleta de colores enriquecida para evitar monotonía
-  const primaryColor = isMorningCount ? '#f4a52a' : '#0a84ff';
-  const secondaryColor = isMorningCount ? '#ffb84d' : '#5e5ce6';
-  const tertiaryColor = isMorningCount ? '#ff9500' : '#4a90e2'; // Naranja medio / Azul medio
-  const accentColor = isMorningCount ? '#ffd93d' : '#7c3aed'; // Amarillo sol / Púrpura
-  const darkAccent = isMorningCount ? '#e67e22' : '#0066cc'; // Naranja oscuro / Azul oscuro
   
   const borderColor = isMorningCount ? 'rgba(244, 165, 42, 0.3)' : 'rgba(10, 132, 255, 0.3)';
   
   // 🤖 [IA] - v1.2.18: Hook optimizado para controlar animación automáticamente
-  const { shouldAnimate, isVisible, elementRef } = usePulseAnimation(isActive);
-  const borderColorLight = isMorningCount ? 'rgba(244, 165, 42, 0.15)' : 'rgba(10, 132, 255, 0.15)';
-  const borderColorSolid = isMorningCount ? 'rgba(244, 165, 42, 0.1)' : 'rgba(10, 132, 255, 0.1)';
-  const focusGlow = isMorningCount ? 'rgba(244, 165, 42, 0.25)' : 'rgba(10, 132, 255, 0.25)';
+  const { shouldAnimate, isVisible } = usePulseAnimation(isActive);
   
   // Gradientes más ricos con 3 tonos
   const gradientBg = isMorningCount 
     ? 'linear-gradient(135deg, #e67e22 0%, #f4a52a 45%, #ffb84d 100%)'
     : 'linear-gradient(135deg, #0066cc 0%, #0a84ff 45%, #5e5ce6 100%)';
-  const gradientBgLight = isMorningCount
-    ? 'linear-gradient(135deg, rgba(230, 126, 34, 0.1), rgba(244, 165, 42, 0.1), rgba(255, 184, 77, 0.1))'
-    : 'linear-gradient(135deg, rgba(0, 102, 204, 0.1), rgba(10, 132, 255, 0.1), rgba(94, 92, 230, 0.1))';
 
   // 🤖 [IA] - v1.2.19: MEJORADO - Siempre inicializar con el valor actual para permitir edición
   const [inputValue, setInputValue] = useState(
@@ -175,7 +156,7 @@ export function GuidedFieldView({
 
   // 🤖 [IA] - v1.3.0: Eliminado manejo manual de touchend event - ahora se maneja por el onTouchStart del Button
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       handleConfirm();
     }
@@ -185,7 +166,27 @@ export function GuidedFieldView({
   const getIcon = () => {
     switch (currentFieldType) {
       case 'coin':
-        return <Coins className="w-8 h-8 text-warning" />;
+        // Determinar qué imagen de moneda mostrar basado en currentFieldName
+        let coinImage = '/monedas-recortadas-dolares/moneda-un-centavo.webp';
+        
+        // Seleccionar la imagen correcta según el nombre del campo
+        if (currentFieldName === 'nickel') {
+          coinImage = '/monedas-recortadas-dolares/moneda-cinco-centavos.webp';
+        } else if (currentFieldName === 'quarter') {
+          coinImage = '/monedas-recortadas-dolares/moneda-veinticinco-centavos.webp';
+        }
+        
+        return (
+          <img 
+            src={coinImage}
+            alt={`Moneda de ${currentFieldLabel}`}
+            className="object-contain"
+            style={{
+              width: 'clamp(40px, 10vw, 56px)', 
+              height: 'clamp(40px, 10vw, 56px)'
+            }}
+          />
+        );
       case 'bill':
         return <Banknote className="w-8 h-8 text-success" />;
       case 'electronic':
@@ -195,8 +196,6 @@ export function GuidedFieldView({
     }
   };
 
-  // Calcular el total acumulado
-  const accumulatedTotal = completedFields.reduce((sum, field) => sum + field.total, 0);
 
   if (isCompleted) {
     return (
@@ -253,33 +252,9 @@ export function GuidedFieldView({
             : `0 8px 32px rgba(10, 132, 255, 0.15), inset 0 1px 0 rgba(94, 92, 230, 0.2)`
         }}>
             {/* 🤖 [IA] - v1.0.95: Header con indicador de sección */}
-            <div className="flex items-center justify-between" style={{ marginBottom: 'clamp(12px, 2.5vw, 16px)' }}>
-              {/* Ícono con gradiente según tipo */}
-              <div 
-                className={cn(
-                  "flex items-center justify-center shadow-lg",
-                  currentFieldType === 'coin' ? 'bg-gradient-to-br from-warning via-warning/80 to-warning/60' :
-                  currentFieldType === 'bill' ? 'bg-gradient-to-br from-success via-success/80 to-success/60' :
-                  isMorningCount 
-                    ? 'bg-gradient-to-br from-warning via-warning/80 to-warning/60'
-                    : 'bg-gradient-to-br from-accent-primary via-accent-primary/80 to-accent-secondary'
-                )}
-                style={{
-                  width: 'clamp(40px, 10vw, 56px)', // 🤖 [IA] - v1.2.18: Responsive width
-                  height: 'clamp(40px, 10vw, 56px)', // 🤖 [IA] - v1.2.18: Responsive height
-                  borderRadius: 'clamp(8px, 2vw, 12px)' // 🤖 [IA] - v1.2.18: Responsive border-radius
-                }}
-              >
-                {currentFieldType === 'coin' ? (
-                  <span className="text-white font-bold" style={{ fontSize: 'clamp(16px, 4vw, 24px)' }}>¢</span>
-                ) : currentFieldType === 'bill' ? (
-                  <span className="text-white font-bold" style={{ fontSize: 'clamp(16px, 4vw, 24px)' }}>$</span>
-                ) : (
-                  <CreditCard className="text-white" style={{ width: 'clamp(20px, 5vw, 28px)', height: 'clamp(20px, 5vw, 28px)' }} />
-                )}
-              </div>
+            <div className="flex items-center justify-center" style={{ marginBottom: 'clamp(12px, 2.5vw, 16px)' }}>
               {/* Información central */}
-              <div className="flex-1 mx-3">
+              <div className="text-center mr-3">
                 <h3 className="font-bold" style={{
                   fontSize: 'clamp(18px, 4.5vw, 28px)', // 🤖 [IA] - v1.2.18: Responsive font-size
                   marginBottom: 'clamp(4px, 1vw, 8px)', // 🤖 [IA] - v1.2.18: Responsive margin
@@ -295,40 +270,28 @@ export function GuidedFieldView({
                 {/* 🤖 [IA] - v1.2.7: Valor unitario ocultado para sistema anti-fraude */}
               </div>
               
-              {/* Badge de sección mejorado con íconos y mayor prominencia */}
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-black/40 rounded-lg" style={{
-                // 🤖 [IA] - v1.2.9: Badge único más prominente sin indicador redundante
-                backgroundColor: currentFieldType === 'coin' ? 
-                  (isMorningCount ? 'rgba(230, 126, 34, 0.2)' : 'rgba(244, 165, 42, 0.2)') :
-                  currentFieldType === 'bill' ? 'rgba(0, 186, 124, 0.2)' :
-                  'rgba(10, 132, 255, 0.15)',
-                border: currentFieldType === 'coin' ? 
-                  (isMorningCount ? '1px solid rgba(230, 126, 34, 0.5)' : '1px solid rgba(244, 165, 42, 0.4)') :
-                  currentFieldType === 'bill' ? '1px solid rgba(0, 186, 124, 0.4)' :
-                  `1px solid ${borderColor}`,
-                color: currentFieldType === 'coin' ? 
-                  (isMorningCount ? darkAccent : '#f4a52a') :
-                  currentFieldType === 'bill' ? '#00ba7c' :
-                  primaryColor
-              }}>
-                {currentFieldType === 'coin' ? <Coins className="h-4 w-4" /> :
-                 currentFieldType === 'bill' ? <Banknote className="h-4 w-4" /> :
-                 <CreditCard className="h-4 w-4" />}
-                <span className="text-sm font-semibold">
-                  {currentFieldType === 'coin' ? 'Monedas' :
-                   currentFieldType === 'bill' ? 'Billetes' :
-                   'Pagos Electrónicos'}
-                </span>
+              {/* Ícono con gradiente según tipo */}
+              <div 
+                className={cn(
+                  "flex items-center justify-center shadow-lg",
+                  currentFieldType === 'coin' ? 'bg-gradient-to-br from-accent-primary via-accent-primary/80 to-accent-secondary' :
+                  currentFieldType === 'bill' ? 'bg-gradient-to-br from-success via-success/80 to-success/60' :
+                  isMorningCount 
+                    ? 'bg-gradient-to-br from-warning via-warning/80 to-warning/60'
+                    : 'bg-gradient-to-br from-accent-primary via-accent-primary/80 to-accent-secondary'
+                )}
+                style={{
+                  width: 'clamp(40px, 10vw, 56px)', // 🤖 [IA] - v1.2.18: Responsive width
+                  height: 'clamp(40px, 10vw, 56px)', // 🤖 [IA] - v1.2.18: Responsive height
+                  borderRadius: 'clamp(8px, 2vw, 12px)' // 🤖 [IA] - v1.2.18: Responsive border-radius
+                }}
+              >
+                {getIcon()}
               </div>
             </div>
 
             {/* Input y confirmación optimizados */}
             <div className="space-y-3">
-              {/* Label compacto */}
-              <label className="text-sm font-medium text-text-secondary block">
-                {currentFieldType === 'electronic' ? 'Monto total:' : 'Cantidad:'}
-              </label>
-              
               {/* Input y botón integrados */}
               <div className="flex" style={{ gap: 'clamp(8px, 2vw, 16px)' }}>
                 <div className="flex-1 relative">
@@ -338,16 +301,13 @@ export function GuidedFieldView({
                     </span>
                   )}
                   <Input
-                    ref={(node) => {
-                      // Asignar solo inputRef - elementRef es usado solo para observación, no modificación
-                      if (inputRef && 'current' in inputRef) inputRef.current = node;
-                    }}
+                    ref={inputRef}
                     type="tel"  // 🤖 [IA] - v1.1.15: Cambiado de "text" a "tel" para mejor activación del teclado numérico
                     inputMode={getInputMode(currentFieldType === 'electronic' ? 'currency' : 'integer')}
                     pattern={getPattern(currentFieldType === 'electronic' ? 'currency' : 'integer')}
                     value={inputValue}
                     onChange={(e) => handleInputChange(e.target.value)}
-                    onKeyPress={handleKeyPress}
+                    onKeyDown={handleKeyDown}
                     autoCapitalize="off"  // Prevenir capitalización en iOS
                     autoCorrect="off"     // Desactivar autocorrección
                     autoComplete="off"    // Desactivar autocompletado
@@ -417,70 +377,6 @@ export function GuidedFieldView({
               )}
 
               {/* 🤖 [IA] - v1.2.9: Barra de progreso segmentada por sección actual (monedas/billetes/electrónicos) - MOVIDA DENTRO DEL MODAL */}
-              {(() => {
-                // Determinar campos de la sección actual usando los nombres correctos que vienen en completedFields
-                const coinFields = ['1¢ centavo', '5¢ centavos', '10¢ centavos', '25¢ centavos', '$1 moneda'];
-                const billFields = ['$1', '$5', '$10', '$20', '$50', '$100'];
-                const electronicFields = ['Credomatic', 'Promerica', 'Transferencia Bancaria', 'PayPal'];
-                
-                let sectionFields: string[] = [];
-                let sectionName = '';
-                let sectionIcon = null;
-                
-                if (currentFieldType === 'coin') {
-                  sectionFields = coinFields;
-                  sectionName = 'Monedas';
-                  sectionIcon = <Coins className="h-3 w-3" />;
-                } else if (currentFieldType === 'bill') {
-                  sectionFields = billFields;
-                  sectionName = 'Billetes';
-                  sectionIcon = <Banknote className="h-3 w-3" />;
-                } else if (currentFieldType === 'electronic') {
-                  sectionFields = electronicFields;
-                  sectionName = 'Pagos Electrónicos';
-                  sectionIcon = <CreditCard className="h-3 w-3" />;
-                }
-                
-                // Calcular progreso de la sección actual
-                const completedInSection = completedFields.filter(field => 
-                  sectionFields.includes(field.name)
-                ).length;
-                const totalInSection = sectionFields.length;
-                const sectionProgress = totalInSection > 0 ? (completedInSection / totalInSection) * 100 : 0;
-                
-                // Solo mostrar si hay una sección válida
-                if (sectionFields.length > 0) {
-                  return (
-                    <div className="px-3 my-4">
-                      {/* Barra de progreso primero - más prominente */}
-                      <div className="h-1 bg-black/40 rounded-full overflow-hidden">
-                        <div 
-                          className="h-full rounded-full transition-all duration-300"
-                          style={{ 
-                            width: `${sectionProgress}%`,
-                            background: isMorningCount 
-                              ? 'linear-gradient(90deg, #f4a52a, #ffb84d)'
-                              : 'linear-gradient(90deg, #0a84ff, #5e5ce6)'
-                          }}
-                        />
-                      </div>
-                      
-                      {/* Texto centrado debajo de la barra */}
-                      <div className="flex justify-center items-center gap-2 mt-2">
-                        <span className="flex items-center gap-1 text-xs" style={{ color: isMorningCount ? '#f4a52a' : '#0a84ff' }}>
-                          {sectionIcon}
-                          <span className="font-medium">{sectionName}:</span>
-                          <span className="text-gray-400">{completedInSection} de {totalInSection}</span>
-                        </span>
-                      </div>
-                    </div>
-                  );
-                }
-                
-                return null;
-              })()}
-
-              {/* 🤖 [IA] - v1.2.23: Navigation buttons moved inside modal for mobile space optimization */}
               {(onCancel || onPrevious) && (
                 <div className="flex items-center justify-between gap-3 pt-4 mt-4 border-t border-white/10">
                   {/* Cancel Button */}
