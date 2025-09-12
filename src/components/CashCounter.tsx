@@ -48,6 +48,7 @@ import { CashCount, ElectronicPayments, DENOMINATIONS } from "@/types/cash"; // 
 import { useGuidedCounting } from "@/hooks/useGuidedCounting";
 import { usePhaseManager } from "@/hooks/usePhaseManager";
 import { useIsMobile } from "@/hooks/useIsMobile"; // 🤖 [IA] - v1.0.46: Hook para detectar móvil
+import { useInstructionsFlow } from "@/hooks/useInstructionsFlow"; // 🤖 [IA] - v1.2.23: Hook para reseteo del flujo de instrucciones
 import { toast } from "sonner";
 import { useTimingConfig } from "@/hooks/useTimingConfig"; // 🤖 [IA] - Hook de timing unificado v1.0.22
 import { OperationMode, OPERATION_MODES } from "@/types/operation-mode"; // 🤖 [IA] - v1.0.81
@@ -102,6 +103,9 @@ const CashCounter = ({
   // 🤖 [IA] - v1.2.8: Estado para el modal de instrucciones
   const [showInstructionsModal, setShowInstructionsModal] = useState(false);
   const [instructionsAcknowledged, setInstructionsAcknowledged] = useState(false);
+  
+  // 🤖 [IA] - v1.2.23: Hook para reseteo del flujo de instrucciones
+  const { resetFlow } = useInstructionsFlow();
   
   // 🤖 [IA] - v1.0.46: Detectar si es dispositivo móvil
   const isMobile = useIsMobile();
@@ -218,21 +222,12 @@ const CashCounter = ({
   // 🤖 [IA] - v1.2.8 - Mostrar modal de instrucciones antes de iniciar
   useEffect(() => {
     if (hasInitialData && !phaseState.phase1Completed) {
-      // Verificar si ya se mostraron las instrucciones en esta sesión
-      const sessionKey = sessionStorage.getItem('guided-instructions-session');
-      const currentSession = sessionStorage.getItem('current-counting-session');
-      
-      if (!sessionKey || sessionKey !== currentSession) {
-        // Primera vez en esta sesión, mostrar modal
-        setShowInstructionsModal(true);
-        sessionStorage.setItem('current-counting-session', `session-${Date.now()}`);
-      } else {
-        // Ya vio las instrucciones, iniciar directamente
-        startPhase1();
-        setInstructionsAcknowledged(true);
-      }
+      // 🤖 [IA] - v1.2.23: Siempre mostrar instrucciones y resetear flujo interno
+      resetFlow(); // Limpiar estado persistente del flujo Wizard v3
+      setShowInstructionsModal(true);
+      sessionStorage.setItem('current-counting-session', `session-${Date.now()}`);
     }
-  }, [hasInitialData]);
+  }, [hasInitialData, resetFlow]);
   
   // 🤖 [IA] - v1.2.8 - Handler para cuando se confirman las instrucciones
   const handleInstructionsConfirm = () => {
