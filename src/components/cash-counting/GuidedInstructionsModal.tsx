@@ -1,10 +1,13 @@
-// 🤖 [IA] - v1.2.13: Modal con Glass Morphism coherente del proyecto
-import React, { useState, useEffect, useMemo } from 'react';
+// 🤖 [IA] - v1.2.23: Modal con Wizard v3 - Flujo Guiado con Revelación Progresiva
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { PrimaryActionButton } from '@/components/ui/primary-action-button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { AlertTriangle, Info, Shield, ArrowRight } from 'lucide-react';
+import { AlertTriangle, Info, Shield, ArrowRight, CheckCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useInstructionsFlow } from '@/hooks/useInstructionsFlow';
+import { currentCashCutInstructions } from '@/config/flows/cashCutInstructionsFlow';
+import { InstructionRule } from '@/components/wizards/InstructionRule';
 import '@/styles/features/guided-start-button.css';
 
 interface GuidedInstructionsModalProps {
@@ -19,6 +22,17 @@ export function GuidedInstructionsModal({
   isMorningCount = false 
 }: GuidedInstructionsModalProps) {
   const [understood, setUnderstood] = useState(false);
+  
+  // 🤖 [IA] - v1.2.23: Hook de flujo guiado para instrucciones
+  const {
+    state: instructionsFlowState,
+    initializeFlow,
+    acknowledgeInstruction,
+    isFlowCompleted,
+    getInstructionState,
+    canInteractWithInstruction,
+    resetFlow
+  } = useInstructionsFlow();
   
   // 🤖 [IA] - Sistema de escala proporcional v1.2.12
   const viewportScale = useMemo(() => {
@@ -36,7 +50,7 @@ export function GuidedInstructionsModal({
     : 'linear-gradient(135deg, #0a84ff 0%, #5e5ce6 100%)';
   
   const handleConfirm = () => {
-    if (understood) {
+    if (isFlowCompleted()) {
       // Guardar en sessionStorage para esta sesión específica
       const sessionKey = `guided-instructions-acknowledged-${Date.now()}`;
       sessionStorage.setItem('guided-instructions-session', sessionKey);
@@ -44,35 +58,28 @@ export function GuidedInstructionsModal({
     }
   };
 
-  // Reset checkbox cuando se abre el modal
+  // 🤖 [IA] - v1.2.23: Handler memoizado para acknowledge de instrucciones
+  const handleInstructionAcknowledge = useCallback((instructionId: string, index: number) => {
+    acknowledgeInstruction(instructionId, index);
+  }, [acknowledgeInstruction]);
+
+  // 🤖 [IA] - v1.2.23: Inicialización del flujo cuando se abre el modal
   useEffect(() => {
     if (isOpen) {
       setUnderstood(false);
+      initializeFlow();
     }
-  }, [isOpen]);
+  }, [isOpen, initializeFlow]);
 
-  const instructions = [
-    {
-      icon: <Info className="w-5 h-5" />,
-      title: "💰 Paquetes de Monedas",
-      description: "Agrupe en paquetes de 10 monedas de $0.01, $0.05, $0.10, $0.25 y $1.00."
-    },
-    {
-      icon: <Shield className="w-5 h-5" />,
-      title: "📦 Caja Ordenada",
-      description: "Coloque cada moneda, paquete y billete en su depósito: $1, $5, $10, $20, $50, $100."
-    },
-    {
-      icon: <AlertTriangle className="w-5 h-5" />,
-      title: "🔢 Conteo Seguro",
-      description: "Cuente cada denominación uno por uno, sin tapar la cámara de seguridad."
-    },
-    {
-      icon: <Info className="w-5 h-5" />,
-      title: "✅ Confirmación Final",
-      description: "Una vez confirmado, el valor queda registrado y no podrá modificarse."
+  // 🤖 [IA] - v1.2.23: Sincronización con flujo completado
+  useEffect(() => {
+    const flowCompleted = isFlowCompleted();
+    if (flowCompleted && !understood) {
+      setUnderstood(true);
     }
-  ];
+  }, [isFlowCompleted, understood]);
+
+  // 🤖 [IA] - v1.2.23: Las instrucciones ahora vienen de la configuración del flujo
 
   return (
     <Dialog open={isOpen} onOpenChange={() => {}}>
@@ -128,92 +135,63 @@ export function GuidedInstructionsModal({
             flexDirection: 'column'
           }}
         >
-          {/* Instrucciones - Responsive */}
-          <div style={{ gap: `clamp(10px, ${12 * viewportScale}px, 12px)`, display: 'flex', flexDirection: 'column' }}>
-            {instructions.map((instruction, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="flex rounded-lg"
-                style={{
-                  gap: `clamp(10px, ${12 * viewportScale}px, 12px)`,
-                  padding: `clamp(12px, ${16 * viewportScale}px, 16px)`,
-                  // 🤖 [IA] - v1.2.13: Glass Morphism para cards de instrucciones
-                  backgroundColor: 'rgba(36, 36, 36, 0.4)',
-                  backdropFilter: 'blur(20px)',
-                  WebkitBackdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(255, 255, 255, 0.15)',
-                  boxShadow: '0 4px 24px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
-                }}
-              >
-                <div 
-                  className="flex-shrink-0 rounded-full flex items-center justify-center"
-                  style={{
-                    width: `clamp(32px, ${40 * viewportScale}px, 40px)`,
-                    height: `clamp(32px, ${40 * viewportScale}px, 40px)`,
-                    background: `linear-gradient(135deg, ${primaryColor}22, ${secondaryColor}22)`,
-                    border: `1px solid ${primaryColor}44`
-                  }}
-                >
-                  <div style={{ 
-                    color: primaryColor,
-                    width: `clamp(16px, ${20 * viewportScale}px, 20px)`,
-                    height: `clamp(16px, ${20 * viewportScale}px, 20px)`
-                  }}>
-                    {React.cloneElement(instruction.icon, {
-                      style: { width: '100%', height: '100%' }
-                    })}
-                  </div>
-                </div>
-                <div style={{ flex: 1 }}>
-                  <h4 
-                    className="font-semibold text-white"
-                    style={{
-                      fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
-                      marginBottom: `clamp(2px, ${4 * viewportScale}px, 4px)`
-                    }}
-                  >
-                    {instruction.title}
-                  </h4>
-                  <p 
-                    className="text-gray-400"
-                    style={{
-                      fontSize: 'clamp(0.75rem, 3vw, 0.875rem)',
-                      lineHeight: 1.4
-                    }}
-                  >
-                    {instruction.description}
-                  </p>
-                </div>
-              </motion.div>
+          {/* 🤖 [IA] - v1.2.23: Instrucciones con flujo guiado Wizard v3 */}
+          <div className="flex flex-col gap-[clamp(0.75rem,3vw,1rem)]">
+            {currentCashCutInstructions.map((instruction, index) => (
+              <InstructionRule
+                key={instruction.id}
+                rule={instruction}
+                state={getInstructionState(instruction.id)}
+                isCurrent={index === instructionsFlowState.currentRuleIndex}
+                onAcknowledge={() => handleInstructionAcknowledge(instruction.id, index)}
+              />
             ))}
           </div>
 
-          {/* Checkbox de confirmación - Responsive */}
+          {/* 🤖 [IA] - v1.2.23: Indicador de progreso del flujo */}
+          {isFlowCompleted() && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="rounded-lg border-2 border-green-400/60 shadow-lg shadow-green-400/20 p-[clamp(0.75rem,3vw,1rem)] text-center"
+              style={{
+                backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)'
+              }}
+            >
+              <div className="flex items-center justify-center gap-[clamp(0.5rem,2vw,0.75rem)]">
+                <CheckCircle className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)] text-green-400" />
+                <span className="font-semibold text-green-400 text-[clamp(0.875rem,3.5vw,1rem)]">
+                  ✓ Todas las Instrucciones Revisadas
+                </span>
+              </div>
+            </motion.div>
+          )}
+
+          {/* 🤖 [IA] - v1.2.23: Checkbox de confirmación sincronizado con flujo */}
           <div 
             className="rounded-lg flex items-center cursor-pointer"
             style={{
               marginTop: `clamp(16px, ${24 * viewportScale}px, 24px)`,
               padding: `clamp(12px, ${16 * viewportScale}px, 16px)`,
               gap: `clamp(10px, ${12 * viewportScale}px, 12px)`,
-              // 🤖 [IA] - v1.2.13: Glass Morphism para checkbox container
-              backgroundColor: understood ? `${primaryColor}11` : 'rgba(36, 36, 36, 0.4)',
+              backgroundColor: isFlowCompleted() ? `${primaryColor}11` : 'rgba(36, 36, 36, 0.4)',
               backdropFilter: 'blur(20px)',
               WebkitBackdropFilter: 'blur(20px)',
-              border: understood ? `2px solid ${primaryColor}44` : '2px solid rgba(255, 255, 255, 0.15)',
+              border: isFlowCompleted() ? `2px solid ${primaryColor}44` : '2px solid rgba(255, 255, 255, 0.15)',
               boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)',
               transition: 'all 0.3s ease'
             }}
-            onClick={() => setUnderstood(!understood)}
+            onClick={() => isFlowCompleted() && setUnderstood(!understood)}
           >
             <Checkbox
-              checked={understood}
-              onCheckedChange={(checked) => setUnderstood(checked as boolean)}
+              checked={understood && isFlowCompleted()}
+              onCheckedChange={(checked) => isFlowCompleted() && setUnderstood(checked as boolean)}
               className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+              disabled={!isFlowCompleted()}
               style={{
-                borderColor: understood ? primaryColor : 'rgba(255, 255, 255, 0.3)',
+                borderColor: (understood && isFlowCompleted()) ? primaryColor : 'rgba(255, 255, 255, 0.3)',
                 width: `clamp(14px, ${16 * viewportScale}px, 16px)`,
                 height: `clamp(14px, ${16 * viewportScale}px, 16px)`
               }}
@@ -225,7 +203,7 @@ export function GuidedInstructionsModal({
                   fontSize: 'clamp(0.813rem, 3.25vw, 0.938rem)'
                 }}
               >
-                Comprendemos y Realizamos las Reglas
+                {isFlowCompleted() ? 'Comprendemos y Realizamos las Reglas' : 'Revise todas las instrucciones primero'}
               </span>
               <p 
                 className="text-gray-400"
@@ -239,12 +217,12 @@ export function GuidedInstructionsModal({
             </label>
           </div>
 
-          {/* Botón de confirmación - Con variante guided-start y data attributes */}
+          {/* 🤖 [IA] - v1.2.23: Botón sincronizado con flujo completado */}
           <PrimaryActionButton
             onClick={handleConfirm}
-            disabled={!understood}
+            disabled={!isFlowCompleted()}
             className="btn-guided-start"
-            data-state={understood ? "active" : "inactive"}
+            data-state={isFlowCompleted() ? "active" : "inactive"}
             data-count-type={isMorningCount ? "morning" : "evening"}
             aria-label="Comenzar conteo guiado"
           >
