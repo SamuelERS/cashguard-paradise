@@ -231,11 +231,9 @@ export function GuidedFieldView({
         exit={{ opacity: 0, x: -20 }}
         className="space-y-3 max-w-md mx-auto sm:max-w-2xl lg:max-w-3xl"
       >
-        {/* Card principal del campo activo con Glass Effect Premium */}
+        {/* Card principal del campo activo - Level 0 Opaque */}
         <div style={{
-          backgroundColor: 'rgba(36, 36, 36, 0.4)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
+          backgroundColor: 'rgba(36, 36, 36, 1.0)', // 🤖 [IA] - v1.2.22: CONSTITUTIONAL FIX - Level 0 opaque background per Doctrine D.2
           border: `2px solid ${borderColor}`,
           borderRadius: 'clamp(12px, 3vw, 20px)', // 🤖 [IA] - v1.2.18: Responsive border-radius
           padding: 'clamp(12px, 3vw, 20px)', // 🤖 [IA] - v1.2.18: Responsive padding
@@ -354,13 +352,11 @@ export function GuidedFieldView({
                       textAlign: 'center',
                       paddingLeft: currentFieldType === 'electronic' ? 'clamp(36px, 6vw, 48px)' : 'clamp(14px, 3vw, 20px)', // 🤖 [IA] - v1.2.18: Responsive padding - ajustar mínimos
                       paddingRight: 'clamp(14px, 3vw, 20px)', // 🤖 [IA] - v1.2.18: Responsive padding right - aumentar mínimo
-                      // 🤖 [IA] - v1.1.18: Override del ring azul con color dinámico
-                      '--tw-ring-color': isMorningCount ? '#f4a52a' : '#0a84ff',
-                      boxShadow: inputValue ? `0 0 0 3px ${focusGlow}` : 'none',
                       transition: 'all 0.3s ease'
                     } as React.CSSProperties}
                     className={cn(
-                      "focus:outline-none",
+                      // 🤖 [IA] - v1.2.22: CONSTITUTIONAL FIX - Doctrinal neon-glow implementation per Doctrine D.4
+                      isMorningCount ? "focus:neon-glow-morning" : "focus:neon-glow-primary",
                       shouldAnimate && (isMorningCount ? "guided-field-pulse-morning" : "guided-field-pulse-evening"),
                       !isVisible && "animation-paused" // 🤖 [IA] - Pausar cuando no es visible
                     )}
