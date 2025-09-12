@@ -12,6 +12,10 @@ interface GuidedCoinSectionProps {
   onFieldConfirm: (value: string) => void;
   onAttemptAccess: () => void;
   isMorningCount?: boolean;
+  // 🤖 [IA] - v1.2.23: Navigation functions for modal integration
+  onCancel?: () => void;
+  onPrevious?: () => void;
+  canGoPrevious?: boolean;
 }
 
 export const GuidedCoinSection = ({
@@ -21,7 +25,11 @@ export const GuidedCoinSection = ({
   isFieldAccessible,
   onFieldConfirm,
   onAttemptAccess,
-  isMorningCount = false
+  isMorningCount = false,
+  // 🤖 [IA] - v1.2.23: Navigation functions for modal integration
+  onCancel,
+  onPrevious,
+  canGoPrevious = false
 }: GuidedCoinSectionProps) => {
   const coinTotal = Object.entries(DENOMINATIONS.COINS).reduce((sum, [key, denomination]) => {
     const quantity = cashCount[key as keyof CashCount] as number;
@@ -65,6 +73,10 @@ export const GuidedCoinSection = ({
         totalSteps={17} // Total de pasos en el conteo guiado
         completedFields={completedFields}
         isMorningCount={isMorningCount}
+        // 🤖 [IA] - v1.2.23: Navigation functions moved inside modal
+        onCancel={onCancel}
+        onPrevious={onPrevious}
+        canGoPrevious={canGoPrevious}
       />
     );
   }

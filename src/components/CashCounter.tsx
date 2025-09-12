@@ -784,6 +784,10 @@ const CashCounter = ({
                 onFieldConfirm={handleGuidedFieldConfirm}
                 onAttemptAccess={handleInvalidAccess}
                 isMorningCount={isMorningCount}
+                // 🤖 [IA] - v1.2.23: Navigation functions moved inside modal
+                onCancel={handleCancelProcess}
+                onPrevious={handlePreviousStep}
+                canGoPrevious={canGoPrevious()}
               />
             )}
             
@@ -797,6 +801,10 @@ const CashCounter = ({
                 onFieldConfirm={handleGuidedFieldConfirm}
                 onAttemptAccess={handleInvalidAccess}
                 isMorningCount={isMorningCount}
+                // 🤖 [IA] - v1.2.23: Navigation functions moved inside modal
+                onCancel={handleCancelProcess}
+                onPrevious={handlePreviousStep}
+                canGoPrevious={canGoPrevious()}
               />
             )}
             
@@ -810,6 +818,10 @@ const CashCounter = ({
                 isFieldAccessible={isFieldAccessible}
                 onFieldConfirm={handleGuidedFieldConfirm}
                 onAttemptAccess={handleInvalidAccess}
+                // 🤖 [IA] - v1.2.23: Navigation functions moved inside modal
+                onCancel={handleCancelProcess}
+                onPrevious={handlePreviousStep}
+                canGoPrevious={canGoPrevious()}
               />
             )}
             
@@ -821,27 +833,7 @@ const CashCounter = ({
             </div>
           </div>
 
-          {/* Sistema de navegación simplificado - 🤖 [IA] - v1.2.19: 2-Button Navigation System */}
-          <div className="phase1-navigation">
-            {/* 🤖 [IA] - v1.2.23: Botón Cancelar migrado a variant="error" desde legacy CSS */}
-            <DestructiveActionButton
-              onClick={handleCancelProcess}
-              aria-label="Cancelar proceso y volver al inicio"
-            >
-              <X className="phase1-nav-icon" />
-              <span className="phase1-nav-text-hidden">Cancelar</span>
-            </DestructiveActionButton>
-            
-            {/* 🤖 [IA] - v1.2.28: Botón Anterior migrado a NeutralActionButton estándar */}
-            <NeutralActionButton
-              onClick={handlePreviousStep}
-              disabled={!canGoPrevious()}
-              aria-label="Retroceder al campo anterior"
-            >
-              <ArrowLeft className="phase1-nav-icon" />
-              <span className="phase1-nav-text-hidden">Anterior</span>
-            </NeutralActionButton>
-          </div>
+          {/* 🤖 [IA] - v1.2.23: Navigation buttons moved inside GuidedFieldView modal for mobile optimization */}
 
           {/* 🤖 [IA] - v2.0.0: Modal de confirmación abstracto para salida */}
           <ConfirmationModal

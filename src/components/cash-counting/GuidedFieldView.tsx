@@ -2,10 +2,12 @@
 // 🤖 [IA] - v1.0.96: Optimización responsive - Vista guiada con anchos adaptativos
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Banknote, Coins, CreditCard, ChevronRight, Check } from 'lucide-react';
+import { Banknote, Coins, CreditCard, ChevronRight, Check, X, ArrowLeft } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ConstructiveActionButton } from '@/components/ui/constructive-action-button';
+import { DestructiveActionButton } from '@/components/ui/destructive-action-button';
+import { NeutralActionButton } from '@/components/ui/neutral-action-button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { DENOMINATIONS } from '@/types/cash';
@@ -30,6 +32,10 @@ interface GuidedFieldViewProps {
   totalSteps: number;
   completedFields: Array<{ name: string; quantity: number; total: number }>;
   isMorningCount?: boolean;
+  // 🤖 [IA] - v1.2.23: Navigation functions moved inside modal for mobile space optimization
+  onCancel?: () => void;
+  onPrevious?: () => void;
+  canGoPrevious?: boolean;
 }
 
 export function GuidedFieldView({
@@ -43,7 +49,11 @@ export function GuidedFieldView({
   currentStep,
   totalSteps,
   completedFields,
-  isMorningCount = false
+  isMorningCount = false,
+  // 🤖 [IA] - v1.2.23: Navigation functions moved inside modal
+  onCancel,
+  onPrevious,
+  canGoPrevious = false
 }: GuidedFieldViewProps) {
   // 🤖 [IA] - v1.1.18: Paleta de colores enriquecida para evitar monotonía
   const primaryColor = isMorningCount ? '#f4a52a' : '#0a84ff';
@@ -469,6 +479,36 @@ export function GuidedFieldView({
                 
                 return null;
               })()}
+
+              {/* 🤖 [IA] - v1.2.23: Navigation buttons moved inside modal for mobile space optimization */}
+              {(onCancel || onPrevious) && (
+                <div className="flex items-center justify-between gap-3 pt-4 mt-4 border-t border-white/10">
+                  {/* Cancel Button */}
+                  {onCancel && (
+                    <DestructiveActionButton
+                      onClick={onCancel}
+                      aria-label="Cancelar proceso y volver al inicio"
+                      className="flex-1"
+                    >
+                      <X className="w-4 h-4" />
+                      <span className="ml-2">Cancelar</span>
+                    </DestructiveActionButton>
+                  )}
+                  
+                  {/* Previous Button */}
+                  {onPrevious && (
+                    <NeutralActionButton
+                      onClick={onPrevious}
+                      disabled={!canGoPrevious}
+                      aria-label="Retroceder al campo anterior"
+                      className="flex-1"
+                    >
+                      <ArrowLeft className="w-4 h-4" />
+                      <span className="ml-2">Anterior</span>
+                    </NeutralActionButton>
+                  )}
+                </div>
+              )}
             </div>
         </div>
 

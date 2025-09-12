@@ -14,6 +14,10 @@ interface GuidedElectronicInputSectionProps {
   isFieldAccessible: (fieldName: string) => boolean;
   onFieldConfirm: (value: string) => void;
   onAttemptAccess: () => void;
+  // 🤖 [IA] - v1.2.23: Navigation functions for modal integration
+  onCancel?: () => void;
+  onPrevious?: () => void;
+  canGoPrevious?: boolean;
 }
 
 // 🤖 [IA] - v1.0.26: Definición de métodos de pago mantenida sin cambios
@@ -56,7 +60,11 @@ export const GuidedElectronicInputSection = ({
   isFieldCompleted,
   isFieldAccessible,
   onFieldConfirm,
-  onAttemptAccess
+  onAttemptAccess,
+  // 🤖 [IA] - v1.2.23: Navigation functions for modal integration
+  onCancel,
+  onPrevious,
+  canGoPrevious = false
 }: GuidedElectronicInputSectionProps) => {
   const totalElectronic = Object.values(electronicPayments).reduce((sum, val) => sum + val, 0);
   const completedPayments = paymentMethods.filter(method => isFieldCompleted(method.key)).length;
@@ -113,6 +121,10 @@ export const GuidedElectronicInputSection = ({
         currentStep={currentStep}
         totalSteps={17} // Total de pasos en el conteo guiado
         completedFields={completedFieldsList}
+        // 🤖 [IA] - v1.2.23: Navigation functions moved inside modal
+        onCancel={onCancel}
+        onPrevious={onPrevious}
+        canGoPrevious={canGoPrevious}
       />
     );
   }
