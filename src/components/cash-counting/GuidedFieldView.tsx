@@ -182,8 +182,8 @@ export function GuidedFieldView({
             alt={`Moneda de ${currentFieldLabel}`}
             className="object-contain"
             style={{
-              width: 'clamp(40px, 10vw, 56px)', 
-              height: 'clamp(40px, 10vw, 56px)'
+              width: 'clamp(64px, 15vw, 80px)', // 🤖 [IA] - v1.2.24: Moneda 60% más grande - coincide con contenedor
+              height: 'clamp(64px, 15vw, 80px)' // 🤖 [IA] - v1.2.24: Altura proporcional
             }}
           />
         );
@@ -251,13 +251,16 @@ export function GuidedFieldView({
             ? `0 8px 32px rgba(244, 165, 42, 0.15), inset 0 1px 0 rgba(255, 184, 77, 0.2)`
             : `0 8px 32px rgba(10, 132, 255, 0.15), inset 0 1px 0 rgba(94, 92, 230, 0.2)`
         }}>
-            {/* 🤖 [IA] - v1.0.95: Header con indicador de sección */}
-            <div className="flex items-center justify-center" style={{ marginBottom: 'clamp(12px, 2.5vw, 16px)' }}>
+            {/* 🤖 [IA] - v1.2.24: Header optimizado con moneda más grande */}
+            <div className="flex items-center justify-center" style={{ 
+              marginBottom: 'clamp(12px, 2.5vw, 16px)',
+              gap: 'clamp(12px, 3vw, 20px)' // Gap responsive en lugar de margin fijo
+            }}>
               {/* Información central */}
-              <div className="text-center mr-3">
+              <div className="text-center">
                 <h3 className="font-bold" style={{
-                  fontSize: 'clamp(18px, 4.5vw, 28px)', // 🤖 [IA] - v1.2.18: Responsive font-size
-                  marginBottom: 'clamp(4px, 1vw, 8px)', // 🤖 [IA] - v1.2.18: Responsive margin
+                  fontSize: 'clamp(20px, 4.5vw, 32px)', // 🤖 [IA] - v1.2.24: Texto más grande para equilibrio
+                  marginBottom: 'clamp(4px, 1vw, 8px)',
                   background: currentFieldType === 'coin' ? 'linear-gradient(135deg, #f4a52a 0%, #ffb84d 100%)' :
                             currentFieldType === 'bill' ? 'linear-gradient(135deg, #00ba7c 0%, #06d6a0 100%)' :
                             gradientBg,
@@ -267,10 +270,9 @@ export function GuidedFieldView({
                 }}>
                   {currentFieldLabel}
                 </h3>
-                {/* 🤖 [IA] - v1.2.7: Valor unitario ocultado para sistema anti-fraude */}
               </div>
               
-              {/* Ícono con gradiente según tipo */}
+              {/* Ícono más grande con gradiente según tipo */}
               <div 
                 className={cn(
                   "flex items-center justify-center shadow-lg",
@@ -281,9 +283,9 @@ export function GuidedFieldView({
                     : 'bg-gradient-to-br from-accent-primary via-accent-primary/80 to-accent-secondary'
                 )}
                 style={{
-                  width: 'clamp(40px, 10vw, 56px)', // 🤖 [IA] - v1.2.18: Responsive width
-                  height: 'clamp(40px, 10vw, 56px)', // 🤖 [IA] - v1.2.18: Responsive height
-                  borderRadius: 'clamp(8px, 2vw, 12px)' // 🤖 [IA] - v1.2.18: Responsive border-radius
+                  width: 'clamp(64px, 15vw, 80px)', // 🤖 [IA] - v1.2.24: Moneda 60% más grande
+                  height: 'clamp(64px, 15vw, 80px)', // 🤖 [IA] - v1.2.24: Altura proporcional
+                  borderRadius: 'clamp(12px, 3vw, 16px)' // 🤖 [IA] - v1.2.24: Border radius proporcionalmente mayor
                 }}
               >
                 {getIcon()}
