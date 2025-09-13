@@ -75,10 +75,10 @@ export interface AlertThresholds {
 
 export const DENOMINATIONS = {
   COINS: {
-    penny: { value: 0.01, name: "1¢ centavo" },
-    nickel: { value: 0.05, name: "5¢ centavos" },
-    dime: { value: 0.10, name: "10¢ centavos" },
-    quarter: { value: 0.25, name: "25¢ centavos" },
+    penny: { value: 0.01, name: "1¢" },
+    nickel: { value: 0.05, name: "5¢" },
+    dime: { value: 0.10, name: "10¢" },
+    quarter: { value: 0.25, name: "25¢" },
     dollarCoin: { value: 1.00, name: "$1 moneda" }
   },
   BILLS: {
