@@ -172,6 +172,8 @@ export function GuidedFieldView({
         // Seleccionar la imagen correcta según el nombre del campo
         if (currentFieldName === 'nickel') {
           coinImage = '/monedas-recortadas-dolares/moneda-cinco-centavos.webp';
+        } else if (currentFieldName === 'dime') {
+          coinImage = '/monedas-recortadas-dolares/moneda-diez-centavos.webp';
         } else if (currentFieldName === 'quarter') {
           coinImage = '/monedas-recortadas-dolares/moneda-veinticinco-centavos.webp';
         }
@@ -182,8 +184,8 @@ export function GuidedFieldView({
             alt={`Moneda de ${currentFieldLabel}`}
             className="object-contain"
             style={{
-              width: 'clamp(80px, 20vw, 120px)', // 🤖 [IA] - v1.2.25: Moneda 50% más grande para mejor visibilidad
-              height: 'clamp(80px, 20vw, 120px)' // 🤖 [IA] - v1.2.25: Altura proporcional
+              width: 'clamp(100px, 25vw, 150px)', // 🤖 [IA] - v1.2.26: Moneda 25% más grande para máxima visibilidad
+              height: 'clamp(100px, 25vw, 150px)' // 🤖 [IA] - v1.2.26: Altura proporcional
             }}
           />
         );
@@ -285,9 +287,9 @@ export function GuidedFieldView({
                     : 'bg-gradient-to-br from-accent-primary via-accent-primary/80 to-accent-secondary'
                 )}
                 style={{
-                  width: 'clamp(80px, 20vw, 120px)', // 🤖 [IA] - v1.2.25: Contenedor 50% más grande para mejor visibilidad
-                  height: 'clamp(80px, 20vw, 120px)', // 🤖 [IA] - v1.2.25: Altura proporcional
-                  borderRadius: 'clamp(16px, 4vw, 24px)' // 🤖 [IA] - v1.2.25: Border radius proporcionalmente mayor
+                  width: 'clamp(100px, 25vw, 150px)', // 🤖 [IA] - v1.2.26: Contenedor 25% más grande para máxima visibilidad
+                  height: 'clamp(100px, 25vw, 150px)', // 🤖 [IA] - v1.2.26: Altura proporcional
+                  borderRadius: 'clamp(20px, 5vw, 30px)' // 🤖 [IA] - v1.2.26: Border radius proporcional al nuevo tamaño
                 }}
               >
                 {getIcon()}
