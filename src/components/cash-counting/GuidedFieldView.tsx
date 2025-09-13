@@ -171,11 +171,11 @@ export function GuidedFieldView({
         
         // Seleccionar la imagen correcta según el nombre del campo
         if (currentFieldName === 'nickel') {
-          coinImage = '/monedas-recortadas-dolares/moneda-cinco-centavos.webp';
+          coinImage = '/monedas-recortadas-dolares/moneda-cinco-centavos-nueva.webp';
         } else if (currentFieldName === 'dime') {
           coinImage = '/monedas-recortadas-dolares/moneda-diez-centavos.webp';
         } else if (currentFieldName === 'quarter') {
-          coinImage = '/monedas-recortadas-dolares/moneda-veinticinco-centavos.webp';
+          coinImage = '/monedas-recortadas-dolares/moneda-veinticinco-centavos-nueva.webp';
         }
         
         return (
