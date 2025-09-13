@@ -176,6 +176,8 @@ export function GuidedFieldView({
           coinImage = '/monedas-recortadas-dolares/moneda-diez-centavos.webp';
         } else if (currentFieldName === 'quarter') {
           coinImage = '/monedas-recortadas-dolares/moneda-veinticinco-centavos-nueva.webp';
+        } else if (currentFieldName === 'dollar' || currentFieldName === 'dollarCoin') {
+          coinImage = '/monedas-recortadas-dolares/moneda-un-dollar-nueva.webp';
         }
         
         return (
