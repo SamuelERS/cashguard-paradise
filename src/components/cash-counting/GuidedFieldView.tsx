@@ -167,7 +167,7 @@ export function GuidedFieldView({
     switch (currentFieldType) {
       case 'coin':
         // Determinar qué imagen de moneda mostrar basado en currentFieldName
-        let coinImage = '/monedas-recortadas-dolares/moneda-un-centavo.webp';
+        let coinImage = '/monedas-recortadas-dolares/moneda-centavo-front-inlay.webp';
         
         // Seleccionar la imagen correcta según el nombre del campo
         if (currentFieldName === 'nickel') {
@@ -182,8 +182,8 @@ export function GuidedFieldView({
             alt={`Moneda de ${currentFieldLabel}`}
             className="object-contain"
             style={{
-              width: 'clamp(64px, 15vw, 80px)', // 🤖 [IA] - v1.2.24: Moneda 60% más grande - coincide con contenedor
-              height: 'clamp(64px, 15vw, 80px)' // 🤖 [IA] - v1.2.24: Altura proporcional
+              width: 'clamp(80px, 20vw, 120px)', // 🤖 [IA] - v1.2.25: Moneda 50% más grande para mejor visibilidad
+              height: 'clamp(80px, 20vw, 120px)' // 🤖 [IA] - v1.2.25: Altura proporcional
             }}
           />
         );
@@ -252,13 +252,13 @@ export function GuidedFieldView({
             : `0 8px 32px rgba(10, 132, 255, 0.15), inset 0 1px 0 rgba(94, 92, 230, 0.2)`
         }}>
             {/* 🤖 [IA] - v1.2.24: Header optimizado con moneda más grande */}
-            <div className="flex items-center justify-center" style={{ 
-              marginBottom: 'clamp(12px, 2.5vw, 16px)',
-              gap: 'clamp(12px, 3vw, 20px)' // Gap responsive en lugar de margin fijo
+            <div className="flex items-center justify-center" style={{
+              marginBottom: 'clamp(16px, 3vw, 20px)',
+              gap: 'clamp(16px, 4vw, 24px)' // 🤖 [IA] - v1.2.25: Gap más amplio para acomodar monedas grandes
             }}>
               {/* Información central */}
               <div className="text-center">
-                <h3 className="font-bold" style={{
+                <h3 className="font-bold capitalize tracking-wide" style={{
                   fontSize: 'clamp(20px, 4.5vw, 32px)', // 🤖 [IA] - v1.2.24: Texto más grande para equilibrio
                   marginBottom: 'clamp(4px, 1vw, 8px)',
                   background: currentFieldType === 'coin' ? 'linear-gradient(135deg, #f4a52a 0%, #ffb84d 100%)' :
@@ -266,7 +266,9 @@ export function GuidedFieldView({
                             gradientBg,
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text'
+                  backgroundClip: 'text',
+                  letterSpacing: '0.05em', // 🤖 [IA] - v1.2.24: Espaciado elegante entre letras
+                  textTransform: 'capitalize' // 🤖 [IA] - v1.2.24: Primera letra mayúscula
                 }}>
                   {currentFieldLabel}
                 </h3>
@@ -275,17 +277,17 @@ export function GuidedFieldView({
               {/* Ícono más grande con gradiente según tipo */}
               <div 
                 className={cn(
-                  "flex items-center justify-center shadow-lg",
+                  "flex items-center justify-center",
                   currentFieldType === 'coin' ? 'bg-gradient-to-br from-accent-primary via-accent-primary/80 to-accent-secondary' :
                   currentFieldType === 'bill' ? 'bg-gradient-to-br from-success via-success/80 to-success/60' :
-                  isMorningCount 
+                  isMorningCount
                     ? 'bg-gradient-to-br from-warning via-warning/80 to-warning/60'
                     : 'bg-gradient-to-br from-accent-primary via-accent-primary/80 to-accent-secondary'
                 )}
                 style={{
-                  width: 'clamp(64px, 15vw, 80px)', // 🤖 [IA] - v1.2.24: Moneda 60% más grande
-                  height: 'clamp(64px, 15vw, 80px)', // 🤖 [IA] - v1.2.24: Altura proporcional
-                  borderRadius: 'clamp(12px, 3vw, 16px)' // 🤖 [IA] - v1.2.24: Border radius proporcionalmente mayor
+                  width: 'clamp(80px, 20vw, 120px)', // 🤖 [IA] - v1.2.25: Contenedor 50% más grande para mejor visibilidad
+                  height: 'clamp(80px, 20vw, 120px)', // 🤖 [IA] - v1.2.25: Altura proporcional
+                  borderRadius: 'clamp(16px, 4vw, 24px)' // 🤖 [IA] - v1.2.25: Border radius proporcionalmente mayor
                 }}
               >
                 {getIcon()}
