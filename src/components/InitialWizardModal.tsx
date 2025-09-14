@@ -422,8 +422,8 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
 
             <div className="flex flex-col gap-fluid-md md:gap-fluid-lg">
               {/* 🤖 [IA] - v1.2.9: Contenedor con grid y variables CSS compartidas para alturas iguales */}
-              <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-fluid-sm md:gap-fluid-md items-stretch">
-                <div className="glass-morphism-panel relative flex-1 pl-2">
+              <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-fluid-sm md:gap-fluid-md items-center">
+                <div className="glass-morphism-panel relative flex-1 pl-2 flex items-center">
                   <span className="absolute left-6 top-1/2 -translate-y-1/2 font-bold text-green-400 text-base md:text-lg">
                     $
                   </span>
@@ -459,6 +459,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                   disabled={!isCompleted}
                   aria-label="Confirmar venta esperada"
                   type="button"
+                  className="h-9 md:h-11"
                 >
                   <CheckCircle aria-hidden="true" className="w-5 md:w-6 h-5 md:h-6 mr-2 md:mr-3" />
                   <span>Confirmar</span>
