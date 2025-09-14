@@ -192,7 +192,39 @@ export function GuidedFieldView({
           />
         );
       case 'bill':
-        return <Banknote className="w-8 h-8 text-success" />;
+        // Determinar qué imagen de billete mostrar basado en currentFieldName
+        let billImage = '/monedas-recortadas-dolares/billete-1.webp';
+        
+        // Asegurarse de mostrar el billete correcto en todos los casos
+        if (currentFieldName === 'five' || 
+            currentFieldName === '$5' ||
+            currentFieldLabel?.includes('5') ||
+            currentFieldLabel?.includes('$5')) {
+          billImage = '/monedas-recortadas-dolares/billete-5.webp';
+        } else if (currentFieldName === 'ten' || 
+            currentFieldName === '$10' ||
+            currentFieldLabel?.includes('10') ||
+            currentFieldLabel?.includes('$10')) {
+          billImage = '/monedas-recortadas-dolares/billete-10.webp';
+        } else if (currentFieldName === 'twenty' || 
+            currentFieldName === '$20' ||
+            currentFieldLabel?.includes('20') ||
+            currentFieldLabel?.includes('$20')) {
+          billImage = '/monedas-recortadas-dolares/billete-20.webp';
+        } else if (currentFieldName === 'fifty' || 
+            currentFieldName === '$50' ||
+            currentFieldLabel?.includes('50') ||
+            currentFieldLabel?.includes('$50')) {
+          billImage = '/monedas-recortadas-dolares/billete-cincuenta-dolares-sobre-fondo-blanco(1).webp';
+        }
+        
+        return (
+          <img 
+            src={billImage}
+            alt={`Billete de ${currentFieldLabel}`}
+            className="object-contain w-full h-full"
+          />
+        );
       case 'electronic':
         return <CreditCard className="w-8 h-8 text-accent-primary" />;
       default:
@@ -282,16 +314,15 @@ export function GuidedFieldView({
               <div 
                 className={cn(
                   "flex items-center justify-center",
-                  currentFieldType === 'coin' ? 'bg-gradient-to-br from-accent-primary via-accent-primary/80 to-accent-secondary' :
-                  currentFieldType === 'bill' ? 'bg-gradient-to-br from-success via-success/80 to-success/60' :
+                  (currentFieldType === 'coin' || currentFieldType === 'bill') ? 'bg-gradient-to-br from-accent-primary via-accent-primary/80 to-accent-secondary' :
                   isMorningCount
                     ? 'bg-gradient-to-br from-warning via-warning/80 to-warning/60'
                     : 'bg-gradient-to-br from-accent-primary via-accent-primary/80 to-accent-secondary'
                 )}
                 style={{
-                  width: 'clamp(100px, 25vw, 150px)', // 🤖 [IA] - v1.2.26: Contenedor 25% más grande para máxima visibilidad
-                  height: 'clamp(100px, 25vw, 150px)', // 🤖 [IA] - v1.2.26: Altura proporcional
-                  borderRadius: 'clamp(20px, 5vw, 30px)' // 🤖 [IA] - v1.2.26: Border radius proporcional al nuevo tamaño
+                  width: 'clamp(120px, 30vw, 200px)', // 🤖 [IA] - v1.3.0: Billete más ancho con relación de aspecto
+                  aspectRatio: '2.4 / 1', // 🤖 [IA] - v1.3.0: Proporción de billete
+                  borderRadius: 'clamp(12px, 3vw, 18px)' // 🤖 [IA] - v1.3.0: Bordes más suaves
                 }}
               >
                 {getIcon()}
