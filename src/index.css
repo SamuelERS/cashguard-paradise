@@ -1016,6 +1016,16 @@
     }
   }
 
+  /* 🤖 [IA] - v1.2.23: Modal background protection - OPERATION-MODAL-CONTAINMENT */
+  /* Previene selección de texto y scroll en background cuando modales están abiertos */
+  .no-text-select {
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+    -webkit-touch-callout: none !important;
+  }
+
   /* Mejora adicional para iOS PWA */
   @supports (-webkit-touch-callout: none) {
     @media (display-mode: standalone) {

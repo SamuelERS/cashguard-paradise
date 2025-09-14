@@ -1,5 +1,5 @@
 // 🤖 [IA] - v1.1.16 - Fix teclado numérico en PWA standalone mode
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import CashCounter from "@/components/CashCounter";
 import InitialWizardModal from "@/components/InitialWizardModal";
@@ -22,6 +22,26 @@ const Index = () => {
     selectedWitness: string;
     expectedSales: string;
   } | null>(null);
+
+  // 🤖 [IA] - v1.2.23: OPERATION-MODAL-CONTAINMENT - Prevención de selección de texto y scroll en background
+  useEffect(() => {
+    const isAnyModalOpen = showWizard || showMorningWizard;
+
+    if (isAnyModalOpen) {
+      document.body.classList.add('no-text-select');
+      // Also prevent scroll
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.classList.remove('no-text-select');
+      document.body.style.overflow = '';
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.body.classList.remove('no-text-select');
+      document.body.style.overflow = '';
+    };
+  }, [showWizard, showMorningWizard]);
 
   const handleWizardComplete = (data: {
     selectedStore: string;
