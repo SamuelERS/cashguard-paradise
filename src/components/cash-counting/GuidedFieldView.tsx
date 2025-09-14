@@ -253,14 +253,46 @@ export function GuidedFieldView({
           />
         );
       case 'electronic':
+        // 🤖 [IA] - v1.2.28: Detección de tipo de pago electrónico para mostrar logo correspondiente
+        const getElectronicLogo = () => {
+          switch (currentFieldName) {
+            case 'credomatic':
+              return {
+                src: "/monedas-recortadas-dolares/bac-logo.webp",
+                alt: "BAC Credomatic"
+              };
+            case 'promerica':
+              return {
+                src: "/monedas-recortadas-dolares/banco promerica logo.webp",
+                alt: "Banco Promerica"
+              };
+            case 'bankTransfer':
+              return {
+                src: "/monedas-recortadas-dolares/bac-logo.webp", // 🤖 [IA] - Fallback a BAC para transferencias
+                alt: "Transferencia Bancaria"
+              };
+            case 'paypal':
+              return {
+                src: "/monedas-recortadas-dolares/bac-logo.webp", // 🤖 [IA] - Fallback a BAC para PayPal
+                alt: "PayPal"
+              };
+            default:
+              return {
+                src: "/monedas-recortadas-dolares/bac-logo.webp",
+                alt: "Pago Electrónico"
+              };
+          }
+        };
+
+        const electronicLogo = getElectronicLogo();
         return (
           <img
-            src="/monedas-recortadas-dolares/bac-logo.webp"
-            alt="BAC Credomatic"
+            src={electronicLogo.src}
+            alt={electronicLogo.alt}
             className="object-contain w-full h-full"
             style={{
-              maxWidth: '90%',  // 🤖 [IA] - v1.2.27: Para que el logo no toque los bordes
-              maxHeight: '90%'
+              maxWidth: currentFieldName === 'promerica' ? '95%' : '90%',  // 🤖 [IA] - v1.2.28: Promerica más grande para igualar tamaño visual
+              maxHeight: currentFieldName === 'promerica' ? '95%' : '90%'
             }}
           />
         );
