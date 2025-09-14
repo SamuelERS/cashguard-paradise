@@ -15,13 +15,20 @@ interface Phase2VerificationSectionProps {
   onStepComplete: (stepKey: string) => void;
   onSectionComplete: () => void;
   completedSteps: Record<string, boolean>;
+  // 🤖 [IA] - v1.2.24: Navigation props to match Phase 1 pattern
+  onCancel: () => void;
+  onPrevious: () => void;
+  canGoPrevious: boolean;
 }
 
 export function Phase2VerificationSection({
   deliveryCalculation,
   onStepComplete,
   onSectionComplete,
-  completedSteps
+  completedSteps,
+  onCancel,
+  onPrevious,
+  canGoPrevious
 }: Phase2VerificationSectionProps) {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [inputValue, setInputValue] = useState('');

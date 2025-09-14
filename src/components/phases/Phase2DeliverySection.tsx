@@ -17,13 +17,20 @@ interface Phase2DeliverySectionProps {
   onStepComplete: (stepKey: string) => void;
   onSectionComplete: () => void;
   completedSteps: Record<string, boolean>;
+  // 🤖 [IA] - v1.2.24: Navigation props to match Phase 1 pattern
+  onCancel: () => void;
+  onPrevious: () => void;
+  canGoPrevious: boolean;
 }
 
 export function Phase2DeliverySection({
   deliveryCalculation,
   onStepComplete,
   onSectionComplete,
-  completedSteps
+  completedSteps,
+  onCancel,
+  onPrevious,
+  canGoPrevious
 }: Phase2DeliverySectionProps) {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
 
@@ -104,54 +111,63 @@ export function Phase2DeliverySection({
     <motion.div
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
-      className="space-y-4 lg:max-w-3xl lg:mx-auto"
+      className="space-y-fluid-md lg:max-w-3xl lg:mx-auto"
     >
-      {/* Progress indicator using canonical GuidedProgressIndicator */}
-      <GuidedProgressIndicator
-        currentStep={completedCount + 1}
-        totalSteps={totalSteps}
-        currentFieldLabel={currentStep?.label || ''}
-        instructionText={allStepsCompleted
-          ? '✅ Todas las denominaciones separadas para gerencia'
-          : `🏢 Separando ${currentStep?.label || ''} para gerencia`
-        }
-        isCompleted={allStepsCompleted}
-        isMorningCount={false}
-      />
+      {/* Progress indicator - Separated container for visual hierarchy */}
+      <div>
+        <GuidedProgressIndicator
+          currentStep={completedCount + 1}
+          totalSteps={totalSteps}
+          currentFieldLabel={currentStep?.label || ''}
+          instructionText={allStepsCompleted
+            ? '✅ Todas las denominaciones separadas para gerencia'
+            : `🏢 Separando ${currentStep?.label || ''} para gerencia`
+          }
+          isCompleted={allStepsCompleted}
+          isMorningCount={false}
+        />
+      </div>
 
-      {/* Current Step using DeliveryFieldView - Phase 1 architecture */}
-      <AnimatePresence mode="wait">
-        {currentStep && !completedSteps[currentStep.key] && (
-          <DeliveryFieldView
-            key={currentStep.key}
-            currentFieldName={currentStep.key}
-            currentFieldLabel={currentStep.label}
-            currentFieldValue={0}
-            targetQuantity={currentStep.quantity}
-            currentFieldType={getCurrentFieldType()}
-            isActive={true}
-            isCompleted={false}
-            onConfirm={handleFieldConfirm}
-          />
-        )}
-      </AnimatePresence>
+      {/* Current Step - Separated container for visual hierarchy */}
+      <div>
+        <AnimatePresence mode="wait">
+          {currentStep && !completedSteps[currentStep.key] && (
+            <DeliveryFieldView
+              key={currentStep.key}
+              currentFieldName={currentStep.key}
+              currentFieldLabel={currentStep.label}
+              currentFieldValue={0}
+              targetQuantity={currentStep.quantity}
+              currentFieldType={getCurrentFieldType()}
+              isActive={true}
+              isCompleted={false}
+              onConfirm={handleFieldConfirm}
+              onCancel={onCancel}
+              onPrevious={onPrevious}
+              canGoPrevious={canGoPrevious}
+            />
+          )}
+        </AnimatePresence>
+      </div>
 
-      {/* Section Complete - Using glass morphism canonical class */}
+      {/* Section Complete - Separated container */}
       {allStepsCompleted && (
-        <div className="glass-morphism-panel text-center p-8" style={{
-          border: '1px solid rgba(0, 186, 124, 0.4)',
-          boxShadow: '0 4px 12px rgba(0, 186, 124, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
-        }}>
-          <Check className="w-12 h-12 mx-auto mb-4 text-success" />
-          <h3 className="text-xl font-bold mb-2 text-success">
-            🏢 Separación Completa
-          </h3>
-          <p className="text-muted-foreground mb-2">
-            Total separado: {formatCurrency(amountToDeliver)}
-          </p>
-          <p className="text-sm font-medium text-primary">
-            Verificando entrega...
-          </p>
+        <div>
+          <div className="glass-morphism-panel text-center p-8" style={{
+            border: '1px solid rgba(0, 186, 124, 0.4)',
+            boxShadow: '0 4px 12px rgba(0, 186, 124, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+          }}>
+            <Check className="w-12 h-12 mx-auto mb-4 text-success" />
+            <h3 className="text-xl font-bold mb-2 text-success">
+              🏢 Separación Completa
+            </h3>
+            <p className="text-muted-foreground mb-2">
+              Total separado: {formatCurrency(amountToDeliver)}
+            </p>
+            <p className="text-sm font-medium text-primary">
+              Verificando entrega...
+            </p>
+          </div>
         </div>
       )}
     </motion.div>

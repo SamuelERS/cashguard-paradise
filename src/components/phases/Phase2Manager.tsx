@@ -255,6 +255,9 @@ export function Phase2Manager({
               onStepComplete={handleDeliveryStepComplete}
               onSectionComplete={handleDeliverySectionComplete}
               completedSteps={deliveryProgress}
+              onCancel={() => setShowExitConfirmation(true)}
+              onPrevious={() => {}}
+              canGoPrevious={false}
             />
           </motion.div>
         )}
@@ -271,36 +274,29 @@ export function Phase2Manager({
               onStepComplete={handleVerificationStepComplete}
               onSectionComplete={handleVerificationSectionComplete}
               completedSteps={verificationProgress}
+              onCancel={() => setShowExitConfirmation(true)}
+              onPrevious={() => {}}
+              canGoPrevious={false}
             />
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Navigation Buttons - 🤖 [IA] - v1.2.24: Navegación estandarizada con Phase 1 */}
-      <div className="flex gap-3 lg:max-w-lg lg:mx-auto">
-        <NeutralActionButton
-          onClick={() => setShowExitConfirmation(true)}
-          aria-label="Volver al inicio"
-          className="btn-phase2-back flex-1"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          <span>Volver al inicio</span>
-        </NeutralActionButton>
-
-        {/* Manual section switch (only when delivery is complete) */}
-        {deliveryCompleted && currentSection === 'delivery' && !verificationCompleted && (
+      {/* Manual section switch - only show when delivery is complete */}
+      {deliveryCompleted && currentSection === 'delivery' && !verificationCompleted && (
+        <div className="flex justify-center">
           <Button
             variant="phase2-verify"
             onClick={() => setCurrentSection('verification')}
             aria-label="Verificar efectivo y continuar"
-            className="flex-1"
+            className="px-6"
           >
             <span>Verificar</span>
             <span className="hidden sm:inline ml-1">Efectivo</span>
             <ArrowRight className="w-4 h-4 ml-2" />
           </Button>
-        )}
-      </div>
+        </div>
+      )}
       
       {/* 🤖 [IA] - v1.2.19: Modal de confirmación migrado a ConfirmationModal estandarizado */}
       <ConfirmationModal
