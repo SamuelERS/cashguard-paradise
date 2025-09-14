@@ -268,12 +268,12 @@ export function GuidedFieldView({
               };
             case 'bankTransfer':
               return {
-                src: "/monedas-recortadas-dolares/bac-logo.webp", // 🤖 [IA] - Fallback a BAC para transferencias
+                src: "/monedas-recortadas-dolares/transferencia-bancaria.png", // 🤖 [IA] - v1.2.28: Logo específico para transferencias bancarias
                 alt: "Transferencia Bancaria"
               };
             case 'paypal':
               return {
-                src: "/monedas-recortadas-dolares/bac-logo.webp", // 🤖 [IA] - Fallback a BAC para PayPal
+                src: "/monedas-recortadas-dolares/paypal-logo.png", // 🤖 [IA] - v1.2.28: Logo oficial de PayPal
                 alt: "PayPal"
               };
             default:
