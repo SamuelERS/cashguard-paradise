@@ -423,8 +423,8 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
             <div className="flex flex-col gap-fluid-md md:gap-fluid-lg">
               {/* 🤖 [IA] - v1.2.9: Contenedor con grid y variables CSS compartidas para alturas iguales */}
               <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-fluid-sm md:gap-fluid-md items-stretch">
-                <div className="glass-morphism-panel relative flex-1">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-green-400 text-base md:text-lg">
+                <div className="glass-morphism-panel relative flex-1 pl-2">
+                  <span className="absolute left-6 top-1/2 -translate-y-1/2 font-bold text-green-400 text-base md:text-lg">
                     $
                   </span>
                   <Input
@@ -445,7 +445,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                     placeholder="0.00"
                     aria-label="Ingrese el monto de la venta esperada"
                     className={cn(
-                      "font-semibold bg-transparent border-none text-primary-foreground pl-7 md:pl-9 h-9 md:h-11 text-base md:text-lg neon-glow-primary",
+                      "font-semibold bg-transparent border-none text-primary-foreground pl-12 md:pl-14 h-9 md:h-11 text-base md:text-lg neon-glow-success",
                       wizardData.expectedSales && parseFloat(wizardData.expectedSales) > 0 && "border-green-500/50"
                     )}
                     data-valid={!!(wizardData.expectedSales && parseFloat(wizardData.expectedSales) > 0)}

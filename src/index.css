@@ -2367,6 +2367,15 @@
       0 0 5px hsl(var(--glow-color) / 0.5),
       0 0 15px hsl(var(--glow-color) / 0.3),
       0 0 25px hsl(var(--glow-color) / 0.2);
+  }
+
+  /* 🤖 [IA] - v1.2.24: Neon glow verde para elementos monetarios */
+  .neon-glow-success {
+    --glow-color: 142 76% 36%; /* Verde success canónico */
+    box-shadow:
+      0 0 5px hsl(var(--glow-color) / 0.5),
+      0 0 15px hsl(var(--glow-color) / 0.3),
+      0 0 25px hsl(var(--glow-color) / 0.2);
     border-color: hsl(var(--glow-color) / 0.8);
   }
 
