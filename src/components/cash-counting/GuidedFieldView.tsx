@@ -2,7 +2,7 @@
 // 🤖 [IA] - v1.0.96: Optimización responsive - Vista guiada con anchos adaptativos
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Banknote, CreditCard, ChevronRight, Check, X, ArrowLeft } from 'lucide-react';
+import { ChevronRight, Check, X, ArrowLeft } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { ConstructiveActionButton } from '@/components/ui/constructive-action-button';
 import { DestructiveActionButton } from '@/components/ui/destructive-action-button';
@@ -253,7 +253,17 @@ export function GuidedFieldView({
           />
         );
       case 'electronic':
-        return <CreditCard className="w-8 h-8 text-accent-primary" />;
+        return (
+          <img
+            src="/monedas-recortadas-dolares/bac-logo.webp"
+            alt="BAC Credomatic"
+            className="object-contain w-full h-full"
+            style={{
+              maxWidth: '90%',  // 🤖 [IA] - v1.2.27: Para que el logo no toque los bordes
+              maxHeight: '90%'
+            }}
+          />
+        );
       default:
         return null;
     }
@@ -305,13 +315,13 @@ export function GuidedFieldView({
       >
         {/* 🤖 [IA] - v1.2.25: Modal container with glass morphism canonical class */}
         <div className={cn(
-          "glass-morphism-panel p-0",
+          "glass-morphism-panel p-0 relative", // 🤖 [IA] - v1.2.26: Added relative for absolute footer positioning
           isMorningCount
             ? "border-2 border-warning/30"
             : "border-2 border-primary/30"
         )}>
-          {/* Content Section with padding */}
-          <div className="p-[clamp(12px,3vw,20px)]">
+          {/* Content Section with padding and bottom space for absolute footer */}
+          <div className="p-[clamp(12px,3vw,20px)] pb-24">
             {/* 🤖 [IA] - v1.2.24: Header optimizado con moneda más grande */}
             <div className="flex items-center justify-center" style={{
               marginBottom: 'clamp(16px, 3vw, 20px)',
@@ -427,9 +437,9 @@ export function GuidedFieldView({
             </div>
           </div>
 
-          {/* 🤖 [IA] - v1.2.25: Modal Footer with Navigation Buttons */}
+          {/* 🤖 [IA] - v1.2.26: Absolute positioned footer with visual separation */}
           {(onCancel || onPrevious) && (
-            <div className="flex items-center justify-between gap-3 border-t border-white/10 p-[clamp(12px,3vw,20px)]">
+            <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between gap-3 border-t border-white/10 p-4 bg-black/20 backdrop-blur-sm">
               {/* Cancel Button */}
               {onCancel && (
                 <DestructiveActionButton
