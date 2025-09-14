@@ -186,7 +186,7 @@ export function GuidedFieldView({
             alt={`Moneda de ${currentFieldLabel}`}
             className="object-contain"
             style={{
-              width: 'clamp(150px, 37.5vw, 250px)', // 🤖 [IA] - v1.3.1: Monedas 25% más grandes
+              width: 'clamp(234.375px, 58.59vw, 390.625px)', // 🤖 [IA] - v1.3.3: Monedas 25% más grandes (segundo aumento adicional)
               aspectRatio: '2.4 / 1' // 🤖 [IA] - v1.3.0: Proporción rectangular como billetes
             }}
           />
@@ -331,9 +331,9 @@ export function GuidedFieldView({
                     : 'bg-gradient-to-br from-accent-primary via-accent-primary/80 to-accent-secondary'
                 )}
                 style={{
-                  width: 'clamp(150px, 37.5vw, 250px)', // 🤖 [IA] - v1.3.1: Billetes 25% más grandes
+                  width: 'clamp(234.375px, 58.59vw, 390.625px)', // 🤖 [IA] - v1.3.3: Contenedor 25% más grande (segundo aumento)
                   aspectRatio: '2.4 / 1', // 🤖 [IA] - v1.3.0: Proporción de billete
-                  borderRadius: 'clamp(15px, 3.75vw, 22.5px)' // 🤖 [IA] - v1.3.1: Bordes escalados proporcionalmente
+                  borderRadius: 'clamp(23.44px, 5.86vw, 35.16px)' // 🤖 [IA] - v1.3.3: Bordes escalados proporcionalmente
                 }}
               >
                 {getIcon()}
