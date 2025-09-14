@@ -186,7 +186,7 @@ export function GuidedFieldView({
             alt={`Moneda de ${currentFieldLabel}`}
             className="object-contain"
             style={{
-              width: 'clamp(120px, 30vw, 200px)', // 🤖 [IA] - v1.3.0: Armonizado con dimensiones de billetes
+              width: 'clamp(150px, 37.5vw, 250px)', // 🤖 [IA] - v1.3.1: Monedas 25% más grandes
               aspectRatio: '2.4 / 1' // 🤖 [IA] - v1.3.0: Proporción rectangular como billetes
             }}
           />
@@ -319,23 +319,7 @@ export function GuidedFieldView({
               marginBottom: 'clamp(16px, 3vw, 20px)',
               gap: 'clamp(16px, 4vw, 24px)' // 🤖 [IA] - v1.2.25: Gap más amplio para acomodar monedas grandes
             }}>
-              {/* Información central - Solo para monedas */}
-              {currentFieldType === 'coin' && (
-                <div className="text-center">
-                  <h3 className="font-bold capitalize tracking-wide" style={{
-                    fontSize: 'clamp(20px, 4.5vw, 32px)', // 🤖 [IA] - v1.2.24: Texto más grande para equilibrio
-                    marginBottom: 'clamp(4px, 1vw, 8px)',
-                    background: 'linear-gradient(135deg, #f4a52a 0%, #ffb84d 100%)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text',
-                    letterSpacing: '0.05em', // 🤖 [IA] - v1.2.24: Espaciado elegante entre letras
-                    textTransform: 'capitalize' // 🤖 [IA] - v1.2.24: Primera letra mayúscula
-                  }}>
-                    {currentFieldLabel}
-                  </h3>
-                </div>
-              )}
+              {/* Texto eliminado para todas las denominaciones - 🤖 [IA] - v1.3.0 */}
               
               {/* Ícono más grande con gradiente según tipo */}
               <div 
@@ -347,9 +331,9 @@ export function GuidedFieldView({
                     : 'bg-gradient-to-br from-accent-primary via-accent-primary/80 to-accent-secondary'
                 )}
                 style={{
-                  width: 'clamp(120px, 30vw, 200px)', // 🤖 [IA] - v1.3.0: Billete más ancho con relación de aspecto
+                  width: 'clamp(150px, 37.5vw, 250px)', // 🤖 [IA] - v1.3.1: Billetes 25% más grandes
                   aspectRatio: '2.4 / 1', // 🤖 [IA] - v1.3.0: Proporción de billete
-                  borderRadius: 'clamp(12px, 3vw, 18px)' // 🤖 [IA] - v1.3.0: Bordes más suaves
+                  borderRadius: 'clamp(15px, 3.75vw, 22.5px)' // 🤖 [IA] - v1.3.1: Bordes escalados proporcionalmente
                 }}
               >
                 {getIcon()}
