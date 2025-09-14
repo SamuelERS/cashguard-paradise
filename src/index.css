@@ -393,9 +393,19 @@
 
   /* 🤖 [IA] - v1.2.22: Glass morphism para headers con dimensiones específicas */
   .glass-morphism-panel.header-section {
-    gap: clamp(0.5rem, 2vw, 0.75rem);
+    gap: clamp(0.75rem, 3vw, 1rem);
     display: flex;
     align-items: center;
+  }
+
+  /* 🤖 [IA] - v1.2.24: Espaciado específico para contenedores con space-y-fluid-lg */
+  .glass-morphism-panel.space-y-fluid-lg > * + * {
+    margin-top: var(--space-lg);
+  }
+
+  /* Evitar doble espaciado en elementos anidados */
+  .glass-morphism-panel.space-y-fluid-lg > .glass-morphism-panel {
+    margin-top: 0;
   }
 
   /* 🤖 [IA] - v1.2.14: Clase glass morphism legacy (migrada a glass-morphism-panel) */

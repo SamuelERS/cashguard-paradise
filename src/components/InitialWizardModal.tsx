@@ -411,7 +411,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
 
       case 5: // Venta Esperada
         return (
-          <div className="glass-morphism-panel">
+          <div className="glass-morphism-panel space-y-fluid-lg">
             {/* 🤖 [IA] - v1.2.12: Header section Venta Esperada optimizado */}
             <div className="glass-morphism-panel header-section">
               <DollarSign className="flex-shrink-0 w-5 md:w-6 h-5 md:h-6 bg-gradient-to-br from-green-400 to-emerald-400 bg-clip-text text-transparent" />
@@ -420,9 +420,9 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               </div>
             </div>
 
-            <div className="flex flex-col gap-2 md:gap-3">
+            <div className="flex flex-col gap-fluid-md md:gap-fluid-lg">
               {/* 🤖 [IA] - v1.2.9: Contenedor con grid y variables CSS compartidas para alturas iguales */}
-              <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-2 md:gap-3 items-stretch">
+              <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-fluid-sm md:gap-fluid-md items-stretch">
                 <div className="glass-morphism-panel relative flex-1">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-green-400 text-base md:text-lg">
                     $
@@ -444,7 +444,11 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                     }}
                     placeholder="0.00"
                     aria-label="Ingrese el monto de la venta esperada"
-                    className="font-semibold bg-transparent border-none text-primary-foreground pl-7 md:pl-9 h-9 md:h-11 text-base md:text-lg"
+                    className={cn(
+                      "font-semibold bg-transparent border-none text-primary-foreground pl-7 md:pl-9 h-9 md:h-11 text-base md:text-lg neon-glow-primary",
+                      wizardData.expectedSales && parseFloat(wizardData.expectedSales) > 0 && "border-green-500/50"
+                    )}
+                    data-valid={!!(wizardData.expectedSales && parseFloat(wizardData.expectedSales) > 0)}
                     autoComplete="off" // 🤖 [IA] - Desactiva autocompletado del navegador
                   />
                 </div>
@@ -485,21 +489,21 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
             <div className="glass-morphism-panel border-l-4 border-l-blue-500 shadow-lg shadow-blue-500/20">
               <h4 className="font-semibold text-blue-500 text-sm md:text-base mb-2 md:mb-3">Resumen de Información:</h4>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-1 md:gap-2 text-xs md:text-sm">
-                <div className="flex justify-between sm:flex-col gap-1 md:gap-2">
+                <div className="flex flex-col gap-1 md:gap-2">
                   <span className="min-w-0 text-muted-foreground">Sucursal:</span>
-                  <span className="font-medium text-right sm:text-left truncate text-primary-foreground">
+                  <span className="font-medium text-left truncate text-primary-foreground">
                     {STORES.find(s => s.id === wizardData.selectedStore)?.name}
                   </span>
                 </div>
-                <div className="flex justify-between sm:flex-col gap-1 md:gap-2">
+                <div className="flex flex-col gap-1 md:gap-2">
                   <span className="min-w-0 text-muted-foreground">Cajero:</span>
-                  <span className="font-medium text-right sm:text-left truncate text-primary-foreground">
+                  <span className="font-medium text-left truncate text-primary-foreground">
                     {availableEmployees.find(e => e.id === wizardData.selectedCashier)?.name}
                   </span>
                 </div>
-                <div className="flex justify-between sm:flex-col gap-1 md:gap-2">
+                <div className="flex flex-col gap-1 md:gap-2">
                   <span className="min-w-0 text-muted-foreground">Testigo:</span>
-                  <span className="font-medium text-right sm:text-left truncate text-primary-foreground">
+                  <span className="font-medium text-left truncate text-primary-foreground">
                     {availableEmployees.find(e => e.id === wizardData.selectedWitness)?.name}
                   </span>
                 </div>
