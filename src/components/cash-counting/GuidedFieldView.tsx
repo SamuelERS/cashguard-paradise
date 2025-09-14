@@ -319,23 +319,23 @@ export function GuidedFieldView({
               marginBottom: 'clamp(16px, 3vw, 20px)',
               gap: 'clamp(16px, 4vw, 24px)' // 🤖 [IA] - v1.2.25: Gap más amplio para acomodar monedas grandes
             }}>
-              {/* Información central */}
-              <div className="text-center">
-                <h3 className="font-bold capitalize tracking-wide" style={{
-                  fontSize: 'clamp(20px, 4.5vw, 32px)', // 🤖 [IA] - v1.2.24: Texto más grande para equilibrio
-                  marginBottom: 'clamp(4px, 1vw, 8px)',
-                  background: currentFieldType === 'coin' ? 'linear-gradient(135deg, #f4a52a 0%, #ffb84d 100%)' :
-                            currentFieldType === 'bill' ? 'linear-gradient(135deg, #00ba7c 0%, #06d6a0 100%)' :
-                            gradientBg,
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                  letterSpacing: '0.05em', // 🤖 [IA] - v1.2.24: Espaciado elegante entre letras
-                  textTransform: 'capitalize' // 🤖 [IA] - v1.2.24: Primera letra mayúscula
-                }}>
-                  {currentFieldLabel}
-                </h3>
-              </div>
+              {/* Información central - Solo para monedas */}
+              {currentFieldType === 'coin' && (
+                <div className="text-center">
+                  <h3 className="font-bold capitalize tracking-wide" style={{
+                    fontSize: 'clamp(20px, 4.5vw, 32px)', // 🤖 [IA] - v1.2.24: Texto más grande para equilibrio
+                    marginBottom: 'clamp(4px, 1vw, 8px)',
+                    background: 'linear-gradient(135deg, #f4a52a 0%, #ffb84d 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                    letterSpacing: '0.05em', // 🤖 [IA] - v1.2.24: Espaciado elegante entre letras
+                    textTransform: 'capitalize' // 🤖 [IA] - v1.2.24: Primera letra mayúscula
+                  }}>
+                    {currentFieldLabel}
+                  </h3>
+                </div>
+              )}
               
               {/* Ícono más grande con gradiente según tipo */}
               <div 
