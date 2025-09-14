@@ -171,11 +171,11 @@ export function GuidedFieldView({
         
         // Seleccionar la imagen correcta según el nombre del campo
         if (currentFieldName === 'nickel') {
-          coinImage = '/monedas-recortadas-dolares/moneda-cinco-centavos-nueva.webp';
+          coinImage = '/monedas-recortadas-dolares/moneda-cinco-centavos-dos-caras.webp';
         } else if (currentFieldName === 'dime') {
           coinImage = '/monedas-recortadas-dolares/moneda-diez-centavos.webp';
         } else if (currentFieldName === 'quarter') {
-          coinImage = '/monedas-recortadas-dolares/moneda-veinticinco-centavos-nueva.webp';
+          coinImage = '/monedas-recortadas-dolares/moneda-25-centavos-dos-caras.webp';
         } else if (currentFieldName === 'dollar' || currentFieldName === 'dollarCoin') {
           coinImage = '/monedas-recortadas-dolares/moneda-un-dollar-nueva.webp';
         }
@@ -186,8 +186,8 @@ export function GuidedFieldView({
             alt={`Moneda de ${currentFieldLabel}`}
             className="object-contain"
             style={{
-              width: 'clamp(100px, 25vw, 150px)', // 🤖 [IA] - v1.2.26: Moneda 25% más grande para máxima visibilidad
-              height: 'clamp(100px, 25vw, 150px)' // 🤖 [IA] - v1.2.26: Altura proporcional
+              width: 'clamp(120px, 30vw, 200px)', // 🤖 [IA] - v1.3.0: Armonizado con dimensiones de billetes
+              aspectRatio: '2.4 / 1' // 🤖 [IA] - v1.3.0: Proporción rectangular como billetes
             }}
           />
         );
