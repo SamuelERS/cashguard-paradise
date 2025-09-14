@@ -246,13 +246,13 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
 
       case 2: // Selección de Sucursal
         return (
-          <div className="glass-morphism-panel">
+          <div className="glass-morphism-panel space-y-fluid-lg">
             {/* 🤖 [IA] - v1.2.12: Header section optimizado */}
             <div className="glass-morphism-panel header-section">
               <MapPin className="flex-shrink-0 w-6 md:w-8 h-6 md:h-8 bg-gradient-to-br from-blue-500 to-purple-500 bg-clip-text text-transparent" />
               <div className="flex-1 min-w-0">
                 <h3 className="font-semibold text-primary-foreground text-lg md:text-xl">Ubicación</h3>
-                <p className="text-muted-foreground text-xs md:text-sm mt-1">Sucursal del corte</p>
+                <p className="text-muted-foreground text-xs md:text-sm mt-fluid-xs">Sucursal del corte</p>
               </div>
             </div>
 
@@ -286,7 +286,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                 animate={{ opacity: 1, y: 0 }}
                 className="glass-morphism-panel border border-green-400/40 shadow-lg shadow-green-400/20"
               >
-                <div className="flex items-center gap-2 md:gap-3">
+                <div className="flex items-center gap-fluid-sm md:gap-fluid-md">
                   <CheckCircle className="flex-shrink-0 text-green-400 w-4 md:w-5 h-4 md:h-5" />
                   <span className="font-medium text-primary-foreground text-sm md:text-base">✓ Seleccionada</span>
                 </div>
@@ -297,7 +297,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
 
       case 3: // Selección de Cajero
         return (
-          <div className="glass-morphism-panel">
+          <div className="glass-morphism-panel space-y-fluid-lg">
             {/* 🤖 [IA] - v1.2.12: Header section Cajero optimizado */}
             <div className="glass-morphism-panel header-section">
               <Users
@@ -307,7 +307,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               />
               <div className="flex-1 min-w-0">
                 <h3 className="font-semibold text-primary-foreground text-lg md:text-xl">Cajero</h3>
-                <p className="text-muted-foreground text-xs md:text-sm mt-1">¿Quién Cobró este día?</p>
+                <p className="text-muted-foreground text-xs md:text-sm mt-fluid-xs">¿Quién Cobró este día?</p>
               </div>
             </div>
 
@@ -333,9 +333,9 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                 animate={{ opacity: 1, y: 0 }}
                 className="glass-morphism-panel border border-green-400/40 shadow-lg shadow-green-400/20"
               >
-                <div className="flex items-center gap-2 md:gap-3">
-                  <CheckCircle 
-                    className="flex-shrink-0 text-green-400 w-4 md:w-5 h-4 md:h-5" 
+                <div className="flex items-center gap-fluid-sm md:gap-fluid-md">
+                  <CheckCircle
+                    className="flex-shrink-0 text-green-400 w-4 md:w-5 h-4 md:h-5"
                     aria-label="Cajero seleccionado correctamente"
                   />
                   <span className="font-medium text-primary-foreground text-sm md:text-base">✓ Cajero seleccionado</span>
@@ -347,13 +347,13 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
 
       case 4: // Selección de Testigo
         return (
-          <div className="glass-morphism-panel">
+          <div className="glass-morphism-panel space-y-fluid-lg">
             {/* 🤖 [IA] - v1.2.12: Header section Testigo optimizado */}
             <div className="glass-morphism-panel header-section">
               <Shield className="flex-shrink-0 w-6 md:w-8 h-6 md:h-8 text-primary" />
               <div className="flex-1 min-w-0">
                 <h3 className="font-semibold text-primary-foreground text-lg md:text-xl">Testigo</h3>
-                <p className="text-muted-foreground text-xs md:text-sm mt-1">
+                <p className="text-muted-foreground text-xs md:text-sm mt-fluid-xs">
                   Selecciona quien Ayudara
                 </p>
               </div>
@@ -384,7 +384,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                 animate={{ opacity: 1, scale: 1 }}
                 className="glass-morphism-panel border border-red-500/40 shadow-lg shadow-red-500/20"
               >
-                <div className="flex items-center gap-2 md:gap-3">
+                <div className="flex items-center gap-fluid-sm md:gap-fluid-md">
                   <AlertTriangle className="flex-shrink-0 text-red-500 w-4 md:w-5 h-4 md:h-5" />
                   <span className="font-medium text-red-500 text-sm md:text-base">
                     El cajero y el testigo deben ser personas diferentes
@@ -400,7 +400,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                 animate={{ opacity: 1, y: 0 }}
                 className="glass-morphism-panel border border-green-400/40 shadow-lg shadow-green-400/20"
               >
-                <div className="flex items-center gap-2 md:gap-3">
+                <div className="flex items-center gap-fluid-sm md:gap-fluid-md">
                   <CheckCircle className="flex-shrink-0 text-green-400 w-4 md:w-5 h-4 md:h-5" />
                   <span className="font-medium text-primary-foreground text-sm md:text-base">Testigo seleccionado correctamente</span>
                 </div>
