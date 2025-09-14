@@ -303,26 +303,24 @@ export function GuidedFieldView({
         exit={{ opacity: 0, x: -20 }}
         className="space-y-3 max-w-md mx-auto sm:max-w-2xl lg:max-w-3xl"
       >
-        {/* Card principal del campo activo - Level 0 Opaque */}
-        <div style={{
-          backgroundColor: 'rgba(36, 36, 36, 1.0)', // 🤖 [IA] - v1.2.22: CONSTITUTIONAL FIX - Level 0 opaque background per Doctrine D.2
-          border: `2px solid ${borderColor}`,
-          borderRadius: 'clamp(12px, 3vw, 20px)', // 🤖 [IA] - v1.2.18: Responsive border-radius
-          padding: 'clamp(12px, 3vw, 20px)', // 🤖 [IA] - v1.2.18: Responsive padding
-          // 🤖 [IA] - v1.1.18: Sombra con tono dorado sutil para conteo matutino
-          boxShadow: isMorningCount 
-            ? `0 8px 32px rgba(244, 165, 42, 0.15), inset 0 1px 0 rgba(255, 184, 77, 0.2)`
-            : `0 8px 32px rgba(10, 132, 255, 0.15), inset 0 1px 0 rgba(94, 92, 230, 0.2)`
-        }}>
+        {/* 🤖 [IA] - v1.2.25: Modal container with glass morphism canonical class */}
+        <div className={cn(
+          "glass-morphism-panel p-0",
+          isMorningCount
+            ? "border-2 border-warning/30"
+            : "border-2 border-primary/30"
+        )}>
+          {/* Content Section with padding */}
+          <div className="p-[clamp(12px,3vw,20px)]">
             {/* 🤖 [IA] - v1.2.24: Header optimizado con moneda más grande */}
             <div className="flex items-center justify-center" style={{
               marginBottom: 'clamp(16px, 3vw, 20px)',
               gap: 'clamp(16px, 4vw, 24px)' // 🤖 [IA] - v1.2.25: Gap más amplio para acomodar monedas grandes
             }}>
               {/* Texto eliminado para todas las denominaciones - 🤖 [IA] - v1.3.0 */}
-              
+
               {/* Ícono más grande con gradiente según tipo */}
-              <div 
+              <div
                 className={cn(
                   "flex items-center justify-center",
                   (currentFieldType === 'coin' || currentFieldType === 'bill') ? 'bg-gradient-to-br from-accent-primary via-accent-primary/80 to-accent-secondary' :
@@ -341,7 +339,7 @@ export function GuidedFieldView({
             </div>
 
             {/* Input y confirmación optimizados */}
-            <div className="space-y-3">
+            <div>
               {/* Input y botón integrados */}
               <div className="flex" style={{ gap: 'clamp(8px, 2vw, 16px)' }}>
                 <div className="flex-1 relative">
@@ -426,36 +424,38 @@ export function GuidedFieldView({
                 </motion.div>
               )}
 
-              {/* 🤖 [IA] - v1.2.9: Barra de progreso segmentada por sección actual (monedas/billetes/electrónicos) - MOVIDA DENTRO DEL MODAL */}
-              {(onCancel || onPrevious) && (
-                <div className="flex items-center justify-between gap-3 pt-4 mt-4 border-t border-white/10">
-                  {/* Cancel Button */}
-                  {onCancel && (
-                    <DestructiveActionButton
-                      onClick={onCancel}
-                      aria-label="Cancelar proceso y volver al inicio"
-                      className="flex-1"
-                    >
-                      <X className="w-4 h-4" />
-                      <span className="ml-2">Cancelar</span>
-                    </DestructiveActionButton>
-                  )}
-                  
-                  {/* Previous Button */}
-                  {onPrevious && (
-                    <NeutralActionButton
-                      onClick={onPrevious}
-                      disabled={!canGoPrevious}
-                      aria-label="Retroceder al campo anterior"
-                      className="flex-1"
-                    >
-                      <ArrowLeft className="w-4 h-4" />
-                      <span className="ml-2">Anterior</span>
-                    </NeutralActionButton>
-                  )}
-                </div>
+            </div>
+          </div>
+
+          {/* 🤖 [IA] - v1.2.25: Modal Footer with Navigation Buttons */}
+          {(onCancel || onPrevious) && (
+            <div className="flex items-center justify-between gap-3 border-t border-white/10 p-[clamp(12px,3vw,20px)]">
+              {/* Cancel Button */}
+              {onCancel && (
+                <DestructiveActionButton
+                  onClick={onCancel}
+                  aria-label="Cancelar proceso y volver al inicio"
+                  className="flex-1"
+                >
+                  <X className="w-4 h-4" />
+                  <span className="ml-2">Cancelar</span>
+                </DestructiveActionButton>
+              )}
+
+              {/* Previous Button */}
+              {onPrevious && (
+                <NeutralActionButton
+                  onClick={onPrevious}
+                  disabled={!canGoPrevious}
+                  aria-label="Retroceder al campo anterior"
+                  className="flex-1"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  <span className="ml-2">Anterior</span>
+                </NeutralActionButton>
               )}
             </div>
+          )}
         </div>
 
       </motion.div>
