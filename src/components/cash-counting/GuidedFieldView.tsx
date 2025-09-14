@@ -213,14 +213,41 @@ export function GuidedFieldView({
           billImage = '/monedas-recortadas-dolares/billete-20.webp';
         } else if (currentFieldName === 'fifty' || 
             currentFieldName === '$50' ||
-            currentFieldLabel?.includes('50') ||
-            currentFieldLabel?.includes('$50')) {
+            currentFieldName === 'billete50' ||
+            currentFieldLabel?.toLowerCase().includes('50') ||
+            currentFieldLabel?.toLowerCase().includes('cincuenta') ||
+            (currentFieldLabel && /\$?50/.test(currentFieldLabel)) ||
+            currentFieldLabel === 'Billete de $50') {
+          // Billete de $50 con ruta explícita y verificada
           billImage = '/monedas-recortadas-dolares/billete-cincuenta-dolares-sobre-fondo-blanco(1).webp';
+        } else if (currentFieldName === 'hundred' ||
+            currentFieldName === '$100' ||
+            currentFieldName === 'billete100' ||
+            currentFieldLabel?.toLowerCase().includes('100') ||
+            (currentFieldLabel && /\$?100/.test(currentFieldLabel)) ||
+            currentFieldLabel === 'Billete de $100') {
+          // Billete de $100 con ruta verificada
+          billImage = '/monedas-recortadas-dolares/billete-100.webp';
         }
         
+        // Override específico para asegurar que los billetes especiales se muestren correctamente
+        let finalSrc = billImage;
+        
+        // Override para billete de $50
+        if (currentFieldLabel === 'Billete de $50' || 
+           (typeof currentFieldLabel === 'string' && currentFieldLabel.includes('50'))) {
+          finalSrc = '/monedas-recortadas-dolares/billete-cincuenta-dolares-sobre-fondo-blanco(1).webp';
+        }
+        
+        // Override para billete de $100
+        if (currentFieldLabel === 'Billete de $100' || 
+           (typeof currentFieldLabel === 'string' && currentFieldLabel.includes('100'))) {
+          finalSrc = '/monedas-recortadas-dolares/billete-100.webp';
+        }
+            
         return (
           <img 
-            src={billImage}
+            src={finalSrc}
             alt={`Billete de ${currentFieldLabel}`}
             className="object-contain w-full h-full"
           />
