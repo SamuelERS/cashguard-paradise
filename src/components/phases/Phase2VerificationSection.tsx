@@ -82,18 +82,15 @@ export function Phase2VerificationSection({
 
   if (verificationSteps.length === 0) {
     return (
-      <div className="rounded-[clamp(0.5rem,2vw,0.75rem)] text-center py-[clamp(1.5rem,6vw,2rem)]" style={{
-        backgroundColor: 'rgba(36, 36, 36, 0.4)',
-        backdropFilter: `blur(clamp(12px, 4vw, 20px))`,
-        WebkitBackdropFilter: `blur(clamp(12px, 4vw, 20px))`,
+      <div className="glass-morphism-panel text-center p-8" style={{
         border: '1px solid rgba(0, 186, 124, 0.4)',
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+        boxShadow: '0 4px 12px rgba(0, 186, 124, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
       }}>
-        <Check className="w-[clamp(3rem,12vw,4rem)] h-[clamp(3rem,12vw,4rem)] mx-auto mb-[clamp(0.75rem,3vw,1rem)]" style={{ color: '#00ba7c' }} />
-        <h3 className="text-[clamp(1rem,4.5vw,1.25rem)] font-bold mb-[clamp(0.5rem,2vw,0.75rem)]" style={{ color: '#00ba7c' }}>
+        <Check className="w-16 h-16 mx-auto mb-4 text-success" />
+        <h3 className="text-xl font-bold mb-2 text-success">
           Verificación Innecesaria
         </h3>
-        <p className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#8899a6' }}>
+        <p className="text-muted-foreground">
           No hay efectivo que verificar en caja.
         </p>
       </div>
@@ -106,20 +103,15 @@ export function Phase2VerificationSection({
       animate={{ opacity: 1, x: 0 }}
       className="space-y-[clamp(0.5rem,2vw,0.75rem)] max-w-md mx-auto sm:max-w-2xl lg:max-w-3xl overflow-y-auto max-h-screen"
     >
-      {/* Header - Simplificado sin redundancias v1.0.77 */}
-      <motion.div 
+      {/* Header - 🤖 [IA] - v1.2.24: Glass morphism unificado */}
+      <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ type: "spring", stiffness: 260, damping: 20 }}
-        className="rounded-[clamp(0.5rem,2vw,0.75rem)]" 
+        className="glass-morphism-panel p-4"
         style={{
-          backgroundColor: 'rgba(36, 36, 36, 0.4)',
-          backdropFilter: `blur(clamp(12px, 4vw, 20px))`,
-          WebkitBackdropFilter: `blur(clamp(12px, 4vw, 20px))`,
           border: '1px solid rgba(0, 186, 124, 0.4)',
-          boxShadow: '0 4px 12px rgba(0, 186, 124, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-          padding: `clamp(0.75rem, 3vw, 1rem)`,
-          borderRadius: `clamp(8px, 3vw, 16px)`
+          boxShadow: '0 4px 12px rgba(0, 186, 124, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
         }}
       >
         <div className="flex flex-col sm:flex-row items-center justify-between gap-[clamp(0.5rem,2vw,0.75rem)]">
@@ -150,15 +142,10 @@ export function Phase2VerificationSection({
         </div>
       </motion.div>
 
-      {/* Progress - 🤖 [IA] - v1.2.11: Indicador de unidades sin montos */}
-      <div className="rounded-[clamp(0.5rem,2vw,0.75rem)]" style={{
-        backgroundColor: 'rgba(36, 36, 36, 0.4)',
-        backdropFilter: `blur(clamp(12px, 4vw, 20px))`,
-        WebkitBackdropFilter: `blur(clamp(12px, 4vw, 20px))`,
+      {/* Progress - 🤖 [IA] - v1.2.24: Glass morphism unificado */}
+      <div className="glass-morphism-panel p-4" style={{
         border: '1px solid rgba(0, 186, 124, 0.25)',
         boxShadow: '0 4px 12px rgba(0, 186, 124, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-        padding: `clamp(0.75rem, 3vw, 1rem)`,
-        borderRadius: `clamp(8px, 3vw, 16px)`,
         background: 'linear-gradient(135deg, rgba(0, 186, 124, 0.05) 0%, rgba(36, 36, 36, 0.4) 100%)'
       }}>
         <div className="flex items-center justify-between">
@@ -206,19 +193,14 @@ export function Phase2VerificationSection({
         const isCoins = ['penny', 'nickel', 'dime', 'quarter', 'dollarCoin'].includes(currentStep.key);
         
         return (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ type: "spring", stiffness: 260, damping: 20 }}
-            className="rounded-[clamp(0.5rem,2vw,0.75rem)]" 
+            className="glass-morphism-panel p-5"
             style={{
-              backgroundColor: 'rgba(36, 36, 36, 0.4)',
-              backdropFilter: `blur(clamp(12px, 4vw, 20px))`,
-              WebkitBackdropFilter: `blur(clamp(12px, 4vw, 20px))`,
               border: '2px solid rgba(0, 186, 124, 0.5)',
-              boxShadow: '0 4px 12px rgba(0, 186, 124, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-              padding: `clamp(1rem, 4vw, 1.25rem)`,
-              borderRadius: `clamp(8px, 3vw, 16px)`
+              boxShadow: '0 4px 12px rgba(0, 186, 124, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
             }}
           >
             {/* Header simplificado con denominación mejorada */}
@@ -368,17 +350,9 @@ export function Phase2VerificationSection({
         );
       })()}
 
-      {/* Completed Steps Summary - Padding coherente v1.0.77 */}
+      {/* Completed Steps Summary - 🤖 [IA] - v1.2.24: Glass morphism unificado */}
       {Object.keys(completedSteps).length > 0 && (
-        <div className="rounded-[clamp(0.5rem,2vw,0.75rem)]" style={{
-          backgroundColor: 'rgba(36, 36, 36, 0.4)',
-          backdropFilter: `blur(clamp(12px, 4vw, 20px))`,
-          WebkitBackdropFilter: `blur(clamp(12px, 4vw, 20px))`,
-          border: '1px solid rgba(255, 255, 255, 0.15)',
-          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-          padding: `clamp(1rem, 4vw, 1.5rem)`,
-          borderRadius: `clamp(8px, 3vw, 16px)`
-        }}>
+        <div className="glass-morphism-panel p-6">
           <h4 className="text-[clamp(0.75rem,3vw,0.875rem)] font-medium mb-[clamp(0.75rem,3vw,1rem)]" style={{ color: '#00ba7c' }}>
             ✓ Denominaciones Verificadas
           </h4>
@@ -411,14 +385,11 @@ export function Phase2VerificationSection({
         </div>
       )}
 
-      {/* Final Validation */}
+      {/* Final Validation - 🤖 [IA] - v1.2.24: Glass morphism unificado */}
       {allStepsCompleted && (
-        <div className="rounded-[clamp(0.5rem,2vw,0.75rem)] text-center py-[clamp(1.5rem,6vw,2rem)]" style={{
-          backgroundColor: 'rgba(36, 36, 36, 0.4)',
-          backdropFilter: `blur(clamp(12px, 4vw, 20px))`,
-          WebkitBackdropFilter: `blur(clamp(12px, 4vw, 20px))`,
+        <div className="glass-morphism-panel text-center p-8" style={{
           border: '1px solid rgba(0, 186, 124, 0.4)',
-          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+          boxShadow: '0 4px 12px rgba(0, 186, 124, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
         }}>
           <Check className="w-[clamp(3rem,12vw,4rem)] h-[clamp(3rem,12vw,4rem)] mx-auto mb-[clamp(0.75rem,3vw,1rem)]" style={{ color: '#00ba7c' }} />
           <h3 className="text-[clamp(1rem,4.5vw,1.25rem)] font-bold mb-[clamp(0.5rem,2vw,0.75rem)]" style={{ color: '#00ba7c' }}>

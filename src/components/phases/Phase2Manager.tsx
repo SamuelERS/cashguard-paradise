@@ -176,44 +176,38 @@ export function Phase2Manager({
     setVerificationCompleted(true);
   };
 
-  if (deliveryCalculation.amountToDeliver <= 0) {
-    // Skip phase 2 entirely
-    useEffect(() => {
+  // Skip phase 2 entirely if no amount to deliver
+  useEffect(() => {
+    if (deliveryCalculation.amountToDeliver <= 0) {
       onPhase2Complete();
-    }, [onPhase2Complete]);
-    
+    }
+  }, [deliveryCalculation.amountToDeliver, onPhase2Complete]);
+
+  if (deliveryCalculation.amountToDeliver <= 0) {
     return null;
   }
 
   return (
     // 🤖 [IA] - v1.0.97: Optimización responsive Fase 2 sin afectar móviles
     <div className="space-y-[clamp(0.75rem,3vw,1rem)] max-w-md mx-auto sm:max-w-2xl lg:max-w-4xl">
-      {/* Section Navigation con header integrado - 🤖 [IA] - v1.1.27: Header movido dentro del card */}
-      <motion.div 
+      {/* Section Navigation con header integrado - 🤖 [IA] - v1.2.24: Glass morphism unificado */}
+      <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="p-[clamp(0.75rem,3vw,1rem)] rounded-[clamp(0.5rem,2vw,0.75rem)]" 
-        style={{
-          backgroundColor: 'rgba(36, 36, 36, 0.4)',
-          backdropFilter: `blur(clamp(12px, 4vw, 20px))`,
-          WebkitBackdropFilter: `blur(clamp(12px, 4vw, 20px))`,
-          border: '1px solid rgba(255, 255, 255, 0.15)',
-          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-          borderRadius: `clamp(8px, 3vw, 16px)`
-        }}
+        className="glass-morphism-panel p-4"
       >
-        {/* Header integrado */}
-        <div className="text-center mb-[clamp(0.375rem,1.5vw,0.5rem)]">
-          <h2 className="text-[clamp(1rem,4.5vw,1.5rem)] font-bold" style={{ color: '#1d9bf0' }}>
+        {/* Header integrado con tipografía unificada */}
+        <div className="text-center mb-2">
+          <h2 className="text-xl font-bold text-primary">
             Fase 2: División de Efectivo
           </h2>
-          <p className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#8899a6' }}>
+          <p className="text-muted-foreground">
             Separa lo que va a gerencia
           </p>
         </div>
-        
+
         {/* Botones de navegación */}
-        <div className="flex items-center gap-[clamp(0.375rem,1.5vw,0.5rem)]">
+        <div className="flex items-center gap-2">
           <Button
             variant="phase2-tab"
             data-active={currentSection === 'delivery' ? "true" : "false"}
@@ -282,27 +276,28 @@ export function Phase2Manager({
         )}
       </AnimatePresence>
 
-      {/* Navigation Buttons - 🤖 [IA] - v2.0.0: Estandarización con NeutralActionButton */}
-      <div className="flex gap-[clamp(0.5rem,2vw,0.75rem)] lg:max-w-lg lg:mx-auto">
+      {/* Navigation Buttons - 🤖 [IA] - v1.2.24: Navegación estandarizada con Phase 1 */}
+      <div className="flex gap-3 lg:max-w-lg lg:mx-auto">
         <NeutralActionButton
           onClick={() => setShowExitConfirmation(true)}
           aria-label="Volver al inicio"
-          className="btn-phase2-back"
+          className="btn-phase2-back flex-1"
         >
-          <ArrowLeft className="w-[clamp(0.875rem,3.5vw,1rem)] h-[clamp(0.875rem,3.5vw,1rem)] mr-[clamp(0.25rem,1vw,0.375rem)] flex-shrink-0" />
+          <ArrowLeft className="w-4 h-4 mr-2" />
           <span>Volver al inicio</span>
         </NeutralActionButton>
-        
+
         {/* Manual section switch (only when delivery is complete) */}
         {deliveryCompleted && currentSection === 'delivery' && !verificationCompleted && (
           <Button
             variant="phase2-verify"
             onClick={() => setCurrentSection('verification')}
             aria-label="Verificar efectivo y continuar"
+            className="flex-1"
           >
             <span>Verificar</span>
             <span className="hidden sm:inline ml-1">Efectivo</span>
-            <ArrowRight className="w-[clamp(0.875rem,3.5vw,1rem)] h-[clamp(0.875rem,3.5vw,1rem)] ml-[clamp(0.25rem,1vw,0.375rem)] flex-shrink-0" />
+            <ArrowRight className="w-4 h-4 ml-2" />
           </Button>
         )}
       </div>
