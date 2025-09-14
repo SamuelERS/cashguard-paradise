@@ -1,7 +1,7 @@
 // 🤖 [IA] - v1.1.14 - Simplificación de tabs y eliminación de redundancias en Fase 2
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Package, ScrollText, Grid3x3, AlertCircle } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Package, ScrollText, Grid3x3, AlertCircle, DollarSign } from 'lucide-react';
 // 🤖 [IA] - v1.2.10: Agregado AlertDialog para confirmación de salida
 import {
   AlertDialog,
@@ -188,116 +188,129 @@ export function Phase2Manager({
   }
 
   return (
-    // 🤖 [IA] - v1.0.97: Optimización responsive Fase 2 sin afectar móviles
-    <div className="space-y-[clamp(0.75rem,3vw,1rem)] max-w-md mx-auto sm:max-w-2xl lg:max-w-4xl">
-      {/* Section Navigation con header integrado - 🤖 [IA] - v1.2.24: Glass morphism unificado */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="glass-morphism-panel p-4"
-      >
-        {/* Header integrado con tipografía unificada */}
-        <div className="text-center mb-2">
-          <h2 className="text-xl font-bold text-primary">
-            Fase 2: División de Efectivo
-          </h2>
-          <p className="text-muted-foreground">
-            Separa lo que va a gerencia
-          </p>
-        </div>
+    <>
+      {/* 🤖 [IA] - v1.2.29: Container principal opaco para fidelidad visual 100% con Phase 1 */}
+      <div className="space-y-fluid-xs max-w-md mx-auto sm:max-w-2xl lg:max-w-4xl">
+        <div className="cash-counter-container space-y-fluid-md">
+          {/* Header integrado con sistema de diseño coherente */}
+          <div className="cash-counter-header">
+            <div className="cash-counter-title">
+              <DollarSign className="cash-counter-icon" style={{
+                background: 'linear-gradient(135deg, #0a84ff 0%, #5e5ce6 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text'
+              }} />
+              <h2>Fase 2: División de Efectivo</h2>
+            </div>
+            <p className="text-muted-foreground text-center">
+              Separa lo que va a gerencia
+            </p>
+          </div>
 
-        {/* Botones de navegación */}
-        <div className="flex items-center gap-2">
-          <Button
-            variant="phase2-tab"
-            data-active={currentSection === 'delivery' ? "true" : "false"}
-            data-state="delivery"
-            data-completed={deliveryCompleted ? "true" : "false"}
-            onClick={() => currentSection !== 'delivery' && !verificationCompleted && setCurrentSection('delivery')}
-            aria-pressed={currentSection === 'delivery'}
-            aria-label="Sección de entrega"
-          >
-            {deliveryCompleted && (
-              <span>✓</span>
+          {/* Área de contenido con sistema coherente */}
+          <div className="cash-counter-content">
+            {/* Section Navigation - 🤖 [IA] - v1.2.29: Movido dentro del content area */}
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="glass-morphism-panel p-4 mb-fluid-md"
+            >
+              {/* Botones de navegación */}
+              <div className="flex items-center gap-2 justify-center">
+                <Button
+                  variant="phase2-tab"
+                  data-active={currentSection === 'delivery' ? "true" : "false"}
+                  data-state="delivery"
+                  data-completed={deliveryCompleted ? "true" : "false"}
+                  onClick={() => currentSection !== 'delivery' && !verificationCompleted && setCurrentSection('delivery')}
+                  aria-pressed={currentSection === 'delivery'}
+                  aria-label="Sección de entrega"
+                >
+                  {deliveryCompleted && (
+                    <span>✓</span>
+                  )}
+                  Entrega
+                </Button>
+                <Button
+                  variant="phase2-tab"
+                  data-active={currentSection === 'verification' ? "true" : "false"}
+                  data-state="verification"
+                  data-completed={verificationCompleted ? "true" : "false"}
+                  data-disabled={!deliveryCompleted ? "true" : "false"}
+                  onClick={() => deliveryCompleted && currentSection !== 'verification' && setCurrentSection('verification')}
+                  disabled={!deliveryCompleted}
+                  aria-pressed={currentSection === 'verification'}
+                  aria-label="Sección de verificación"
+                >
+                  {verificationCompleted && (
+                    <span>✓</span>
+                  )}
+                  Verificar
+                </Button>
+              </div>
+            </motion.div>
+
+            {/* Section Content */}
+            <AnimatePresence mode="wait">
+              {currentSection === 'delivery' && (
+                <motion.div
+                  key="delivery"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                >
+                  <Phase2DeliverySection
+                    deliveryCalculation={deliveryCalculation}
+                    onStepComplete={handleDeliveryStepComplete}
+                    onSectionComplete={handleDeliverySectionComplete}
+                    completedSteps={deliveryProgress}
+                    onCancel={() => setShowExitConfirmation(true)}
+                    onPrevious={() => {}}
+                    canGoPrevious={false}
+                  />
+                </motion.div>
+              )}
+
+              {currentSection === 'verification' && (
+                <motion.div
+                  key="verification"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                >
+                  <Phase2VerificationSection
+                    deliveryCalculation={deliveryCalculation}
+                    onStepComplete={handleVerificationStepComplete}
+                    onSectionComplete={handleVerificationSectionComplete}
+                    completedSteps={verificationProgress}
+                    onCancel={() => setShowExitConfirmation(true)}
+                    onPrevious={() => {}}
+                    canGoPrevious={false}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Manual section switch - only show when delivery is complete */}
+            {deliveryCompleted && currentSection === 'delivery' && !verificationCompleted && (
+              <div className="flex justify-center">
+                <Button
+                  variant="phase2-verify"
+                  onClick={() => setCurrentSection('verification')}
+                  aria-label="Verificar efectivo y continuar"
+                  className="px-6"
+                >
+                  <span>Verificar</span>
+                  <span className="hidden sm:inline ml-1">Efectivo</span>
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </div>
             )}
-            Entrega
-          </Button>
-          <Button
-            variant="phase2-tab"
-            data-active={currentSection === 'verification' ? "true" : "false"}
-            data-state="verification"
-            data-completed={verificationCompleted ? "true" : "false"}
-            data-disabled={!deliveryCompleted ? "true" : "false"}
-            onClick={() => deliveryCompleted && currentSection !== 'verification' && setCurrentSection('verification')}
-            disabled={!deliveryCompleted}
-            aria-pressed={currentSection === 'verification'}
-            aria-label="Sección de verificación"
-          >
-            {verificationCompleted && (
-              <span>✓</span>
-            )}
-            Verificar
-          </Button>
+          </div>
         </div>
-      </motion.div>
+      </div>
 
-      {/* Section Content */}
-      <AnimatePresence mode="wait">
-        {currentSection === 'delivery' && (
-          <motion.div
-            key="delivery"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-          >
-            <Phase2DeliverySection
-              deliveryCalculation={deliveryCalculation}
-              onStepComplete={handleDeliveryStepComplete}
-              onSectionComplete={handleDeliverySectionComplete}
-              completedSteps={deliveryProgress}
-              onCancel={() => setShowExitConfirmation(true)}
-              onPrevious={() => {}}
-              canGoPrevious={false}
-            />
-          </motion.div>
-        )}
-
-        {currentSection === 'verification' && (
-          <motion.div
-            key="verification"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 20 }}
-          >
-            <Phase2VerificationSection
-              deliveryCalculation={deliveryCalculation}
-              onStepComplete={handleVerificationStepComplete}
-              onSectionComplete={handleVerificationSectionComplete}
-              completedSteps={verificationProgress}
-              onCancel={() => setShowExitConfirmation(true)}
-              onPrevious={() => {}}
-              canGoPrevious={false}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Manual section switch - only show when delivery is complete */}
-      {deliveryCompleted && currentSection === 'delivery' && !verificationCompleted && (
-        <div className="flex justify-center">
-          <Button
-            variant="phase2-verify"
-            onClick={() => setCurrentSection('verification')}
-            aria-label="Verificar efectivo y continuar"
-            className="px-6"
-          >
-            <span>Verificar</span>
-            <span className="hidden sm:inline ml-1">Efectivo</span>
-            <ArrowRight className="w-4 h-4 ml-2" />
-          </Button>
-        </div>
-      )}
-      
       {/* 🤖 [IA] - v1.2.19: Modal de confirmación migrado a ConfirmationModal estandarizado */}
       <ConfirmationModal
         open={showExitConfirmation}
@@ -596,6 +609,6 @@ export function Phase2Manager({
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-    </div>
+    </>
   );
 }

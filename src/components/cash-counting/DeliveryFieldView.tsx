@@ -282,7 +282,7 @@ export function DeliveryFieldView({
                   width: 'clamp(234.375px, 58.59vw, 390.625px)',
                   aspectRatio: '2.4 / 1',
                   borderRadius: 'clamp(23.44px, 5.86vw, 35.16px)',
-                  background: 'linear-gradient(135deg, #0066cc 0%, #0a84ff 45%, #5e5ce6 100%)'
+                  backgroundColor: 'transparent'
                 }}
               >
                 {getIcon()}
