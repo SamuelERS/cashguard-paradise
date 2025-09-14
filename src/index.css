@@ -53,6 +53,11 @@
     --glass-border: rgba(255, 255, 255, 0.03);
     --glass-hover: rgba(255, 255, 255, 0.04);
     --glass-surface: rgba(8, 8, 12, 0.2);
+
+    /* 🤖 [IA] - v1.2.22: Variables Glass Morphism blur levels según Doctrina v1.1 */
+    --glass-blur-light: blur(10px);
+    --glass-blur-medium: blur(15px);
+    --glass-blur-full: blur(20px);
     
     /* Typography */
     --text-primary: rgba(255, 255, 255, 0.92);
@@ -282,8 +287,8 @@
   /* 🤖 [IA] - InitialWizardModal optimizado v1.2.12 */
   .wizard-modal-content {
     background-color: rgba(25, 25, 25, 0.65);
-    backdrop-filter: blur(40px) saturate(180%);
-    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    backdrop-filter: var(--glass-blur-full) saturate(180%);
+    -webkit-backdrop-filter: var(--glass-blur-full) saturate(180%);
     border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
     z-index: 50;
@@ -296,8 +301,8 @@
   .wizard-step-container {
     /* 🤖 [IA] - v1.2.12: Glass morphism premium ultra-refinado */
     background-color: rgba(36, 36, 36, 0.35);
-    backdrop-filter: blur(clamp(16px, 6vw, 24px)) saturate(130%);
-    -webkit-backdrop-filter: blur(clamp(16px, 6vw, 24px)) saturate(130%);
+    backdrop-filter: var(--glass-blur-full) saturate(130%);
+    -webkit-backdrop-filter: var(--glass-blur-full) saturate(130%);
     border: 1px solid rgba(255, 255, 255, 0.18);
     border-radius: clamp(0.75rem, 3vw, 1rem);
     /* Sombras multicapa para profundidad premium */
@@ -331,8 +336,8 @@
 
   .wizard-header-section {
     background-color: rgba(36, 36, 36, 0.4);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: var(--glass-blur-full);
+    -webkit-backdrop-filter: var(--glass-blur-full);
     border: 1px solid rgba(255, 255, 255, 0.15);
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
     gap: clamp(0.5rem, 2vw, 0.75rem);
@@ -347,7 +352,7 @@
 
   .wizard-success-feedback {
     background-color: rgba(36, 36, 36, 0.4);
-    backdrop-filter: blur(20px);
+    backdrop-filter: var(--glass-blur-full);
     border: 1px solid rgba(0, 186, 124, 0.4);
     box-shadow: 0 0 15px rgba(0, 186, 124, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
     padding: clamp(0.75rem, 3vw, 1rem);
@@ -356,21 +361,50 @@
 
   .wizard-error-feedback {
     background-color: rgba(36, 36, 36, 0.4);
-    backdrop-filter: blur(clamp(12px, 4vw, 20px));
-    -webkit-backdrop-filter: blur(clamp(12px, 4vw, 20px));
+    backdrop-filter: var(--glass-blur-full);
+    -webkit-backdrop-filter: var(--glass-blur-full);
     border: 1px solid rgba(244, 33, 46, 0.4);
     box-shadow: 0 0 15px rgba(244, 33, 46, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
     padding: clamp(0.75rem, 3vw, 1rem);
     border-radius: clamp(0.5rem, 2vw, 0.75rem);
   }
 
-  /* 🤖 [IA] - v1.2.14: Clase glass morphism estandarizada para elementos del wizard */
+  /* 🤖 [IA] - v1.2.22: Doctrina Oficial Glass Morphism - Paradise UI v1.1 */
+  .glass-morphism-panel {
+    /* Fondo semi-transparente */
+    background-color: rgba(36, 36, 36, 0.4);
+
+    /* Difuminado del fondo (Backdrop Filter) */
+    backdrop-filter: var(--glass-blur-full);
+    -webkit-backdrop-filter: var(--glass-blur-full);
+
+    /* Borde sutil */
+    border: 1px solid rgba(255, 255, 255, 0.15);
+
+    /* Sombras duales para profundidad */
+    box-shadow:
+      rgba(0, 0, 0, 0.2) 0px 4px 24px,       /* Sombra exterior */
+      rgba(255, 255, 255, 0.1) 0px 1px 0px inset; /* Brillo interior sutil */
+
+    /* --- RESPONSIVIDAD FLUIDA V1.1 --- */
+    border-radius: clamp(0.75rem, 3vw, 1rem); /* 12px a 16px */
+    padding: clamp(1rem, 4vw, 1.5rem);       /* 16px a 24px */
+  }
+
+  /* 🤖 [IA] - v1.2.22: Glass morphism para headers con dimensiones específicas */
+  .glass-morphism-panel.header-section {
+    gap: clamp(0.5rem, 2vw, 0.75rem);
+    display: flex;
+    align-items: center;
+  }
+
+  /* 🤖 [IA] - v1.2.14: Clase glass morphism legacy (migrada a glass-morphism-panel) */
   .wizard-glass-element {
     background-color: rgba(36, 36, 36, 0.4);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: var(--glass-blur-full);
+    -webkit-backdrop-filter: var(--glass-blur-full);
     border: 1px solid rgba(255, 255, 255, 0.15);
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2), 
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2),
                 inset 0 1px 0 rgba(255, 255, 255, 0.1);
     border-radius: clamp(0.5rem, 2vw, 0.75rem);
     padding: clamp(0.75rem, 3vw, 1rem);
@@ -506,9 +540,10 @@
     .wizard-glass-element,
     .wizard-header-section,
     .wizard-success-feedback,
-    .wizard-error-feedback {
-      backdrop-filter: blur(15px) !important;
-      -webkit-backdrop-filter: blur(15px) !important;
+    .wizard-error-feedback,
+    .glass-morphism-panel {
+      backdrop-filter: var(--glass-blur-medium) !important;
+      -webkit-backdrop-filter: var(--glass-blur-medium) !important;
     }
     
     /* Dropdown and form elements */

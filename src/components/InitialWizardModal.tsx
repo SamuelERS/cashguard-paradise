@@ -201,9 +201,9 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
     switch (currentStep) {
       case 1: // Protocolo Anti-Fraude - Flujo Guiado
         return (
-          <div className="wizard-step-container">
+          <div className="glass-morphism-panel">
             {/* 🤖 [IA] - v1.3.0: Card IMPORTANTE con información del flujo guiado */}
-            <div className="wizard-glass-element rounded-[clamp(0.5rem,2vw,0.75rem)] border border-orange-400/40 border-l-4 border-l-orange-400 p-[clamp(0.75rem,3vw,1rem)] text-center shadow-lg shadow-orange-400/10">
+            <div className="glass-morphism-panel border border-orange-400/40 border-l-4 border-l-orange-400 text-center shadow-lg shadow-orange-400/10">
               <div className="flex items-center justify-center gap-[clamp(0.5rem,2vw,0.75rem)] mb-[clamp(0.5rem,2vw,0.75rem)]">
                 <AlertTriangle className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)] text-orange-400" />
                 <h3 className="font-semibold text-orange-400 text-[clamp(0.875rem,3.5vw,1rem)]">PROTOCOLO OBLIGATORIO</h3>
@@ -231,7 +231,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="wizard-glass-element border-2 border-green-400/60 shadow-lg shadow-green-400/20 rounded-[clamp(0.5rem,2vw,0.75rem)] p-[clamp(0.75rem,3vw,1rem)] text-center"
+                className="glass-morphism-panel border-2 border-green-400/60 shadow-lg shadow-green-400/20 text-center"
               >
                 <div className="flex items-center justify-center gap-[clamp(0.5rem,2vw,0.75rem)]">
                   <CheckCircle className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)] text-green-400" />
@@ -246,9 +246,9 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
 
       case 2: // Selección de Sucursal
         return (
-          <div className="wizard-step-container">
+          <div className="glass-morphism-panel">
             {/* 🤖 [IA] - v1.2.12: Header section optimizado */}
-            <div className="wizard-header-section">
+            <div className="glass-morphism-panel header-section">
               <MapPin className="flex-shrink-0 w-6 md:w-8 h-6 md:h-8 bg-gradient-to-br from-blue-500 to-purple-500 bg-clip-text text-transparent" />
               <div className="flex-1 min-w-0">
                 <h3 className="font-semibold text-primary-foreground text-lg md:text-xl">Ubicación</h3>
@@ -284,7 +284,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="wizard-success-feedback"
+                className="glass-morphism-panel border border-green-400/40 shadow-lg shadow-green-400/20"
               >
                 <div className="flex items-center gap-2 md:gap-3">
                   <CheckCircle className="flex-shrink-0 text-green-400 w-4 md:w-5 h-4 md:h-5" />
@@ -297,11 +297,11 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
 
       case 3: // Selección de Cajero
         return (
-          <div className="wizard-step-container">
+          <div className="glass-morphism-panel">
             {/* 🤖 [IA] - v1.2.12: Header section Cajero optimizado */}
-            <div className="wizard-header-section">
-              <Users 
-                className="flex-shrink-0 w-6 md:w-8 h-6 md:h-8 bg-gradient-to-br from-blue-500 to-purple-500 bg-clip-text text-transparent" 
+            <div className="glass-morphism-panel header-section">
+              <Users
+                className="flex-shrink-0 w-6 md:w-8 h-6 md:h-8 bg-gradient-to-br from-blue-500 to-purple-500 bg-clip-text text-transparent"
                 aria-label="Icono de cajero responsable"
                 role="img"
               />
@@ -331,7 +331,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="wizard-success-feedback"
+                className="glass-morphism-panel border border-green-400/40 shadow-lg shadow-green-400/20"
               >
                 <div className="flex items-center gap-2 md:gap-3">
                   <CheckCircle 
@@ -347,9 +347,9 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
 
       case 4: // Selección de Testigo
         return (
-          <div className="wizard-step-container">
+          <div className="glass-morphism-panel">
             {/* 🤖 [IA] - v1.2.12: Header section Testigo optimizado */}
-            <div className="wizard-header-section">
+            <div className="glass-morphism-panel header-section">
               <Shield className="flex-shrink-0 w-6 md:w-8 h-6 md:h-8 text-primary" />
               <div className="flex-1 min-w-0">
                 <h3 className="font-semibold text-primary-foreground text-lg md:text-xl">Testigo</h3>
@@ -382,7 +382,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="wizard-error-feedback"
+                className="glass-morphism-panel border border-red-500/40 shadow-lg shadow-red-500/20"
               >
                 <div className="flex items-center gap-2 md:gap-3">
                   <AlertTriangle className="flex-shrink-0 text-red-500 w-4 md:w-5 h-4 md:h-5" />
@@ -398,7 +398,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="wizard-success-feedback"
+                className="glass-morphism-panel border border-green-400/40 shadow-lg shadow-green-400/20"
               >
                 <div className="flex items-center gap-2 md:gap-3">
                   <CheckCircle className="flex-shrink-0 text-green-400 w-4 md:w-5 h-4 md:h-5" />
@@ -411,9 +411,9 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
 
       case 5: // Venta Esperada
         return (
-          <div className="wizard-step-container">
+          <div className="glass-morphism-panel">
             {/* 🤖 [IA] - v1.2.12: Header section Venta Esperada optimizado */}
-            <div className="wizard-header-section">
+            <div className="glass-morphism-panel header-section">
               <DollarSign className="flex-shrink-0 w-5 md:w-6 h-5 md:h-6 bg-gradient-to-br from-green-400 to-emerald-400 bg-clip-text text-transparent" />
               <div className="flex-1 min-w-0">
                 <h3 className="font-semibold text-primary-foreground text-lg md:text-xl">Ingresa Total Vendido</h3>
@@ -423,7 +423,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
             <div className="flex flex-col gap-2 md:gap-3">
               {/* 🤖 [IA] - v1.2.9: Contenedor con grid y variables CSS compartidas para alturas iguales */}
               <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-2 md:gap-3 items-stretch">
-                <div className="wizard-glass-element relative flex-1 rounded-md md:rounded-lg p-2 md:p-3">
+                <div className="glass-morphism-panel relative flex-1">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-green-400 text-base md:text-lg">
                     $
                   </span>
@@ -471,7 +471,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="wizard-success-feedback"
+                className="glass-morphism-panel border border-green-400/40 shadow-lg shadow-green-400/20"
               >
                 <div className="flex items-center gap-2 md:gap-3">
                   <CheckCircle className="flex-shrink-0 text-green-400 w-5 md:w-6 h-5 md:h-6" />
@@ -482,7 +482,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               </motion.div>
             )}
 
-            <div className="wizard-glass-element border-l-4 border-l-blue-500 shadow-lg shadow-blue-500/20">
+            <div className="glass-morphism-panel border-l-4 border-l-blue-500 shadow-lg shadow-blue-500/20">
               <h4 className="font-semibold text-blue-500 text-sm md:text-base mb-2 md:mb-3">Resumen de Información:</h4>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-1 md:gap-2 text-xs md:text-sm">
                 <div className="flex justify-between sm:flex-col gap-1 md:gap-2">
@@ -522,8 +522,8 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
         return;
       }
     }}>
-      <DialogContent 
-        className="wizard-modal-content w-[clamp(90vw,95vw,95vw)] max-w-[clamp(300px,90vw,540px)] max-h-[clamp(85vh,90vh,90vh)] overflow-y-auto overflow-x-hidden p-0 [&>button]:hidden"
+      <DialogContent
+        className="glass-morphism-panel w-[clamp(90vw,95vw,95vw)] max-w-[clamp(300px,90vw,540px)] max-h-[clamp(85vh,90vh,90vh)] overflow-y-auto overflow-x-hidden p-0 [&>button]:hidden"
       >
         <div className="p-[clamp(1rem,4vw,1.5rem)]">
           <DialogHeader className="text-center">
