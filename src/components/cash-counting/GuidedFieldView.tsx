@@ -263,7 +263,7 @@ export function GuidedFieldView({
               };
             case 'promerica':
               return {
-                src: "/monedas-recortadas-dolares/banco promerica logo.webp",
+                src: "/monedas-recortadas-dolares/banco promerica logo.png",
                 alt: "Banco Promerica"
               };
             case 'bankTransfer':
