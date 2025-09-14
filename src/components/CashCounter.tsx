@@ -420,16 +420,16 @@ const CashCounter = ({
         ease: [0.23, 1, 0.32, 1],
         staggerChildren: 0.1
       }}
-      className="space-y-4"
+      className="space-y-fluid-md"
     >
       {/* 🤖 [IA] - v1.0.64 - Header con glass effect premium */}
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.5 }}
-        className="text-center mb-8"
+        className="text-center mb-fluid-xl"
       >
-        <div className="flex items-center justify-center gap-3 mb-4">
+        <div className="flex items-center justify-center gap-fluid-sm mb-fluid-md">
           <IconComponent className="w-10 h-10" style={{
             background: primaryGradient,
             WebkitBackgroundClip: 'text',
@@ -446,12 +446,12 @@ const CashCounter = ({
       </motion.div>
 
       {/* 🤖 [IA] - v1.0.64 - Container principal con glass effect */}
-      <div className="space-y-4" style={{ 
+      <div className="space-y-fluid-md" style={{
         backgroundColor: 'rgba(36, 36, 36, 0.4)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
         border: '1px solid rgba(255, 255, 255, 0.15)',
-        padding: '28px',
+        padding: 'clamp(1.5rem, 6vw, 2.25rem)',
         borderRadius: '16px',
         boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
       }}>
@@ -467,9 +467,9 @@ const CashCounter = ({
             WebkitBackdropFilter: 'blur(10px)',
             border: '1px solid rgba(255, 255, 255, 0.1)',
             borderRadius: '12px',
-            padding: '24px'
+            padding: 'clamp(1rem, 4vw, 1.5rem)'
           }}>
-            <div className="flex items-center gap-3 mb-6">
+            <div className="flex items-center gap-fluid-sm mb-fluid-lg">
               <MapPin className="w-8 h-8" style={{
                 background: primaryGradient,
                 WebkitBackgroundClip: 'text',
@@ -519,9 +519,9 @@ const CashCounter = ({
             WebkitBackdropFilter: 'blur(10px)',
             border: '1px solid rgba(255, 255, 255, 0.1)',
             borderRadius: '12px',
-            padding: '24px'
+            padding: 'clamp(1rem, 4vw, 1.5rem)'
           }}>
-            <div className="flex items-center gap-3 mb-6">
+            <div className="flex items-center gap-fluid-sm mb-fluid-lg">
               <Users className="w-8 h-8" style={{
                 background: 'linear-gradient(135deg, #00ba7c 0%, #06d6a0 100%)',
                 WebkitBackgroundClip: 'text',
@@ -530,9 +530,9 @@ const CashCounter = ({
               }} />
               <h3 className="text-xl font-bold" style={{ color: '#e1e8ed' }}>Personal</h3>
             </div>
-            <div className="space-y-4">
+            <div className="space-y-fluid-md">
               <div>
-                <Label htmlFor="cashier" className="text-sm font-medium mb-3 block" style={{ color: '#8899a6' }}>
+                <Label htmlFor="cashier" className="text-sm font-medium mb-fluid-sm block" style={{ color: '#8899a6' }}>
                   Cajero/a
                 </Label>
                 <Select value={selectedCashier} onValueChange={setSelectedCashier} disabled={!selectedStore}>
@@ -565,7 +565,7 @@ const CashCounter = ({
               </div>
 
               <div>
-                <Label htmlFor="witness" className="text-sm font-medium mb-3 block" style={{ color: '#8899a6' }}>
+                <Label htmlFor="witness" className="text-sm font-medium mb-fluid-sm block" style={{ color: '#8899a6' }}>
                   Testigo
                 </Label>
                 <Select value={selectedWitness} onValueChange={setSelectedWitness} disabled={!selectedStore}>
@@ -608,7 +608,7 @@ const CashCounter = ({
                     backgroundColor: 'rgba(244, 33, 46, 0.1)',
                     border: '1px solid rgba(244, 33, 46, 0.3)',
                     borderRadius: '12px',
-                    padding: '16px'
+                    padding: 'clamp(0.75rem, 3vw, 1.125rem)'
                   }}
                 >
                   <p className="text-sm font-medium" style={{ color: '#f4212e' }}>
@@ -632,9 +632,9 @@ const CashCounter = ({
             WebkitBackdropFilter: 'blur(10px)',
             border: '1px solid rgba(255, 255, 255, 0.1)',
             borderRadius: '12px',
-            padding: '24px'
+            padding: 'clamp(1rem, 4vw, 1.5rem)'
           }}>
-            <div className="flex items-center gap-3 mb-6">
+            <div className="flex items-center gap-fluid-sm mb-fluid-lg">
               <DollarSign className="w-8 h-8" style={{
                 background: 'linear-gradient(135deg, #00ba7c 0%, #06d6a0 100%)',
                 WebkitBackgroundClip: 'text',
@@ -674,7 +674,7 @@ const CashCounter = ({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4, duration: 0.5 }}
-        className="flex gap-4 pt-4"
+        className="flex gap-fluid-md pt-fluid-md"
       >
         <Button
           onClick={onBack}
@@ -737,10 +737,10 @@ const CashCounter = ({
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="space-y-2 max-w-md mx-auto sm:max-w-2xl lg:max-w-4xl"
+        className="space-y-fluid-xs max-w-md mx-auto sm:max-w-2xl lg:max-w-4xl"
       >
         {/* 🤖 [IA] - v1.2.14 - Container principal con sistema de diseño coherente */}
-        <div className="cash-counter-container space-y-4">
+        <div className="cash-counter-container space-y-fluid-md">
           {/* 🤖 [IA] - v1.2.14 - Header con sistema de diseño coherente */}
           <div className="cash-counter-header">
             <div className="cash-counter-title">
@@ -773,7 +773,7 @@ const CashCounter = ({
             </div>
 
             {/* 🤖 [IA] - v1.0.95: Vista guiada unificada - Solo mostrar sección activa en todas las plataformas */}
-            <div className="space-y-4">
+            <div className="space-y-fluid-md">
             {/* Coins Section - Solo si hay algún campo de moneda activo */}
             {FIELD_ORDER.slice(0, 5).some(field => isFieldActive(field)) && (
               <GuidedCoinSection

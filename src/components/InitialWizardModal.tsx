@@ -204,8 +204,8 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
           <div className="glass-morphism-panel">
             {/* 🤖 [IA] - v1.3.0: Card IMPORTANTE con información del flujo guiado */}
             <div className="glass-morphism-panel border border-orange-400/40 border-l-4 border-l-orange-400 text-center shadow-lg shadow-orange-400/10">
-              <div className="flex items-center justify-center gap-[clamp(0.5rem,2vw,0.75rem)] mb-[clamp(0.5rem,2vw,0.75rem)]">
-                <AlertTriangle className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)] text-orange-400" />
+              <div className="flex items-center justify-center gap-fluid-md mb-fluid-md">
+                <AlertTriangle className="w-fluid-lg h-fluid-lg text-orange-400" />
                 <h3 className="font-semibold text-orange-400 text-[clamp(0.875rem,3.5vw,1rem)]">PROTOCOLO OBLIGATORIO</h3>
               </div>
               <p className="text-primary-foreground text-[clamp(0.875rem,3.5vw,1rem)] font-medium">
@@ -214,7 +214,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
             </div>
 
             {/* 🤖 [IA] - v1.3.0: Flujo guiado de reglas usando componentes ProtocolRule */}
-            <div className="flex flex-col gap-[clamp(0.75rem,3vw,1rem)]">
+            <div className="flex flex-col gap-fluid-base">
               {currentProtocolRules.map((rule, index) => (
                 <ProtocolRule
                   key={rule.id}
@@ -233,8 +233,8 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                 animate={{ opacity: 1, y: 0 }}
                 className="glass-morphism-panel border-2 border-green-400/60 shadow-lg shadow-green-400/20 text-center"
               >
-                <div className="flex items-center justify-center gap-[clamp(0.5rem,2vw,0.75rem)]">
-                  <CheckCircle className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)] text-green-400" />
+                <div className="flex items-center justify-center gap-fluid-md">
+                  <CheckCircle className="w-fluid-lg h-fluid-lg text-green-400" />
                   <span className="font-semibold text-green-400 text-[clamp(0.875rem,3.5vw,1rem)]">
                     ✓ Protocolo Revisado Completamente
                   </span>
@@ -525,9 +525,9 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
       <DialogContent
         className="glass-morphism-panel w-[clamp(90vw,95vw,95vw)] max-w-[clamp(300px,90vw,540px)] max-h-[clamp(85vh,90vh,90vh)] overflow-y-auto overflow-x-hidden p-0 [&>button]:hidden"
       >
-        <div className="p-[clamp(1rem,4vw,1.5rem)]">
+        <div className="p-fluid-lg">
           <DialogHeader className="text-center">
-            <DialogTitle className="text-primary mb-[clamp(0.5rem,2vw,0.75rem)] text-[clamp(1.125rem,4.5vw,1.5rem)]">
+            <DialogTitle className="text-primary mb-fluid-md text-[clamp(1.125rem,4.5vw,1.5rem)]">
               {getStepTitle()}
             </DialogTitle>
             <DialogDescription className="sr-only">
@@ -536,7 +536,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
           </DialogHeader>
 
           {/* Progress Bar Section */}
-          <div className="mt-[clamp(0.75rem,3vw,1rem)] mb-[clamp(1rem,4vw,1.5rem)]">
+          <div className="mt-fluid-base mb-fluid-lg">
             <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
               <motion.div
                 className="h-full bg-gradient-to-r from-primary to-secondary rounded-full"
@@ -591,18 +591,18 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
           )}
 
           {/* 🤖 [IA] - v1.2.22: Footer centrado - botones agrupados centro con espaciado consistente */}
-          <div className="flex items-center justify-center mt-[clamp(1.5rem,6vw,2rem)] pt-[clamp(1rem,4vw,1.5rem)] border-t border-slate-600 gap-[clamp(0.5rem,2vw,0.75rem)]">
-            <DestructiveActionButton 
+          <div className="flex items-center justify-center mt-fluid-xl pt-fluid-lg border-t border-slate-600 gap-fluid-md">
+            <DestructiveActionButton
               onClick={handleCancelRequest}
-              className="h-[clamp(2.5rem,10vw,3rem)] px-[clamp(1rem,4vw,1.5rem)]"
+              className="h-fluid-3xl px-fluid-lg"
             >
               Cancelar
             </DestructiveActionButton>
-            
+
             {canGoPrevious && (
-              <NeutralActionButton 
+              <NeutralActionButton
                 onClick={() => setShowBackConfirmation(true)}
-                className="h-[clamp(2.5rem,10vw,3rem)] px-[clamp(1rem,4vw,1.5rem)]"
+                className="h-fluid-3xl px-fluid-lg"
               >
                 Anterior
               </NeutralActionButton>
@@ -612,7 +612,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               <ConstructiveActionButton
                 onClick={handleNext}
                 disabled={currentStep === 1 ? !isFlowCompleted() : !canGoNext}
-                className="h-[clamp(2.5rem,10vw,3rem)] px-[clamp(1rem,4vw,1.5rem)]"
+                className="h-fluid-3xl px-fluid-lg"
               >
                 Siguiente
               </ConstructiveActionButton>

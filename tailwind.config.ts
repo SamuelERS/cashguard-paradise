@@ -116,6 +116,19 @@ export default {
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out'
+			},
+			spacing: {
+				// 🤖 [IA] - v1.2.24: Canonical Fluid Spacing System - RESPONSIVE-MARGIN-AUDIT
+				'fluid-2xs': 'var(--space-2xs)',
+				'fluid-xs': 'var(--space-xs)',
+				'fluid-sm': 'var(--space-sm)',
+				'fluid-md': 'var(--space-md)',
+				'fluid-base': 'var(--space-base)',
+				'fluid-lg': 'var(--space-lg)',
+				'fluid-xl': 'var(--space-xl)',
+				'fluid-2xl': 'var(--space-2xl)',
+				'fluid-3xl': 'var(--space-3xl)',
+				'fluid-4xl': 'var(--space-4xl)',
 			}
 		}
 	},
