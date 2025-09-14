@@ -201,7 +201,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
     switch (currentStep) {
       case 1: // Protocolo Anti-Fraude - Flujo Guiado
         return (
-          <div className="glass-morphism-panel">
+          <div className="glass-morphism-panel space-y-fluid-lg">
             {/* 🤖 [IA] - v1.3.0: Card IMPORTANTE con información del flujo guiado */}
             <div className="glass-morphism-panel border border-orange-400/40 border-l-4 border-l-orange-400 text-center shadow-lg shadow-orange-400/10">
               <div className="flex items-center justify-center gap-fluid-md mb-fluid-md">
@@ -214,7 +214,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
             </div>
 
             {/* 🤖 [IA] - v1.3.0: Flujo guiado de reglas usando componentes ProtocolRule */}
-            <div className="flex flex-col gap-fluid-base">
+            <div className="flex flex-col gap-fluid-lg">
               {currentProtocolRules.map((rule, index) => (
                 <ProtocolRule
                   key={rule.id}
@@ -529,8 +529,8 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
       <DialogContent
         className="glass-morphism-panel w-[clamp(90vw,95vw,95vw)] max-w-[clamp(300px,90vw,540px)] max-h-[clamp(85vh,90vh,90vh)] overflow-y-auto overflow-x-hidden p-0 [&>button]:hidden"
       >
-        <div className="p-fluid-lg">
-          <DialogHeader className="text-center">
+        <div className="p-fluid-lg space-y-fluid-lg">
+          <DialogHeader className="text-center space-y-fluid-md">
             <DialogTitle className="text-primary mb-fluid-md text-[clamp(1.125rem,4.5vw,1.5rem)]">
               {getStepTitle()}
             </DialogTitle>
@@ -540,7 +540,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
           </DialogHeader>
 
           {/* Progress Bar Section */}
-          <div className="mt-fluid-base mb-fluid-lg">
+          <div className="mt-fluid-lg mb-fluid-xl">
             <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
               <motion.div
                 className="h-full bg-gradient-to-r from-primary to-secondary rounded-full"
@@ -549,7 +549,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                 transition={{ duration: 0.5, ease: "easeOut", delay: 0.2 }}
               />
             </div>
-            <div className="flex justify-center mt-1">
+            <div className="flex justify-center mt-fluid-sm">
               <span className="text-xs">
                 <span className="text-primary font-medium">Preparación de Corte</span>
                 <span className="text-gray-400"> {progressValue}% completado</span>
@@ -575,7 +575,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="rounded-lg p-3 mt-4 bg-orange-400/10 border border-orange-400/30"
+              className="rounded-lg p-fluid-md mt-fluid-lg bg-orange-400/10 border border-orange-400/30"
               id="validation-feedback"
               role="alert"
               aria-live="polite"
@@ -595,7 +595,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
           )}
 
           {/* 🤖 [IA] - v1.2.22: Footer centrado - botones agrupados centro con espaciado consistente */}
-          <div className="flex items-center justify-center mt-fluid-xl pt-fluid-lg border-t border-slate-600 gap-fluid-md">
+          <div className="flex items-center justify-center mt-fluid-2xl pt-fluid-xl border-t border-slate-600 gap-fluid-lg">
             <DestructiveActionButton
               onClick={handleCancelRequest}
               className="h-fluid-3xl px-fluid-lg"

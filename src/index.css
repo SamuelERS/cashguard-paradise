@@ -403,9 +403,20 @@
     margin-top: var(--space-lg);
   }
 
+  /* Modal container principal con espaciado optimizado */
+  .p-fluid-lg.space-y-fluid-lg > * + * {
+    margin-top: var(--space-lg);
+  }
+
   /* Evitar doble espaciado en elementos anidados */
-  .glass-morphism-panel.space-y-fluid-lg > .glass-morphism-panel {
+  .glass-morphism-panel.space-y-fluid-lg > .glass-morphism-panel,
+  .p-fluid-lg.space-y-fluid-lg > .glass-morphism-panel.space-y-fluid-lg {
     margin-top: 0;
+  }
+
+  /* DialogHeader con espaciado específico */
+  .space-y-fluid-md > * + * {
+    margin-top: var(--space-md);
   }
 
   /* 🤖 [IA] - v1.2.14: Clase glass morphism legacy (migrada a glass-morphism-panel) */
