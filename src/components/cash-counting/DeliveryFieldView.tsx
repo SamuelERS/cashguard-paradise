@@ -265,11 +265,6 @@ export function DeliveryFieldView({
           <div className="p-[clamp(12px,3vw,20px)] pb-24">
             {/* Header with delivery instruction */}
             <div className="text-center mb-[clamp(16px,4vw,24px)]">
-              {/* Denomination label */}
-              <h3 className="text-xl font-bold text-primary mb-4">
-                {currentFieldLabel}
-              </h3>
-
               {/* Denomination image */}
               <div
                 className="flex items-center justify-center mx-auto"
@@ -289,7 +284,7 @@ export function DeliveryFieldView({
                   border: '1px solid rgba(244, 33, 46, 0.3)'
                 }}>
                 <p className="text-sm font-semibold" style={{ color: '#f4212e' }}>
-                  📤 SEPARAR {targetQuantity}
+                  📤 ENTREGAR <span style={{ color: 'white', fontWeight: 'bold', fontSize: '1.4em' }}>{targetQuantity}</span>
                 </p>
               </div>
             </div>
