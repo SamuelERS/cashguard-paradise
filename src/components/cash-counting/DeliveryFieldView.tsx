@@ -265,15 +265,10 @@ export function DeliveryFieldView({
           <div className="p-[clamp(12px,3vw,20px)] pb-24">
             {/* Header with delivery instruction */}
             <div className="text-center mb-[clamp(16px,4vw,24px)]">
-              <div className="inline-block px-4 py-2 rounded-lg mb-4"
-                style={{
-                  backgroundColor: 'rgba(244, 33, 46, 0.1)',
-                  border: '1px solid rgba(244, 33, 46, 0.3)'
-                }}>
-                <p className="text-sm font-semibold" style={{ color: '#f4212e' }}>
-                  🏢 PARA GERENCIA - SEPARAR {targetQuantity}
-                </p>
-              </div>
+              {/* Denomination label */}
+              <h3 className="text-xl font-bold text-primary mb-4">
+                {currentFieldLabel}
+              </h3>
 
               {/* Denomination image */}
               <div
@@ -288,10 +283,15 @@ export function DeliveryFieldView({
                 {getIcon()}
               </div>
 
-              {/* Denomination label */}
-              <h3 className="text-xl font-bold text-primary mt-4">
-                {currentFieldLabel}
-              </h3>
+              <div className="inline-block px-4 py-2 rounded-lg mt-4"
+                style={{
+                  backgroundColor: 'rgba(244, 33, 46, 0.1)',
+                  border: '1px solid rgba(244, 33, 46, 0.3)'
+                }}>
+                <p className="text-sm font-semibold" style={{ color: '#f4212e' }}>
+                  🏢 PARA GERENCIA - SEPARAR {targetQuantity}
+                </p>
+              </div>
             </div>
 
             {/* Input and confirmation */}
