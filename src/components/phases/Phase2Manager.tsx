@@ -302,7 +302,7 @@ export function Phase2Manager({
         left: '50%',
         top: '50%',
         transform: 'translateX(-50%) translateY(-50%)',
-        overflow: 'hidden',
+        overflow: 'visible',
         display: 'flex',
         flexDirection: 'column'
       }}>
@@ -319,9 +319,9 @@ export function Phase2Manager({
           </AlertDialogTitle>
         </AlertDialogHeader>
         
-        <div style={{ 
-          padding: `clamp(0.75rem, 3vw, 1rem) 0`,
-          overflow: 'auto',
+        <div style={{
+          padding: `clamp(1rem, 4vw, 1.5rem) clamp(0.5rem, 2vw, 1rem)`,
+          overflow: 'visible',
           flex: 1,
           minHeight: 0
         }}>
@@ -369,7 +369,8 @@ export function Phase2Manager({
             <div style={{
               display: 'flex',
               flexDirection: 'column',
-              gap: `clamp(0.5rem, 2vw, 0.75rem)`
+              gap: `clamp(0.75rem, 3vw, 1rem)`,
+              padding: `clamp(0.5rem, 2vw, 0.75rem) 0`
             }}>
               {/* Item 1: Bolsa */}
               <motion.label
