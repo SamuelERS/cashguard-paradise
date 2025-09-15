@@ -31,6 +31,7 @@ import { Phase2VerificationSection } from './Phase2VerificationSection';
 import { DeliveryCalculation } from '@/types/phases';
 import { formatCurrency } from '@/utils/calculations';
 import { useTimingConfig } from '@/hooks/useTimingConfig'; // 🤖 [IA] - Hook de timing unificado v1.0.22
+import { useChecklistFlow } from '@/hooks/useChecklistFlow'; // 🤖 [IA] - v1.2.26: Hook especializado para checklist
 import { Checkbox } from '@/components/ui/checkbox'; // 🤖 [IA] - v1.2.10: Checkbox para checklist
 
 interface Phase2ManagerProps {
@@ -51,68 +52,29 @@ export function Phase2Manager({
   const [verificationProgress, setVerificationProgress] = useState<Record<string, boolean>>({});
   const [showExitConfirmation, setShowExitConfirmation] = useState(false); // 🤖 [IA] - v1.2.10: Estado para modal de confirmación
   const [showInstructionsModal, setShowInstructionsModal] = useState(true); // 🤖 [IA] - v1.2.10: Modal de instrucciones
-  const [checkedItems, setCheckedItems] = useState({
-    bolsa: false,
-    tirro: false,
-    espacio: false,
-    entendido: false
-  }); // 🤖 [IA] - v1.2.10: Estado del checklist
-  const [enabledItems, setEnabledItems] = useState({
-    bolsa: false,
-    tirro: false,
-    espacio: false,
-    entendido: false
-  }); // 🤖 [IA] - v1.1.24: Estados individuales para activación secuencial
-  
+  // 🤖 [IA] - v1.2.26: Hook especializado para checklist progresivo con revelación
+  const {
+    checkedItems,
+    enabledItems,
+    hiddenItems,
+    initializeChecklist,
+    handleCheckChange,
+    isChecklistComplete,
+    getItemClassName,
+    isItemActivating
+  } = useChecklistFlow();
+
   const { createTimeoutWithCleanup } = useTimingConfig(); // 🤖 [IA] - Usar timing unificado v1.0.22
 
-  // 🤖 [IA] - v1.2.10: Manejar cambios en checklist
-  const handleCheckChange = (item: keyof typeof checkedItems) => {
-    setCheckedItems(prev => ({
-      ...prev,
-      [item]: !prev[item]
-    }));
-  };
+  // 🤖 [IA] - v1.2.26: Verificar si todos los items están marcados
+  const allItemsChecked = isChecklistComplete();
 
-  // 🤖 [IA] - v1.2.10: Verificar si todos los items están marcados
-  const allItemsChecked = Object.values(checkedItems).every(checked => checked);
-
-  // 🤖 [IA] - v1.1.25: Activación inicial - solo el primer checkbox después de 2s
+  // 🤖 [IA] - v1.2.26: Inicialización del checklist con revelación progresiva
   useEffect(() => {
     if (showInstructionsModal) {
-      const timer = setTimeout(() => {
-        setEnabledItems(prev => ({...prev, bolsa: true}));
-      }, 2000);
-      return () => clearTimeout(timer);
+      initializeChecklist();
     }
-  }, [showInstructionsModal]);
-
-  // 🤖 [IA] - v1.1.25: Activación progresiva basada en interacción del usuario
-  useEffect(() => {
-    // Activar tirro después de marcar bolsa
-    if (checkedItems.bolsa && !enabledItems.tirro) {
-      const timer = setTimeout(() => {
-        setEnabledItems(prev => ({...prev, tirro: true}));
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-    
-    // Activar espacio después de marcar tirro
-    if (checkedItems.tirro && checkedItems.bolsa && !enabledItems.espacio) {
-      const timer = setTimeout(() => {
-        setEnabledItems(prev => ({...prev, espacio: true}));
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-    
-    // Activar entendido después de marcar espacio
-    if (checkedItems.espacio && checkedItems.tirro && checkedItems.bolsa && !enabledItems.entendido) {
-      const timer = setTimeout(() => {
-        setEnabledItems(prev => ({...prev, entendido: true}));
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [checkedItems, enabledItems]);
+  }, [showInstructionsModal, initializeChecklist]);
 
   // Auto-advance to verification when delivery is complete
   useEffect(() => {
@@ -327,16 +289,13 @@ export function Phase2Manager({
     {/* 🤖 [IA] - v1.2.10: Modal de instrucciones con checklist para preparación - Colores de corte nocturno */}
     <AlertDialog open={showInstructionsModal} onOpenChange={setShowInstructionsModal}>
       <AlertDialogContent style={{
-        /* Removido según Doctrina D.2 - Componente debe ser opaco (Nivel 0 Base):
-        backgroundColor: 'rgba(36, 36, 36, 0.95)',
-        backdropFilter: `blur(clamp(12px, 4vw, 20px))`,
-        WebkitBackdropFilter: `blur(clamp(12px, 4vw, 20px))`,
-        */
-        /* Usando color de fondo sólido según design system */
-        backgroundColor: 'hsl(var(--background))',
-        border: '1px solid rgba(244, 33, 46, 0.3)',
+        /* 🤖 [IA] - v1.2.26: Restaurando Glass Morphism consistente con otros modales */
+        backgroundColor: 'rgba(36, 36, 36, 0.4)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        border: '1px solid rgba(255, 255, 255, 0.15)',
         borderRadius: `clamp(8px, 3vw, 16px)`,
-        boxShadow: '0 4px 24px rgba(0, 0, 0, 0.8), 0 0 20px rgba(244, 33, 46, 0.2)',
+        boxShadow: '0 4px 24px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
         maxWidth: `clamp(300px, 90vw, 500px)`,
         maxHeight: `clamp(400px, 85vh, 90vh)`,
         position: 'fixed',
@@ -375,81 +334,66 @@ export function Phase2Manager({
             marginBottom: `clamp(1rem, 4vw, 1.25rem)`,
             textAlign: 'center'
           }}>
-            <p style={{ 
-              color: '#F4212E', 
-              fontSize: `clamp(0.875rem, 3.5vw, 1.1rem)`, 
-              fontWeight: '700',
-              marginBottom: `clamp(0.375rem, 1.5vw, 0.5rem)`
+            <p className="text-destructive font-bold mb-2" style={{
+              fontSize: `clamp(0.875rem, 3.5vw, 1.1rem)`
             }}>
               ⚠️ IMPORTANTE
             </p>
-            <p style={{ 
-              color: '#ffffff', 
-              fontSize: `clamp(0.875rem, 3.5vw, 1rem)`, 
-              fontWeight: '600' 
+            <p className="text-white font-semibold" style={{
+              fontSize: `clamp(0.875rem, 3.5vw, 1rem)`
             }}>
               El sistema dirá cuántas monedas y billetes tomar para entregar, solo debes colocar lo que diga en la bolsa.
             </p>
-            <p style={{ 
-              color: '#e1e8ed', 
-              fontSize: `clamp(0.75rem, 3vw, 0.9rem)`, 
-              marginTop: `clamp(0.375rem, 1.5vw, 0.5rem)` 
+            <p className="text-muted-foreground mt-2" style={{
+              fontSize: `clamp(0.75rem, 3vw, 0.9rem)`
             }}>
               
             </p>
           </div>
 
           {/* Checklist de preparación */}
-          <div style={{ color: '#e1e8ed' }}>
-            <p style={{ 
-              marginBottom: `clamp(0.5rem, 2vw, 0.75rem)`, 
-              fontSize: `clamp(0.8rem, 3.2vw, 0.95rem)` 
+          <div className="text-muted-foreground">
+            <p className="mb-3" style={{
+              fontSize: `clamp(0.8rem, 3.2vw, 0.95rem)`
             }}>
               Antes de continuar, confirme lo siguiente:
             </p>
             
-            {/* 🤖 [IA] - v1.1.24: Mensaje de activación secuencial */}
-            <div style={{
-              backgroundColor: !enabledItems.bolsa ? 'rgba(10, 132, 255, 0.1)' : 'rgba(0, 186, 124, 0.1)',
-              border: !enabledItems.bolsa ? '1px solid rgba(10, 132, 255, 0.3)' : '1px solid rgba(0, 186, 124, 0.3)',
-              borderRadius: `clamp(4px, 2vw, 8px)`,
-              padding: `clamp(0.5rem, 2vw, 0.75rem)`,
-              marginBottom: `clamp(0.75rem, 3vw, 1rem)`,
-              textAlign: 'center'
-            }}>
-              <p style={{ 
-                color: !enabledItems.bolsa ? '#1d9bf0' : '#00ba7c',
-                fontSize: `clamp(0.8rem, 3.2vw, 0.95rem)`,
-                fontWeight: '500',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: `clamp(0.375rem, 1.5vw, 0.5rem)`
-              }}>
+            {/* 🤖 [IA] - v1.2.26: Mensaje de activación secuencial usando clases CSS */}
+            <div className={`checklist-status-indicator ${enabledItems.bolsa ? 'ready' : ''}`}>
+              <p className={`checklist-status-text ${enabledItems.bolsa ? 'ready' : ''}`}>
                 {!enabledItems.bolsa ? '⏱️ Preparando checklist...' : '📋 Verifiquen estemos Listos'}
               </p>
             </div>
             
-            <div style={{ 
-              display: 'flex', 
-              flexDirection: 'column', 
-              gap: `clamp(0.5rem, 2vw, 0.75rem)` 
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: `clamp(0.5rem, 2vw, 0.75rem)`
             }}>
               {/* Item 1: Bolsa */}
-              <label 
-                style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: `clamp(0.5rem, 2vw, 0.75rem)`,
-                  padding: `clamp(0.5rem, 2vw, 0.75rem)`,
-                  backgroundColor: checkedItems.bolsa ? 'rgba(0, 186, 124, 0.1)' : 'rgba(255, 255, 255, 0.05)',
-                  border: checkedItems.bolsa ? '1px solid rgba(0, 186, 124, 0.3)' : enabledItems.bolsa ? '1px solid rgba(10, 132, 255, 0.2)' : '1px solid rgba(255, 255, 255, 0.1)',
-                  borderRadius: `clamp(4px, 2vw, 8px)`,
-                  cursor: enabledItems.bolsa ? 'pointer' : 'not-allowed',
-                  opacity: enabledItems.bolsa ? 1 : 0.4,
-                  transition: 'all 0.3s ease',
-                  animation: enabledItems.bolsa && !checkedItems.bolsa ? 'pulse 1s ease-in-out' : 'none'
-                }}
+              <motion.label
+                className={getItemClassName('bolsa')}
+                animate={
+                  hiddenItems.bolsa
+                    ? {
+                        opacity: 0.5,
+                        scale: 0.95,
+                        transition: {
+                          opacity: { duration: 0.6, ease: "easeOut" },
+                          scale: { duration: 0.6, ease: "easeOut" }
+                        }
+                      }
+                    : {
+                        opacity: 1,
+                        scale: 1,
+                        transition: {
+                          opacity: { duration: 0.6, ease: "easeOut" },
+                          scale: { duration: 0.6, ease: "easeOut" }
+                        }
+                      }
+                }
+                style={{ position: 'relative' }}
               >
                 <Checkbox
                   checked={checkedItems.bolsa}
@@ -461,30 +405,57 @@ export function Phase2Manager({
                   }}
                 />
                 <Package className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)]" style={{ color: '#0a84ff' }} />
-                <span style={{ 
-                  flex: 1,
-                  fontSize: `clamp(0.8rem, 3.2vw, 0.9rem)`
-                }}>
+                <span className="checklist-item-text">
                   Tengo la bolsa lista para entregar
-                  {!enabledItems.bolsa && <span style={{ color: '#8899a6', fontSize: `clamp(0.7rem, 2.8vw, 0.85rem)`, marginLeft: `clamp(0.375rem, 1.5vw, 0.5rem)` }}>(activando...)</span>}
+                  {!enabledItems.bolsa && (
+                    <span className="checklist-loader">
+                      <div className="checklist-loader-spinner" />
+                      activando...
+                    </span>
+                  )}
                 </span>
-              </label>
+
+                {/* Overlay para item oculto */}
+                {hiddenItems.bolsa && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-lg backdrop-blur-sm"
+                  >
+                    <span className="text-xs text-white/80 font-medium px-3 py-1 bg-black/40 rounded-full">
+                      🔒 Complete el ítem anterior
+                    </span>
+                  </motion.div>
+                )}
+              </motion.label>
 
               {/* Item 2: Tirro */}
-              <label 
-                style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: `clamp(0.5rem, 2vw, 0.75rem)`,
-                  padding: `clamp(0.5rem, 2vw, 0.75rem)`,
-                  backgroundColor: checkedItems.tirro ? 'rgba(0, 186, 124, 0.1)' : 'rgba(255, 255, 255, 0.05)',
-                  border: checkedItems.tirro ? '1px solid rgba(0, 186, 124, 0.3)' : enabledItems.tirro ? '1px solid rgba(10, 132, 255, 0.2)' : '1px solid rgba(255, 255, 255, 0.1)',
-                  borderRadius: `clamp(4px, 2vw, 8px)`,
-                  cursor: enabledItems.tirro ? 'pointer' : 'not-allowed',
-                  opacity: enabledItems.tirro ? 1 : 0.4,
-                  transition: 'all 0.3s ease',
-                  animation: enabledItems.tirro && !checkedItems.tirro && enabledItems.bolsa ? 'pulse 1s ease-in-out' : 'none'
-                }}
+              <motion.label
+                className={getItemClassName('tirro')}
+                animate={
+                  hiddenItems.tirro
+                    ? { // ESTADO OCULTO - TRANSICIÓN SUAVE
+                        opacity: 0.5,
+                        scale: 0.95,
+                        filter: 'blur(8px)',
+                        transition: {
+                          opacity: { duration: 0.6, ease: "easeOut" },
+                          scale: { duration: 0.6, ease: "easeOut" },
+                          filter: { duration: 0.6, ease: "easeOut" }
+                        }
+                      }
+                    : { // ESTADO REVELADO - TRANSICIÓN ELEGANTE
+                        opacity: 1,
+                        scale: 1,
+                        filter: 'blur(0px)',
+                        transition: {
+                          opacity: { duration: 0.6, ease: "easeOut" },
+                          scale: { duration: 0.6, ease: "easeOut" },
+                          filter: { duration: 0.6, ease: "easeOut" }
+                        }
+                      }
+                }
+                style={{ position: 'relative' }}
               >
                 <Checkbox
                   checked={checkedItems.tirro}
@@ -496,34 +467,57 @@ export function Phase2Manager({
                   }}
                 />
                 <ScrollText className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)]" style={{ color: '#0a84ff' }} />
-                <span style={{ 
-                  flex: 1,
-                  fontSize: `clamp(0.8rem, 3.2vw, 0.9rem)`
-                }}>
+                <span className="checklist-item-text">
                   Tengo cinta y plumon para rotular
                   {!enabledItems.tirro && (
-                    <span style={{ color: '#8899a6', fontSize: `clamp(0.7rem, 2.8vw, 0.85rem)`, marginLeft: `clamp(0.375rem, 1.5vw, 0.5rem)` }}>
-                      {checkedItems.bolsa ? '(activando...)' : '(marque el anterior)'}
+                    <span className={checkedItems.bolsa ? "checklist-loader" : "checklist-item-hint"}>
+                      {checkedItems.bolsa && <div className="checklist-loader-spinner" />}
+                      {checkedItems.bolsa ? 'activando...' : '(marque el anterior)'}
                     </span>
                   )}
                 </span>
-              </label>
+
+                {/* Overlay para item oculto */}
+                {hiddenItems.tirro && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-lg backdrop-blur-sm"
+                  >
+                    <span className="text-xs text-white/80 font-medium px-3 py-1 bg-black/40 rounded-full">
+                      🔒 Complete el ítem anterior
+                    </span>
+                  </motion.div>
+                )}
+              </motion.label>
 
               {/* Item 3: Espacio */}
-              <label 
-                style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: `clamp(0.5rem, 2vw, 0.75rem)`,
-                  padding: `clamp(0.5rem, 2vw, 0.75rem)`,
-                  backgroundColor: checkedItems.espacio ? 'rgba(0, 186, 124, 0.1)' : 'rgba(255, 255, 255, 0.05)',
-                  border: checkedItems.espacio ? '1px solid rgba(0, 186, 124, 0.3)' : enabledItems.espacio ? '1px solid rgba(10, 132, 255, 0.2)' : '1px solid rgba(255, 255, 255, 0.1)',
-                  borderRadius: `clamp(4px, 2vw, 8px)`,
-                  cursor: enabledItems.espacio ? 'pointer' : 'not-allowed',
-                  opacity: enabledItems.espacio ? 1 : 0.4,
-                  transition: 'all 0.3s ease',
-                  animation: enabledItems.espacio && !checkedItems.espacio && enabledItems.tirro ? 'pulse 1s ease-in-out' : 'none'
-                }}
+              <motion.label
+                className={getItemClassName('espacio')}
+                animate={
+                  hiddenItems.espacio
+                    ? { // ESTADO OCULTO - TRANSICIÓN SUAVE
+                        opacity: 0.5,
+                        scale: 0.95,
+                        filter: 'blur(8px)',
+                        transition: {
+                          opacity: { duration: 0.6, ease: "easeOut" },
+                          scale: { duration: 0.6, ease: "easeOut" },
+                          filter: { duration: 0.6, ease: "easeOut" }
+                        }
+                      }
+                    : { // ESTADO REVELADO - TRANSICIÓN ELEGANTE
+                        opacity: 1,
+                        scale: 1,
+                        filter: 'blur(0px)',
+                        transition: {
+                          opacity: { duration: 0.6, ease: "easeOut" },
+                          scale: { duration: 0.6, ease: "easeOut" },
+                          filter: { duration: 0.6, ease: "easeOut" }
+                        }
+                      }
+                }
+                style={{ position: 'relative' }}
               >
                 <Checkbox
                   checked={checkedItems.espacio}
@@ -535,34 +529,57 @@ export function Phase2Manager({
                   }}
                 />
                 <Grid3x3 className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)]" style={{ color: '#0a84ff' }} />
-                <span style={{ 
-                  flex: 1,
-                  fontSize: `clamp(0.8rem, 3.2vw, 0.9rem)`
-                }}>
+                <span className="checklist-item-text">
                   Tomare cantidad que sistema diga
                   {!enabledItems.espacio && (
-                    <span style={{ color: '#8899a6', fontSize: `clamp(0.7rem, 2.8vw, 0.85rem)`, marginLeft: `clamp(0.375rem, 1.5vw, 0.5rem)` }}>
-                      {checkedItems.tirro ? '(activando...)' : '(marque el anterior)'}
+                    <span className={checkedItems.tirro ? "checklist-loader" : "checklist-item-hint"}>
+                      {checkedItems.tirro && <div className="checklist-loader-spinner" />}
+                      {checkedItems.tirro ? 'activando...' : '(marque el anterior)'}
                     </span>
                   )}
                 </span>
-              </label>
+
+                {/* Overlay para item oculto */}
+                {hiddenItems.espacio && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-lg backdrop-blur-sm"
+                  >
+                    <span className="text-xs text-white/80 font-medium px-3 py-1 bg-black/40 rounded-full">
+                      🔒 Complete el ítem anterior
+                    </span>
+                  </motion.div>
+                )}
+              </motion.label>
 
               {/* Item 4: Entendido */}
-              <label 
-                style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: `clamp(0.5rem, 2vw, 0.75rem)`,
-                  padding: `clamp(0.5rem, 2vw, 0.75rem)`,
-                  backgroundColor: checkedItems.entendido ? 'rgba(0, 186, 124, 0.1)' : 'rgba(255, 255, 255, 0.05)',
-                  border: checkedItems.entendido ? '1px solid rgba(0, 186, 124, 0.3)' : enabledItems.entendido ? '1px solid rgba(10, 132, 255, 0.2)' : '1px solid rgba(255, 255, 255, 0.1)',
-                  borderRadius: `clamp(4px, 2vw, 8px)`,
-                  cursor: enabledItems.entendido ? 'pointer' : 'not-allowed',
-                  opacity: enabledItems.entendido ? 1 : 0.4,
-                  transition: 'all 0.3s ease',
-                  animation: enabledItems.entendido && !checkedItems.entendido && enabledItems.espacio ? 'pulse 1s ease-in-out' : 'none'
-                }}
+              <motion.label
+                className={getItemClassName('entendido')}
+                animate={
+                  hiddenItems.entendido
+                    ? { // ESTADO OCULTO - TRANSICIÓN SUAVE
+                        opacity: 0.5,
+                        scale: 0.95,
+                        filter: 'blur(8px)',
+                        transition: {
+                          opacity: { duration: 0.6, ease: "easeOut" },
+                          scale: { duration: 0.6, ease: "easeOut" },
+                          filter: { duration: 0.6, ease: "easeOut" }
+                        }
+                      }
+                    : { // ESTADO REVELADO - TRANSICIÓN ELEGANTE
+                        opacity: 1,
+                        scale: 1,
+                        filter: 'blur(0px)',
+                        transition: {
+                          opacity: { duration: 0.6, ease: "easeOut" },
+                          scale: { duration: 0.6, ease: "easeOut" },
+                          filter: { duration: 0.6, ease: "easeOut" }
+                        }
+                      }
+                }
+                style={{ position: 'relative' }}
               >
                 <Checkbox
                   checked={checkedItems.entendido}
@@ -574,18 +591,29 @@ export function Phase2Manager({
                   }}
                 />
                 <AlertCircle className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)]" style={{ color: '#0a84ff' }} />
-                <span style={{ 
-                  flex: 1,
-                  fontSize: `clamp(0.8rem, 3.2vw, 0.9rem)`
-                }}>
+                <span className="checklist-item-text">
                   Estamos listos para continuar
                   {!enabledItems.entendido && (
-                    <span style={{ color: '#8899a6', fontSize: `clamp(0.7rem, 2.8vw, 0.85rem)`, marginLeft: `clamp(0.375rem, 1.5vw, 0.5rem)` }}>
-                      {checkedItems.espacio ? '(activando...)' : '(marque el anterior)'}
+                    <span className={checkedItems.espacio ? "checklist-loader" : "checklist-item-hint"}>
+                      {checkedItems.espacio && <div className="checklist-loader-spinner" />}
+                      {checkedItems.espacio ? 'activando...' : '(marque el anterior)'}
                     </span>
                   )}
                 </span>
-              </label>
+
+                {/* Overlay para item oculto */}
+                {hiddenItems.entendido && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-lg backdrop-blur-sm"
+                  >
+                    <span className="text-xs text-white/80 font-medium px-3 py-1 bg-black/40 rounded-full">
+                      🔒 Complete el ítem anterior
+                    </span>
+                  </motion.div>
+                )}
+              </motion.label>
             </div>
           </div>
         </div>

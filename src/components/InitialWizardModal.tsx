@@ -52,7 +52,8 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
     goPrevious,
     updateWizardData,
     resetWizard,
-    getStepTitle
+    getStepTitle,
+    getNavigationState
   } = useWizardNavigation();
 
   // 🤖 [IA] - v1.3.0: Hook para flujo guiado de reglas del protocolo
@@ -113,13 +114,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
     }
   }, [isFlowCompleted, currentStep, hasVibratedForError]);
 
-  // 🤖 [IA] - v1.3.1: Sincroniza el estado del nuevo flujo guiado con el campo wizardData.rulesAccepted del sistema de validación legado para mantener la compatibilidad
-  useEffect(() => {
-    const rulesCompleted = isFlowCompleted();
-    if (rulesCompleted && !wizardData.rulesAccepted) {
-      updateWizardData({ rulesAccepted: true });
-    }
-  }, [isFlowCompleted, wizardData.rulesAccepted, updateWizardData]);
+  // 🤖 [IA] - v1.2.25: Sincronización eliminada - usar solo isFlowCompleted() como fuente única de verdad
 
   // Empleados disponibles basados en la sucursal seleccionada
   const availableEmployees = wizardData.selectedStore 
@@ -131,14 +126,15 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
     acknowledgeRule(ruleId, index);
   }, [acknowledgeRule]);
 
-  // 🤖 [IA] - v1.3.0: Manejar siguiente paso - verificar flujo de reglas en paso 1
+  // 🤖 [IA] - v1.2.26: Manejar siguiente paso - pasar estado de reglas a navegación
   const handleNext = () => {
     if (currentStep === 1 && !isFlowCompleted()) {
       toast.error("Debe revisar todas las reglas del protocolo");
       return;
     }
-    
-    const success = goNext();
+
+    // Pasar el estado de las reglas para validación del paso 1
+    const success = goNext(isFlowCompleted());
     if (!success) {
       toast.error("Complete todos los campos para continuar");
     }
@@ -146,7 +142,8 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
 
   // Manejar completar el wizard
   const handleComplete = () => {
-    if (isCompleted) {
+    const wizardState = getNavigationState(isFlowCompleted());
+    if (wizardState.isCompleted) {
       onComplete({
         selectedStore: wizardData.selectedStore,
         selectedCashier: wizardData.selectedCashier,
@@ -175,24 +172,15 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
     setShowCancelConfirmation(false);
   }, []);
 
-  // 🤖 [IA] - v1.3.0: Definir tareas específicas para cada paso - paso 1 usa flujo guiado
-  const stepTasks = {
-    1: ['rulesFlowCompleted'],           // Protocolo de Seguridad (flujo guiado)
-    2: ['selectedStore'],               // Selección de Sucursal
-    3: ['selectedCashier'],             // Selección de Cajero
-    4: ['selectedWitness'],             // Selección de Testigo
-    5: ['expectedSales']                // Venta Esperada
-  };
-
-  // 🤖 [IA] - v1.3.0: Calcular progreso basado en tareas completadas - incluye flujo guiado
-  const totalTasks = Object.values(stepTasks).flat().length;
-  const completedTasks = Object.entries(wizardData).reduce((count, [key, value]) => {
-    // Contar campos completados
-    if (value !== '' && value !== false) {
-      return count + 1;
-    }
-    return count;
-  }, 0) + (isFlowCompleted() ? 1 : 0); // Agregar 1 si el flujo de reglas está completo
+  // 🤖 [IA] - v1.2.25: Calcular progreso basado en tareas completadas - flujo guiado como fuente única de verdad
+  const totalTasks = 5; // 5 pasos del wizard
+  const completedTasks = [
+    isFlowCompleted(),                         // Paso 1: Protocolo completado
+    wizardData.selectedStore !== '',          // Paso 2: Sucursal seleccionada
+    wizardData.selectedCashier !== '',        // Paso 3: Cajero seleccionado
+    wizardData.selectedWitness !== '',        // Paso 4: Testigo seleccionado
+    wizardData.expectedSales !== '' && parseFloat(wizardData.expectedSales) > 0  // Paso 5: Venta esperada
+  ].filter(Boolean).length;
 
   const progressValue = Math.round((completedTasks / totalTasks) * 100);
 
@@ -456,7 +444,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                 {/* 🤖 [IA] - v1.2.30: Botón migrado a ConstructiveActionButton estándar */}
                 <ConstructiveActionButton
                   onClick={handleComplete}
-                  disabled={!isCompleted}
+                  disabled={!getNavigationState(isFlowCompleted()).isCompleted}
                   aria-label="Confirmar venta esperada"
                   type="button"
                   className="h-9 md:h-11"
@@ -616,7 +604,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
             {currentStep < totalSteps && (
               <ConstructiveActionButton
                 onClick={handleNext}
-                disabled={currentStep === 1 ? !isFlowCompleted() : !canGoNext}
+                disabled={currentStep === 1 ? !isFlowCompleted() : !getNavigationState(isFlowCompleted()).canGoNext}
                 className="h-fluid-3xl px-fluid-lg"
               >
                 Siguiente

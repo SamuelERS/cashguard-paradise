@@ -28,46 +28,41 @@ const ProtocolRuleComponent = ({ rule, state, isCurrent, onAcknowledge }: Protoc
     return 'disabled';
   }, [state.isChecked, state.isBeingReviewed, state.isEnabled, state.isHidden]);
 
-  // 🤖 [IA] - Configuración de estilos basada en estado (memoizado para performance)
+  // 🤖 [IA] - Configuración de estilos basada en estado usando clases estáticas (memoizado para performance)
   const styles = useMemo(() => {
     switch (visualState) {
       case 'checked':
         return {
-          container: 'border-green-400/60 bg-green-400/10 shadow-lg shadow-green-400/20',
-          border: 'border-l-green-400',
-          icon: 'text-green-400',
-          cursor: 'cursor-default'
+          container: 'protocol-rule-checked',
+          icon: 'text-green-400'
         };
       case 'reviewing':
         return {
-          container: 'border-blue-400/60 bg-blue-400/10 shadow-lg shadow-blue-400/20',
-          border: 'border-l-blue-400',
-          icon: 'text-blue-400',
-          cursor: 'cursor-default'
+          container: 'protocol-rule-reviewing',
+          icon: 'text-blue-400'
         };
-      case 'enabled':
+      case 'enabled': {
+        // Determinar color basado en la configuración de la regla
+        const colorVariant = colors.border.includes('orange') ? 'orange' :
+                           colors.border.includes('red') ? 'red' :
+                           colors.border.includes('blue') ? 'blue' : 'green';
         return {
-          container: `border-${colors.border.split('-')[2]}/60 bg-${colors.border.split('-')[2]}/5 shadow-lg ${colors.glow} cursor-pointer hover:bg-${colors.border.split('-')[2]}/10 transition-all duration-300`,
-          border: colors.border,
-          icon: colors.text,
-          cursor: 'cursor-pointer'
+          container: `protocol-rule-enabled-${colorVariant}`,
+          icon: colors.text
         };
+      }
       case 'hidden':
         return {
-          container: 'border-muted/20 bg-muted/3 protocol-rule-hidden',
-          border: 'border-l-muted',
-          icon: 'text-muted-foreground',
-          cursor: 'cursor-not-allowed'
+          container: 'protocol-rule-hidden',
+          icon: 'text-muted-foreground'
         };
       default:
         return {
-          container: 'border-muted/30 bg-muted/5 opacity-50',
-          border: 'border-l-muted',
-          icon: 'text-muted-foreground',
-          cursor: 'cursor-not-allowed'
+          container: 'protocol-rule-disabled',
+          icon: 'text-muted-foreground'
         };
     }
-  }, [visualState, rule.colors]);
+  }, [visualState, colors.border, colors.text]);
 
   // 🤖 [IA] - Manejar click en la regla (memoizado para performance)
   const handleClick = useCallback(() => {
@@ -76,68 +71,40 @@ const ProtocolRuleComponent = ({ rule, state, isCurrent, onAcknowledge }: Protoc
     }
   }, [state.isEnabled, state.isChecked, onAcknowledge]);
 
-  // 🤖 [IA] - Animaciones optimizadas para GPU (transform + opacity only)
-  const pulseAnimation = useMemo(() => {
-    return isCurrent && state.isEnabled && !state.isChecked ? {
-      scale: [1, 1.02, 1],
-      transition: {
-        duration: 2,
-        repeat: Infinity,
-        repeatType: "reverse" as const
-      }
-    } : {};
-  }, [isCurrent, state.isEnabled, state.isChecked]);
-
-  // 🤖 [IA] - v3.0.0: Animación de revelación progresiva elegante - timing dramático
-  const revealAnimation = useMemo(() => {
-    if (visualState === 'hidden') {
-      return {}; // 🎯 DELEGACIÓN CSS: Eliminación de override inline, responsabilidad transferida al CSS
-    }
-    return {
-      opacity: 1,
-      scale: 1,
-      transition: {
-        duration: 0.7,
-        ease: [0.23, 1, 0.32, 1] // cubic-bezier personalizado para suavidad premium
-      }
-    };
-  }, [visualState]);
-
   return (
     <motion.div
       className={cn(
-        "flex items-start border-l-4 gap-[clamp(0.75rem,3vw,1rem)] p-[clamp(0.625rem,2.5vw,0.875rem)] rounded-[clamp(0.375rem,1.5vw,0.5rem)] border border-border/50 relative",
+        "flex items-start gap-[clamp(0.75rem,3vw,1rem)] p-[clamp(0.625rem,2.5vw,0.875rem)] rounded-[clamp(0.375rem,1.5vw,0.5rem)] border relative",
         styles.container,
-        styles.border,
-        styles.cursor
+        // Agregar clase para revelación cuando no esté oculto
+        visualState !== 'hidden' && "protocol-rule-revealed"
       )}
       onClick={handleClick}
       animate={
         visualState === 'hidden'
-          ? { // ESTADO OCULTO - FORZADO
+          ? { // ESTADO OCULTO - TRANSICIÓN SUAVE
               opacity: 0.5,
               scale: 0.95,
-              filter: 'blur(8px)', // Aplicamos el blur directamente aquí
+              transition: {
+                opacity: { duration: 0.6, ease: "easeOut" },
+                scale: { duration: 0.6, ease: "easeOut" }
+              }
             }
           : visualState === 'enabled' && isCurrent
           ? { // ESTADO ACTIVO - ANIMACIÓN DE PULSO
               opacity: 1,
               scale: [1, 1.02, 1],
-              filter: 'blur(0px)',
-              transition: { 
+              transition: {
                 scale: { duration: 2, repeat: Infinity, repeatType: "reverse" as const },
-                // Transición suave para opacity y filter al revelarse
-                opacity: { duration: 0.5, ease: "easeOut" }, 
-                filter: { duration: 0.5, ease: "easeOut" }
+                opacity: { duration: 0.6, ease: "easeOut" }
               }
             }
           : { // ESTADO POR DEFECTO (COMPLETADO, REVISANDO, ETC.)
               opacity: 1,
               scale: 1,
-              filter: 'blur(0px)',
-              transition: { 
-                opacity: { duration: 0.5, ease: "easeOut" }, 
-                filter: { duration: 0.5, ease: "easeOut" }
+              transition: {
+                opacity: { duration: 0.6, ease: "easeOut" },
+                scale: { duration: 0.6, ease: "easeOut" }
               }
             }
       }
@@ -199,15 +166,18 @@ const ProtocolRuleComponent = ({ rule, state, isCurrent, onAcknowledge }: Protoc
         </div>
       </div>
 
-      {/* 🤖 [IA] - Indicador de interactividad optimizado para GPU (scale + opacity) */}
+      {/* 🤖 [IA] - Indicador de interactividad usando variables CSS del sistema */}
       {state.isEnabled && !state.isChecked && (
         <motion.div
-          className="absolute inset-0 rounded-[clamp(0.375rem,1.5vw,0.5rem)] pointer-events-none"
-          style={{
-            willChange: 'transform, opacity',
-            border: `2px solid ${colors.border.includes('red') ? 'rgba(239, 68, 68, 0.3)' : 'rgba(251, 146, 60, 0.3)'}`,
-            backgroundColor: colors.border.includes('red') ? 'rgba(239, 68, 68, 0.05)' : 'rgba(251, 146, 60, 0.05)'
-          }}
+          className={cn(
+            "absolute inset-0 rounded-[clamp(0.375rem,1.5vw,0.5rem)] pointer-events-none",
+            "border-2",
+            colors.border.includes('red') ? 'border-red-400/30 bg-red-400/5' :
+            colors.border.includes('blue') ? 'border-blue-400/30 bg-blue-400/5' :
+            colors.border.includes('green') ? 'border-green-400/30 bg-green-400/5' :
+            'border-orange-400/30 bg-orange-400/5'
+          )}
+          style={{ willChange: 'transform, opacity' }}
           animate={{
             scale: [1, 1.01, 1],
             opacity: [0.6, 1, 0.6]

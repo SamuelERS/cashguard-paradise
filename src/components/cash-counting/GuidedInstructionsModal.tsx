@@ -71,13 +71,7 @@ export function GuidedInstructionsModal({
     }
   }, [isOpen, initializeFlow]);
 
-  // 🤖 [IA] - v1.2.23: Sincronización con flujo completado
-  useEffect(() => {
-    const flowCompleted = isFlowCompleted();
-    if (flowCompleted && !understood) {
-      setUnderstood(true);
-    }
-  }, [isFlowCompleted, understood]);
+  // 🤖 [IA] - v1.2.26: Sincronización eliminada - usar solo isFlowCompleted() como fuente única de verdad
 
   // 🤖 [IA] - v1.2.23: Las instrucciones ahora vienen de la configuración del flujo
 
@@ -169,8 +163,8 @@ export function GuidedInstructionsModal({
             </motion.div>
           )}
 
-          {/* 🤖 [IA] - v1.2.23: Checkbox de confirmación sincronizado con flujo */}
-          <div 
+          {/* 🤖 [IA] - v1.2.26: Checkbox de confirmación usando solo isFlowCompleted() como fuente única */}
+          <div
             className="rounded-lg flex items-center cursor-pointer"
             style={{
               marginTop: `clamp(16px, ${24 * viewportScale}px, 24px)`,
@@ -197,7 +191,7 @@ export function GuidedInstructionsModal({
               }}
             />
             <label className="flex-1 cursor-pointer select-none">
-              <span 
+              <span
                 className="font-medium text-white"
                 style={{
                   fontSize: 'clamp(0.813rem, 3.25vw, 0.938rem)'
@@ -205,7 +199,7 @@ export function GuidedInstructionsModal({
               >
                 {isFlowCompleted() ? 'Comprendemos y Realizamos las Reglas' : 'Revise todas las instrucciones primero'}
               </span>
-              <p 
+              <p
                 className="text-gray-400"
                 style={{
                   fontSize: 'clamp(0.688rem, 2.75vw, 0.75rem)',
@@ -217,12 +211,12 @@ export function GuidedInstructionsModal({
             </label>
           </div>
 
-          {/* 🤖 [IA] - v1.2.23: Botón sincronizado con flujo completado */}
+          {/* 🤖 [IA] - v1.2.26: Botón requiere checkbox marcado además del flujo completado */}
           <PrimaryActionButton
             onClick={handleConfirm}
-            disabled={!isFlowCompleted()}
+            disabled={!isFlowCompleted() || !understood}
             className="btn-guided-start"
-            data-state={isFlowCompleted() ? "active" : "inactive"}
+            data-state={isFlowCompleted() && understood ? "active" : "inactive"}
             data-count-type={isMorningCount ? "morning" : "evening"}
             aria-label="Comenzar conteo guiado"
           >

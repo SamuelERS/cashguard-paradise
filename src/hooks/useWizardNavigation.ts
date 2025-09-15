@@ -40,34 +40,34 @@ export function useWizardNavigation() {
   const [wizardData, setWizardData] = useState<WizardData>(INITIAL_WIZARD_DATA);
   const totalSteps = 5;
 
-  // Validaciones por paso
-  const validateStep = useCallback((step: number, data: WizardData): boolean => {
+  // Validaciones por paso - ahora acepta estado externo para las reglas
+  const validateStep = useCallback((step: number, data: WizardData, rulesCompleted?: boolean): boolean => {
     switch (step) {
-      case 1: // Protocolo
-        return data.rulesAccepted;
-      
+      case 1: // Protocolo - usar estado externo si está disponible
+        return rulesCompleted !== undefined ? rulesCompleted : data.rulesAccepted;
+
       case 2: // Sucursal
         return data.selectedStore !== '';
-      
+
       case 3: // Cajero
         return data.selectedCashier !== '';
-      
+
       case 4: // Testigo
-        return data.selectedWitness !== '' && 
+        return data.selectedWitness !== '' &&
                data.selectedWitness !== data.selectedCashier;
-      
+
       case 5: // Venta Esperada
         const salesValue = parseFloat(data.expectedSales);
         return !isNaN(salesValue) && salesValue > 0;
-      
+
       default:
         return false;
     }
   }, []);
 
-  // Navegar al siguiente paso
-  const goNext = useCallback(() => {
-    if (currentStep < totalSteps && validateStep(currentStep, wizardData)) {
+  // Navegar al siguiente paso - acepta estado externo de reglas
+  const goNext = useCallback((rulesCompleted?: boolean) => {
+    if (currentStep < totalSteps && validateStep(currentStep, wizardData, rulesCompleted)) {
       setCurrentStep(prev => prev + 1);
       return true;
     }
@@ -161,31 +161,38 @@ export function useWizardNavigation() {
     }
   }, []);
 
-  const canGoNext = validateStep(currentStep, wizardData) && currentStep < totalSteps;
-  const canGoPrevious = currentStep > 1;
-  const isCompleted = currentStep === totalSteps && validateStep(totalSteps, wizardData);
+  // Función para obtener estado de navegación con reglas externas
+  const getNavigationState = useCallback((rulesCompleted?: boolean) => ({
+    canGoNext: validateStep(currentStep, wizardData, rulesCompleted) && currentStep < totalSteps,
+    canGoPrevious: currentStep > 1,
+    isCompleted: currentStep === totalSteps && validateStep(totalSteps, wizardData, rulesCompleted)
+  }), [currentStep, totalSteps, wizardData, validateStep]);
+
+  // Estado por defecto (usando datos internos)
+  const defaultState = getNavigationState();
 
   return {
     // Estado
     currentStep,
     totalSteps,
     wizardData,
-    canGoNext,
-    canGoPrevious,
-    isCompleted,
-    
+    canGoNext: defaultState.canGoNext,
+    canGoPrevious: defaultState.canGoPrevious,
+    isCompleted: defaultState.isCompleted,
+
     // Navegación
     goNext,
     goPrevious,
     goToStep,
-    
+
     // Datos
     updateWizardData,
     resetWizard,
     completeWizard,
-    
+
     // Utilidades
-    validateStep: (step?: number) => validateStep(step || currentStep, wizardData),
+    validateStep: (step?: number, rulesCompleted?: boolean) => validateStep(step || currentStep, wizardData, rulesCompleted),
+    getNavigationState,
     getStepTitle: () => getStepTitle(currentStep),
     getStepDescription: () => getStepDescription(currentStep),
     getCurrentStepTitle: getStepTitle,

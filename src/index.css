@@ -1215,16 +1215,122 @@
   }
 
   @keyframes pulse-glow {
-    0%, 100% { 
-      box-shadow: 
+    0%, 100% {
+      box-shadow:
         var(--shadow-md),
         0 0 30px var(--success-glow);
     }
-    50% { 
-      box-shadow: 
+    50% {
+      box-shadow:
         var(--shadow-md),
         0 0 50px var(--success-glow);
     }
+  }
+
+  /* 🤖 [IA] - v1.2.26: Clases CSS para checklist Phase2Manager */
+  .checklist-item {
+    @apply flex items-center transition-all duration-300 rounded-lg;
+    padding: clamp(0.5rem, 2vw, 0.75rem);
+    gap: clamp(0.5rem, 2vw, 0.75rem);
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    cursor: not-allowed;
+    opacity: 0.4;
+  }
+
+  .checklist-item-enabled {
+    border-color: rgba(10, 132, 255, 0.2);
+    cursor: pointer;
+    opacity: 1;
+    animation: pulse 1s ease-in-out infinite;
+  }
+
+  .checklist-item-checked {
+    background-color: rgba(0, 186, 124, 0.1);
+    border-color: rgba(0, 186, 124, 0.3);
+    cursor: pointer;
+    opacity: 1;
+    animation: none;
+  }
+
+  /* 🤖 [IA] - v1.2.26: Estados de revelación progresiva para checklist */
+  .checklist-item-hidden {
+    opacity: 0.5;
+    transform: scale(0.95);
+    filter: blur(8px);
+    transition: all 0.6s ease-out;
+    pointer-events: none;
+  }
+
+  .checklist-item-revealed {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0px);
+    transition: all 0.6s ease-out;
+  }
+
+  /* 🤖 [IA] - v1.2.26: Clases adicionales para checklist */
+  .checklist-status-indicator {
+    background-color: rgba(10, 132, 255, 0.1);
+    border: 1px solid rgba(10, 132, 255, 0.3);
+    border-radius: clamp(4px, 2vw, 8px);
+    padding: clamp(0.5rem, 2vw, 0.75rem);
+    margin-bottom: clamp(0.75rem, 3vw, 1rem);
+    text-align: center;
+  }
+
+  .checklist-status-indicator.ready {
+    background-color: rgba(0, 186, 124, 0.1);
+    border-color: rgba(0, 186, 124, 0.3);
+  }
+
+  .checklist-status-text {
+    color: #1d9bf0;
+    font-size: clamp(0.8rem, 3.2vw, 0.95rem);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(0.375rem, 1.5vw, 0.5rem);
+  }
+
+  .checklist-status-text.ready {
+    color: #00ba7c;
+  }
+
+  .checklist-item-text {
+    flex: 1;
+    font-size: clamp(0.8rem, 3.2vw, 0.9rem);
+    color: var(--foreground);
+  }
+
+  .checklist-item-hint {
+    color: var(--muted-foreground);
+    font-size: clamp(0.7rem, 2.8vw, 0.85rem);
+    margin-left: clamp(0.375rem, 1.5vw, 0.5rem);
+  }
+
+  /* 🤖 [IA] - v1.2.26: Spinner/loader para estados "activando..." */
+  .checklist-loader {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--muted-foreground);
+    font-size: clamp(0.7rem, 2.8vw, 0.85rem);
+    margin-left: clamp(0.375rem, 1.5vw, 0.5rem);
+  }
+
+  .checklist-loader-spinner {
+    width: 0.75rem;
+    height: 0.75rem;
+    border: 1px solid var(--muted-foreground);
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
   }
 
   @keyframes shine {
@@ -2386,5 +2492,87 @@
       0 0 15px hsl(var(--glow-color) / 0.3),
       0 0 25px hsl(var(--glow-color) / 0.2);
     border-color: hsl(var(--glow-color) / 0.8);
+  }
+
+  /* 🤖 [IA] - v1.2.25: Clases estáticas para estados de ProtocolRule */
+  .protocol-rule-enabled-orange {
+    @apply border-orange-400/60 bg-orange-400/5 shadow-lg shadow-orange-400/20 hover:bg-orange-400/10 transition-all duration-300 border-l-orange-400 cursor-pointer;
+  }
+
+  .protocol-rule-enabled-red {
+    @apply border-red-400/60 bg-red-400/5 shadow-lg shadow-red-400/20 hover:bg-red-400/10 transition-all duration-300 border-l-red-400 cursor-pointer;
+  }
+
+  .protocol-rule-enabled-blue {
+    @apply border-blue-400/60 bg-blue-400/5 shadow-lg shadow-blue-400/20 hover:bg-blue-400/10 transition-all duration-300 border-l-blue-400 cursor-pointer;
+  }
+
+  .protocol-rule-enabled-green {
+    @apply border-green-400/60 bg-green-400/5 shadow-lg shadow-green-400/20 hover:bg-green-400/10 transition-all duration-300 border-l-green-400 cursor-pointer;
+  }
+
+  .protocol-rule-checked {
+    @apply border-green-400/60 bg-green-400/10 shadow-lg shadow-green-400/20 border-l-green-400 cursor-default;
+  }
+
+  .protocol-rule-reviewing {
+    @apply border-blue-400/60 bg-blue-400/10 shadow-lg shadow-blue-400/20 border-l-blue-400 cursor-default;
+  }
+
+  .protocol-rule-disabled {
+    @apply border-muted/30 bg-muted/5 opacity-50 border-l-muted cursor-not-allowed;
+  }
+
+  /* Blur para reglas ocultas - aplicado vía CSS para transición suave */
+  .protocol-rule-hidden {
+    @apply border-muted/20 bg-muted/5 border-l-muted cursor-not-allowed;
+    filter: blur(8px);
+    transition: filter 0.6s ease-out;
+  }
+
+  .protocol-rule-revealed {
+    filter: blur(0px);
+    transition: filter 0.6s ease-out;
+  }
+
+  /* 🤖 [IA] - v1.2.26: Clases estáticas para estados de InstructionRule */
+  .instruction-rule-enabled-orange {
+    @apply border-orange-400/60 bg-orange-400/5 shadow-lg shadow-orange-400/20 hover:bg-orange-400/10 transition-all duration-300 border-l-orange-400 cursor-pointer;
+  }
+
+  .instruction-rule-enabled-red {
+    @apply border-red-400/60 bg-red-400/5 shadow-lg shadow-red-400/20 hover:bg-red-400/10 transition-all duration-300 border-l-red-400 cursor-pointer;
+  }
+
+  .instruction-rule-enabled-blue {
+    @apply border-blue-400/60 bg-blue-400/5 shadow-lg shadow-blue-400/20 hover:bg-blue-400/10 transition-all duration-300 border-l-blue-400 cursor-pointer;
+  }
+
+  .instruction-rule-enabled-green {
+    @apply border-green-400/60 bg-green-400/5 shadow-lg shadow-green-400/20 hover:bg-green-400/10 transition-all duration-300 border-l-green-400 cursor-pointer;
+  }
+
+  .instruction-rule-checked {
+    @apply border-green-400/60 bg-green-400/10 shadow-lg shadow-green-400/20 border-l-green-400 cursor-default;
+  }
+
+  .instruction-rule-reviewing {
+    @apply border-blue-400/60 bg-blue-400/10 shadow-lg shadow-blue-400/20 border-l-blue-400 cursor-default;
+  }
+
+  .instruction-rule-disabled {
+    @apply border-muted/30 bg-muted/5 opacity-50 border-l-muted cursor-not-allowed;
+  }
+
+  /* Blur para instrucciones ocultas - aplicado vía CSS para transición suave */
+  .instruction-rule-hidden {
+    @apply border-muted/20 bg-muted/5 border-l-muted cursor-not-allowed;
+    filter: blur(8px);
+    transition: filter 0.6s ease-out;
+  }
+
+  .instruction-rule-revealed {
+    filter: blur(0px);
+    transition: filter 0.6s ease-out;
   }
 }
