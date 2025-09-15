@@ -292,9 +292,6 @@ export function DeliveryFieldView({
               <h3 className="text-xl font-bold text-primary mt-4">
                 {currentFieldLabel}
               </h3>
-              <p className="text-muted-foreground">
-                Valor unitario: {formatCurrency(denominationValue)}
-              </p>
             </div>
 
             {/* Input and confirmation */}
