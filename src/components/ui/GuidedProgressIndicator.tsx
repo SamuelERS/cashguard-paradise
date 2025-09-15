@@ -64,19 +64,6 @@ export const GuidedProgressIndicator: React.FC<GuidedProgressIndicatorProps> = (
         />
       </div>
 
-      {/* Instructions */}
-      <div className="guided-progress-instructions">
-        <div className="guided-progress-instruction-content">
-          {isCompleted ? (
-            <Check className="guided-progress-instruction-icon success" />
-          ) : (
-            <ArrowRight className={`guided-progress-instruction-icon ${modeClass}`} />
-          )}
-          <div>
-            <p className="guided-progress-instruction-text">{instructionText}</p>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };
