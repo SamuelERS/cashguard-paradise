@@ -289,7 +289,7 @@ export function DeliveryFieldView({
                   border: '1px solid rgba(244, 33, 46, 0.3)'
                 }}>
                 <p className="text-sm font-semibold" style={{ color: '#f4212e' }}>
-                  🏢 PARA GERENCIA - SEPARAR {targetQuantity}
+                  📤 SEPARAR {targetQuantity}
                 </p>
               </div>
             </div>
