@@ -470,7 +470,7 @@ export function Phase2Manager({
           </div>
         </div>
 
-        <AlertDialogFooter className="!flex !justify-center !items-center pt-6 !flex-row !space-x-0">
+        <AlertDialogFooter className="pt-6 flex-row space-x-0 justify-center sm:justify-center">
           <AlertDialogAction asChild>
             <PrimaryActionButton
               onClick={() => setShowInstructionsModal(false)}
