@@ -142,26 +142,6 @@ export function GuidedInstructionsModal({
             ))}
           </div>
 
-          {/* 🤖 [IA] - v1.2.23: Indicador de progreso del flujo */}
-          {isFlowCompleted() && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="rounded-lg border-2 border-green-400/60 shadow-lg shadow-green-400/20 p-[clamp(0.75rem,3vw,1rem)] text-center"
-              style={{
-                backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)'
-              }}
-            >
-              <div className="flex items-center justify-center gap-[clamp(0.5rem,2vw,0.75rem)]">
-                <CheckCircle className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)] text-green-400" />
-                <span className="font-semibold text-green-400 text-[clamp(0.875rem,3.5vw,1rem)]">
-                  ✓ Todas las Instrucciones Revisadas
-                </span>
-              </div>
-            </motion.div>
-          )}
 
 
           {/* 🤖 [IA] - v1.2.26: Botón se habilita directamente cuando el flujo se completa */}
