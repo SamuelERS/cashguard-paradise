@@ -9,7 +9,6 @@ import '@/styles/features/phase2-confirm-button.css';
 import { DeliveryCalculation } from '@/types/phases';
 import { formatCurrency, calculateCashTotal } from '@/utils/calculations';
 import { useTimingConfig } from '@/hooks/useTimingConfig'; // 🤖 [IA] - Hook de timing unificado v1.0.22
-import { DenominationImage } from '@/utils/denominationImages'; // 🤖 [IA] - v1.2.31: OPERACIÓN SIMETRÍA
 
 interface Phase2VerificationSectionProps {
   deliveryCalculation: DeliveryCalculation;
@@ -190,43 +189,42 @@ export function Phase2VerificationSection({
             transition={{ type: "spring", stiffness: 260, damping: 20 }}
             className="glass-verification-field p-5"
           >
-            {/* 🤖 [IA] - v1.2.31: OPERACIÓN SIMETRÍA - Imagen real de denominación */}
-            <div className="text-center mb-[clamp(16px,4vw,24px)]">
-              {/* Denomination image - matching DeliveryFieldView structure */}
-              <div
-                className="flex items-center justify-center mx-auto"
+            {/* Header simplificado con denominación mejorada */}
+            <div className="flex items-center gap-[clamp(0.5rem,2vw,0.75rem)] mb-[clamp(0.75rem,3vw,1rem)]">
+              <motion.div 
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                className="w-[clamp(2rem,8vw,2.5rem)] h-[clamp(2rem,8vw,2.5rem)] rounded-[clamp(0.5rem,2vw,0.75rem)] flex items-center justify-center"
                 style={{
-                  width: 'clamp(234.375px, 58.59vw, 390.625px)',
-                  aspectRatio: '2.4 / 1',
-                  borderRadius: 'clamp(23.44px, 5.86vw, 35.16px)',
-                  backgroundColor: 'transparent'
+                  background: isCoins 
+                    ? 'linear-gradient(135deg, #f4a52a 0%, #ffb84d 100%)' 
+                    : 'linear-gradient(135deg, var(--success-paradise) 0%, var(--success-paradise-light) 100%)'
                 }}
               >
-                <DenominationImage
-                  fieldName={currentStep.key}
-                  fieldLabel={currentStep.label}
-                  fieldType={isCoins ? 'coin' : 'bill'}
-                  size="medium"
-                />
-              </div>
-            </div>
-
-            {/* Título centrado */}
-            <div className="text-center mb-[clamp(0.75rem,3vw,1rem)]">
-              <motion.h3
-                initial={{ opacity: 0.8 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5, repeat: Infinity, repeatType: "reverse" }}
-                className="text-[clamp(1rem,4.5vw,1.25rem)] font-bold"
-                style={{
-                  color: '#ffffff',
-                  textShadow: '0 1px 3px rgba(0, 0, 0, 0.3), 0 0 20px rgba(0, 186, 124, 0.3)'
-                }}
-              >
-                {currentStep.label}
-              </motion.h3>
-              <div className="text-[clamp(0.75rem,3vw,0.875rem)] mt-[clamp(0.25rem,1vw,0.375rem)]" style={{ color: 'var(--muted-paradise)' }}>
-                Valor unitario: {formatCurrency(currentStep.value)}
+                {isCoins ? (
+                  <Coins className="w-[clamp(1.25rem,5vw,1.5rem)] h-[clamp(1.25rem,5vw,1.5rem)] text-white" />
+                ) : (
+                  <Banknote className="w-[clamp(1.25rem,5vw,1.5rem)] h-[clamp(1.25rem,5vw,1.5rem)] text-white" />
+                )}
+              </motion.div>
+              
+              <div className="flex-1">
+                <motion.h3 
+                  initial={{ opacity: 0.8 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.5, repeat: Infinity, repeatType: "reverse" }}
+                  className="text-[clamp(1rem,4.5vw,1.25rem)] font-bold" 
+                  style={{ 
+                    color: '#ffffff',
+                    textShadow: '0 1px 3px rgba(0, 0, 0, 0.3), 0 0 20px rgba(0, 186, 124, 0.3)'
+                  }}
+                >
+                  {currentStep.label}
+                </motion.h3>
+                <div className="text-[clamp(0.75rem,3vw,0.875rem)] mt-[clamp(0.25rem,1vw,0.375rem)]" style={{ color: 'var(--muted-paradise)' }}>
+                  Valor unitario: {formatCurrency(currentStep.value)}
+                </div>
               </div>
             </div>
 
