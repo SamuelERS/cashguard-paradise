@@ -215,21 +215,6 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               ))}
             </div>
 
-            {/* 🤖 [IA] - v1.3.0: Indicador de progreso del flujo */}
-            {isFlowCompleted() && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="glass-morphism-panel border-2 border-green-400/60 shadow-lg shadow-green-400/20 text-center"
-              >
-                <div className="flex items-center justify-center gap-fluid-md">
-                  <CheckCircle className="w-fluid-lg h-fluid-lg text-green-400" />
-                  <span className="font-semibold text-green-400 text-[clamp(0.875rem,3.5vw,1rem)]">
-                    ✓ Protocolo Revisado Completamente
-                  </span>
-                </div>
-              </motion.div>
-            )}
           </div>
         );
 
