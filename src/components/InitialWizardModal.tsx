@@ -545,29 +545,6 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
             </motion.div>
           </AnimatePresence>
 
-          {/* 🤖 [IA] - v1.3.0: Validation Feedback - mensaje específico para flujo guiado */}
-          {currentStep === 1 && !isFlowCompleted() && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="rounded-lg p-fluid-md mt-fluid-lg bg-orange-400/10 border border-orange-400/30"
-              id="validation-feedback"
-              role="alert"
-              aria-live="polite"
-              aria-atomic="true"
-              aria-label="Validación pendiente para continuar"
-            >
-              <div className="flex justify-center">
-                <p className="font-medium text-orange-400 text-sm flex items-center">
-                  <AlertTriangle 
-                    className="w-4 h-4 mr-2 flex-shrink-0"
-                    aria-hidden="true"
-                  />
-                  Revisar todas las reglas para continuar
-                </p>
-              </div>
-            </motion.div>
-          )}
 
           {/* 🤖 [IA] - v1.2.22: Footer centrado - botones agrupados centro con espaciado consistente */}
           <div className="flex items-center justify-center mt-fluid-2xl pt-fluid-xl border-t border-slate-600 gap-fluid-lg">
