@@ -80,7 +80,16 @@
 
 /* Success State Panels */
 .glass-panel-success {
-  @apply glass-morphism-panel;
+  /* 🤖 [IA] - OPERACIÓN JERARQUÍA: Expandido glass-morphism-panel inline */
+  background-color: rgba(36, 36, 36, 0.4);
+  backdrop-filter: var(--glass-blur-full);
+  -webkit-backdrop-filter: var(--glass-blur-full);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 24px, rgba(255, 255, 255, 0.1) 0px 1px 0px inset;
+  border-radius: clamp(0.75rem, 3vw, 1rem);
+  padding: clamp(1rem, 4vw, 1.5rem);
+
+  /* Estilos específicos de success */
   background: linear-gradient(135deg, var(--success-paradise-glow) 0%, rgba(36, 36, 36, 0.4) 100%);
   border: 1px solid var(--success-paradise);
   box-shadow: 0 4px 12px var(--success-paradise-glow),
@@ -126,7 +135,16 @@
 
 /* Delivery Panel Styling */
 .glass-delivery-panel {
-  @apply glass-morphism-panel;
+  /* 🤖 [IA] - OPERACIÓN JERARQUÍA: Expandido glass-morphism-panel inline */
+  background-color: rgba(36, 36, 36, 0.4);
+  backdrop-filter: var(--glass-blur-full);
+  -webkit-backdrop-filter: var(--glass-blur-full);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 24px, rgba(255, 255, 255, 0.1) 0px 1px 0px inset;
+  border-radius: clamp(0.75rem, 3vw, 1rem);
+  padding: clamp(1rem, 4vw, 1.5rem);
+
+  /* Estilos específicos de delivery */
   border: 2px solid var(--accent-primary);
   background: linear-gradient(135deg, rgba(10, 132, 255, 0.1) 0%, rgba(36, 36, 36, 0.4) 100%);
   box-shadow: 0 4px 16px rgba(10, 132, 255, 0.2);

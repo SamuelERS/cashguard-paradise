@@ -2,19 +2,16 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, X, Calculator, Users, MapPin, DollarSign, Sunrise } from "lucide-react";
-// 🤖 [IA] - v1.2.18 - Import modular CSS for desktop alignment improvements
-import '../styles/features/cash-counter-desktop-alignment.css';
-// 🤖 [IA] - v1.2.19 - Import modular CSS for phase 1 navigation
-import '../styles/features/phase1-navigation.css';
-// 🤖 [IA] - v1.2.20 - Import Glass Morphism for phase 1 navigation container
-import '../styles/features/phase1-navigation-glass.css';
-// 🤖 [IA] - v1.2.20 - Import Glass Morphism coherence optimization
-import '../styles/features/glass-morphism-coherence.css';
-// 🤖 [IA] - v1.2.20 - Import responsive verification for all breakpoints
-import '../styles/features/responsive-verification.css';
-import '../styles/features/cash-counter-alert-buttons.css';
-import '../styles/features/cash-counter-alert-dialog.css';
-import '../styles/features/cashcounter-navigation-buttons.css';
+// 🤖 [IA] - FAE-02: PURGA QUIRÚRGICA COMPLETADA - CSS imports eliminados
+// Los 8 archivos CSS están ahora importados globalmente vía index.css:
+// - cash-counter-desktop-alignment.css
+// - phase1-navigation.css
+// - phase1-navigation-glass.css
+// - glass-morphism-coherence.css
+// - responsive-verification.css
+// - cash-counter-alert-buttons.css
+// - cash-counter-alert-dialog.css
+// - cashcounter-navigation-buttons.css
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";

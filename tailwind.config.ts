@@ -117,6 +117,16 @@ export default {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out'
 			},
+			fontSize: {
+				// 🤖 [IA] - FASE 4: FLUIDEZ DOCTRINAL - Sistema Tipográfico Fluido Canónico
+				'fluid-xs': ['clamp(0.75rem, 3vw, 0.875rem)', { lineHeight: '1.25rem' }],
+				'fluid-sm': ['clamp(0.8rem, 3.2vw, 0.95rem)', { lineHeight: '1.35rem' }],
+				'fluid-base': ['clamp(0.875rem, 3.5vw, 1rem)', { lineHeight: '1.5rem' }],
+				'fluid-lg': ['clamp(1rem, 4vw, 1.125rem)', { lineHeight: '1.75rem' }],
+				'fluid-xl': ['clamp(1.125rem, 4.5vw, 1.5rem)', { lineHeight: '2rem' }],
+				'fluid-2xl': ['clamp(1.25rem, 5vw, 1.75rem)', { lineHeight: '2.25rem' }],
+				'fluid-3xl': ['clamp(1.5rem, 6vw, 2.25rem)', { lineHeight: '2.5rem' }],
+			},
 			spacing: {
 				// 🤖 [IA] - v1.2.24: Canonical Fluid Spacing System - RESPONSIVE-MARGIN-AUDIT
 				'fluid-2xs': 'var(--space-2xs)',

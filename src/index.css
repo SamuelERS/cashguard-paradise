@@ -1,3 +1,56 @@
+/* 🤖 [IA] - OPERACIÓN JERARQUÍA - @imports deben preceder TODO */
+
+/* Alert & Navigation Systems */
+@import "./styles/features/cash-counter-alert-buttons.css";
+@import "./styles/features/cash-counter-alert-dialog.css";
+@import "./styles/features/cash-counter-desktop-alignment.css";
+@import "./styles/features/cashcounter-navigation-buttons.css";
+
+/* Circular & Visual Elements */
+@import "./styles/features/circular-coin-images.css";
+
+/* Field & Input Systems */
+@import "./styles/features/field-glow-lite.css";
+@import "./styles/features/guided-field-input-border.css";
+@import "./styles/features/guided-field-pulse.css";
+
+/* Glass Morphism System */
+@import "./styles/features/glass-morphism-coherence.css";
+
+/* Gradient & Button Systems */
+@import "./styles/features/gradient-dynamic-button.css";
+@import "./styles/features/guided-confirm-button.css";
+@import "./styles/features/guided-field-confirm-button.css";
+@import "./styles/features/guided-instructions-start-button.css";
+@import "./styles/features/guided-numeric-confirm-button.css";
+@import "./styles/features/guided-start-button.css";
+@import "./styles/features/morning-gradient-button.css";
+@import "./styles/features/report-action-button.css";
+@import "./styles/features/totals-confirm-button.css";
+
+/* Guided Progress System */
+@import "./styles/features/guided-progress-glass.css";
+
+/* Modal Systems */
+@import "./styles/features/modal-dark-scrollbar.css";
+
+/* Phase 1 Navigation */
+@import "./styles/features/phase1-navigation.css";
+@import "./styles/features/phase1-navigation-glass.css";
+
+/* Phase 2 Systems */
+@import "./styles/features/phase2-buttons.css";
+@import "./styles/features/phase2-confirm-button.css";
+@import "./styles/features/phase2-modal.css";
+
+/* Responsive System */
+@import "./styles/features/responsive-verification.css";
+
+/* Wizard Navigation */
+@import "./styles/features/wizard-nav-next-button.css";
+@import "./styles/features/wizard-nav-previous-button.css";
+@import "./styles/features/wizard-select-elements.css";
+
 /* 🤖 [IA] - Suppressing VS Code CSS warnings for Tailwind CSS directives */
 /* stylelint-disable at-rule-no-unknown */
 /* postcss-disable-next-line */
@@ -380,7 +433,7 @@
     border-radius: clamp(0.5rem, 2vw, 0.75rem);
   }
 
-  /* 🤖 [IA] - v1.2.22: Doctrina Oficial Glass Morphism - Paradise UI v1.1 */
+  /* 🤖 [IA] - FASE 4: FLUIDEZ DOCTRINAL - Clase canónica estratificada */
   .glass-morphism-panel {
     /* Fondo semi-transparente */
     background-color: rgba(36, 36, 36, 0.4);
@@ -2600,3 +2653,4 @@
     transition: filter 0.6s ease-out;
   }
 }
+
