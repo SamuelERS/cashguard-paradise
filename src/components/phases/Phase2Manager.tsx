@@ -280,15 +280,15 @@ export function Phase2Manager({
 
       {/* 🤖 [IA] - v1.2.30: Modal de instrucciones con Glass Morphism v1.2.23 - FASE 1 Doctrina Canónica */}
       <AlertDialog open={showInstructionsModal} onOpenChange={setShowInstructionsModal}>
-      <AlertDialogContent className="glass-morphism-panel w-[clamp(300px,90vw,500px)] max-w-[500px] max-h-[clamp(400px,85vh,90vh)]">
-        <AlertDialogHeader className="text-center space-y-4">
+      <AlertDialogContent className="glass-morphism-panel w-[clamp(300px,90vw,500px)] max-w-[500px] max-h-[clamp(400px,85vh,90vh)] flex flex-col">
+        <AlertDialogHeader className="text-center space-y-4 flex-shrink-0">
           <AlertDialogTitle className="text-primary-foreground text-[clamp(1.125rem,4.5vw,1.5rem)] font-semibold flex items-center justify-center gap-3" id="instructions-title">
             {/* 🤖 [IA] - FASE 3: Icono único sin redundancia */}
             💵 Preparar Dinero a Entregar
           </AlertDialogTitle>
         </AlertDialogHeader>
 
-        <div className="space-y-6 p-6">
+        <div className="flex-grow overflow-y-auto space-y-6 p-6">
           {/* Mensaje principal destacado - FASE 1: Usando glass-morphism-panel canónica */}
           <div className="glass-morphism-panel border-2 border-orange-400/40 border-l-4 border-l-orange-400 text-center space-y-3">
             <p className="text-orange-400 font-bold text-[clamp(0.875rem,3.5vw,1.1rem)]">
@@ -470,7 +470,7 @@ export function Phase2Manager({
           </div>
         </div>
 
-        <AlertDialogFooter className="pt-6 flex-row space-x-0 justify-center sm:justify-center">
+        <AlertDialogFooter className="pt-6 justify-center flex-col sm:flex-row flex-shrink-0">
           <AlertDialogAction asChild>
             <PrimaryActionButton
               onClick={() => setShowInstructionsModal(false)}
