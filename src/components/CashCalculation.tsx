@@ -5,8 +5,9 @@ import { Calculator, AlertTriangle, CheckCircle, Share, Download, Copy } from "l
 import { Button } from "@/components/ui/button";
 // 🤖 [IA] - v1.1.08: Removidos Card components para coherencia con glass morphism
 // 🤖 [IA] - v1.1.08: Alert components removidos para coherencia con glass morphism
-// 🤖 [IA] - v1.3.0: Importación de CSS modular para el botón report-action
-import '@/styles/features/report-action-button.css';
+// 🤖 [IA] - FAE-02: PURGA QUIRÚRGICA COMPLETADA - CSS imports eliminados
+// Los 1 archivos CSS están ahora importados globalmente vía index.css:
+// - report-action-button.css
 import { Badge } from "@/components/ui/badge";
 import { PrimaryActionButton } from "@/components/ui/primary-action-button"; // 🤖 [IA] - v2.0.0: Botón de acción primaria estándar
 import { NeutralActionButton } from "@/components/ui/neutral-action-button"; // 🤖 [IA] - v2.0.0: Botón de acción neutral estándar

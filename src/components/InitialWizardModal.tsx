@@ -15,11 +15,12 @@ import { useRulesFlow } from "@/hooks/useRulesFlow"; // 🤖 [IA] - Hook para fl
 import { currentProtocolRules } from "@/config/flows/initialWizardFlow"; // 🤖 [IA] - Configuración de datos v1.0 + randomización v3.0
 import { ProtocolRule } from "@/components/wizards/ProtocolRule"; // 🤖 [IA] - Componente reutilizable v1.0
 import { STORES, getEmployeesByStore } from "@/data/paradise";
-import '@/styles/features/modal-dark-scrollbar.css';
-// 🤖 [IA] - v1.2.25: Removed wizard-cancel-button.css import (obsoleto - migrado a variant system)
-import '@/styles/features/wizard-nav-previous-button.css';
-import '@/styles/features/wizard-nav-next-button.css';
-import '@/styles/features/wizard-select-elements.css';
+// 🤖 [IA] - FAE-02: PURGA QUIRÚRGICA COMPLETADA - CSS imports eliminados
+// Los 4 archivos CSS están ahora importados globalmente vía index.css:
+// - modal-dark-scrollbar.css
+// - wizard-nav-previous-button.css
+// - wizard-nav-next-button.css
+// - wizard-select-elements.css
 import { toast } from "sonner";
 import { useTimingConfig } from "@/hooks/useTimingConfig"; // 🤖 [IA] - Hook de timing unificado v1.0.22
 import { useInputValidation } from "@/hooks/useInputValidation"; // 🤖 [IA] - v1.0.45: Hook para validación de decimales

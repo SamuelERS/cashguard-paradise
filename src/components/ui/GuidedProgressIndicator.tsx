@@ -1,8 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Check, ArrowRight } from 'lucide-react';
-// 🤖 [IA] - v1.2.20: Import Glass Morphism styles for perfect Glass effect
-import '../../styles/features/guided-progress-glass.css';
+// 🤖 [IA] - FAE-02: PURGA QUIRÚRGICA COMPLETADA - CSS imports eliminados
+// Los 1 archivos CSS están ahora importados globalmente vía index.css:
+// - guided-progress-glass.css
 
 interface GuidedProgressIndicatorProps {
   currentStep: number;

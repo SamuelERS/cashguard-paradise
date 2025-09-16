@@ -9,8 +9,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useTimingConfig } from "@/hooks/useTimingConfig";
-import "@/styles/features/gradient-dynamic-button.css";
-import "@/styles/features/totals-confirm-button.css";
+// 🤖 [IA] - FAE-02: PURGA QUIRÚRGICA COMPLETADA - CSS imports eliminados
+// Los 2 archivos CSS están ahora importados globalmente vía index.css:
+// - gradient-dynamic-button.css
+// - totals-confirm-button.css
 
 interface TotalsSummarySectionProps {
   totalCash: number;

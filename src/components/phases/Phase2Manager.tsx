@@ -24,10 +24,10 @@ import { DestructiveActionButton } from "@/components/ui/destructive-action-butt
 import { ConstructiveActionButton } from "@/components/ui/constructive-action-button";
 // 🤖 [IA] - v2.0.0: Agregado NeutralActionButton para botón "Volver al inicio"
 import { NeutralActionButton } from "@/components/ui/neutral-action-button";
-// 🤖 [IA] - v1.3.0: Importado CSS modular para botones de Phase2
-import "@/styles/features/phase2-buttons.css";
-// 🤖 [IA] - v1.2.30: Importado CSS modular para modal de Phase2
-import "@/styles/features/phase2-modal.css";
+// 🤖 [IA] - FAE-02: PURGA QUIRÚRGICA COMPLETADA - CSS imports eliminados
+// Los 2 archivos CSS están ahora importados globalmente vía index.css:
+// - phase2-buttons.css
+// - phase2-modal.css
 import { Phase2DeliverySection } from './Phase2DeliverySection';
 import { Phase2VerificationSection } from './Phase2VerificationSection';
 import { DeliveryCalculation } from '@/types/phases';
@@ -470,7 +470,7 @@ export function Phase2Manager({
           </div>
         </div>
 
-        <AlertDialogFooter className="flex justify-center pt-6">
+        <AlertDialogFooter className="!flex !justify-center !items-center pt-6 !flex-row !space-x-0">
           <AlertDialogAction asChild>
             <PrimaryActionButton
               onClick={() => setShowInstructionsModal(false)}

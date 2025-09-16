@@ -11,7 +11,9 @@ import { cn } from "@/lib/utils";
 import { useFieldNavigation } from "@/hooks/useFieldNavigation";
 import { useInputValidation } from "@/hooks/useInputValidation";
 import { useTimingConfig } from "@/hooks/useTimingConfig";
-import "@/styles/features/guided-numeric-confirm-button.css";
+// 🤖 [IA] - FAE-02: PURGA QUIRÚRGICA COMPLETADA - CSS imports eliminados
+// Los 1 archivos CSS están ahora importados globalmente vía index.css:
+// - guided-numeric-confirm-button.css
 
 interface GuidedElectronicPaymentItemProps {
   paymentMethod: {

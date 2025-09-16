@@ -8,7 +8,9 @@ import { motion } from 'framer-motion';
 import { useInstructionsFlow } from '@/hooks/useInstructionsFlow';
 import { currentCashCutInstructions } from '@/config/flows/cashCutInstructionsFlow';
 import { InstructionRule } from '@/components/wizards/InstructionRule';
-import '@/styles/features/guided-start-button.css';
+// 🤖 [IA] - FAE-02: PURGA QUIRÚRGICA COMPLETADA - CSS imports eliminados
+// Los 1 archivos CSS están ahora importados globalmente vía index.css:
+// - guided-start-button.css
 
 interface GuidedInstructionsModalProps {
   isOpen: boolean;

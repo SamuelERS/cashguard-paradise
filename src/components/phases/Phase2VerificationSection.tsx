@@ -4,7 +4,9 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Building, ChevronRight, Check, Banknote, Target, CheckCircle, Coins } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import '@/styles/features/phase2-confirm-button.css';
+// 🤖 [IA] - FAE-02: PURGA QUIRÚRGICA COMPLETADA - CSS imports eliminados
+// Los 1 archivos CSS están ahora importados globalmente vía index.css:
+// - phase2-confirm-button.css
 // 🤖 [IA] - Eliminado imports de componentes UI para usar estilos inline v1.0.74
 import { DeliveryCalculation } from '@/types/phases';
 import { formatCurrency, calculateCashTotal } from '@/utils/calculations';

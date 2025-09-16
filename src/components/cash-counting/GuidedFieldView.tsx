@@ -14,10 +14,12 @@ import { useInputValidation } from '@/hooks/useInputValidation';
 import { useTimingConfig } from '@/hooks/useTimingConfig';
 import { usePulseAnimation } from '@/hooks/useVisibleAnimation'; // 🤖 [IA] - v1.2.18: Optimización automática de animaciones
 import { cn } from '@/lib/utils';
-import '@/styles/features/guided-field-pulse.css';
-import '@/styles/features/guided-confirm-button.css';
-import '@/styles/features/guided-field-input-border.css';
-import '@/styles/features/circular-coin-images.css';
+// 🤖 [IA] - FAE-02: PURGA QUIRÚRGICA COMPLETADA - CSS imports eliminados
+// Los 4 archivos CSS están ahora importados globalmente vía index.css:
+// - guided-field-pulse.css
+// - guided-confirm-button.css
+// - guided-field-input-border.css
+// - circular-coin-images.css
 
 interface GuidedFieldViewProps {
   currentFieldName: string;

@@ -9,7 +9,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { STORES, getEmployeesByStore } from '@/data/paradise';
 import { useTimingConfig } from '@/hooks/useTimingConfig';
-import '@/styles/features/morning-gradient-button.css';
+// 🤖 [IA] - FAE-02: PURGA QUIRÚRGICA COMPLETADA - CSS imports eliminados
+// Los 1 archivos CSS están ahora importados globalmente vía index.css:
+// - morning-gradient-button.css
 
 interface MorningCountWizardProps {
   isOpen: boolean;
