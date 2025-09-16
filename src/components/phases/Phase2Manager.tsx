@@ -278,41 +278,41 @@ export function Phase2Manager({
         onCancel={() => setShowExitConfirmation(false)}
       />
 
-      {/* 🤖 [IA] - v1.2.30: Modal de instrucciones con Glass Morphism v1.2.23 */}
+      {/* 🤖 [IA] - v1.2.30: Modal de instrucciones con Glass Morphism v1.2.23 - FASE 1 Doctrina Canónica */}
       <AlertDialog open={showInstructionsModal} onOpenChange={setShowInstructionsModal}>
-      <AlertDialogContent className="glass-modal-instructions">
-        <AlertDialogHeader className="glass-modal-header">
-          <AlertDialogTitle className="glass-modal-title" id="instructions-title">
-            <AlertCircle className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)]" aria-hidden="true" />
+      <AlertDialogContent className="glass-morphism-panel w-[clamp(300px,90vw,500px)] max-w-[500px] max-h-[clamp(400px,85vh,90vh)]">
+        <AlertDialogHeader className="text-center space-y-4">
+          <AlertDialogTitle className="text-primary-foreground text-[clamp(1.125rem,4.5vw,1.5rem)] font-semibold flex items-center justify-center gap-3" id="instructions-title">
+            <AlertCircle className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)] text-orange-400" aria-hidden="true" />
             💵 Preparar Dinero a Entregar
           </AlertDialogTitle>
         </AlertDialogHeader>
 
-        <div className="glass-modal-content">
-          {/* Mensaje principal destacado */}
-          <div className="glass-modal-alert">
-            <p className="glass-modal-alert-title">
+        <div className="space-y-6 p-6">
+          {/* Mensaje principal destacado - FASE 1: Usando glass-morphism-panel canónica */}
+          <div className="glass-morphism-panel border-2 border-orange-400/40 border-l-4 border-l-orange-400 text-center space-y-3">
+            <p className="text-orange-400 font-bold text-[clamp(0.875rem,3.5vw,1.1rem)]">
               ⚠️ IMPORTANTE
             </p>
-            <p className="glass-modal-alert-text">
+            <p className="text-primary-foreground font-semibold text-[clamp(0.875rem,3.5vw,1rem)]">
               El sistema dirá cuántas monedas y billetes tomar para entregar, solo debes colocar lo que diga en la bolsa.
             </p>
           </div>
 
-          {/* Checklist de preparación */}
-          <div className="glass-modal-checklist">
-            <p className="glass-modal-checklist-intro">
+          {/* Checklist de preparación - FASE 1: Usando clases canónicas */}
+          <div className="space-y-4">
+            <p className="text-muted-foreground text-[clamp(0.8rem,3.2vw,0.95rem)] text-center">
               Antes de continuar, confirme lo siguiente:
             </p>
 
-            {/* 🤖 [IA] - v1.2.30: Mensaje de activación secuencial usando clases CSS */}
-            <div className={`checklist-status-indicator ${enabledItems.bolsa ? 'ready' : ''}`}>
-              <p className={`checklist-status-text ${enabledItems.bolsa ? 'ready' : ''}`}>
+            {/* 🤖 [IA] - v1.2.30: Mensaje de activación secuencial usando clases canónicas */}
+            <div className="glass-morphism-panel text-center transition-all duration-300">
+              <p className={`font-medium text-[clamp(0.8rem,3.2vw,0.95rem)] ${enabledItems.bolsa ? 'text-green-400' : 'text-blue-400'}`}>
                 {!enabledItems.bolsa ? '⏱️ Preparando checklist...' : '📋 Verifiquen estemos Listos'}
               </p>
             </div>
 
-            <div className="glass-modal-checklist-items" role="group" aria-labelledby="instructions-title">
+            <div className="space-y-4" role="group" aria-labelledby="instructions-title">
               {/* Item 1: Bolsa */}
               <label
                 className={`checklist-item ${enabledItems.bolsa ? 'enabled' : 'disabled'} ${checkedItems.bolsa ? 'checked' : ''}`}
@@ -322,12 +322,9 @@ export function Phase2Manager({
                   onCheckedChange={() => enabledItems.bolsa && handleCheckChange('bolsa')}
                   disabled={!enabledItems.bolsa}
                   aria-label="Tengo la bolsa lista para entregar"
-                  style={{
-                    borderColor: checkedItems.bolsa ? 'var(--success-paradise)' : 'var(--border-disabled)',
-                    cursor: enabledItems.bolsa ? 'pointer' : 'not-allowed'
-                  }}
+                  className={`transition-colors duration-200 ${checkedItems.bolsa ? 'border-green-400 data-[state=checked]:bg-green-400' : ''}`}
                 />
-                <Package className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)]" style={{ color: 'var(--accent-primary)' }} />
+                <Package className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)] text-blue-400" />
                 <span className="checklist-item-text">
                   Tengo la bolsa lista para entregar
                   {!enabledItems.bolsa && (
@@ -348,12 +345,9 @@ export function Phase2Manager({
                   onCheckedChange={() => enabledItems.tirro && handleCheckChange('tirro')}
                   disabled={!enabledItems.tirro}
                   aria-label="Tengo cinta y plumon para rotular"
-                  style={{
-                    borderColor: checkedItems.tirro ? 'var(--success-paradise)' : 'var(--border-disabled)',
-                    cursor: enabledItems.tirro ? 'pointer' : 'not-allowed'
-                  }}
+                  className={`transition-colors duration-200 ${checkedItems.tirro ? 'border-green-400 data-[state=checked]:bg-green-400' : ''}`}
                 />
-                <ScrollText className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)]" style={{ color: 'var(--accent-primary)' }} />
+                <ScrollText className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)] text-blue-400" />
                 <span className="checklist-item-text">
                   Tengo cinta y plumon para rotular
                   {!enabledItems.tirro && (
@@ -374,12 +368,9 @@ export function Phase2Manager({
                   onCheckedChange={() => enabledItems.espacio && handleCheckChange('espacio')}
                   disabled={!enabledItems.espacio}
                   aria-label="Tomare cantidad que sistema diga"
-                  style={{
-                    borderColor: checkedItems.espacio ? 'var(--success-paradise)' : 'var(--border-disabled)',
-                    cursor: enabledItems.espacio ? 'pointer' : 'not-allowed'
-                  }}
+                  className={`transition-colors duration-200 ${checkedItems.espacio ? 'border-green-400 data-[state=checked]:bg-green-400' : ''}`}
                 />
-                <Grid3x3 className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)]" style={{ color: 'var(--accent-primary)' }} />
+                <Grid3x3 className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)] text-blue-400" />
                 <span className="checklist-item-text">
                   Tomare cantidad que sistema diga
                   {!enabledItems.espacio && (
@@ -400,12 +391,9 @@ export function Phase2Manager({
                   onCheckedChange={() => enabledItems.entendido && handleCheckChange('entendido')}
                   disabled={!enabledItems.entendido}
                   aria-label="Estamos listos para continuar"
-                  style={{
-                    borderColor: checkedItems.entendido ? 'var(--success-paradise)' : 'var(--border-disabled)',
-                    cursor: enabledItems.entendido ? 'pointer' : 'not-allowed'
-                  }}
+                  className={`transition-colors duration-200 ${checkedItems.entendido ? 'border-green-400 data-[state=checked]:bg-green-400' : ''}`}
                 />
-                <AlertCircle className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)]" style={{ color: 'var(--accent-primary)' }} />
+                <AlertCircle className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)] text-blue-400" />
                 <span className="checklist-item-text">
                   Estamos listos para continuar
                   {!enabledItems.entendido && (
@@ -420,12 +408,12 @@ export function Phase2Manager({
           </div>
         </div>
 
-        <AlertDialogFooter className="glass-modal-footer">
+        <AlertDialogFooter className="flex justify-center pt-6">
           <AlertDialogAction asChild>
-            <PrimaryActionButton 
-              onClick={() => setShowInstructionsModal(false)} 
+            <PrimaryActionButton
+              onClick={() => setShowInstructionsModal(false)}
               disabled={!allItemsChecked}
-              className="btn-phase2-instruction"
+              className="h-12 px-6 transition-all duration-300"
             >
               {allItemsChecked ? '✓ Continuar' : '☑️ Marque todos los ítems para continuar'}
             </PrimaryActionButton>

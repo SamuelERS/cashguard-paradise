@@ -4,106 +4,10 @@
  * Replaces inline styles with CSS classes
  */
 
-/* Instructions Modal - Glass Morphism Doctrine v1.2.23 */
-.glass-modal-instructions {
-  @apply glass-morphism-panel;
-  max-width: clamp(300px, 90vw, 500px);
-  max-height: clamp(400px, 85vh, 90vh);
-  position: fixed;
-  left: 50%;
-  top: 50%;
-  transform: translateX(-50%) translateY(-50%);
-  overflow: visible;
-  display: flex;
-  flex-direction: column;
-}
+/* 🤖 [IA] - FASE 1 COMPLETADA: Clases redundantes ERRADICADAS - Usar glass-morphism-panel canónica
+ * Mantenidas solo las clases específicas que no tienen equivalente canónico */
 
-/* Instructions Modal Header */
-.glass-modal-header {
-  flex-shrink: 0;
-}
-
-.glass-modal-title {
-  color: var(--accent-primary);
-  font-size: clamp(1rem, 4.5vw, 1.25rem);
-  display: flex;
-  align-items: center;
-  gap: clamp(0.375rem, 1.5vw, 0.5rem);
-}
-
-/* Instructions Modal Content */
-.glass-modal-content {
-  padding: clamp(1rem, 4vw, 1.5rem) clamp(0.5rem, 2vw, 1rem);
-  overflow: visible;
-  flex: 1;
-  min-height: 0;
-}
-
-/* Important Message Box */
-.glass-modal-alert {
-  background: linear-gradient(135deg, rgba(10, 132, 255, 0.1) 0%, rgba(36, 36, 36, 0.4) 100%);
-  border: 2px solid var(--accent-primary);
-  border-radius: clamp(6px, 2.5vw, 12px);
-  padding: clamp(0.75rem, 3vw, 1rem);
-  margin-bottom: clamp(1rem, 4vw, 1.25rem);
-  text-align: center;
-  box-shadow: 0 4px 12px var(--accent-glow);
-}
-
-.glass-modal-alert-title {
-  font-size: clamp(0.875rem, 3.5vw, 1.1rem);
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-  color: var(--destructive);
-}
-
-.glass-modal-alert-text {
-  font-size: clamp(0.875rem, 3.5vw, 1rem);
-  font-weight: 600;
-  color: var(--foreground);
-}
-
-.glass-modal-alert-subtext {
-  font-size: clamp(0.75rem, 3vw, 0.9rem);
-  margin-top: 0.5rem;
-  color: var(--muted-foreground);
-}
-
-/* Checklist Container */
-.glass-modal-checklist {
-  color: var(--muted-foreground);
-}
-
-.glass-modal-checklist-intro {
-  margin-bottom: 0.75rem;
-  font-size: clamp(0.8rem, 3.2vw, 0.95rem);
-}
-
-.glass-modal-checklist-items {
-  display: flex;
-  flex-direction: column;
-  gap: clamp(0.75rem, 3vw, 1rem);
-  padding: clamp(0.5rem, 2vw, 0.75rem) 0;
-}
-
-/* Checklist Status Indicator */
-.checklist-status-indicator {
-  margin-bottom: 1rem;
-  transition: all 0.3s ease;
-}
-
-.checklist-status-text {
-  font-size: clamp(0.75rem, 3vw, 0.875rem);
-  font-weight: 500;
-  text-align: center;
-  color: var(--muted-foreground);
-}
-
-.checklist-status-text.ready {
-  color: var(--success);
-}
-
-/* Checklist Items */
+/* Checklist Items - Specific behavior not covered by canonical classes */
 .checklist-item {
   display: flex;
   align-items: center;
@@ -170,15 +74,6 @@
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
-}
-
-/* Modal Footer */
-.glass-modal-footer {
-  flex-shrink: 0;
-  padding-top: clamp(0.5rem, 2vw, 0.75rem);
-  display: flex;
-  justify-content: center;
-  width: 100%;
 }
 
 /* 🤖 [IA] - v1.2.31: New Paradise Design System Utilities for Phase2 */
@@ -307,15 +202,6 @@
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-  .glass-modal-instructions {
-    max-width: 95vw;
-    max-height: 90vh;
-  }
-
-  .glass-modal-content {
-    padding: clamp(0.75rem, 3vw, 1rem) clamp(0.375rem, 1.5vw, 0.75rem);
-  }
-
   .glass-delivery-panel {
     border-width: 1px;
     box-shadow: 0 2px 8px rgba(10, 132, 255, 0.15);
