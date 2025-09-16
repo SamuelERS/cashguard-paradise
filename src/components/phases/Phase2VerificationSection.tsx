@@ -89,10 +89,7 @@ export function Phase2VerificationSection({
 
   if (verificationSteps.length === 0) {
     return (
-      <div className="glass-morphism-panel text-center p-8" style={{
-        border: '1px solid rgba(0, 186, 124, 0.4)',
-        boxShadow: '0 4px 12px rgba(0, 186, 124, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
-      }}>
+      <div className="glass-panel-success text-center p-8">
         <Check className="w-16 h-16 mx-auto mb-4 text-success" />
         <h3 className="text-xl font-bold mb-2 text-success">
           Verificación Innecesaria
@@ -115,11 +112,7 @@ export function Phase2VerificationSection({
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ type: "spring", stiffness: 260, damping: 20 }}
-        className="glass-morphism-panel p-4"
-        style={{
-          border: '1px solid rgba(0, 186, 124, 0.4)',
-          boxShadow: '0 4px 12px rgba(0, 186, 124, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
-        }}
+        className="glass-panel-success p-4"
       >
         <div className="flex flex-col sm:flex-row items-center justify-between gap-[clamp(0.5rem,2vw,0.75rem)]">
           <div className="flex items-center gap-[clamp(0.5rem,2vw,0.75rem)]">
@@ -138,11 +131,7 @@ export function Phase2VerificationSection({
             </div>
           </div>
           <div className="text-center sm:text-right">
-            <span className="inline-block px-[clamp(0.5rem,2vw,0.75rem)] py-[clamp(0.25rem,1vw,0.375rem)] rounded-[clamp(0.5rem,2vw,0.75rem)] text-[clamp(0.75rem,3vw,0.875rem)] font-bold" style={{
-              backgroundColor: 'rgba(0, 186, 124, 0.15)',
-              border: '2px solid rgba(0, 186, 124, 0.4)',
-              color: 'var(--success-paradise)'
-            }}>
+            <span className="glass-target-badge inline-block px-[clamp(0.5rem,2vw,0.75rem)] py-[clamp(0.25rem,1vw,0.375rem)] rounded-[clamp(0.5rem,2vw,0.75rem)] text-[clamp(0.75rem,3vw,0.875rem)] font-bold">
               🎯 Objetivo: Cambio completo
             </span>
           </div>
@@ -150,19 +139,13 @@ export function Phase2VerificationSection({
       </motion.div>
 
       {/* Progress - 🤖 [IA] - v1.2.24: Glass morphism unificado */}
-      <div className="glass-morphism-panel p-4" style={{
-        border: '1px solid rgba(0, 186, 124, 0.25)',
-        boxShadow: '0 4px 12px rgba(0, 186, 124, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-        background: 'linear-gradient(135deg, rgba(0, 186, 124, 0.05) 0%, rgba(36, 36, 36, 0.4) 100%)'
-      }}>
+      <div className="glass-progress-container p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-[clamp(0.5rem,2vw,0.75rem)]">
             {/* Badge QUEDA EN CAJA */}
-            <div style={{
+            <div className="glass-badge-success" style={{
               padding: `clamp(0.25rem,1vw,0.375rem) clamp(0.5rem,2vw,0.75rem)`,
               borderRadius: `clamp(10px,4vw,20px)`,
-              background: 'linear-gradient(135deg, rgba(0, 186, 124, 0.2) 0%, rgba(0, 186, 124, 0.1) 100%)',
-              border: '1px solid rgba(0, 186, 124, 0.4)',
               display: 'flex',
               alignItems: 'center',
               gap: `clamp(0.25rem,1vw,0.375rem)`
@@ -204,11 +187,7 @@ export function Phase2VerificationSection({
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ type: "spring", stiffness: 260, damping: 20 }}
-            className="glass-morphism-panel p-5"
-            style={{
-              border: '2px solid rgba(0, 186, 124, 0.5)',
-              boxShadow: '0 4px 12px rgba(0, 186, 124, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
-            }}
+            className="glass-verification-field p-5"
           >
             {/* Header simplificado con denominación mejorada */}
             <div className="flex items-center gap-[clamp(0.5rem,2vw,0.75rem)] mb-[clamp(0.75rem,3vw,1rem)]">
@@ -251,11 +230,7 @@ export function Phase2VerificationSection({
 
             {/* Cantidad destacada con jerarquía balanceada */}
             <div className="text-center mb-[clamp(0.75rem,3vw,1rem)]">
-              <div className="inline-block px-[clamp(1rem,4vw,1.25rem)] py-[clamp(0.375rem,1.5vw,0.5rem)] rounded-[clamp(0.5rem,2vw,0.75rem)]" 
-                style={{
-                  backgroundColor: 'rgba(0, 186, 124, 0.08)',
-                  border: '1px solid rgba(0, 186, 124, 0.25)',
-                }}
+              <div className="glass-quantity-display inline-block px-[clamp(1rem,4vw,1.25rem)] py-[clamp(0.375rem,1.5vw,0.5rem)] rounded-[clamp(0.5rem,2vw,0.75rem)]"
               >
                 <p className="text-[clamp(1.25rem,5vw,1.5rem)] sm:text-[clamp(1.5rem,6vw,1.875rem)] font-bold" style={{ color: 'var(--success-paradise)' }}>
                   {currentStep.quantity}
@@ -394,10 +369,7 @@ export function Phase2VerificationSection({
 
       {/* Final Validation - 🤖 [IA] - v1.2.24: Glass morphism unificado */}
       {allStepsCompleted && (
-        <div className="glass-morphism-panel text-center p-8" style={{
-          border: '1px solid rgba(0, 186, 124, 0.4)',
-          boxShadow: '0 4px 12px rgba(0, 186, 124, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
-        }}>
+        <div className="glass-panel-success text-center p-8">
           <Check className="w-[clamp(3rem,12vw,4rem)] h-[clamp(3rem,12vw,4rem)] mx-auto mb-[clamp(0.75rem,3vw,1rem)]" style={{ color: 'var(--success-paradise)' }} />
           <h3 className="text-[clamp(1rem,4.5vw,1.25rem)] font-bold mb-[clamp(0.5rem,2vw,0.75rem)]" style={{ color: 'var(--success-paradise)' }}>
             Verificación Exitosa
