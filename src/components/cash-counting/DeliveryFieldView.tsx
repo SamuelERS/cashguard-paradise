@@ -48,7 +48,7 @@ export function DeliveryFieldView({
 }: DeliveryFieldViewProps) {
 
   // Phase 2 always uses evening colors (blue gradient)
-  const borderColor = 'var(--accent-primary)';
+  const borderColor = 'rgba(10, 132, 255, 0.3)';
   const isMorningCount = false;
 
   const { shouldAnimate, isVisible } = usePulseAnimation(isActive);
@@ -278,7 +278,11 @@ export function DeliveryFieldView({
                 {getIcon()}
               </div>
 
-              <div className="glass-status-error inline-block px-4 py-2 rounded-lg mt-4">
+              <div className="inline-block px-4 py-2 rounded-lg mt-4"
+                style={{
+                  backgroundColor: 'rgba(244, 33, 46, 0.1)',
+                  border: '1px solid rgba(244, 33, 46, 0.3)'
+                }}>
                 <p className="text-sm font-semibold" style={{ color: '#f4212e' }}>
                   📤 ENTREGAR <span style={{ color: 'white', fontWeight: 'bold', fontSize: '1.4em' }}>{targetQuantity}</span>
                 </p>
@@ -302,7 +306,9 @@ export function DeliveryFieldView({
                     autoComplete="off"
                     placeholder="0"
                     style={{
-                      borderColor: showError ? 'var(--danger)' : 'var(--accent-primary)',
+                      backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                      border: `2px solid ${showError ? 'rgba(244, 33, 46, 0.5)' : borderColor}`,
+                      borderRadius: 'clamp(8px, 2vw, 12px)',
                       fontSize: 'clamp(18px, 4vw, 24px)',
                       fontWeight: 'bold',
                       height: 'clamp(48px, 12vw, 56px)',
