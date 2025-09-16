@@ -283,7 +283,7 @@ export function Phase2Manager({
       <AlertDialogContent className="glass-morphism-panel w-[clamp(300px,90vw,500px)] max-w-[500px] max-h-[clamp(400px,85vh,90vh)]">
         <AlertDialogHeader className="text-center space-y-4">
           <AlertDialogTitle className="text-primary-foreground text-[clamp(1.125rem,4.5vw,1.5rem)] font-semibold flex items-center justify-center gap-3" id="instructions-title">
-            <AlertCircle className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)] text-orange-400" aria-hidden="true" />
+            {/* 🤖 [IA] - FASE 3: Icono único sin redundancia */}
             💵 Preparar Dinero a Entregar
           </AlertDialogTitle>
         </AlertDialogHeader>
