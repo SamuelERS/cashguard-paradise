@@ -92,10 +92,7 @@ export function Phase2DeliverySection({
 
   if (deliverySteps.length === 0) {
     return (
-      <div className="glass-morphism-panel text-center p-8" style={{
-        border: '1px solid rgba(0, 186, 124, 0.4)',
-        boxShadow: '0 4px 12px rgba(0, 186, 124, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
-      }}>
+      <div className="glass-panel-success text-center p-8">
         <Check className="w-12 h-12 mx-auto mb-4 text-success" />
         <h3 className="text-xl font-bold mb-2 text-success">
           Sin entrega necesaria
@@ -153,10 +150,7 @@ export function Phase2DeliverySection({
       {/* Section Complete - Separated container */}
       {allStepsCompleted && (
         <div>
-          <div className="glass-morphism-panel text-center p-8" style={{
-            border: '1px solid rgba(0, 186, 124, 0.4)',
-            boxShadow: '0 4px 12px rgba(0, 186, 124, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
-          }}>
+          <div className="glass-panel-success text-center p-8">
             <Check className="w-12 h-12 mx-auto mb-4 text-success" />
             <h3 className="text-xl font-bold mb-2 text-success">
               🏢 Separación Completa
