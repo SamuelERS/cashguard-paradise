@@ -1,5 +1,5 @@
 // 🤖 [IA] - v1.1.14 - Simplificación de tabs y eliminación de redundancias en Fase 2
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Package, ScrollText, Grid3x3, AlertCircle, DollarSign } from 'lucide-react';
 // 🤖 [IA] - v1.2.10: Agregado AlertDialog para confirmación de salida
@@ -158,29 +158,29 @@ export function Phase2Manager({
         {/* Header integrado con sistema de diseño coherente */}
         <div className="cash-counter-header">
           <div className="cash-counter-title">
-            <DollarSign className="cash-counter-icon" />
+            <DollarSign className="cash-counter-icon evening-gradient" />
             <h2>Fase 2: División de Efectivo</h2>
           </div>
         </div>
 
         {/* Área de contenido con sistema coherente */}
         <div className="cash-counter-content">
-            {/* Section Navigation - 🤖 [IA] - v1.2.30: Espaciado optimizado */}
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="glass-morphism-panel p-4"
-            >
-              {/* Botones de navegación */}
-              <div className="flex items-center gap-2 justify-center">
-                <Button
-                  variant="phase2-tab"
-                  data-active={currentSection === 'delivery' ? "true" : "false"}
-                  data-state="delivery"
-                  data-completed={deliveryCompleted ? "true" : "false"}
-                  onClick={() => currentSection !== 'delivery' && !verificationCompleted && setCurrentSection('delivery')}
-                  aria-pressed={currentSection === 'delivery'}
-                  aria-label="Sección de entrega"
+          {/* Section Navigation - 🤖 [IA] - v1.2.30: Espaciado optimizado */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="glass-morphism-panel p-4"
+          >
+            {/* Botones de navegación */}
+            <div className="flex items-center gap-2 justify-center">
+              <Button
+                variant="phase2-tab"
+                data-active={currentSection === 'delivery' ? "true" : "false"}
+                data-state="delivery"
+                data-completed={deliveryCompleted ? "true" : "false"}
+                onClick={() => currentSection !== 'delivery' && !verificationCompleted && setCurrentSection('delivery')}
+                aria-pressed={currentSection === 'delivery'}
+                aria-label="Sección de entrega"
                 >
                   {deliveryCompleted && (
                     <span>✓</span>
@@ -204,65 +204,64 @@ export function Phase2Manager({
                   Verificar
                 </Button>
               </div>
-            </motion.div>
+          </motion.div>
 
-            {/* Section Content */}
-            <AnimatePresence mode="wait">
-              {currentSection === 'delivery' && (
-                <motion.div
-                  key="delivery"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                >
-                  <Phase2DeliverySection
-                    deliveryCalculation={deliveryCalculation}
-                    onStepComplete={handleDeliveryStepComplete}
-                    onSectionComplete={handleDeliverySectionComplete}
-                    completedSteps={deliveryProgress}
-                    onCancel={() => setShowExitConfirmation(true)}
-                    onPrevious={() => {}}
-                    canGoPrevious={false}
-                  />
-                </motion.div>
-              )}
-
-              {currentSection === 'verification' && (
-                <motion.div
-                  key="verification"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                >
-                  <Phase2VerificationSection
-                    deliveryCalculation={deliveryCalculation}
-                    onStepComplete={handleVerificationStepComplete}
-                    onSectionComplete={handleVerificationSectionComplete}
-                    completedSteps={verificationProgress}
-                    onCancel={() => setShowExitConfirmation(true)}
-                    onPrevious={() => {}}
-                    canGoPrevious={false}
-                  />
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* Manual section switch - only show when delivery is complete */}
-            {deliveryCompleted && currentSection === 'delivery' && !verificationCompleted && (
-              <div className="flex justify-center">
-                <Button
-                  variant="phase2-verify"
-                  onClick={() => setCurrentSection('verification')}
-                  aria-label="Verificar efectivo y continuar"
-                  className="px-6"
-                >
-                  <span>Verificar</span>
-                  <span className="hidden sm:inline ml-1">Efectivo</span>
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              </div>
+          {/* Section Content */}
+          <AnimatePresence mode="wait">
+            {currentSection === 'delivery' && (
+              <motion.div
+                key="delivery"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+              >
+                <Phase2DeliverySection
+                  deliveryCalculation={deliveryCalculation}
+                  onStepComplete={handleDeliveryStepComplete}
+                  onSectionComplete={handleDeliverySectionComplete}
+                  completedSteps={deliveryProgress}
+                  onCancel={() => setShowExitConfirmation(true)}
+                  onPrevious={() => {}}
+                  canGoPrevious={false}
+                />
+              </motion.div>
             )}
-          </div>
+
+            {currentSection === 'verification' && (
+              <motion.div
+                key="verification"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+              >
+                <Phase2VerificationSection
+                  deliveryCalculation={deliveryCalculation}
+                  onStepComplete={handleVerificationStepComplete}
+                  onSectionComplete={handleVerificationSectionComplete}
+                  completedSteps={verificationProgress}
+                  onCancel={() => setShowExitConfirmation(true)}
+                  onPrevious={() => {}}
+                  canGoPrevious={false}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Manual section switch - only show when delivery is complete */}
+          {deliveryCompleted && currentSection === 'delivery' && !verificationCompleted && (
+            <div className="flex justify-center">
+              <Button
+                variant="phase2-verify"
+                onClick={() => setCurrentSection('verification')}
+                aria-label="Verificar efectivo y continuar"
+                className="px-6"
+              >
+                <span>Verificar</span>
+                <span className="hidden sm:inline ml-1">Efectivo</span>
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -279,8 +278,8 @@ export function Phase2Manager({
         onCancel={() => setShowExitConfirmation(false)}
       />
 
-    {/* 🤖 [IA] - v1.2.30: Modal de instrucciones con Glass Morphism v1.2.23 */}
-    <AlertDialog open={showInstructionsModal} onOpenChange={setShowInstructionsModal}>
+      {/* 🤖 [IA] - v1.2.30: Modal de instrucciones con Glass Morphism v1.2.23 */}
+      <AlertDialog open={showInstructionsModal} onOpenChange={setShowInstructionsModal}>
       <AlertDialogContent className="glass-modal-instructions">
         <AlertDialogHeader className="glass-modal-header">
           <AlertDialogTitle className="glass-modal-title" id="instructions-title">
@@ -324,11 +323,11 @@ export function Phase2Manager({
                   disabled={!enabledItems.bolsa}
                   aria-label="Tengo la bolsa lista para entregar"
                   style={{
-                    borderColor: checkedItems.bolsa ? '#00ba7c' : 'rgba(255, 255, 255, 0.3)',
+                    borderColor: checkedItems.bolsa ? 'var(--success-paradise)' : 'var(--border-disabled)',
                     cursor: enabledItems.bolsa ? 'pointer' : 'not-allowed'
                   }}
                 />
-                <Package className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)]" style={{ color: '#0a84ff' }} />
+                <Package className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)]" style={{ color: 'var(--accent-primary)' }} />
                 <span className="checklist-item-text">
                   Tengo la bolsa lista para entregar
                   {!enabledItems.bolsa && (
@@ -350,11 +349,11 @@ export function Phase2Manager({
                   disabled={!enabledItems.tirro}
                   aria-label="Tengo cinta y plumon para rotular"
                   style={{
-                    borderColor: checkedItems.tirro ? '#00ba7c' : 'rgba(255, 255, 255, 0.3)',
+                    borderColor: checkedItems.tirro ? 'var(--success-paradise)' : 'var(--border-disabled)',
                     cursor: enabledItems.tirro ? 'pointer' : 'not-allowed'
                   }}
                 />
-                <ScrollText className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)]" style={{ color: '#0a84ff' }} />
+                <ScrollText className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)]" style={{ color: 'var(--accent-primary)' }} />
                 <span className="checklist-item-text">
                   Tengo cinta y plumon para rotular
                   {!enabledItems.tirro && (
@@ -376,11 +375,11 @@ export function Phase2Manager({
                   disabled={!enabledItems.espacio}
                   aria-label="Tomare cantidad que sistema diga"
                   style={{
-                    borderColor: checkedItems.espacio ? '#00ba7c' : 'rgba(255, 255, 255, 0.3)',
+                    borderColor: checkedItems.espacio ? 'var(--success-paradise)' : 'var(--border-disabled)',
                     cursor: enabledItems.espacio ? 'pointer' : 'not-allowed'
                   }}
                 />
-                <Grid3x3 className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)]" style={{ color: '#0a84ff' }} />
+                <Grid3x3 className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)]" style={{ color: 'var(--accent-primary)' }} />
                 <span className="checklist-item-text">
                   Tomare cantidad que sistema diga
                   {!enabledItems.espacio && (
@@ -402,11 +401,11 @@ export function Phase2Manager({
                   disabled={!enabledItems.entendido}
                   aria-label="Estamos listos para continuar"
                   style={{
-                    borderColor: checkedItems.entendido ? '#00ba7c' : 'rgba(255, 255, 255, 0.3)',
+                    borderColor: checkedItems.entendido ? 'var(--success-paradise)' : 'var(--border-disabled)',
                     cursor: enabledItems.entendido ? 'pointer' : 'not-allowed'
                   }}
                 />
-                <AlertCircle className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)]" style={{ color: '#0a84ff' }} />
+                <AlertCircle className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)]" style={{ color: 'var(--accent-primary)' }} />
                 <span className="checklist-item-text">
                   Estamos listos para continuar
                   {!enabledItems.entendido && (

@@ -49,6 +49,11 @@
     --success-paradise-glow: rgba(0, 186, 124, 0.25);
     /* Paradise muted text color */
     --muted-paradise: #8899a6;
+    /* Phase accent colors */
+    --accent-primary: #0a84ff;
+    --accent-secondary: #5e5ce6;
+    /* Disabled border color for checklist items */
+    --border-disabled: rgba(255, 255, 255, 0.3);
     --warning: #ff9f0a;
     --warning-glow: rgba(255, 159, 10, 0.25);
     --danger: #ff453a;
@@ -1724,6 +1729,14 @@
 .cash-counter-icon {
   width: var(--icon-md);
   height: var(--icon-md);
+}
+
+/* 🤖 [IA] - v1.2.30: Gradient icon for Phase 2 header */
+.cash-counter-icon.evening-gradient {
+  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 /* Área de contenido scrollable */
