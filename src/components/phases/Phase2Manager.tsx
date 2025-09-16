@@ -26,6 +26,8 @@ import { ConstructiveActionButton } from "@/components/ui/constructive-action-bu
 import { NeutralActionButton } from "@/components/ui/neutral-action-button";
 // 🤖 [IA] - v1.3.0: Importado CSS modular para botones de Phase2
 import "@/styles/features/phase2-buttons.css";
+// 🤖 [IA] - v1.2.30: Importado CSS modular para modal de Phase2
+import "@/styles/features/phase2-modal.css";
 import { Phase2DeliverySection } from './Phase2DeliverySection';
 import { Phase2VerificationSection } from './Phase2VerificationSection';
 import { DeliveryCalculation } from '@/types/phases';
@@ -151,32 +153,23 @@ export function Phase2Manager({
 
   return (
     <>
-      {/* 🤖 [IA] - v1.2.29: Container principal opaco para fidelidad visual 100% con Phase 1 */}
-      <div className="space-y-fluid-xs max-w-md mx-auto sm:max-w-2xl lg:max-w-4xl">
-        <div className="cash-counter-container space-y-fluid-md">
-          {/* Header integrado con sistema de diseño coherente */}
-          <div className="cash-counter-header">
-            <div className="cash-counter-title">
-              <DollarSign className="cash-counter-icon" style={{
-                background: 'linear-gradient(135deg, #0a84ff 0%, #5e5ce6 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text'
-              }} />
-              <h2>Fase 2: División de Efectivo</h2>
-            </div>
-            <p className="text-muted-foreground text-center">
-              Separa lo que va a gerencia
-            </p>
+      {/* 🤖 [IA] - v1.2.30: Estructura simplificada sin contenedores redundantes */}
+      <div className="cash-counter-container space-y-fluid-md max-w-md mx-auto sm:max-w-2xl lg:max-w-4xl">
+        {/* Header integrado con sistema de diseño coherente */}
+        <div className="cash-counter-header">
+          <div className="cash-counter-title">
+            <DollarSign className="cash-counter-icon" />
+            <h2>Fase 2: División de Efectivo</h2>
           </div>
+        </div>
 
-          {/* Área de contenido con sistema coherente */}
-          <div className="cash-counter-content">
-            {/* Section Navigation - 🤖 [IA] - v1.2.29: Movido dentro del content area */}
+        {/* Área de contenido con sistema coherente */}
+        <div className="cash-counter-content">
+            {/* Section Navigation - 🤖 [IA] - v1.2.30: Espaciado optimizado */}
             <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="glass-morphism-panel p-4 mb-fluid-md"
+              className="glass-morphism-panel p-4"
             >
               {/* Botones de navegación */}
               <div className="flex items-center gap-2 justify-center">
@@ -286,120 +279,50 @@ export function Phase2Manager({
         onCancel={() => setShowExitConfirmation(false)}
       />
 
-    {/* 🤖 [IA] - v1.2.10: Modal de instrucciones con checklist para preparación - Colores de corte nocturno */}
+    {/* 🤖 [IA] - v1.2.30: Modal de instrucciones con Glass Morphism v1.2.23 */}
     <AlertDialog open={showInstructionsModal} onOpenChange={setShowInstructionsModal}>
-      <AlertDialogContent style={{
-        /* 🤖 [IA] - v1.2.26: Restaurando Glass Morphism consistente con otros modales */
-        backgroundColor: 'rgba(36, 36, 36, 0.4)',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
-        border: '1px solid rgba(255, 255, 255, 0.15)',
-        borderRadius: `clamp(8px, 3vw, 16px)`,
-        boxShadow: '0 4px 24px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-        maxWidth: `clamp(300px, 90vw, 500px)`,
-        maxHeight: `clamp(400px, 85vh, 90vh)`,
-        position: 'fixed',
-        left: '50%',
-        top: '50%',
-        transform: 'translateX(-50%) translateY(-50%)',
-        overflow: 'visible',
-        display: 'flex',
-        flexDirection: 'column'
-      }}>
-        <AlertDialogHeader style={{ flexShrink: 0 }}>
-          <AlertDialogTitle style={{ 
-            color: '#1d9bf0', 
-            fontSize: `clamp(1rem, 4.5vw, 1.25rem)`, 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: `clamp(0.375rem, 1.5vw, 0.5rem)` 
-          }}>
-            <AlertCircle className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)]" />
+      <AlertDialogContent className="glass-modal-instructions">
+        <AlertDialogHeader className="glass-modal-header">
+          <AlertDialogTitle className="glass-modal-title" id="instructions-title">
+            <AlertCircle className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)]" aria-hidden="true" />
             💵 Preparar Dinero a Entregar
           </AlertDialogTitle>
         </AlertDialogHeader>
-        
-        <div style={{
-          padding: `clamp(1rem, 4vw, 1.5rem) clamp(0.5rem, 2vw, 1rem)`,
-          overflow: 'visible',
-          flex: 1,
-          minHeight: 0
-        }}>
+
+        <div className="glass-modal-content">
           {/* Mensaje principal destacado */}
-          <div style={{
-            backgroundColor: 'rgba(10, 132, 255, 0.1)',
-            border: '2px solid rgba(10, 132, 255, 0.4)',
-            borderRadius: `clamp(6px, 2.5vw, 12px)`,
-            padding: `clamp(0.75rem, 3vw, 1rem)`,
-            marginBottom: `clamp(1rem, 4vw, 1.25rem)`,
-            textAlign: 'center'
-          }}>
-            <p className="text-destructive font-bold mb-2" style={{
-              fontSize: `clamp(0.875rem, 3.5vw, 1.1rem)`
-            }}>
+          <div className="glass-modal-alert">
+            <p className="glass-modal-alert-title">
               ⚠️ IMPORTANTE
             </p>
-            <p className="text-white font-semibold" style={{
-              fontSize: `clamp(0.875rem, 3.5vw, 1rem)`
-            }}>
+            <p className="glass-modal-alert-text">
               El sistema dirá cuántas monedas y billetes tomar para entregar, solo debes colocar lo que diga en la bolsa.
-            </p>
-            <p className="text-muted-foreground mt-2" style={{
-              fontSize: `clamp(0.75rem, 3vw, 0.9rem)`
-            }}>
-              
             </p>
           </div>
 
           {/* Checklist de preparación */}
-          <div className="text-muted-foreground">
-            <p className="mb-3" style={{
-              fontSize: `clamp(0.8rem, 3.2vw, 0.95rem)`
-            }}>
+          <div className="glass-modal-checklist">
+            <p className="glass-modal-checklist-intro">
               Antes de continuar, confirme lo siguiente:
             </p>
-            
-            {/* 🤖 [IA] - v1.2.26: Mensaje de activación secuencial usando clases CSS */}
+
+            {/* 🤖 [IA] - v1.2.30: Mensaje de activación secuencial usando clases CSS */}
             <div className={`checklist-status-indicator ${enabledItems.bolsa ? 'ready' : ''}`}>
               <p className={`checklist-status-text ${enabledItems.bolsa ? 'ready' : ''}`}>
                 {!enabledItems.bolsa ? '⏱️ Preparando checklist...' : '📋 Verifiquen estemos Listos'}
               </p>
             </div>
-            
-            <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: `clamp(0.75rem, 3vw, 1rem)`,
-              padding: `clamp(0.5rem, 2vw, 0.75rem) 0`
-            }}>
+
+            <div className="glass-modal-checklist-items" role="group" aria-labelledby="instructions-title">
               {/* Item 1: Bolsa */}
-              <motion.label
-                className={getItemClassName('bolsa')}
-                animate={
-                  hiddenItems.bolsa
-                    ? {
-                        opacity: 0.5,
-                        scale: 0.95,
-                        transition: {
-                          opacity: { duration: 0.6, ease: "easeOut" },
-                          scale: { duration: 0.6, ease: "easeOut" }
-                        }
-                      }
-                    : {
-                        opacity: 1,
-                        scale: 1,
-                        transition: {
-                          opacity: { duration: 0.6, ease: "easeOut" },
-                          scale: { duration: 0.6, ease: "easeOut" }
-                        }
-                      }
-                }
-                style={{ position: 'relative' }}
+              <label
+                className={`checklist-item ${enabledItems.bolsa ? 'enabled' : 'disabled'} ${checkedItems.bolsa ? 'checked' : ''}`}
               >
                 <Checkbox
                   checked={checkedItems.bolsa}
                   onCheckedChange={() => enabledItems.bolsa && handleCheckChange('bolsa')}
                   disabled={!enabledItems.bolsa}
+                  aria-label="Tengo la bolsa lista para entregar"
                   style={{
                     borderColor: checkedItems.bolsa ? '#00ba7c' : 'rgba(255, 255, 255, 0.3)',
                     cursor: enabledItems.bolsa ? 'pointer' : 'not-allowed'
@@ -415,53 +338,17 @@ export function Phase2Manager({
                     </span>
                   )}
                 </span>
-
-                {/* Overlay para item oculto */}
-                {hiddenItems.bolsa && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-lg backdrop-blur-sm"
-                  >
-                    <span className="text-xs text-white/80 font-medium px-3 py-1 bg-black/40 rounded-full">
-                      🔒 Complete el ítem anterior
-                    </span>
-                  </motion.div>
-                )}
-              </motion.label>
+              </label>
 
               {/* Item 2: Tirro */}
-              <motion.label
-                className={getItemClassName('tirro')}
-                animate={
-                  hiddenItems.tirro
-                    ? { // ESTADO OCULTO - TRANSICIÓN SUAVE
-                        opacity: 0.5,
-                        scale: 0.95,
-                        filter: 'blur(8px)',
-                        transition: {
-                          opacity: { duration: 0.6, ease: "easeOut" },
-                          scale: { duration: 0.6, ease: "easeOut" },
-                          filter: { duration: 0.6, ease: "easeOut" }
-                        }
-                      }
-                    : { // ESTADO REVELADO - TRANSICIÓN ELEGANTE
-                        opacity: 1,
-                        scale: 1,
-                        filter: 'blur(0px)',
-                        transition: {
-                          opacity: { duration: 0.6, ease: "easeOut" },
-                          scale: { duration: 0.6, ease: "easeOut" },
-                          filter: { duration: 0.6, ease: "easeOut" }
-                        }
-                      }
-                }
-                style={{ position: 'relative' }}
+              <label
+                className={`checklist-item ${enabledItems.tirro ? 'enabled' : 'disabled'} ${checkedItems.tirro ? 'checked' : ''}`}
               >
                 <Checkbox
                   checked={checkedItems.tirro}
                   onCheckedChange={() => enabledItems.tirro && handleCheckChange('tirro')}
                   disabled={!enabledItems.tirro}
+                  aria-label="Tengo cinta y plumon para rotular"
                   style={{
                     borderColor: checkedItems.tirro ? '#00ba7c' : 'rgba(255, 255, 255, 0.3)',
                     cursor: enabledItems.tirro ? 'pointer' : 'not-allowed'
@@ -477,53 +364,17 @@ export function Phase2Manager({
                     </span>
                   )}
                 </span>
-
-                {/* Overlay para item oculto */}
-                {hiddenItems.tirro && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-lg backdrop-blur-sm"
-                  >
-                    <span className="text-xs text-white/80 font-medium px-3 py-1 bg-black/40 rounded-full">
-                      🔒 Complete el ítem anterior
-                    </span>
-                  </motion.div>
-                )}
-              </motion.label>
+              </label>
 
               {/* Item 3: Espacio */}
-              <motion.label
-                className={getItemClassName('espacio')}
-                animate={
-                  hiddenItems.espacio
-                    ? { // ESTADO OCULTO - TRANSICIÓN SUAVE
-                        opacity: 0.5,
-                        scale: 0.95,
-                        filter: 'blur(8px)',
-                        transition: {
-                          opacity: { duration: 0.6, ease: "easeOut" },
-                          scale: { duration: 0.6, ease: "easeOut" },
-                          filter: { duration: 0.6, ease: "easeOut" }
-                        }
-                      }
-                    : { // ESTADO REVELADO - TRANSICIÓN ELEGANTE
-                        opacity: 1,
-                        scale: 1,
-                        filter: 'blur(0px)',
-                        transition: {
-                          opacity: { duration: 0.6, ease: "easeOut" },
-                          scale: { duration: 0.6, ease: "easeOut" },
-                          filter: { duration: 0.6, ease: "easeOut" }
-                        }
-                      }
-                }
-                style={{ position: 'relative' }}
+              <label
+                className={`checklist-item ${enabledItems.espacio ? 'enabled' : 'disabled'} ${checkedItems.espacio ? 'checked' : ''}`}
               >
                 <Checkbox
                   checked={checkedItems.espacio}
                   onCheckedChange={() => enabledItems.espacio && handleCheckChange('espacio')}
                   disabled={!enabledItems.espacio}
+                  aria-label="Tomare cantidad que sistema diga"
                   style={{
                     borderColor: checkedItems.espacio ? '#00ba7c' : 'rgba(255, 255, 255, 0.3)',
                     cursor: enabledItems.espacio ? 'pointer' : 'not-allowed'
@@ -539,53 +390,17 @@ export function Phase2Manager({
                     </span>
                   )}
                 </span>
-
-                {/* Overlay para item oculto */}
-                {hiddenItems.espacio && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-lg backdrop-blur-sm"
-                  >
-                    <span className="text-xs text-white/80 font-medium px-3 py-1 bg-black/40 rounded-full">
-                      🔒 Complete el ítem anterior
-                    </span>
-                  </motion.div>
-                )}
-              </motion.label>
+              </label>
 
               {/* Item 4: Entendido */}
-              <motion.label
-                className={getItemClassName('entendido')}
-                animate={
-                  hiddenItems.entendido
-                    ? { // ESTADO OCULTO - TRANSICIÓN SUAVE
-                        opacity: 0.5,
-                        scale: 0.95,
-                        filter: 'blur(8px)',
-                        transition: {
-                          opacity: { duration: 0.6, ease: "easeOut" },
-                          scale: { duration: 0.6, ease: "easeOut" },
-                          filter: { duration: 0.6, ease: "easeOut" }
-                        }
-                      }
-                    : { // ESTADO REVELADO - TRANSICIÓN ELEGANTE
-                        opacity: 1,
-                        scale: 1,
-                        filter: 'blur(0px)',
-                        transition: {
-                          opacity: { duration: 0.6, ease: "easeOut" },
-                          scale: { duration: 0.6, ease: "easeOut" },
-                          filter: { duration: 0.6, ease: "easeOut" }
-                        }
-                      }
-                }
-                style={{ position: 'relative' }}
+              <label
+                className={`checklist-item ${enabledItems.entendido ? 'enabled' : 'disabled'} ${checkedItems.entendido ? 'checked' : ''}`}
               >
                 <Checkbox
                   checked={checkedItems.entendido}
                   onCheckedChange={() => enabledItems.entendido && handleCheckChange('entendido')}
                   disabled={!enabledItems.entendido}
+                  aria-label="Estamos listos para continuar"
                   style={{
                     borderColor: checkedItems.entendido ? '#00ba7c' : 'rgba(255, 255, 255, 0.3)',
                     cursor: enabledItems.entendido ? 'pointer' : 'not-allowed'
@@ -601,31 +416,12 @@ export function Phase2Manager({
                     </span>
                   )}
                 </span>
-
-                {/* Overlay para item oculto */}
-                {hiddenItems.entendido && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-lg backdrop-blur-sm"
-                  >
-                    <span className="text-xs text-white/80 font-medium px-3 py-1 bg-black/40 rounded-full">
-                      🔒 Complete el ítem anterior
-                    </span>
-                  </motion.div>
-                )}
-              </motion.label>
+              </label>
             </div>
           </div>
         </div>
 
-        <AlertDialogFooter style={{ 
-          flexShrink: 0, 
-          paddingTop: `clamp(0.5rem, 2vw, 0.75rem)`,
-          display: 'flex',
-          justifyContent: 'center', 
-          width: '100%' 
-        }}>
+        <AlertDialogFooter className="glass-modal-footer">
           <AlertDialogAction asChild>
             <PrimaryActionButton 
               onClick={() => setShowInstructionsModal(false)} 

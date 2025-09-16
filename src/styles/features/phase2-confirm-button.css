@@ -40,6 +40,20 @@
 /* Efecto hover para estados válidos */
 .btn-phase2-confirm[data-state="valid"]:hover {
   transform: translateY(-2px);
+  filter: brightness(1.1);
+}
+
+/* Efecto focus para estados válidos */
+.btn-phase2-confirm[data-state="valid"]:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+  transform: translateY(-1px);
+}
+
+/* Animación de pulsado para retroalimentación táctil */
+.btn-phase2-confirm[data-state="valid"]:active {
+  transform: translateY(0px);
+  transition: transform 0.1s ease;
 }
 
 /* Efecto de iconos */
@@ -49,4 +63,28 @@
 
 .btn-phase2-confirm[data-state="invalid"] [data-icon="true"] {
   opacity: 0.6;
+}
+
+/* Estado de carga/procesamiento */
+.btn-phase2-confirm[data-state="processing"] {
+  opacity: 0.7;
+  cursor: wait;
+  pointer-events: none;
+}
+
+.btn-phase2-confirm[data-state="processing"]::after {
+  content: '';
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid currentColor;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-left: 8px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }

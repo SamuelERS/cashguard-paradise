@@ -43,6 +43,12 @@
     /* System States - iOS 26 Muted */
     --success: #30d158;
     --success-glow: rgba(48, 209, 88, 0.25);
+    /* 🤖 [IA] - v1.2.30: Paradise custom success colors for verification */
+    --success-paradise: #00ba7c;
+    --success-paradise-light: #06d6a0;
+    --success-paradise-glow: rgba(0, 186, 124, 0.25);
+    /* Paradise muted text color */
+    --muted-paradise: #8899a6;
     --warning: #ff9f0a;
     --warning-glow: rgba(255, 159, 10, 0.25);
     --danger: #ff453a;

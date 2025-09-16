@@ -124,15 +124,15 @@ export function Phase2VerificationSection({
         <div className="flex flex-col sm:flex-row items-center justify-between gap-[clamp(0.5rem,2vw,0.75rem)]">
           <div className="flex items-center gap-[clamp(0.5rem,2vw,0.75rem)]">
             <div className="w-[clamp(2.5rem,10vw,3rem)] h-[clamp(2.5rem,10vw,3rem)] rounded-full flex items-center justify-center" style={{
-              background: 'linear-gradient(135deg, #00ba7c 0%, #06d6a0 100%)'
+              background: 'linear-gradient(135deg, var(--success-paradise) 0%, var(--success-paradise-light) 100%)'
             }}>
               <Building className="w-[clamp(1.25rem,5vw,1.5rem)] h-[clamp(1.25rem,5vw,1.5rem)] text-white" />
             </div>
             <div>
-              <h3 className="text-[clamp(0.875rem,3.5vw,1rem)] sm:text-[clamp(1rem,4vw,1.125rem)] font-bold" style={{ color: '#00ba7c' }}>
+              <h3 className="text-[clamp(0.875rem,3.5vw,1rem)] sm:text-[clamp(1rem,4vw,1.125rem)] font-bold" style={{ color: 'var(--success-paradise)' }}>
                 VERIFICACIÓN EN CAJA
               </h3>
-              <p className="text-[clamp(0.75rem,3vw,0.875rem)]" style={{ color: '#8899a6' }}>
+              <p className="text-[clamp(0.75rem,3vw,0.875rem)]" style={{ color: 'var(--muted-foreground)' }}>
                 Confirmar lo que queda
               </p>
             </div>
@@ -141,7 +141,7 @@ export function Phase2VerificationSection({
             <span className="inline-block px-[clamp(0.5rem,2vw,0.75rem)] py-[clamp(0.25rem,1vw,0.375rem)] rounded-[clamp(0.5rem,2vw,0.75rem)] text-[clamp(0.75rem,3vw,0.875rem)] font-bold" style={{
               backgroundColor: 'rgba(0, 186, 124, 0.15)',
               border: '2px solid rgba(0, 186, 124, 0.4)',
-              color: '#00ba7c'
+              color: 'var(--success-paradise)'
             }}>
               🎯 Objetivo: Cambio completo
             </span>
@@ -168,15 +168,15 @@ export function Phase2VerificationSection({
               gap: `clamp(0.25rem,1vw,0.375rem)`
             }}>
               <span style={{ fontSize: `clamp(0.7rem,2.8vw,0.75rem)` }}>💼</span>
-              <span className="text-[clamp(0.7rem,2.8vw,0.75rem)] font-bold uppercase" style={{ color: '#00ba7c', letterSpacing: '0.5px' }}>
+              <span className="text-[clamp(0.7rem,2.8vw,0.75rem)] font-bold uppercase" style={{ color: 'var(--success-paradise)', letterSpacing: '0.5px' }}>
                 Queda en Caja
               </span>
             </div>
             {/* Contador de unidades */}
             <div className="flex items-center gap-[clamp(0.375rem,1.5vw,0.5rem)]">
-              <span className="text-[clamp(0.75rem,3vw,0.875rem)]" style={{ color: '#8899a6' }}>Verificado:</span>
+              <span className="text-[clamp(0.75rem,3vw,0.875rem)] hidden sm:inline" style={{ color: 'var(--muted-paradise)' }}>Verificado:</span>
               <span className="text-[clamp(0.875rem,3.5vw,1rem)] font-bold" style={{ color: '#ffffff' }}>
-                ✅ {Object.keys(completedSteps).length}/{verificationSteps.length}
+                ✅ {Object.keys(completedSteps).filter(key => completedSteps[key]).length}/{verificationSteps.length}
               </span>
             </div>
           </div>
@@ -184,8 +184,8 @@ export function Phase2VerificationSection({
             <div 
               className="h-[clamp(0.5rem,2vw,0.625rem)] rounded-full transition-all duration-500"
               style={{ 
-                width: `${(Object.keys(completedSteps).length / verificationSteps.length) * 100}%`,
-                background: 'linear-gradient(90deg, #00ba7c 0%, #06d6a0 100%)',
+                width: `${(Object.keys(completedSteps).filter(key => completedSteps[key]).length / verificationSteps.length) * 100}%`,
+                background: 'linear-gradient(90deg, var(--success-paradise) 0%, var(--success-paradise-light) 100%)',
                 boxShadow: '0 0 8px rgba(0, 186, 124, 0.4)'
               }}
             />
@@ -220,7 +220,7 @@ export function Phase2VerificationSection({
                 style={{
                   background: isCoins 
                     ? 'linear-gradient(135deg, #f4a52a 0%, #ffb84d 100%)' 
-                    : 'linear-gradient(135deg, #00ba7c 0%, #06d6a0 100%)'
+                    : 'linear-gradient(135deg, var(--success-paradise) 0%, var(--success-paradise-light) 100%)'
                 }}
               >
                 {isCoins ? (
@@ -243,7 +243,7 @@ export function Phase2VerificationSection({
                 >
                   {currentStep.label}
                 </motion.h3>
-                <div className="text-[clamp(0.75rem,3vw,0.875rem)] mt-[clamp(0.25rem,1vw,0.375rem)]" style={{ color: '#8899a6' }}>
+                <div className="text-[clamp(0.75rem,3vw,0.875rem)] mt-[clamp(0.25rem,1vw,0.375rem)]" style={{ color: 'var(--muted-paradise)' }}>
                   Valor unitario: {formatCurrency(currentStep.value)}
                 </div>
               </div>
@@ -257,10 +257,10 @@ export function Phase2VerificationSection({
                   border: '1px solid rgba(0, 186, 124, 0.25)',
                 }}
               >
-                <p className="text-[clamp(1.25rem,5vw,1.5rem)] sm:text-[clamp(1.5rem,6vw,1.875rem)] font-bold" style={{ color: '#00ba7c' }}>
+                <p className="text-[clamp(1.25rem,5vw,1.5rem)] sm:text-[clamp(1.5rem,6vw,1.875rem)] font-bold" style={{ color: 'var(--success-paradise)' }}>
                   {currentStep.quantity}
                 </p>
-                <p className="text-[clamp(0.75rem,3vw,0.875rem)] mt-[clamp(0.25rem,1vw,0.375rem)]" style={{ color: '#8899a6' }}>
+                <p className="text-[clamp(0.75rem,3vw,0.875rem)] mt-[clamp(0.25rem,1vw,0.375rem)]" style={{ color: 'var(--muted-paradise)' }}>
                   {isCoins ? 'moneda' : 'billete'}{currentStep.quantity !== 1 ? 's' : ''} debe quedar
                 </p>
               </div>
@@ -269,7 +269,7 @@ export function Phase2VerificationSection({
             {/* Input de confirmación - Estilo coherente con Phase2DeliverySection */}
             <div className="space-y-[clamp(0.5rem,2vw,0.75rem)]">
               
-              <div className="flex gap-[clamp(0.375rem,1.5vw,0.5rem)] items-center">
+              <div className="flex flex-col sm:flex-row gap-[clamp(0.375rem,1.5vw,0.5rem)] items-center justify-center">
                 <input
                   type="tel"
                   inputMode="numeric"
@@ -284,7 +284,7 @@ export function Phase2VerificationSection({
                   }}
                   onKeyPress={handleKeyPress}
                   placeholder={`Confirme: ${currentStep.quantity}`}
-                  className="input-field text-center text-[clamp(1rem,4.5vw,1.25rem)] font-semibold h-[clamp(2.5rem,10vw,3rem)] w-[clamp(200px,60vw,280px)]"
+                  className="input-field text-center text-[clamp(1rem,4.5vw,1.25rem)] font-semibold h-[clamp(2.5rem,10vw,3rem)] w-full max-w-[clamp(180px,80vw,260px)] sm:max-w-[clamp(200px,60vw,280px)]"
                   style={{
                     backgroundColor: 'rgba(255, 255, 255, 0.1)',
                     border: parseInt(inputValue) > 0 && parseInt(inputValue) !== currentStep.quantity 
@@ -360,7 +360,7 @@ export function Phase2VerificationSection({
       {/* Completed Steps Summary - 🤖 [IA] - v1.2.24: Glass morphism unificado */}
       {Object.keys(completedSteps).length > 0 && (
         <div className="glass-morphism-panel p-6">
-          <h4 className="text-[clamp(0.75rem,3vw,0.875rem)] font-medium mb-[clamp(0.75rem,3vw,1rem)]" style={{ color: '#00ba7c' }}>
+          <h4 className="text-[clamp(0.75rem,3vw,0.875rem)] font-medium mb-[clamp(0.75rem,3vw,1rem)]" style={{ color: 'var(--success-paradise)' }}>
             ✓ Denominaciones Verificadas
           </h4>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-[clamp(0.375rem,1.5vw,0.5rem)]">
@@ -375,7 +375,7 @@ export function Phase2VerificationSection({
                   border: completedSteps[step.key]
                     ? '1px solid rgba(0, 186, 124, 0.3)'
                     : '1px solid rgba(255, 255, 255, 0.1)',
-                  color: completedSteps[step.key] ? '#00ba7c' : '#8899a6'
+                  color: completedSteps[step.key] ? 'var(--success-paradise)' : 'var(--muted-paradise)'
                 }}
               >
                 {completedSteps[step.key] ? (
@@ -398,11 +398,11 @@ export function Phase2VerificationSection({
           border: '1px solid rgba(0, 186, 124, 0.4)',
           boxShadow: '0 4px 12px rgba(0, 186, 124, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
         }}>
-          <Check className="w-[clamp(3rem,12vw,4rem)] h-[clamp(3rem,12vw,4rem)] mx-auto mb-[clamp(0.75rem,3vw,1rem)]" style={{ color: '#00ba7c' }} />
-          <h3 className="text-[clamp(1rem,4.5vw,1.25rem)] font-bold mb-[clamp(0.5rem,2vw,0.75rem)]" style={{ color: '#00ba7c' }}>
+          <Check className="w-[clamp(3rem,12vw,4rem)] h-[clamp(3rem,12vw,4rem)] mx-auto mb-[clamp(0.75rem,3vw,1rem)]" style={{ color: 'var(--success-paradise)' }} />
+          <h3 className="text-[clamp(1rem,4.5vw,1.25rem)] font-bold mb-[clamp(0.5rem,2vw,0.75rem)]" style={{ color: 'var(--success-paradise)' }}>
             Verificación Exitosa
           </h3>
-          <p className="text-[clamp(0.875rem,3.5vw,1rem)] mb-[clamp(0.75rem,3vw,1rem)]" style={{ color: '#8899a6' }}>
+          <p className="text-[clamp(0.875rem,3.5vw,1rem)] mb-[clamp(0.75rem,3vw,1rem)]" style={{ color: 'var(--muted-paradise)' }}>
             Has confirmado que quedan exactamente {formatCurrency(expectedTotal)} en caja.
           </p>
           <div className="rounded-[clamp(0.5rem,2vw,0.75rem)] p-[clamp(0.75rem,3vw,1rem)] mb-[clamp(0.75rem,3vw,1rem)] mx-auto max-w-md" style={{
@@ -410,8 +410,8 @@ export function Phase2VerificationSection({
             border: '1px solid rgba(0, 186, 124, 0.3)',
           }}>
             <div className="flex items-center justify-center gap-[clamp(0.375rem,1.5vw,0.5rem)]">
-              <Target className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)]" style={{ color: '#00ba7c' }} />
-              <span className="font-bold text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#00ba7c' }}>
+              <Target className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)]" style={{ color: 'var(--success-paradise)' }} />
+              <span className="font-bold text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: 'var(--success-paradise)' }}>
                 OBJETIVO CUMPLIDO: {formatCurrency(50.00)} ✓
               </span>
             </div>
