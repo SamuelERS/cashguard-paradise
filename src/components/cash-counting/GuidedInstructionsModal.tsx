@@ -23,7 +23,6 @@ export function GuidedInstructionsModal({
   onConfirm,
   isMorningCount = false 
 }: GuidedInstructionsModalProps) {
-  const [understood, setUnderstood] = useState(false);
   
   // 🤖 [IA] - v1.2.23: Hook de flujo guiado para instrucciones
   const {
@@ -68,7 +67,6 @@ export function GuidedInstructionsModal({
   // 🤖 [IA] - v1.2.23: Inicialización del flujo cuando se abre el modal
   useEffect(() => {
     if (isOpen) {
-      setUnderstood(false);
       initializeFlow();
     }
   }, [isOpen, initializeFlow]);
@@ -165,60 +163,13 @@ export function GuidedInstructionsModal({
             </motion.div>
           )}
 
-          {/* 🤖 [IA] - v1.2.26: Checkbox de confirmación usando solo isFlowCompleted() como fuente única */}
-          <div
-            className="rounded-lg flex items-center cursor-pointer"
-            style={{
-              marginTop: `clamp(16px, ${24 * viewportScale}px, 24px)`,
-              padding: `clamp(12px, ${16 * viewportScale}px, 16px)`,
-              gap: `clamp(10px, ${12 * viewportScale}px, 12px)`,
-              backgroundColor: isFlowCompleted() ? `${primaryColor}11` : 'rgba(36, 36, 36, 0.4)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
-              border: isFlowCompleted() ? `2px solid ${primaryColor}44` : '2px solid rgba(255, 255, 255, 0.15)',
-              boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)',
-              transition: 'all 0.3s ease'
-            }}
-            onClick={() => isFlowCompleted() && setUnderstood(!understood)}
-          >
-            <Checkbox
-              checked={understood && isFlowCompleted()}
-              onCheckedChange={(checked) => isFlowCompleted() && setUnderstood(checked as boolean)}
-              className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-              disabled={!isFlowCompleted()}
-              style={{
-                borderColor: (understood && isFlowCompleted()) ? primaryColor : 'rgba(255, 255, 255, 0.3)',
-                width: `clamp(14px, ${16 * viewportScale}px, 16px)`,
-                height: `clamp(14px, ${16 * viewportScale}px, 16px)`
-              }}
-            />
-            <label className="flex-1 cursor-pointer select-none">
-              <span
-                className="font-medium text-white"
-                style={{
-                  fontSize: 'clamp(0.813rem, 3.25vw, 0.938rem)'
-                }}
-              >
-                {isFlowCompleted() ? 'Comprendemos y Realizamos las Reglas' : 'Revise todas las instrucciones primero'}
-              </span>
-              <p
-                className="text-gray-400"
-                style={{
-                  fontSize: 'clamp(0.688rem, 2.75vw, 0.75rem)',
-                  marginTop: `clamp(2px, ${4 * viewportScale}px, 4px)`
-                }}
-              >
-                No podremos modificar valores ya confirmados
-              </p>
-            </label>
-          </div>
 
-          {/* 🤖 [IA] - v1.2.26: Botón requiere checkbox marcado además del flujo completado */}
+          {/* 🤖 [IA] - v1.2.26: Botón se habilita directamente cuando el flujo se completa */}
           <PrimaryActionButton
             onClick={handleConfirm}
-            disabled={!isFlowCompleted() || !understood}
+            disabled={!isFlowCompleted()}
             className="btn-guided-start"
-            data-state={isFlowCompleted() && understood ? "active" : "inactive"}
+            data-state={isFlowCompleted() ? "active" : "inactive"}
             data-count-type={isMorningCount ? "morning" : "evening"}
             aria-label="Comenzar conteo guiado"
           >
