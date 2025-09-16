@@ -312,11 +312,33 @@ export function Phase2Manager({
               </p>
             </div>
 
-            <div className="space-y-4" role="group" aria-labelledby="instructions-title">
-              {/* Item 1: Bolsa */}
-              <label
-                className={`checklist-item ${enabledItems.bolsa ? 'enabled' : 'disabled'} ${checkedItems.bolsa ? 'checked' : ''}`}
+            {/* 🤖 [IA] - FASE 2: AnimatePresence para Progressive Revelation canónica */}
+            <AnimatePresence mode="wait">
+              <motion.div
+                className="space-y-4"
+                role="group"
+                aria-labelledby="instructions-title"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3 }}
               >
+                {/* Item 1: Bolsa - FASE 2: Motion component con animación canónica */}
+                <motion.label
+                  className={`checklist-item ${enabledItems.bolsa ? 'enabled' : 'disabled'} ${checkedItems.bolsa ? 'checked' : ''}`}
+                  initial={{ opacity: 0.5, filter: 'blur(8px)', scale: 0.95 }}
+                  animate={{
+                    opacity: enabledItems.bolsa ? 1 : 0.5,
+                    filter: enabledItems.bolsa ? 'blur(0px)' : 'blur(8px)',
+                    scale: enabledItems.bolsa ? 1 : 0.95
+                  }}
+                  transition={{
+                    duration: 0.6,
+                    ease: [0.23, 1, 0.32, 1],
+                    delay: 0
+                  }}
+                  whileHover={enabledItems.bolsa ? { scale: 1.02 } : {}}
+                  whileTap={enabledItems.bolsa ? { scale: 0.98 } : {}}
+                >
                 <Checkbox
                   checked={checkedItems.bolsa}
                   onCheckedChange={() => enabledItems.bolsa && handleCheckChange('bolsa')}
@@ -334,12 +356,25 @@ export function Phase2Manager({
                     </span>
                   )}
                 </span>
-              </label>
+                </motion.label>
 
-              {/* Item 2: Tirro */}
-              <label
-                className={`checklist-item ${enabledItems.tirro ? 'enabled' : 'disabled'} ${checkedItems.tirro ? 'checked' : ''}`}
-              >
+                {/* Item 2: Tirro - FASE 2: Motion component con staggered delay */}
+                <motion.label
+                  className={`checklist-item ${enabledItems.tirro ? 'enabled' : 'disabled'} ${checkedItems.tirro ? 'checked' : ''}`}
+                  initial={{ opacity: 0.5, filter: 'blur(8px)', scale: 0.95 }}
+                  animate={{
+                    opacity: enabledItems.tirro ? 1 : 0.5,
+                    filter: enabledItems.tirro ? 'blur(0px)' : 'blur(8px)',
+                    scale: enabledItems.tirro ? 1 : 0.95
+                  }}
+                  transition={{
+                    duration: 0.6,
+                    ease: [0.23, 1, 0.32, 1],
+                    delay: 0.1
+                  }}
+                  whileHover={enabledItems.tirro ? { scale: 1.02 } : {}}
+                  whileTap={enabledItems.tirro ? { scale: 0.98 } : {}}
+                >
                 <Checkbox
                   checked={checkedItems.tirro}
                   onCheckedChange={() => enabledItems.tirro && handleCheckChange('tirro')}
@@ -357,12 +392,25 @@ export function Phase2Manager({
                     </span>
                   )}
                 </span>
-              </label>
+                </motion.label>
 
-              {/* Item 3: Espacio */}
-              <label
-                className={`checklist-item ${enabledItems.espacio ? 'enabled' : 'disabled'} ${checkedItems.espacio ? 'checked' : ''}`}
-              >
+                {/* Item 3: Espacio - FASE 2: Motion component con staggered delay */}
+                <motion.label
+                  className={`checklist-item ${enabledItems.espacio ? 'enabled' : 'disabled'} ${checkedItems.espacio ? 'checked' : ''}`}
+                  initial={{ opacity: 0.5, filter: 'blur(8px)', scale: 0.95 }}
+                  animate={{
+                    opacity: enabledItems.espacio ? 1 : 0.5,
+                    filter: enabledItems.espacio ? 'blur(0px)' : 'blur(8px)',
+                    scale: enabledItems.espacio ? 1 : 0.95
+                  }}
+                  transition={{
+                    duration: 0.6,
+                    ease: [0.23, 1, 0.32, 1],
+                    delay: 0.2
+                  }}
+                  whileHover={enabledItems.espacio ? { scale: 1.02 } : {}}
+                  whileTap={enabledItems.espacio ? { scale: 0.98 } : {}}
+                >
                 <Checkbox
                   checked={checkedItems.espacio}
                   onCheckedChange={() => enabledItems.espacio && handleCheckChange('espacio')}
@@ -380,12 +428,25 @@ export function Phase2Manager({
                     </span>
                   )}
                 </span>
-              </label>
+                </motion.label>
 
-              {/* Item 4: Entendido */}
-              <label
-                className={`checklist-item ${enabledItems.entendido ? 'enabled' : 'disabled'} ${checkedItems.entendido ? 'checked' : ''}`}
-              >
+                {/* Item 4: Entendido - FASE 2: Motion component con staggered delay final */}
+                <motion.label
+                  className={`checklist-item ${enabledItems.entendido ? 'enabled' : 'disabled'} ${checkedItems.entendido ? 'checked' : ''}`}
+                  initial={{ opacity: 0.5, filter: 'blur(8px)', scale: 0.95 }}
+                  animate={{
+                    opacity: enabledItems.entendido ? 1 : 0.5,
+                    filter: enabledItems.entendido ? 'blur(0px)' : 'blur(8px)',
+                    scale: enabledItems.entendido ? 1 : 0.95
+                  }}
+                  transition={{
+                    duration: 0.6,
+                    ease: [0.23, 1, 0.32, 1],
+                    delay: 0.3
+                  }}
+                  whileHover={enabledItems.entendido ? { scale: 1.02 } : {}}
+                  whileTap={enabledItems.entendido ? { scale: 0.98 } : {}}
+                >
                 <Checkbox
                   checked={checkedItems.entendido}
                   onCheckedChange={() => enabledItems.entendido && handleCheckChange('entendido')}
@@ -403,8 +464,9 @@ export function Phase2Manager({
                     </span>
                   )}
                 </span>
-              </label>
-            </div>
+                </motion.label>
+              </motion.div>
+            </AnimatePresence>
           </div>
         </div>
 
