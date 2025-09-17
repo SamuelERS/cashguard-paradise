@@ -1,17 +1,18 @@
 // 🤖 [IA] - v1.2.23: Modal con Wizard v3 - Flujo Guiado con Revelación Progresiva
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { PrimaryActionButton } from '@/components/ui/primary-action-button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { AlertTriangle, Info, Shield, ArrowRight, CheckCircle } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { useInstructionsFlow } from '@/hooks/useInstructionsFlow';
-import { currentCashCutInstructions } from '@/config/flows/cashCutInstructionsFlow';
+import { ConstructiveActionButton } from '@/components/shared/ConstructiveActionButton';
+import { DestructiveActionButton } from '@/components/shared/DestructiveActionButton';
+import { Shield, ArrowRight } from 'lucide-react';
+import * as Icons from 'lucide-react';
 import { InstructionRule } from '@/components/wizards/InstructionRule';
 import { InstructionProgress } from '@/components/wizards/InstructionProgress';
+import { useInstructionFlow } from '@/hooks/instructions/useInstructionFlow';
+import { cashCountingInstructions } from '@/data/instructions/cashCountingInstructions';
 // 🤖 [IA] - FAE-02: PURGA QUIRÚRGICA COMPLETADA - CSS imports eliminados
 // Los 1 archivos CSS están ahora importados globalmente vía index.css:
 // - guided-start-button.css
+
 
 interface GuidedInstructionsModalProps {
   isOpen: boolean;
@@ -19,23 +20,12 @@ interface GuidedInstructionsModalProps {
   isMorningCount?: boolean;
 }
 
-export function GuidedInstructionsModal({ 
-  isOpen, 
+export function GuidedInstructionsModal({
+  isOpen,
   onConfirm,
-  isMorningCount = false 
+  isMorningCount = false
 }: GuidedInstructionsModalProps) {
-  
-  // 🤖 [IA] - v1.2.23: Hook de flujo guiado para instrucciones
-  const {
-    state: instructionsFlowState,
-    initializeFlow,
-    acknowledgeInstruction,
-    isFlowCompleted,
-    getInstructionState,
-    canInteractWithInstruction,
-    resetFlow
-  } = useInstructionsFlow();
-  
+
   // 🤖 [IA] - Sistema de escala proporcional v1.2.12
   const viewportScale = useMemo(() => {
     if (typeof window !== 'undefined') {
@@ -43,38 +33,26 @@ export function GuidedInstructionsModal({
     }
     return 1;
   }, []);
-  
+
   // 🤖 [IA] - Colores dinámicos según el modo - v1.2.12 tonos mate
   const primaryColor = isMorningCount ? '#c78a2c' : '#0a84ff';
   const secondaryColor = isMorningCount ? '#daa250' : '#5e5ce6';
-  const gradientBg = isMorningCount 
+  const gradientBg = isMorningCount
     ? 'linear-gradient(135deg, #c78a2c 0%, #daa250 100%)'
     : 'linear-gradient(135deg, #0a84ff 0%, #5e5ce6 100%)';
-  
-  const handleConfirm = () => {
-    if (isFlowCompleted()) {
-      // Guardar en sessionStorage para esta sesión específica
-      const sessionKey = `guided-instructions-acknowledged-${Date.now()}`;
-      sessionStorage.setItem('guided-instructions-session', sessionKey);
-      onConfirm();
-    }
-  };
 
-  // 🤖 [IA] - v1.2.23: Handler memoizado para acknowledge de instrucciones
-  const handleInstructionAcknowledge = useCallback((instructionId: string, index: number) => {
-    acknowledgeInstruction(instructionId, index);
-  }, [acknowledgeInstruction]);
+  // 🤖 [CTO] v3.1.2 - Instanciación del hook useInstructionFlow
+  const { state, startFlow, acknowledgeInstruction, completeInstruction } = useInstructionFlow();
 
-  // 🤖 [IA] - v1.2.23: Inicialización del flujo cuando se abre el modal
+  // 🤖 [CTO] v3.1.2 - Iniciar el flujo cuando el componente se monta
   useEffect(() => {
-    if (isOpen) {
-      initializeFlow();
-    }
-  }, [isOpen, initializeFlow]);
+    startFlow(cashCountingInstructions);
+  }, [startFlow]);
 
-  // 🤖 [IA] - v1.2.26: Sincronización eliminada - usar solo isFlowCompleted() como fuente única de verdad
-
-  // 🤖 [IA] - v1.2.23: Las instrucciones ahora vienen de la configuración del flujo
+  // 🤖 [CTO] v3.1.2 - Handler simplificado conectado al estado del hook
+  const handleConfirm = () => {
+    onConfirm();
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={() => {}}>
@@ -113,10 +91,10 @@ export function GuidedInstructionsModal({
         </div>
 
         <InstructionProgress
-          currentStep={1} // Valor estático para prueba inicial
-          totalSteps={4}  // Valor estático para prueba inicial
+          currentStep={Object.values(state.instructionStates).filter(s => s === 'checked').length}
+          totalSteps={state.instructions.length}
           phase="Preparación de Conteo"
-          isComplete={false}
+          isComplete={state.isFlowComplete}
         />
 
         {/* Contenido - Responsive */}
@@ -128,35 +106,43 @@ export function GuidedInstructionsModal({
             flexDirection: 'column'
           }}
         >
-          {/* 🤖 [IA] - v1.2.23: Instrucciones con flujo guiado Wizard v3 */}
-          <div className="flex flex-col gap-[clamp(0.75rem,3vw,1rem)]">
-            {currentCashCutInstructions.map((instruction, index) => (
+          {/* 🤖 [CTO] v3.1.2 - Mapeo dinámico conectado al hook useInstructionFlow */}
+          <div className="flex flex-col gap-3">
+            {state.instructions.map((rule) => (
               <InstructionRule
-                key={instruction.id}
-                rule={instruction}
-                state={getInstructionState(instruction.id)}
-                isCurrent={index === instructionsFlowState.currentRuleIndex}
-                onAcknowledge={() => handleInstructionAcknowledge(instruction.id, index)}
+                key={rule.id}
+                state={state.instructionStates[rule.id]}
+                icon={rule.icon}
+                title={rule.title}
+                description={rule.description}
+                onClick={() => {
+                  if (state.instructionStates[rule.id] === 'enabled') {
+                    acknowledgeInstruction(rule.id);
+                  }
+                  if (state.instructionStates[rule.id] === 'reviewing') {
+                    completeInstruction(rule.id);
+                  }
+                }}
+                isDisabled={state.instructionStates[rule.id] !== 'enabled' && state.instructionStates[rule.id] !== 'reviewing'}
               />
             ))}
           </div>
 
-
-
-          {/* 🤖 [IA] - v1.2.26: Botón se habilita directamente cuando el flujo se completa */}
-          <PrimaryActionButton
-            onClick={handleConfirm}
-            disabled={!isFlowCompleted()}
-            className="btn-guided-start"
-            data-state={isFlowCompleted() ? "active" : "inactive"}
-            data-count-type={isMorningCount ? "morning" : "evening"}
-            aria-label="Comenzar conteo guiado"
-          >
-            <span>
-              Comenzar Conteo
-              <ArrowRight />
-            </span>
-          </PrimaryActionButton>
+          {/* 🤖 [CTO] v3.1.2 - Implementación de Arquitectura de Botones (D.1) y Footer Estándar Wizard V3 */}
+          <div className="mt-[var(--instruction-fluid-2xl)] pt-[var(--instruction-fluid-xl)] border-t border-slate-700/50 flex items-center justify-center gap-[var(--instruction-fluid-lg)] px-[var(--instruction-fluid-lg)] pb-[var(--instruction-fluid-lg)]">
+            <DestructiveActionButton
+              text="Cancelar"
+              onClick={() => {}}
+              className="w-full sm:w-auto"
+            />
+            <ConstructiveActionButton
+              text="Comenzar Conteo"
+              onClick={handleConfirm}
+              disabled={!state.isFlowComplete}
+              icon={ArrowRight}
+              className="w-full sm:w-auto"
+            />
+          </div>
         </div>
       </DialogContent>
     </Dialog>

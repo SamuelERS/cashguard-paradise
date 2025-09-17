@@ -1,0 +1,118 @@
+// > [CTO] v3.1.2 - Inicio de Misi�n M-V3-DELTA. Estructura base del hook useInstructionFlow.
+import { useReducer, useCallback } from 'react';
+import * as Icons from 'lucide-react';
+
+// Tipos de datos que el hook manejar�
+export interface Instruction {
+  id: string;
+  icon: keyof typeof Icons; // Reemplaza el 'as any'
+  title: string;
+  description: string;
+  minReviewTimeMs: number; // Mínimo tiempo de revisión
+}
+
+// La forma de nuestro estado
+interface InstructionFlowState {
+  instructions: Instruction[];
+  instructionStates: Record<string, 'hidden' | 'enabled' | 'reviewing' | 'checked'>;
+  currentInstructionIndex: number;
+  isFlowComplete: boolean;
+  timingData: Record<string, { startTime: number | null }>;
+}
+
+// Las acciones que pueden modificar nuestro estado
+type Action =
+  | { type: 'START_FLOW'; payload: Instruction[] }
+  | { type: 'ACKNOWLEDGE_INSTRUCTION'; payload: { instructionId: string } }
+  | { type: 'COMPLETE_INSTRUCTION'; payload: { instructionId: string } };
+
+// Estado inicial del wizard
+const initialState: InstructionFlowState = {
+  instructions: [],
+  instructionStates: {},
+  currentInstructionIndex: -1,
+  isFlowComplete: false,
+  timingData: {},
+};
+
+// El reducer que maneja las transiciones de estado
+function instructionFlowReducer(state: InstructionFlowState, action: Action): InstructionFlowState {
+  switch (action.type) {
+    case 'START_FLOW': {
+      const initialStates = action.payload.reduce((acc, instruction, index) => {
+        acc[instruction.id] = index === 0 ? 'enabled' : 'hidden';
+        return acc;
+      }, {} as Record<string, 'hidden' | 'enabled' | 'reviewing' | 'checked'>);
+
+      return {
+        ...initialState,
+        instructions: action.payload,
+        instructionStates: initialStates,
+        currentInstructionIndex: 0,
+      };
+    }
+
+    case 'ACKNOWLEDGE_INSTRUCTION': {
+      // Marcar la instrucción actual como 'reviewing'
+      const newStates = { ...state.instructionStates };
+      newStates[action.payload.instructionId] = 'reviewing';
+
+      const newTimingData = { ...state.timingData };
+      newTimingData[action.payload.instructionId] = { startTime: Date.now() };
+
+      return { ...state, instructionStates: newStates, timingData: newTimingData };
+    }
+
+    case 'COMPLETE_INSTRUCTION': {
+      const timing = state.timingData[action.payload.instructionId];
+      const instruction = state.instructions.find(i => i.id === action.payload.instructionId);
+      const elapsed = timing?.startTime ? Date.now() - timing.startTime : 0;
+
+      // VALIDACIÓN ANTI-FRAUDE:
+      if (!instruction || elapsed < instruction.minReviewTimeMs) {
+        console.error(`VALIDATION FAILED: Timing too short for ${instruction?.id}. Required: ${instruction?.minReviewTimeMs}ms, Actual: ${elapsed}ms`);
+        return state; // No se actualiza el estado si no se cumple el tiempo
+      }
+
+      // Marcar la instrucción como 'checked' y habilitar la siguiente
+      const newStates = { ...state.instructionStates };
+      newStates[action.payload.instructionId] = 'checked';
+
+      const nextIndex = state.currentInstructionIndex + 1;
+      const isFlowNowComplete = nextIndex >= state.instructions.length;
+
+      if (!isFlowNowComplete) {
+        const nextInstructionId = state.instructions[nextIndex].id;
+        newStates[nextInstructionId] = 'enabled';
+      }
+
+      return {
+        ...state,
+        instructionStates: newStates,
+        currentInstructionIndex: nextIndex,
+        isFlowComplete: isFlowNowComplete,
+      };
+    }
+
+    default:
+      return state;
+  }
+}
+
+// El hook que encapsula toda la l�gica
+export function useInstructionFlow() {
+  const [state, dispatch] = useReducer(instructionFlowReducer, initialState);
+
+  return {
+    state,
+    startFlow: useCallback((instructions: Instruction[]) => {
+      dispatch({ type: 'START_FLOW', payload: instructions });
+    }, []),
+    acknowledgeInstruction: useCallback((instructionId: string) => {
+      dispatch({ type: 'ACKNOWLEDGE_INSTRUCTION', payload: { instructionId } });
+    }, []),
+    completeInstruction: useCallback((instructionId: string) => {
+      dispatch({ type: 'COMPLETE_INSTRUCTION', payload: { instructionId } });
+    }, []),
+  };
+}
