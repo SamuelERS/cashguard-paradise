@@ -232,6 +232,22 @@
     --bp-md: 768px;
     --bp-lg: 1024px;
     --bp-xl: 1280px;
+
+    /* 🤖 [CTO] v3.1.2 - Implementación de variables para Responsividad Fluida (D.3) y Sistema Glass (D.2) */
+    /* Glass System */
+    --glass-blur-light: 10px;
+    --glass-blur-medium: 15px;
+    --glass-blur-full: 20px;
+
+    /* Fluid Spacing para Instructions Modal */
+    --instruction-fluid-sm: clamp(0.25rem, 1vw, 0.375rem);
+    --instruction-fluid-md: clamp(0.5rem, 2vw, 0.75rem);
+    --instruction-fluid-lg: clamp(0.75rem, 3vw, 1rem);
+    --instruction-fluid-xl: clamp(1rem, 4vw, 1.5rem);
+    --instruction-fluid-2xl: clamp(1.5rem, 6vw, 2rem);
+
+    /* Nota: Se añade una variable extra para el tamaño de botones del plan */
+    --instruction-fluid-3xl: clamp(2.5rem, 8vw, 3rem);
   }
 
   .dark {

@@ -8,7 +8,6 @@ import { motion } from 'framer-motion';
 import { useInstructionsFlow } from '@/hooks/useInstructionsFlow';
 import { currentCashCutInstructions } from '@/config/flows/cashCutInstructionsFlow';
 import { InstructionRule } from '@/components/wizards/InstructionRule';
-import { InstructionProgress } from '@/components/wizards/InstructionProgress';
 // 🤖 [IA] - FAE-02: PURGA QUIRÚRGICA COMPLETADA - CSS imports eliminados
 // Los 1 archivos CSS están ahora importados globalmente vía index.css:
 // - guided-start-button.css
@@ -78,8 +77,17 @@ export function GuidedInstructionsModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={() => {}}>
-      <DialogContent
-        className="glass-morphism-panel w-[clamp(90vw,95vw,95vw)] max-w-[clamp(300px,90vw,540px)] max-h-[clamp(85vh,90vh,90vh)] overflow-y-auto overflow-x-hidden p-0 [&>button]:hidden"
+      <DialogContent 
+        className="w-[95vw] max-w-[95vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] sm:max-h-[85vh] overflow-y-auto border-0 p-0 [&>button]:hidden"
+        style={{
+          // 🤖 [IA] - v1.2.13: Glass Morphism consistente con proyecto (40% opacidad)
+          backgroundColor: 'rgba(36, 36, 36, 0.4)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          border: '1px solid rgba(255, 255, 255, 0.15)',
+          // 🤖 [IA] - v1.2.13: Sombras duales del sistema (externa + interna)
+          boxShadow: '0 4px 24px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+        }}
       >
         {/* Header con gradiente - Responsive */}
         <div 
@@ -111,13 +119,6 @@ export function GuidedInstructionsModal({
             </DialogDescription>
           </DialogHeader>
         </div>
-
-        <InstructionProgress
-          currentStep={1} // Valor estático para prueba inicial
-          totalSteps={4}  // Valor estático para prueba inicial
-          phase="Preparación de Conteo"
-          isComplete={false}
-        />
 
         {/* Contenido - Responsive */}
         <div 
