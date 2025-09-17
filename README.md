@@ -1,4 +1,4 @@
-# CashGuard Paradise v1.2.19
+# CashGuard Paradise v1.2.24
 
 Sistema de control de caja para Acuarios Paradise con prevención de fraude y protocolos estrictos.
 
@@ -50,6 +50,24 @@ src/hooks/
 - **Reusable UI**: shadcn/ui components with Radix UI
 - **Smart Forms**: React Hook Form with Zod validation
 - **Smooth Animations**: Framer Motion transitions
+
+## ✨ Arquitectura de Flujo Guiado: Estándar Wizard V3
+
+El proyecto CashGuard Paradise ha estandarizado los componentes de flujo guiado (wizards) bajo la arquitectura **"Wizard V3"**. Este patrón garantiza consistencia, seguridad y una clara separación de responsabilidades.
+
+El componente `src/components/cash-counting/GuidedInstructionsModal.tsx` sirve como la **implementación de referencia canónica**.
+
+### Principios Clave:
+
+1.  **UI Controlada ("Dumb Component"):** El componente de React (ej. `GuidedInstructionsModal`) es puramente presentacional. No contiene lógica de estado. Su única función es renderizar la UI basada en las `props` que recibe y emitir eventos de usuario.
+
+2.  **Lógica Centralizada (Hook "Cerebro"):** Toda la lógica de estado, transiciones y validaciones reside en un hook dedicado (ej. `src/hooks/instructions/useInstructionFlow.ts`). Este hook actúa como el "cerebro" del wizard.
+
+3.  **Configuración Externa:** El contenido y las reglas del wizard (textos, iconos, timing anti-fraude) se definen en archivos de configuración externos (ej. `src/data/instructions/cashCountingInstructions.ts`), permitiendo modificar el flujo sin tocar el código de lógica o presentación.
+
+4.  **Seguridad por Diseño:** Incluye un sistema de timing anti-fraude que previene que los usuarios avancen por el flujo más rápido de lo estipulado en la configuración.
+
+Cualquier nuevo desarrollo de un flujo guiado **DEBE** adherirse a esta arquitectura.
 
 ## 📱 Recent Improvements (v1.1.20)
 

@@ -1,4 +1,4 @@
-# CLAUDE.md v1.2.22
+# CLAUDE.md v1.2.24
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
@@ -258,6 +258,18 @@ src/
 10. **🧪 Tests:** Funciones financieras con 100% cobertura
 
 ### 🧭 Metodología: `Reviso → Planifico → Ejecuto → Documento → Valido`
+
+### 📐 Doctrinas Arquitectónicas
+
+#### Doctrina D.5: Arquitectura de Flujo Guiado "Wizard V3"
+
+- **Status:** Ley Arquitectónica Obligatoria.
+- **Principio:** Para cualquier componente que guíe al usuario a través de una secuencia de pasos (wizard), se implementará obligatoriamente la arquitectura "Wizard V3".
+- **Componentes Clave de la Arquitectura:**
+  - **Componente de UI (Presentación):** Debe ser un "dumb component" sin estado, controlado por `props`. Referencia: `GuidedInstructionsModal.tsx`.
+  - **Hook de Lógica (Cerebro):** Un hook `use...Flow` debe encapsular toda la lógica de estado (usando `useReducer`), transiciones y validaciones. Referencia: `useInstructionFlow.ts`.
+  - **Archivo de Configuración (Datos):** Los pasos, textos, reglas y parámetros (como `minReviewTimeMs`) deben residir en un archivo de configuración exportado desde el directorio `/data`. Referencia: `cashCountingInstructions.ts`.
+- **Enforcement:** Cualquier plan para crear o modificar un wizard que no siga este patrón de separación de UI/Lógica/Datos será **rechazado categóricamente**. Se debe justificar explícitamente el cumplimiento de esta doctrina en cada plan relacionado.
 
 ---
 
