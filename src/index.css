@@ -2509,6 +2509,18 @@
   @apply opacity-30 cursor-not-allowed;
 }
 
+/* 🎯 FONT ELEMENT PROTECTION - Neutralización elementos <font> problemáticos */
+.protected-button-container font {
+  all: unset !important;
+  display: contents !important;
+}
+
+.protected-button-container {
+  isolation: isolate;
+  contain: layout style;
+  transform: translateZ(0);
+}
+
 /* 🤖 [IA] - v1.2.19: GlassAlertDialog - Refactorización de estilos inline */
 /* Clases modulares para componente GlassAlertDialog premium */
 .glass-alert-dialog-content {

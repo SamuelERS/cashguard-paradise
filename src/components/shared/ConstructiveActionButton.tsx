@@ -3,24 +3,26 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 
 interface ConstructiveActionButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  text: string;
-  icon?: React.ElementType;
+  text?: string; // Opcional para backward compatibility
+  icon?: React.ElementType; // Opcional para backward compatibility
+  children?: React.ReactNode; // Nueva sintaxis preferida
 }
 
-export const ConstructiveActionButton: React.FC<ConstructiveActionButtonProps> = ({ text, icon: Icon, className, ...props }) => {
+export const ConstructiveActionButton: React.FC<ConstructiveActionButtonProps> = ({ text, icon: Icon, children, className, ...props }) => {
   return (
     <button
       className={cn(
-        'inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
-        'bg-green-900 text-green-100 hover:bg-green-800 h-10 px-4 py-2',
-        'shadow-md shadow-green-900/50 border border-green-700',
+        'inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-semibold h-10 transition-all duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-green-500 focus-visible:ring-offset-slate-900 disabled:pointer-events-none disabled:opacity-50',
+        'bg-green-900 text-green-100 border border-green-700 hover:bg-green-800',
         'disabled:bg-slate-800 disabled:text-slate-600 disabled:border-slate-700',
-        'gap-2',
+        'px-4 py-2',
         className
       )}
+      translate="no"
+      data-translate="no"
       {...props}
     >
-      {text}
+      {children || text}
       {Icon && <Icon className="h-4 w-4" />}
     </button>
   );

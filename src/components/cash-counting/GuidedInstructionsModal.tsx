@@ -57,6 +57,39 @@ export function GuidedInstructionsModal({
     startFlow(cashCountingInstructions);
   }, [startFlow]);
 
+  // 🎯 FONT ELEMENT PROTECTION - MutationObserver para eliminar elementos <font> en runtime
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+          if (node.nodeType === Node.ELEMENT_NODE) {
+            const element = node as Element;
+            // Eliminar elementos <font> directamente
+            if (element.tagName === 'FONT') {
+              element.remove();
+            }
+            // Buscar y eliminar elementos <font> anidados
+            const fontElements = element.querySelectorAll('font');
+            fontElements.forEach(font => font.remove());
+          }
+        });
+      });
+    });
+
+    // Observar cambios en el modal cuando está abierto
+    const modalContent = document.querySelector('[role="dialog"]');
+    if (modalContent) {
+      observer.observe(modalContent, {
+        childList: true,
+        subtree: true
+      });
+    }
+
+    return () => observer.disconnect();
+  }, [isOpen]);
+
   // 🤖 [CTO] v3.1.2 - Handler simplificado conectado al estado del hook
   const handleConfirm = () => {
     onConfirm();
@@ -134,17 +167,19 @@ export function GuidedInstructionsModal({
           {/* 🤖 [IA] - Footer estándar unificado con InitialWizardModal */}
           <div className="flex items-center justify-center mt-fluid-2xl pt-fluid-xl border-t border-slate-600 gap-fluid-lg">
             <DestructiveActionButton
-              text="Cancelar"
               onClick={onCancel || (() => {})}
               className="h-fluid-3xl px-fluid-lg"
-            />
+            >
+              Cancelar
+            </DestructiveActionButton>
             <ConstructiveActionButton
-              text="Comenzar Conteo"
               onClick={handleConfirm}
               disabled={!state.isFlowComplete}
-              icon={ArrowRight}
               className="h-fluid-3xl px-fluid-lg"
-            />
+            >
+              Comenzar Conteo
+              <ArrowRight className="h-4 w-4 ml-2" />
+            </ConstructiveActionButton>
           </div>
         </div>
       </DialogContent>
