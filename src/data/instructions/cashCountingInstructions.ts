@@ -1,33 +1,33 @@
-// > [CTO] v3.1.2 - Configuración final de instrucciones con sistema anti-fraude
+// ðŸ¤– [CTO] v3.1.2 - ConfiguraciÃ³n final de instrucciones con sistema anti-fraude
 import type { Instruction } from '@/hooks/instructions/useInstructionFlow';
 
 export const cashCountingInstructions: Instruction[] = [
   {
     id: 'confirmation',
     icon: 'ShieldCheck',
-    title: ' Confirmación Final',
-    description: 'El valor no podrá modificarse.',
+    title: 'ðŸ”’ ConfirmaciÃ³n Final',
+    description: 'Â¿EstÃ¡s seguro del valor?',
     minReviewTimeMs: 3000
   },
   {
     id: 'counting',
     icon: 'Calculator',
-    title: '=" Conteo Seguro',
-    description: 'Cuente sin tapar la cámara.',
+    title: 'ðŸ§® Conteo Seguro',
+    description: 'Â¿ContÃ³ sin tapar la cÃ¡mara?',
     minReviewTimeMs: 5000
   },
   {
     id: 'ordering',
     icon: 'Box',
-    title: '=æ Caja Ordenada',
-    description: 'Coloque cada denominación en su depósito.',
+    title: 'ðŸ“¦ Caja Ordenada',
+    description: 'Â¿Cada denominaciÃ³n en su depÃ³sito?',
     minReviewTimeMs: 4000
   },
   {
     id: 'packaging',
     icon: 'PackagePlus',
-    title: '=° Paquetes de Monedas',
-    description: 'Agrupe las monedas en paquetes estándar.',
+    title: 'ðŸ’° Paquetes de Monedas',
+    description: 'Â¿Monedas en paquetes estÃ¡ndar?',
     minReviewTimeMs: 4000
   },
 ];

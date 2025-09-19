@@ -1,12 +1,12 @@
 // 🤖 [IA] - v1.2.23: Modal con Wizard v3 - Flujo Guiado con Revelación Progresiva
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useCallback } from 'react';
+import { motion } from 'framer-motion';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { ConstructiveActionButton } from '@/components/shared/ConstructiveActionButton';
 import { DestructiveActionButton } from '@/components/shared/DestructiveActionButton';
-import { Shield, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import * as Icons from 'lucide-react';
 import { InstructionRule } from '@/components/wizards/InstructionRule';
-import { InstructionProgress } from '@/components/wizards/InstructionProgress';
 import { useInstructionFlow } from '@/hooks/instructions/useInstructionFlow';
 import { cashCountingInstructions } from '@/data/instructions/cashCountingInstructions';
 // 🤖 [IA] - FAE-02: PURGA QUIRÚRGICA COMPLETADA - CSS imports eliminados
@@ -17,32 +17,40 @@ import { cashCountingInstructions } from '@/data/instructions/cashCountingInstru
 interface GuidedInstructionsModalProps {
   isOpen: boolean;
   onConfirm: () => void;
-  isMorningCount?: boolean;
+  onCancel?: () => void;
 }
 
 export function GuidedInstructionsModal({
   isOpen,
   onConfirm,
-  isMorningCount = false
+  onCancel
 }: GuidedInstructionsModalProps) {
-
-  // 🤖 [IA] - Sistema de escala proporcional v1.2.12
-  const viewportScale = useMemo(() => {
-    if (typeof window !== 'undefined') {
-      return Math.min(window.innerWidth / 430, 1);
-    }
-    return 1;
-  }, []);
-
-  // 🤖 [IA] - Colores dinámicos según el modo - v1.2.12 tonos mate
-  const primaryColor = isMorningCount ? '#c78a2c' : '#0a84ff';
-  const secondaryColor = isMorningCount ? '#daa250' : '#5e5ce6';
-  const gradientBg = isMorningCount
-    ? 'linear-gradient(135deg, #c78a2c 0%, #daa250 100%)'
-    : 'linear-gradient(135deg, #0a84ff 0%, #5e5ce6 100%)';
 
   // 🤖 [CTO] v3.1.2 - Instanciación del hook useInstructionFlow
   const { state, startFlow, acknowledgeInstruction, completeInstruction } = useInstructionFlow();
+
+  // 🤖 [IA] - v1.2.26: Cálculo de progreso memoizado para performance
+  const progressValue = useMemo(() => {
+    if (state.instructions.length === 0) return 0;
+    const completedCount = Object.values(state.instructionStates).filter(s => s === 'checked').length;
+    return Math.round((completedCount / state.instructions.length) * 100);
+  }, [state.instructionStates, state.instructions.length]);
+
+  // 🤖 [IA] - v1.2.26: FASE 2 - Sistema de colores dinámicos por tipo de instrucción
+  const getInstructionColor = useCallback((instruction: any) => {
+    switch(instruction.id) {
+      case 'confirmation':
+        return { border: 'red', text: 'text-red-500' };
+      case 'counting':
+        return { border: 'blue', text: 'text-blue-400' };
+      case 'ordering':
+        return { border: 'green', text: 'text-green-400' };
+      case 'packaging':
+        return { border: 'orange', text: 'text-orange-400' };
+      default:
+        return { border: 'blue', text: 'text-blue-400' };
+    }
+  }, []);
 
   // 🤖 [CTO] v3.1.2 - Iniciar el flujo cuando el componente se monta
   useEffect(() => {
@@ -59,88 +67,83 @@ export function GuidedInstructionsModal({
       <DialogContent
         className="glass-morphism-panel w-[clamp(90vw,95vw,95vw)] max-w-[clamp(300px,90vw,540px)] max-h-[clamp(85vh,90vh,90vh)] overflow-y-auto overflow-x-hidden p-0 [&>button]:hidden"
       >
-        {/* Header con gradiente - Responsive */}
-        <div 
-          style={{
-            padding: `clamp(16px, ${20 * viewportScale}px, 24px)`,
-            paddingBottom: 0,
-            background: gradientBg,
-            borderRadius: '16px 16px 0 0'
-          }}
-        >
-          <DialogHeader className="text-center">
-            <DialogTitle 
-              className="font-bold text-white flex items-center justify-center"
-              style={{
-                fontSize: 'clamp(1.125rem, 4.5vw, 1.375rem)',
-                gap: 'clamp(6px, 1.5vw, 8px)'
-              }}
-            >
-              <Shield style={{ width: 'clamp(20px, 5vw, 24px)', height: 'clamp(20px, 5vw, 24px)' }} />
+        <div className="p-fluid-lg space-y-fluid-lg">
+          <DialogHeader className="text-center space-y-fluid-md">
+            <DialogTitle className="text-primary mb-fluid-md text-[clamp(1.125rem,4.5vw,1.5rem)]">
               Instrucciones del Corte de Caja
             </DialogTitle>
-            <DialogDescription 
-              className="text-white/80"
-              style={{
-                fontSize: 'clamp(0.813rem, 3.25vw, 0.938rem)',
-                marginTop: 'clamp(6px, 1.5vw, 8px)'
-              }}
-            >
+            <DialogDescription className="sr-only">
+              Complete las instrucciones para el corte de caja
             </DialogDescription>
           </DialogHeader>
-        </div>
 
-        <InstructionProgress
-          currentStep={Object.values(state.instructionStates).filter(s => s === 'checked').length}
-          totalSteps={state.instructions.length}
-          phase="Preparación de Conteo"
-          isComplete={state.isFlowComplete}
-        />
-
-        {/* Contenido - Responsive */}
-        <div 
-          style={{
-            padding: `clamp(16px, ${20 * viewportScale}px, 24px)`,
-            gap: `clamp(12px, ${16 * viewportScale}px, 16px)`,
-            display: 'flex',
-            flexDirection: 'column'
-          }}
-        >
-          {/* 🤖 [CTO] v3.1.2 - Mapeo dinámico conectado al hook useInstructionFlow */}
-          <div className="flex flex-col gap-3">
-            {state.instructions.map((rule) => (
-              <InstructionRule
-                key={rule.id}
-                state={state.instructionStates[rule.id]}
-                icon={rule.icon}
-                title={rule.title}
-                description={rule.description}
-                onClick={() => {
-                  if (state.instructionStates[rule.id] === 'enabled') {
-                    acknowledgeInstruction(rule.id);
-                  }
-                  if (state.instructionStates[rule.id] === 'reviewing') {
-                    completeInstruction(rule.id);
-                  }
-                }}
-                isDisabled={state.instructionStates[rule.id] !== 'enabled' && state.instructionStates[rule.id] !== 'reviewing'}
+          {/* Progress Bar Section */}
+          <div className="mt-fluid-lg mb-fluid-xl">
+            <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
+              <motion.div
+                className="h-full bg-gradient-to-r from-primary to-secondary rounded-full"
+                initial={{ width: 0 }}
+                animate={{ width: `${progressValue}%` }}
+                transition={{ duration: 0.5, ease: "easeOut", delay: 0.2 }}
               />
-            ))}
+            </div>
+            <div className="flex justify-center mt-fluid-sm">
+              <span className="text-xs">
+                <span className="text-primary font-medium">Preparación de Conteo</span>
+                <span className="text-gray-400"> {progressValue}% completado</span>
+              </span>
+            </div>
           </div>
 
-          {/* 🤖 [CTO] v3.1.2 - Implementación de Arquitectura de Botones (D.1) y Footer Estándar Wizard V3 */}
-          <div className="mt-[var(--instruction-fluid-2xl)] pt-[var(--instruction-fluid-xl)] border-t border-slate-700/50 flex items-center justify-center gap-[var(--instruction-fluid-lg)] px-[var(--instruction-fluid-lg)] pb-[var(--instruction-fluid-lg)]">
+          {/* Step Content */}
+          <div className="glass-morphism-panel space-y-fluid-lg">
+            {/* 🤖 [IA] - v1.2.26: FASE 6 - Mapeo dinámico según nueva interface exacta */}
+            <div className="flex flex-col gap-[clamp(0.75rem,3vw,1rem)]">
+              {state.instructions.map((instruction, index) => {
+                const instructionState = state.instructionStates[instruction.id];
+                return (
+                  <InstructionRule
+                    key={instruction.id}
+                    rule={{
+                      id: instruction.id,
+                      title: instruction.title,
+                      subtitle: instruction.description,
+                      Icon: Icons[instruction.icon as keyof typeof Icons] as React.ComponentType<any>,
+                      colors: getInstructionColor(instruction)
+                    }}
+                    state={{
+                      isChecked: instructionState === 'checked',
+                      isBeingReviewed: instructionState === 'reviewing',
+                      isEnabled: instructionState === 'enabled',
+                      isHidden: instructionState === 'hidden'
+                    }}
+                    isCurrent={index === state.currentInstructionIndex}
+                    onAcknowledge={() => {
+                      // 🤖 [IA] - v1.2.26: FASE 2 - Solo trigger inicial, auto-completion automática
+                      if (instructionState === 'enabled') {
+                        acknowledgeInstruction(instruction.id);
+                        // La transición reviewing → checked será automática tras minReviewTimeMs
+                      }
+                    }}
+                  />
+                );
+              })}
+            </div>
+          </div>
+
+          {/* 🤖 [IA] - Footer estándar unificado con InitialWizardModal */}
+          <div className="flex items-center justify-center mt-fluid-2xl pt-fluid-xl border-t border-slate-600 gap-fluid-lg">
             <DestructiveActionButton
               text="Cancelar"
-              onClick={() => {}}
-              className="w-full sm:w-auto"
+              onClick={onCancel || (() => {})}
+              className="h-fluid-3xl px-fluid-lg"
             />
             <ConstructiveActionButton
               text="Comenzar Conteo"
               onClick={handleConfirm}
               disabled={!state.isFlowComplete}
               icon={ArrowRight}
-              className="w-full sm:w-auto"
+              className="h-fluid-3xl px-fluid-lg"
             />
           </div>
         </div>

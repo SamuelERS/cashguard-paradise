@@ -1,5 +1,5 @@
 // > [CTO] v3.1.2 - Inicio de Misi�n M-V3-DELTA. Estructura base del hook useInstructionFlow.
-import { useReducer, useCallback } from 'react';
+import { useReducer, useCallback, useEffect } from 'react';
 import * as Icons from 'lucide-react';
 
 // Tipos de datos que el hook manejar�
@@ -102,6 +102,32 @@ function instructionFlowReducer(state: InstructionFlowState, action: Action): In
 // El hook que encapsula toda la l�gica
 export function useInstructionFlow() {
   const [state, dispatch] = useReducer(instructionFlowReducer, initialState);
+
+  // 🤖 [IA] - v1.2.26: FASE 3 - Auto-completion tras minReviewTimeMs
+  useEffect(() => {
+    // Buscar instrucciones en estado 'reviewing' para auto-completar
+    Object.entries(state.instructionStates).forEach(([instructionId, instructionState]) => {
+      if (instructionState === 'reviewing') {
+        const instruction = state.instructions.find(i => i.id === instructionId);
+        const timing = state.timingData[instructionId];
+
+        if (instruction && timing?.startTime) {
+          const elapsed = Date.now() - timing.startTime;
+
+          // Si ya pasó el tiempo mínimo, auto-completar
+          if (elapsed >= instruction.minReviewTimeMs) {
+            dispatch({ type: 'COMPLETE_INSTRUCTION', payload: { instructionId } });
+          } else {
+            // Programar auto-completion para cuando cumpla el tiempo
+            const remainingTime = instruction.minReviewTimeMs - elapsed;
+            setTimeout(() => {
+              dispatch({ type: 'COMPLETE_INSTRUCTION', payload: { instructionId } });
+            }, remainingTime);
+          }
+        }
+      }
+    });
+  }, [state.instructionStates, state.instructions, state.timingData]);
 
   return {
     state,

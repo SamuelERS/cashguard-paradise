@@ -478,6 +478,27 @@
     align-items: center;
   }
 
+  /* 🤖 [IA] - v1.2.26: BADGE COLOR PARITY FIX - Clase aislada para neutralizar interferencia glass morphism */
+  .badge-primary-isolated {
+    /* Neutralizar interferencia backdrop-filter de contextos glass morphism */
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+
+    /* Forzar color primario directo sin dilución */
+    background: hsl(var(--primary)) !important;
+    color: hsl(var(--primary-foreground)) !important;
+
+    /* Hardware acceleration para rendering consistente */
+    transform: translateZ(0);
+    will-change: auto;
+
+    /* Shadow enhancement para mayor contraste visual */
+    box-shadow:
+      0 10px 15px -3px rgba(213, 100%, 52%, 0.3),  /* Primary shadow */
+      0 4px 6px -2px rgba(213, 100%, 52%, 0.2),    /* Inner shadow */
+      0 0 0 1px rgba(213, 100%, 52%, 0.1);         /* Border glow */
+  }
+
   /* 🤖 [IA] - v1.2.24: Espaciado específico para contenedores con space-y-fluid-lg */
   .glass-morphism-panel.space-y-fluid-lg > * + * {
     margin-top: var(--space-lg);

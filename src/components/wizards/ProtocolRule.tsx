@@ -196,7 +196,10 @@ const ProtocolRuleComponent = ({ rule, state, isCurrent, onAcknowledge }: Protoc
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.5 }}
-          className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs px-2 py-1 rounded-full shadow-lg"
+          className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs px-3 py-2 rounded-full shadow-lg z-10 min-w-max min-h-[44px] flex items-center"
+          role="status"
+          aria-live="polite"
+          aria-label="Instrucción disponible para revisar"
         >
           Toca para revisar
         </motion.div>
