@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Button Inspector - CashGuard Forensic Analysis</title>
+    <style>
+        body {
+            font-family: 'Monaco', monospace;
+            background: #1a1a1a;
+            color: #e1e8ed;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #0a84ff;
+            border-bottom: 2px solid #0a84ff;
+            padding-bottom: 10px;
+        }
+        .inspector-panel {
+            background: rgba(36, 36, 36, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .result {
+            background: rgba(10, 132, 255, 0.1);
+            border: 1px solid rgba(10, 132, 255, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+        }
+        .success { border-color: #00ff00; background: rgba(0, 255, 0, 0.1); }
+        .error { border-color: #ff0000; background: rgba(255, 0, 0, 0.1); }
+        .warning { border-color: #ffaa00; background: rgba(255, 170, 0, 0.1); }
+        button {
+            background: #0a84ff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: 2px solid #0a84ff;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Button Inspector - Forensic Analysis Tool</h1>
+
+        <div class="inspector-panel">
+            <h2>Control Panel</h2>
+            <button onclick="inspectButtons()">🔎 Inspect All Buttons</button>
+            <button onclick="compareButtons()">⚖️ Compare Modal Buttons</button>
+            <button onclick="clearResults()">🗑️ Clear Results</button>
+            <button onclick="window.open('http://localhost:5174/', '_blank')">🌐 Open App in New Tab</button>
+        </div>
+
+        <div class="inspector-panel">
+            <h2>Application Frame</h2>
+            <iframe id="appFrame" src="http://localhost:5174/"></iframe>
+        </div>
+
+        <div class="inspector-panel">
+            <h2>Inspection Results</h2>
+            <div id="results"></div>
+        </div>
+    </div>
+
+    <script>
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+
+        function addResult(title, content, type = 'result') {
+            const resultsDiv = document.getElementById('results');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `result ${type}`;
+            resultDiv.innerHTML = `<strong>${title}</strong>\n${content}`;
+            resultsDiv.appendChild(resultDiv);
+        }
+
+        async function inspectButtons() {
+            clearResults();
+            addResult('Starting Button Inspection', 'Attempting to access iframe content...', 'warning');
+
+            try {
+                const iframe = document.getElementById('appFrame');
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+
+                // Find all buttons with "Cancelar" text
+                const buttons = Array.from(iframeDoc.querySelectorAll('button')).filter(btn =>
+                    btn.textContent.includes('Cancelar')
+                );
+
+                if (buttons.length === 0) {
+                    addResult('No Buttons Found', 'No "Cancelar" buttons found. Modal may not be open.', 'warning');
+                    return;
+                }
+
+                buttons.forEach((button, index) => {
+                    const computed = iframe.contentWindow.getComputedStyle(button);
+                    const classes = button.className;
+
+                    const info = `
+Button ${index + 1} - "${button.textContent.trim()}"
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DOM Classes: ${classes.substring(0, 150)}${classes.length > 150 ? '...' : ''}
+
+Has fluid classes:
+  - h-fluid-3xl: ${classes.includes('h-fluid-3xl') ? '✅ YES' : '❌ NO'}
+  - px-fluid-lg: ${classes.includes('px-fluid-lg') ? '✅ YES' : '❌ NO'}
+  - py-2: ${classes.includes('py-2') ? '✅ YES' : '❌ NO'}
+
+Computed Styles:
+  - Height: ${computed.height}
+  - Padding-left: ${computed.paddingLeft}
+  - Padding-right: ${computed.paddingRight}
+  - Background: ${computed.backgroundColor}
+  - Border-radius: ${computed.borderRadius}
+  - Font-size: ${computed.fontSize}
+  - Min-height: ${computed.minHeight}
+`;
+
+                    const hasFluidClasses = classes.includes('h-fluid-3xl') && classes.includes('px-fluid-lg');
+                    addResult(`Button ${index + 1} Analysis`, info, hasFluidClasses ? 'success' : 'error');
+                });
+
+                addResult('Inspection Complete', `Found and analyzed ${buttons.length} button(s)`, 'success');
+
+            } catch (error) {
+                addResult('Inspection Error', `Error: ${error.message}\n\nNote: Due to CORS, you may need to inspect manually.`, 'error');
+                addResult('Manual Inspection Instructions', `
+1. Open DevTools (F12)
+2. Navigate to the app at http://localhost:5174/
+3. Open InitialWizardModal
+4. Inspect the "Cancelar" button
+5. Check for classes: h-fluid-3xl, px-fluid-lg, py-2
+6. Note the computed height and padding values
+7. Repeat for GuidedInstructionsModal
+`, 'warning');
+            }
+        }
+
+        async function compareButtons() {
+            clearResults();
+            addResult('Button Comparison', 'This feature requires manual inspection due to CORS restrictions.', 'warning');
+            addResult('Comparison Checklist', `
+□ Open InitialWizardModal
+  - Inspect "Cancelar" button
+  - Record height: _____px
+  - Record padding-left: _____px
+  - Record background-color: _____
+
+□ Open GuidedInstructionsModal
+  - Inspect "Cancelar" button
+  - Record height: _____px
+  - Record padding-left: _____px
+  - Record background-color: _____
+
+□ Comparison Results:
+  - Heights match: YES / NO
+  - Paddings match: YES / NO
+  - Colors match: YES / NO
+`, 'result');
+        }
+
+        // Auto-run inspection after page loads
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                addResult('Inspector Ready', 'Click buttons above to start inspection', 'success');
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
