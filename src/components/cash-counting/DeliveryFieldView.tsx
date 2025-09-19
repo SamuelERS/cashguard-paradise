@@ -380,10 +380,8 @@ export function DeliveryFieldView({
                 <DestructiveActionButton
                   onClick={onCancel}
                   aria-label="Cancelar entrega y volver"
-                  className="flex-1"
                 >
-                  <X className="w-4 h-4" />
-                  <span className="ml-2">Cancelar</span>
+                  Cancelar
                 </DestructiveActionButton>
               )}
 
@@ -392,7 +390,6 @@ export function DeliveryFieldView({
                   onClick={onPrevious}
                   disabled={!canGoPrevious}
                   aria-label="Denominación anterior"
-                  className="flex-1"
                 >
                   <ArrowLeft className="w-4 h-4" />
                   <span className="ml-2">Anterior</span>

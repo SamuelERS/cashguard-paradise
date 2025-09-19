@@ -125,9 +125,8 @@ export function ConfirmationModal({
           className="flex flex-col gap-[clamp(0.75rem,3vw,1rem)] mt-[clamp(1rem,4vw,1.5rem)] sm:justify-center"
         >
           <AlertDialogAction asChild>
-            <DestructiveActionButton 
+            <DestructiveActionButton
               onClick={onConfirm}
-              className="h-[clamp(2.5rem,10vw,3rem)] px-[clamp(1rem,4vw,1.5rem)]"
             >
               {confirmText}
             </DestructiveActionButton>

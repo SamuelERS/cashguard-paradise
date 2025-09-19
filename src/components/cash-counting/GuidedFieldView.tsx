@@ -479,10 +479,8 @@ export function GuidedFieldView({
                 <DestructiveActionButton
                   onClick={onCancel}
                   aria-label="Cancelar proceso y volver al inicio"
-                  className="flex-1"
                 >
-                  <X className="w-4 h-4" />
-                  <span className="ml-2">Cancelar</span>
+                  Cancelar
                 </DestructiveActionButton>
               )}
 
@@ -492,7 +490,6 @@ export function GuidedFieldView({
                   onClick={onPrevious}
                   disabled={!canGoPrevious}
                   aria-label="Retroceder al campo anterior"
-                  className="flex-1"
                 >
                   <ArrowLeft className="w-4 h-4" />
                   <span className="ml-2">Anterior</span>

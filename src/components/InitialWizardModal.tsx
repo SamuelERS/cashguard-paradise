@@ -557,7 +557,6 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
             {canGoPrevious && (
               <NeutralActionButton
                 onClick={() => setShowBackConfirmation(true)}
-                className="h-fluid-3xl px-fluid-lg"
               >
                 Anterior
               </NeutralActionButton>
