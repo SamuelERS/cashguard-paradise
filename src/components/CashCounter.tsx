@@ -927,6 +927,7 @@ const CashCounter = ({
       <GuidedInstructionsModal
         isOpen={showInstructionsModal}
         onConfirm={handleInstructionsConfirm}
+        onCancel={handleInstructionsCancel}
         isMorningCount={isMorningCount}
       />
     </>

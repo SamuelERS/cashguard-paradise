@@ -1,5 +1,5 @@
 // 🤖 [IA] - v1.2.23: Modal con Wizard v3 - Flujo Guiado con Revelación Progresiva
-import React, { useMemo, useEffect, useCallback } from 'react';
+import React, { useMemo, useEffect, useCallback, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { ConstructiveActionButton } from '@/components/shared/ConstructiveActionButton';
@@ -9,6 +9,7 @@ import * as Icons from 'lucide-react';
 import { InstructionRule } from '@/components/wizards/InstructionRule';
 import { useInstructionFlow } from '@/hooks/instructions/useInstructionFlow';
 import { cashCountingInstructions } from '@/data/instructions/cashCountingInstructions';
+import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 // 🤖 [IA] - FAE-02: PURGA QUIRÚRGICA COMPLETADA - CSS imports eliminados
 // Los 1 archivos CSS están ahora importados globalmente vía index.css:
 // - guided-start-button.css
@@ -28,6 +29,27 @@ export function GuidedInstructionsModal({
 
   // 🤖 [CTO] v3.1.2 - Instanciación del hook useInstructionFlow
   const { state, startFlow, acknowledgeInstruction, completeInstruction } = useInstructionFlow();
+
+  // 🤖 [IA] - v1.2.24: Estado para modal de confirmación de cancelación (FINAL-POLISH)
+  const [showCancelConfirmation, setShowCancelConfirmation] = useState(false);
+
+  // 🤖 [IA] - v1.2.24: Handler para solicitud de cancelación - abre modal de confirmación
+  const handleCancelRequest = useCallback(() => {
+    setShowCancelConfirmation(true);
+  }, []);
+
+  // 🤖 [IA] - v1.2.24: Handler para cerrar modal de confirmación sin cancelar
+  const handleCancelClose = useCallback(() => {
+    setShowCancelConfirmation(false);
+  }, []);
+
+  // 🤖 [IA] - v1.2.24: Handler para confirmación de cancelación - ejecuta onCancel real
+  const handleConfirmedClose = useCallback(() => {
+    setShowCancelConfirmation(false);
+    if (onCancel) {
+      onCancel();
+    }
+  }, [onCancel]);
 
   // 🤖 [IA] - v1.2.26: Cálculo de progreso memoizado para performance
   const progressValue = useMemo(() => {
@@ -167,15 +189,13 @@ export function GuidedInstructionsModal({
           {/* 🤖 [IA] - Footer estándar unificado con InitialWizardModal */}
           <div className="flex items-center justify-center mt-fluid-2xl pt-fluid-xl border-t border-slate-600 gap-fluid-lg">
             <DestructiveActionButton
-              onClick={onCancel || (() => {})}
-              className="h-fluid-3xl px-fluid-lg"
+              onClick={handleCancelRequest}
             >
               Cancelar
             </DestructiveActionButton>
             <ConstructiveActionButton
               onClick={handleConfirm}
               disabled={!state.isFlowComplete}
-              className="h-fluid-3xl px-fluid-lg"
             >
               Comenzar Conteo
               <ArrowRight className="h-4 w-4 ml-2" />
@@ -183,6 +203,19 @@ export function GuidedInstructionsModal({
           </div>
         </div>
       </DialogContent>
+
+      {/* 🤖 [IA] - v1.2.24: Modal de confirmación para cancelar - consistente con InitialWizardModal */}
+      <ConfirmationModal
+        open={showCancelConfirmation}
+        onOpenChange={setShowCancelConfirmation}
+        title="Cancelar Instrucciones"
+        description="Se perderá el progreso de las instrucciones del conteo"
+        warningText="Esta acción no se puede deshacer"
+        confirmText="Sí, Cancelar"
+        cancelText="Continuar"
+        onConfirm={handleConfirmedClose}
+        onCancel={handleCancelClose}
+      />
     </Dialog>
   );
 }
