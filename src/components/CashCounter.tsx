@@ -64,16 +64,18 @@ interface CashCounterProps {
   initialWitness?: string;
   initialExpectedSales?: string;
   onBack?: () => void;
+  onFlowCancel?: () => void; // 🤖 [IA] - SAFE-RETURN: Callback para cancelación de flujo
 }
 
 // 🤖 [IA] - v1.0.81 - Glass effect con modo dual
-const CashCounter = ({ 
+const CashCounter = ({
   operationMode = OperationMode.CASH_CUT, // 🤖 [IA] - v1.0.81
   initialStore = "",
   initialCashier = "",
   initialWitness = "",
   initialExpectedSales = "",
-  onBack 
+  onBack,
+  onFlowCancel // 🤖 [IA] - SAFE-RETURN: Callback para cancelación de flujo
 }: CashCounterProps) => {
   // 🤖 [IA] - v1.0.81 - Detectar modo de operación
   const isMorningCount = operationMode === OperationMode.CASH_COUNT;
@@ -237,10 +239,10 @@ const CashCounter = ({
     }
   };
 
-  // 🤖 [IA] - v1.2.24 - Handler para cuando se cancelan las instrucciones (FINAL-POLISH)
+  // 🤖 [IA] - SAFE-RETURN: Handler para cancelación con navegación segura
   const handleInstructionsCancel = () => {
     setShowInstructionsModal(false);
-    // No establecer instructionsAcknowledged para mantener modal reapareciendo si es necesario
+    onFlowCancel?.(); // Notificar al padre para navegar de vuelta al inicio
   };
 
   // 🤖 [IA] - v1.2.8: Sistema Ciego Anti-Fraude: Auto-confirmar todos los totales sin mostrar valores

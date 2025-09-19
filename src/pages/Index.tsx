@@ -111,6 +111,7 @@ const Index = () => {
         initialWitness={initialData.selectedWitness}
         initialExpectedSales={initialData.expectedSales}
         onBack={handleBackFromCounter}
+        onFlowCancel={handleBackFromCounter} // 🤖 [IA] - SAFE-RETURN: Navegación segura en cancelación
       />
     );
   }
