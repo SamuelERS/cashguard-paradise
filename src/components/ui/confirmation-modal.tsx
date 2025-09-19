@@ -15,8 +15,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger
 } from "@/components/ui/alert-dialog";
-import { DestructiveActionButton } from "@/components/ui/destructive-action-button";
-import { ConstructiveActionButton } from "@/components/ui/constructive-action-button";
+import { DestructiveActionButton } from '@/components/shared/DestructiveActionButton';
+import { ConstructiveActionButton } from '@/components/shared/ConstructiveActionButton';
 
 // Props tipadas para máxima flexibilidad y reutilización
 interface ConfirmationModalProps {

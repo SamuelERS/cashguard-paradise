@@ -20,8 +20,8 @@ import { Button } from "@/components/ui/button";
 // 🤖 [IA] - v1.2.19: Agregado PrimaryActionButton para botón principal "Todo listo, continuar"
 import { PrimaryActionButton } from "@/components/ui/primary-action-button";
 // 🤖 [IA] - v1.2.19: Agregados botones de acción para modal de confirmación ROJO/VERDE
-import { DestructiveActionButton } from "@/components/ui/destructive-action-button";
-import { ConstructiveActionButton } from "@/components/ui/constructive-action-button";
+import { DestructiveActionButton } from '@/components/shared/DestructiveActionButton';
+import { ConstructiveActionButton } from '@/components/shared/ConstructiveActionButton';
 // 🤖 [IA] - v2.0.0: Agregado NeutralActionButton para botón "Volver al inicio"
 import { NeutralActionButton } from "@/components/ui/neutral-action-button";
 // 🤖 [IA] - FAE-02: PURGA QUIRÚRGICA COMPLETADA - CSS imports eliminados

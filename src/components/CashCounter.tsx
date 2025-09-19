@@ -28,7 +28,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"; // 🤖 [IA] - v1.2.9: Diálogo de confirmación
 import { ConfirmationModal } from "@/components/ui/confirmation-modal"; // 🤖 [IA] - v2.0.0: Modal de confirmación abstracto
-import { DestructiveActionButton } from "@/components/ui/destructive-action-button"; // 🤖 [IA] - v2.0.0: Botón destructivo estándar
+import { DestructiveActionButton } from '@/components/shared/DestructiveActionButton'; // 🤖 [IA] - v2.0.0: Botón destructivo estándar
 import { NeutralActionButton } from "@/components/ui/neutral-action-button"; // 🤖 [IA] - v1.2.28: Botón neutral estándar
 import CashCalculation from "@/components/CashCalculation";
 import { GuidedProgressIndicator } from "@/components/ui/GuidedProgressIndicator";
@@ -235,6 +235,12 @@ const CashCounter = ({
     if (currentSession) {
       sessionStorage.setItem('guided-instructions-session', currentSession);
     }
+  };
+
+  // 🤖 [IA] - v1.2.24 - Handler para cuando se cancelan las instrucciones (FINAL-POLISH)
+  const handleInstructionsCancel = () => {
+    setShowInstructionsModal(false);
+    // No establecer instructionsAcknowledged para mantener modal reapareciendo si es necesario
   };
 
   // 🤖 [IA] - v1.2.8: Sistema Ciego Anti-Fraude: Auto-confirmar todos los totales sin mostrar valores

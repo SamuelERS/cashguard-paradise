@@ -170,17 +170,17 @@
   }
 
   /* CRÍTICO: Input/Button ratio 70/30 profesional */
-  .flex.gap-2 {
+  .cash-counter-container .flex.gap-2 {
     display: flex !important;
     gap: 10px !important;
     align-items: stretch !important;
   }
 
-  .flex.gap-2 > .flex-1 {
+  .cash-counter-container .flex.gap-2 > .flex-1 {
     flex: 0 0 70% !important; /* Input ocupa 70% */
   }
 
-  .flex.gap-2 input {
+  .cash-counter-container .flex.gap-2 input {
     height: 48px !important;
     font-size: 20px !important;
     padding: 0 18px !important;
@@ -189,13 +189,13 @@
     width: 100% !important;
   }
 
-  .flex.gap-2 input:focus {
+  .cash-counter-container .flex.gap-2 input:focus {
     transform: scale(1.01) !important;
     border-width: 3px !important;
     box-shadow: 0 0 0 4px rgba(10, 132, 255, 0.1) !important;
   }
 
-  .flex.gap-2 button {
+  .cash-counter-container .flex.gap-2 button {
     flex: 0 0 calc(30% - 10px) !important; /* Botón ocupa 30% menos el gap */
     height: 48px !important;
     min-width: unset !important;
@@ -325,20 +325,20 @@
     font-size: 28px !important;
   }
 
-  .flex.gap-2 {
+  .cash-counter-container .flex.gap-2 {
     gap: 10px !important;
   }
 
-  .flex.gap-2 > .flex-1 {
+  .cash-counter-container .flex.gap-2 > .flex-1 {
     flex: 0 0 65% !important; /* Input 65% en tablet */
   }
 
-  .flex.gap-2 button {
+  .cash-counter-container .flex.gap-2 button {
     flex: 0 0 calc(35% - 10px) !important; /* Botón 35% en tablet */
   }
 
-  .flex.gap-2 input,
-  .flex.gap-2 button {
+  .cash-counter-container .flex.gap-2 input,
+  .cash-counter-container .flex.gap-2 button {
     height: 46px !important;
     font-size: 18px !important;
   }
@@ -359,21 +359,21 @@
     font-size: 26px !important;
   }
 
-  .flex.gap-2 {
+  .cash-counter-container .flex.gap-2 {
     flex-direction: row !important;
     gap: 8px !important;
   }
 
-  .flex.gap-2 > .flex-1 {
+  .cash-counter-container .flex.gap-2 > .flex-1 {
     flex: 0 0 60% !important;
   }
 
-  .flex.gap-2 button {
+  .cash-counter-container .flex.gap-2 button {
     flex: 0 0 calc(40% - 8px) !important;
   }
 
-  .flex.gap-2 input,
-  .flex.gap-2 button {
+  .cash-counter-container .flex.gap-2 input,
+  .cash-counter-container .flex.gap-2 button {
     height: 44px !important;
   }
 }
@@ -398,19 +398,19 @@
     font-size: 24px !important;
   }
 
-  .flex.gap-2 {
+  .cash-counter-container .flex.gap-2 {
     flex-direction: column !important;
     gap: 10px !important;
   }
 
-  .flex.gap-2 > .flex-1,
-  .flex.gap-2 button {
+  .cash-counter-container .flex.gap-2 > .flex-1,
+  .cash-counter-container .flex.gap-2 button {
     flex: 1 1 100% !important;
     width: 100% !important;
   }
 
-  .flex.gap-2 input,
-  .flex.gap-2 button {
+  .cash-counter-container .flex.gap-2 input,
+  .cash-counter-container .flex.gap-2 button {
     height: 42px !important;
   }
 
@@ -429,19 +429,19 @@
     font-size: 22px !important;
   }
 
-  .flex.gap-2 {
+  .cash-counter-container .flex.gap-2 {
     flex-direction: column !important;
     gap: 8px !important;
   }
 
-  .flex.gap-2 > .flex-1,
-  .flex.gap-2 button {
+  .cash-counter-container .flex.gap-2 > .flex-1,
+  .cash-counter-container .flex.gap-2 button {
     flex: 1 1 100% !important;
     width: 100% !important;
   }
 
-  .flex.gap-2 input,
-  .flex.gap-2 button {
+  .cash-counter-container .flex.gap-2 input,
+  .cash-counter-container .flex.gap-2 button {
     height: 40px !important;
     font-size: 16px !important;
   }
@@ -501,20 +501,20 @@
   }
 
   /* Input focus animation */
-  .flex.gap-2 input {
+  .cash-counter-container .flex.gap-2 input {
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
   }
 
-  .flex.gap-2 input:focus {
+  .cash-counter-container .flex.gap-2 input:focus {
     animation: glow-pulse 2s ease-in-out infinite !important;
   }
 
   /* Button hover elevation */
-  .flex.gap-2 button {
+  .cash-counter-container .flex.gap-2 button {
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
   }
 
-  .flex.gap-2 button:not(:disabled) {
+  .cash-counter-container .flex.gap-2 button:not(:disabled) {
     cursor: pointer !important;
   }
 
