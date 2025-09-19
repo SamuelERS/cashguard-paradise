@@ -1,9 +1,9 @@
 // 🤖 [IA] - InitialWizardModal v1.3.0 - Arquitectura Guiada Basada en Datos + Performance Optimized
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
+import {
   Shield, AlertTriangle, CheckCircle,
-  MapPin, Users, DollarSign
+  MapPin, Users, DollarSign, ArrowRight
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -550,7 +550,6 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
           <div className="flex items-center justify-center mt-fluid-2xl pt-fluid-xl border-t border-slate-600 gap-fluid-lg">
             <DestructiveActionButton
               onClick={handleCancelRequest}
-              className="h-fluid-3xl px-fluid-lg"
             >
               Cancelar
             </DestructiveActionButton>
@@ -568,9 +567,9 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               <ConstructiveActionButton
                 onClick={handleNext}
                 disabled={currentStep === 1 ? !isFlowCompleted() : !getNavigationState(isFlowCompleted()).canGoNext}
-                className="h-fluid-3xl px-fluid-lg"
               >
-                Siguiente
+                Continuar
+                <ArrowRight className="h-4 w-4 ml-2" />
               </ConstructiveActionButton>
             )}
           </div>
