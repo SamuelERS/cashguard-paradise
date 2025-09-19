@@ -25,9 +25,9 @@ import { toast } from "sonner";
 import { useTimingConfig } from "@/hooks/useTimingConfig"; // 🤖 [IA] - Hook de timing unificado v1.0.22
 import { useInputValidation } from "@/hooks/useInputValidation"; // 🤖 [IA] - v1.0.45: Hook para validación de decimales
 import { ConfirmationModal } from "@/components/ui/confirmation-modal"; // 🤖 [IA] - v2.0.0: Modal de confirmación abstracto
-import { DestructiveActionButton } from "@/components/ui/destructive-action-button"; // 🤖 [IA] - v1.2.26: Botón destructivo estándar
+import { DestructiveActionButton } from "@/components/shared/DestructiveActionButton"; // 🤖 [IA] - v1.2.26: Botón destructivo estándar
 import { NeutralActionButton } from "@/components/ui/neutral-action-button"; // 🤖 [IA] - v1.2.27: Botón neutral estándar
-import { ConstructiveActionButton } from "@/components/ui/constructive-action-button"; // 🤖 [IA] - v1.2.29: Botón constructivo estándar
+import { ConstructiveActionButton } from "@/components/shared/ConstructiveActionButton"; // 🤖 [IA] - v1.2.29: Botón constructivo estándar
 import { cn } from "@/lib/utils"; // 🤖 [IA] - v1.2.23: Utilidad para manejo seguro de clases
 
 interface InitialWizardModalProps {
