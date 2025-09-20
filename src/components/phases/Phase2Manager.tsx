@@ -14,8 +14,6 @@ import {
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 // 🤖 [IA] - v1.3.0: Reemplazado botones nativos con componentes Button para estandarización
 import { Button } from "@/components/ui/button";
-// 🤖 [IA] - v1.2.19: Agregado PrimaryActionButton para botón principal "Todo listo, continuar"
-import { PrimaryActionButton } from "@/components/ui/primary-action-button";
 // 🤖 [IA] - v1.2.19: Agregados botones de acción para modal de confirmación ROJO/VERDE
 import { DestructiveActionButton } from '@/components/shared/DestructiveActionButton';
 import { ConstructiveActionButton } from '@/components/shared/ConstructiveActionButton';
@@ -51,6 +49,7 @@ export function Phase2Manager({
   const [verificationProgress, setVerificationProgress] = useState<Record<string, boolean>>({});
   const [showExitConfirmation, setShowExitConfirmation] = useState(false); // 🤖 [IA] - v1.2.10: Estado para modal de confirmación
   const [showInstructionsModal, setShowInstructionsModal] = useState(true); // 🤖 [IA] - v1.2.10: Modal de instrucciones
+  const [showInstructionsCancelConfirmation, setShowInstructionsCancelConfirmation] = useState(false); // 🤖 [IA] - Estado para confirmar cancelación del modal de instrucciones
   // 🤖 [IA] - v1.2.26: Hook especializado para checklist progresivo con revelación
   const {
     checkedItems,
@@ -67,6 +66,11 @@ export function Phase2Manager({
 
   // 🤖 [IA] - v1.2.26: Verificar si todos los items están marcados
   const allItemsChecked = isChecklistComplete();
+
+  // 🤖 [IA] - Handler para solicitud de cancelación del modal de instrucciones
+  const handleInstructionsCancelRequest = () => {
+    setShowInstructionsCancelConfirmation(true);
+  };
 
   // 🤖 [IA] - v1.2.26: Inicialización del checklist con revelación progresiva
   useEffect(() => {
@@ -473,17 +477,39 @@ export function Phase2Manager({
 
           {/* Footer - migrado a div normal como InitialWizardModal */}
           <div className="flex items-center justify-center mt-fluid-2xl pt-fluid-xl border-t border-slate-600 gap-fluid-lg">
-            <PrimaryActionButton
+            <DestructiveActionButton
+              onClick={handleInstructionsCancelRequest}
+            >
+              Cancelar
+            </DestructiveActionButton>
+            <ConstructiveActionButton
               onClick={() => setShowInstructionsModal(false)}
               disabled={!allItemsChecked}
-              className="transition-all duration-300"
             >
-              {allItemsChecked ? '✓ Continuar' : '☑️ Marque todos los ítems para continuar'}
-            </PrimaryActionButton>
+              ✓ Continuar
+              <ArrowRight className="h-4 w-4 ml-2" />
+            </ConstructiveActionButton>
           </div>
         </div>
       </AlertDialogContent>
     </AlertDialog>
+
+    {/* 🤖 [IA] - Modal de confirmación para cancelar instrucciones */}
+    <ConfirmationModal
+      open={showInstructionsCancelConfirmation}
+      onOpenChange={setShowInstructionsCancelConfirmation}
+      title="¿Cancelar proceso de preparación?"
+      description="Se perderá el progreso del checklist actual."
+      warningText="Deberá reiniciar el proceso desde el principio."
+      confirmText="Sí, cancelar"
+      cancelText="Continuar aquí"
+      onConfirm={() => {
+        setShowInstructionsCancelConfirmation(false);
+        setShowInstructionsModal(false);
+        onBack();
+      }}
+      onCancel={() => setShowInstructionsCancelConfirmation(false)}
+    />
     </>
   );
 }
