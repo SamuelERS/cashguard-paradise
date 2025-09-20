@@ -16,6 +16,7 @@ import { useTimingConfig } from '@/hooks/useTimingConfig'; // 🤖 [IA] - Hook d
 interface Phase2DeliverySectionProps {
   deliveryCalculation: DeliveryCalculation;
   onStepComplete: (stepKey: string) => void;
+  onStepUncomplete?: (stepKey: string) => void; // 🤖 [IA] - v1.2.24: Para deshacer pasos al retroceder
   onSectionComplete: () => void;
   completedSteps: Record<string, boolean>;
   // 🤖 [IA] - v1.2.24: Navigation props to match Phase 1 pattern
@@ -27,6 +28,7 @@ interface Phase2DeliverySectionProps {
 export function Phase2DeliverySection({
   deliveryCalculation,
   onStepComplete,
+  onStepUncomplete,
   onSectionComplete,
   completedSteps,
   onCancel,
@@ -53,7 +55,20 @@ export function Phase2DeliverySection({
   // 🤖 [IA] - v1.2.24: Función para confirmar retroceso
   const handleConfirmedPrevious = () => {
     if (currentStepIndex > 0) {
+      // Deshacer el paso actual si está completado
+      const currentStepKey = deliverySteps[currentStepIndex].key;
+      if (completedSteps[currentStepKey] && onStepUncomplete) {
+        onStepUncomplete(currentStepKey);
+      }
+
+      // También deshacer el paso anterior para poder reeditarlo
       const prevIndex = currentStepIndex - 1;
+      const prevStepKey = deliverySteps[prevIndex].key;
+      if (completedSteps[prevStepKey] && onStepUncomplete) {
+        onStepUncomplete(prevStepKey);
+      }
+
+      // Ahora retroceder al índice anterior
       setCurrentStepIndex(prevIndex);
     }
     setShowBackConfirmation(false);

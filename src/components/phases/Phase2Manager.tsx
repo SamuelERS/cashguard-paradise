@@ -111,10 +111,18 @@ export function Phase2Manager({
     const allDeliveryComplete = deliveryCalculation.deliverySteps.every(
       step => deliveryProgress[step.key] || step.key === stepKey
     );
-    
+
     if (allDeliveryComplete) {
       setDeliveryCompleted(true);
     }
+  };
+
+  // 🤖 [IA] - v1.2.24: Función para deshacer pasos de entrega
+  const handleDeliveryStepUncomplete = (stepKey: string) => {
+    setDeliveryProgress(prev => ({
+      ...prev,
+      [stepKey]: false
+    }));
   };
 
   const handleDeliverySectionComplete = () => {
@@ -131,10 +139,18 @@ export function Phase2Manager({
     const allVerificationComplete = deliveryCalculation.verificationSteps.every(
       step => verificationProgress[step.key] || step.key === stepKey
     );
-    
+
     if (allVerificationComplete) {
       setVerificationCompleted(true);
     }
+  };
+
+  // 🤖 [IA] - v1.2.24: Función para deshacer pasos de verificación
+  const handleVerificationStepUncomplete = (stepKey: string) => {
+    setVerificationProgress(prev => ({
+      ...prev,
+      [stepKey]: false
+    }));
   };
 
   const handleVerificationSectionComplete = () => {
@@ -215,6 +231,7 @@ export function Phase2Manager({
                 <Phase2DeliverySection
                   deliveryCalculation={deliveryCalculation}
                   onStepComplete={handleDeliveryStepComplete}
+                  onStepUncomplete={handleDeliveryStepUncomplete}
                   onSectionComplete={handleDeliverySectionComplete}
                   completedSteps={deliveryProgress}
                   onCancel={() => setShowExitConfirmation(true)}
@@ -234,6 +251,7 @@ export function Phase2Manager({
                 <Phase2VerificationSection
                   deliveryCalculation={deliveryCalculation}
                   onStepComplete={handleVerificationStepComplete}
+                  onStepUncomplete={handleVerificationStepUncomplete}
                   onSectionComplete={handleVerificationSectionComplete}
                   completedSteps={verificationProgress}
                   onCancel={() => setShowExitConfirmation(true)}
