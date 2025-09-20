@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Building, ChevronRight, Check, Banknote, Target, CheckCircle, Coins } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ConstructiveActionButton } from '@/components/shared/ConstructiveActionButton';
+import { Input } from '@/components/ui/input';
 // 🤖 [IA] - FAE-02: PURGA QUIRÚRGICA COMPLETADA - CSS imports eliminados
 // Los 1 archivos CSS están ahora importados globalmente vía index.css:
 // - phase2-confirm-button.css
@@ -181,9 +183,59 @@ export function Phase2VerificationSection({
 
       {/* Current Step - Con detección dinámica y animaciones v1.0.77 */}
       {currentStep && !completedSteps[currentStep.key] && (() => {
-        // 🤖 [IA] - Detección dinámica del tipo de denominación
-        const isCoins = ['penny', 'nickel', 'dime', 'quarter', 'dollarCoin'].includes(currentStep.key);
-        
+        // 🤖 [IA] - Función getIcon para mostrar imagen de denominación como DeliveryFieldView
+        const getIcon = () => {
+          const fieldType = ['penny', 'nickel', 'dime', 'quarter', 'dollarCoin'].includes(currentStep.key) ? 'coin' : 'bill';
+
+          if (fieldType === 'coin') {
+            let coinImage = '/monedas-recortadas-dolares/moneda-centavo-front-inlay.webp';
+
+            if (currentStep.key === 'nickel') {
+              coinImage = '/monedas-recortadas-dolares/moneda-cinco-centavos-dos-caras.webp';
+            } else if (currentStep.key === 'dime') {
+              coinImage = '/monedas-recortadas-dolares/moneda-diez-centavos.webp';
+            } else if (currentStep.key === 'quarter') {
+              coinImage = '/monedas-recortadas-dolares/moneda-25-centavos-dos-caras.webp';
+            } else if (currentStep.key === 'dollarCoin') {
+              coinImage = '/monedas-recortadas-dolares/moneda-un-dollar-nueva.webp';
+            }
+
+            return (
+              <img
+                src={coinImage}
+                alt={`Moneda de ${currentStep.label}`}
+                className="object-contain"
+                style={{
+                  width: 'clamp(234.375px, 58.59vw, 390.625px)',
+                  aspectRatio: '2.4 / 1'
+                }}
+              />
+            );
+          } else {
+            let billImage = '/monedas-recortadas-dolares/billete-1.webp';
+
+            if (currentStep.key === 'five') {
+              billImage = '/monedas-recortadas-dolares/billete-5.webp';
+            } else if (currentStep.key === 'ten') {
+              billImage = '/monedas-recortadas-dolares/billete-10.webp';
+            } else if (currentStep.key === 'twenty') {
+              billImage = '/monedas-recortadas-dolares/billete-20.webp';
+            } else if (currentStep.key === 'fifty') {
+              billImage = '/monedas-recortadas-dolares/billete-cincuenta-dolares-sobre-fondo-blanco(1).webp';
+            } else if (currentStep.key === 'hundred') {
+              billImage = '/monedas-recortadas-dolares/billete-100.webp';
+            }
+
+            return (
+              <img
+                src={billImage}
+                alt={`Billete de ${currentStep.label}`}
+                className="object-contain w-full h-full"
+              />
+            );
+          }
+        };
+
         return (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -191,142 +243,97 @@ export function Phase2VerificationSection({
             transition={{ type: "spring", stiffness: 260, damping: 20 }}
             className="glass-verification-field p-5"
           >
-            {/* Header simplificado con denominación mejorada */}
-            <div className="flex items-center gap-[clamp(0.5rem,2vw,0.75rem)] mb-[clamp(0.75rem,3vw,1rem)]">
-              <motion.div 
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: "spring", stiffness: 260, damping: 20 }}
-                className="w-[clamp(2rem,8vw,2.5rem)] h-[clamp(2rem,8vw,2.5rem)] rounded-[clamp(0.5rem,2vw,0.75rem)] flex items-center justify-center"
+            {/* Header con imagen de denominación como DeliveryFieldView */}
+            <div className="text-center mb-[clamp(16px,4vw,24px)]">
+              {/* Imagen de denominación */}
+              <div
+                className="flex items-center justify-center mx-auto"
                 style={{
-                  background: isCoins 
-                    ? 'linear-gradient(135deg, #f4a52a 0%, #ffb84d 100%)' 
-                    : 'linear-gradient(135deg, var(--success-paradise) 0%, var(--success-paradise-light) 100%)'
+                  width: 'clamp(234.375px, 58.59vw, 390.625px)',
+                  aspectRatio: '2.4 / 1',
+                  borderRadius: 'clamp(23.44px, 5.86vw, 35.16px)',
+                  backgroundColor: 'transparent'
                 }}
               >
-                {isCoins ? (
-                  <Coins className="w-[clamp(1.25rem,5vw,1.5rem)] h-[clamp(1.25rem,5vw,1.5rem)] text-white" />
-                ) : (
-                  <Banknote className="w-[clamp(1.25rem,5vw,1.5rem)] h-[clamp(1.25rem,5vw,1.5rem)] text-white" />
-                )}
-              </motion.div>
-              
-              <div className="flex-1">
-                <motion.h3 
-                  initial={{ opacity: 0.8 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.5, repeat: Infinity, repeatType: "reverse" }}
-                  className="text-[clamp(1rem,4.5vw,1.25rem)] font-bold" 
-                  style={{ 
-                    color: '#ffffff',
-                    textShadow: '0 1px 3px rgba(0, 0, 0, 0.3), 0 0 20px rgba(0, 186, 124, 0.3)'
-                  }}
-                >
-                  {currentStep.label}
-                </motion.h3>
-                <div className="text-[clamp(0.75rem,3vw,0.875rem)] mt-[clamp(0.25rem,1vw,0.375rem)]" style={{ color: 'var(--muted-paradise)' }}>
-                  Valor unitario: {formatCurrency(currentStep.value)}
+                {getIcon()}
+              </div>
+
+              {/* Badge QUEDA EN CAJA */}
+              <div className="glass-status-error inline-block px-4 py-2 rounded-lg mt-4">
+                <p className="text-sm font-semibold" style={{ color: '#f4212e' }}>
+                  💰 QUEDA EN CAJA <span style={{ color: 'white', fontWeight: 'bold', fontSize: '1.4em' }}>{currentStep.quantity}</span>
+                </p>
+              </div>
+            </div>
+
+            {/* Input de confirmación - Estilo coherente con DeliveryFieldView */}
+            <div>
+              <div className="flex items-center" style={{ gap: 'clamp(8px, 2vw, 16px)' }}>
+                <div className="flex-1 relative">
+                  <Input
+                    type="tel"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    value={inputValue}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/[^0-9]/g, '');
+                      setInputValue(value);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && parseInt(inputValue) === currentStep.quantity) {
+                        handleConfirmStep();
+                      }
+                    }}
+                    autoCapitalize="off"
+                    autoCorrect="off"
+                    autoComplete="off"
+                    placeholder="0"
+                    style={{
+                      borderColor: parseInt(inputValue) !== currentStep.quantity && inputValue ? 'var(--danger)' : 'var(--accent-primary)',
+                      fontSize: 'clamp(18px, 4vw, 24px)',
+                      fontWeight: 'bold',
+                      height: 'clamp(48px, 12vw, 56px)',
+                      textAlign: 'center',
+                      paddingLeft: 'clamp(14px, 3vw, 20px)',
+                      paddingRight: 'clamp(14px, 3vw, 20px)',
+                      transition: 'all 0.3s ease'
+                    }}
+                    className="focus:neon-glow-primary"
+                    autoFocus
+                  />
+                  {parseInt(inputValue) !== currentStep.quantity && inputValue && (
+                    <div className="absolute -bottom-6 left-0 right-0 text-center">
+                      <span className="text-xs text-destructive">
+                        Debe confirmar exactamente {currentStep.quantity}
+                      </span>
+                    </div>
+                  )}
                 </div>
-              </div>
-            </div>
-
-            {/* Cantidad destacada con jerarquía balanceada */}
-            <div className="text-center mb-[clamp(0.75rem,3vw,1rem)]">
-              <div className="glass-quantity-display inline-block px-[clamp(1rem,4vw,1.25rem)] py-[clamp(0.375rem,1.5vw,0.5rem)] rounded-[clamp(0.5rem,2vw,0.75rem)]"
-              >
-                <p className="text-[clamp(1.25rem,5vw,1.5rem)] sm:text-[clamp(1.5rem,6vw,1.875rem)] font-bold" style={{ color: 'var(--success-paradise)' }}>
-                  {currentStep.quantity}
-                </p>
-                <p className="text-[clamp(0.75rem,3vw,0.875rem)] mt-[clamp(0.25rem,1vw,0.375rem)]" style={{ color: 'var(--muted-paradise)' }}>
-                  {isCoins ? 'moneda' : 'billete'}{currentStep.quantity !== 1 ? 's' : ''} debe quedar
-                </p>
-              </div>
-            </div>
-
-            {/* Input de confirmación - Estilo coherente con Phase2DeliverySection */}
-            <div className="space-y-[clamp(0.5rem,2vw,0.75rem)]">
-              
-              <div className="flex flex-col sm:flex-row gap-[clamp(0.375rem,1.5vw,0.5rem)] items-center justify-center">
-                <input
-                  type="tel"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  autoComplete="off"
-                  min="0"
-                  max={currentStep.quantity}
-                  value={inputValue}
-                  onChange={(e) => {
-                    const value = e.target.value.replace(/[^0-9]/g, '');
-                    setInputValue(value);
-                  }}
-                  onKeyPress={handleKeyPress}
-                  placeholder={`Confirme: ${currentStep.quantity}`}
-                  className="input-field text-center text-[clamp(1rem,4.5vw,1.25rem)] font-semibold h-[clamp(2.5rem,10vw,3rem)] w-full max-w-[clamp(180px,80vw,260px)] sm:max-w-[clamp(200px,60vw,280px)]"
-                  style={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                    border: parseInt(inputValue) > 0 && parseInt(inputValue) !== currentStep.quantity 
-                      ? '2px solid rgba(244, 33, 46, 0.5)' 
-                      : '2px solid rgba(0, 186, 124, 0.4)',
-                    color: '#ffffff',
-                    outline: 'none',
-                    borderRadius: `clamp(8px, 3vw, 16px)`,
-                    transition: 'all 0.3s',
-                    WebkitAppearance: 'none',
-                    MozAppearance: 'textfield'
-                  }}
-                  onFocus={(e) => {
-                    if (!(parseInt(inputValue) > 0 && parseInt(inputValue) !== currentStep.quantity)) {
-                      e.currentTarget.style.borderColor = 'rgba(0, 186, 124, 0.6)';
-                      e.currentTarget.style.boxShadow = '0 0 10px rgba(0, 186, 124, 0.2)';
-                    }
-                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
-                    setTimeout(() => {
-                      e.currentTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }, 100);
-                  }}
-                  onBlur={(e) => {
-                    if (!(parseInt(inputValue) > 0 && parseInt(inputValue) !== currentStep.quantity)) {
-                      e.currentTarget.style.borderColor = 'rgba(0, 186, 124, 0.4)';
-                    }
-                    e.currentTarget.style.boxShadow = 'none';
-                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-                  }}
-                  onMouseDown={(e) => e.stopPropagation()}
-                  autoFocus
-                />
-                
-                <Button
-                  variant="phase2-confirm"
-                  data-state={parseInt(inputValue) === currentStep.quantity ? "valid" : "invalid"}
-                  data-mode="verification"
+                <ConstructiveActionButton
                   onClick={handleConfirmStep}
                   disabled={parseInt(inputValue) !== currentStep.quantity}
-                  onMouseDown={(e) => e.preventDefault()}
                   onTouchStart={(e) => e.preventDefault()}
-                  aria-label="Confirmar verificación"
-                >
-                  ⏎
-                </Button>
-              </div>
-              
-              {/* Mensaje de error mejorado */}
-              {parseInt(inputValue) > 0 && parseInt(inputValue) !== currentStep.quantity && (
-                <motion.div 
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="rounded-[clamp(0.5rem,2vw,0.75rem)] p-[clamp(0.75rem,3vw,1rem)] text-center" 
+                  aria-label="Confirmar cantidad"
+                  className="btn-guided-confirm"
                   style={{
-                    backgroundColor: 'rgba(244, 33, 46, 0.15)',
-                    border: '2px solid rgba(244, 33, 46, 0.4)',
-                    borderRadius: `clamp(8px, 3vw, 16px)`
+                    height: 'clamp(48px, 12vw, 56px)'
                   }}
                 >
-                  <p className="font-semibold text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#f4212e' }}>
-                    ⚠️ Cantidad incorrecta
-                  </p>
-                  <p className="text-[clamp(0.75rem,3vw,0.875rem)] mt-[clamp(0.25rem,1vw,0.375rem)]" style={{ color: '#f4212e' }}>
-                    Deben quedar exactamente {currentStep.quantity} {currentStep.quantity === 1 ? 'unidad' : 'unidades'}
-                  </p>
+                  Confirmar
+                  <ChevronRight className="w-4 h-4 ml-1" />
+                </ConstructiveActionButton>
+              </div>
+              {/* Success indicator */}
+              {inputValue && parseInt(inputValue) === currentStep.quantity && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="mt-2 flex justify-start"
+                >
+                  <div className="flex items-center gap-1 text-xs text-success">
+                    <Check className="w-3 h-3" />
+                    <span>Cantidad correcta</span>
+                  </div>
                 </motion.div>
               )}
             </div>
