@@ -5,11 +5,8 @@ import { ArrowLeft, ArrowRight, Package, ScrollText, Grid3x3, AlertCircle, Dolla
 // 🤖 [IA] - v1.2.10: Agregado AlertDialog para confirmación de salida
 import {
   AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
-  AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
@@ -280,27 +277,31 @@ export function Phase2Manager({
 
       {/* 🤖 [IA] - v1.2.30: Modal de instrucciones con Glass Morphism v1.2.23 - FASE 1 Doctrina Canónica */}
       <AlertDialog open={showInstructionsModal} onOpenChange={setShowInstructionsModal}>
-      <AlertDialogContent className="glass-morphism-panel w-[clamp(300px,90vw,500px)] max-w-[500px] max-h-[clamp(400px,85vh,90vh)] flex flex-col">
-        <AlertDialogHeader className="text-center space-y-4 flex-shrink-0">
-          <AlertDialogTitle className="text-primary-foreground text-[clamp(1.125rem,4.5vw,1.5rem)] font-semibold flex items-center justify-center gap-3" id="instructions-title">
-            {/* 🤖 [IA] - FASE 3: Icono único sin redundancia */}
-            💵 Preparar Dinero a Entregar
-          </AlertDialogTitle>
-        </AlertDialogHeader>
-
-        <div className="flex-grow overflow-y-auto space-y-6 p-6">
-          {/* Mensaje principal destacado - FASE 1: Usando glass-morphism-panel canónica */}
-          <div className="glass-morphism-panel border-2 border-orange-400/40 border-l-4 border-l-orange-400 text-center space-y-3">
-            <p className="text-orange-400 font-bold text-[clamp(0.875rem,3.5vw,1.1rem)]">
-              ⚠️ IMPORTANTE
-            </p>
+      <AlertDialogContent className="glass-morphism-panel w-[clamp(90vw,95vw,95vw)] max-w-[clamp(300px,90vw,540px)] max-h-[clamp(85vh,90vh,90vh)] overflow-y-auto overflow-x-hidden p-0">
+        <div className="p-fluid-lg space-y-fluid-lg">
+          <AlertDialogHeader className="text-center space-y-fluid-md">
+            <AlertDialogTitle className="text-primary mb-fluid-md text-[clamp(1.125rem,4.5vw,1.5rem)]">
+              Preparar Dinero a Entregar
+            </AlertDialogTitle>
+            <AlertDialogDescription className="sr-only">
+              Complete el proceso de preparación de dinero para entregar
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          {/* Contenido principal envuelto en glass-morphism-panel como InitialWizardModal */}
+          <div className="glass-morphism-panel space-y-fluid-lg">
+            {/* Card IMPORTANTE */}
+            <div className="glass-morphism-panel border border-orange-400/40 border-l-4 border-l-orange-400 text-center shadow-lg shadow-orange-400/10">
+            <div className="flex items-center justify-center gap-fluid-md mb-fluid-md">
+              <AlertCircle className="w-fluid-lg h-fluid-lg text-orange-400" />
+              <h3 className="font-semibold text-orange-400 text-[clamp(0.875rem,3.5vw,1rem)]">IMPORTANTE</h3>
+            </div>
             <p className="text-primary-foreground font-semibold text-[clamp(0.875rem,3.5vw,1rem)]">
               El sistema dirá cuántas monedas y billetes tomar para entregar, solo debes colocar lo que diga en la bolsa.
             </p>
-          </div>
+            </div>
 
-          {/* Checklist de preparación - FASE 1: Usando clases canónicas */}
-          <div className="space-y-4">
+            {/* Checklist de preparación */}
+            <div className="flex flex-col gap-fluid-lg">
             <p className="text-muted-foreground text-[clamp(0.8rem,3.2vw,0.95rem)] text-center">
               Antes de continuar, confirme lo siguiente:
             </p>
@@ -315,9 +316,9 @@ export function Phase2Manager({
             {/* 🤖 [IA] - FASE 2: AnimatePresence para Progressive Revelation canónica */}
             <AnimatePresence mode="wait">
               <motion.div
-                className="space-y-4"
+                className="space-y-fluid-lg"
                 role="group"
-                aria-labelledby="instructions-title"
+                role="group"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.3 }}
@@ -467,20 +468,20 @@ export function Phase2Manager({
                 </motion.label>
               </motion.div>
             </AnimatePresence>
+            </div>
           </div>
-        </div>
 
-        <AlertDialogFooter className="pt-6 justify-center flex-col sm:flex-row flex-shrink-0">
-          <AlertDialogAction asChild>
+          {/* Footer - migrado a div normal como InitialWizardModal */}
+          <div className="flex items-center justify-center mt-fluid-2xl pt-fluid-xl border-t border-slate-600 gap-fluid-lg">
             <PrimaryActionButton
               onClick={() => setShowInstructionsModal(false)}
               disabled={!allItemsChecked}
-              className="h-12 px-6 transition-all duration-300"
+              className="transition-all duration-300"
             >
               {allItemsChecked ? '✓ Continuar' : '☑️ Marque todos los ítems para continuar'}
             </PrimaryActionButton>
-          </AlertDialogAction>
-        </AlertDialogFooter>
+          </div>
+        </div>
       </AlertDialogContent>
     </AlertDialog>
     </>
