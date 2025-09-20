@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Check } from 'lucide-react';
 import { DeliveryFieldView } from '@/components/cash-counting/DeliveryFieldView';
 import { GuidedProgressIndicator } from '@/components/ui/GuidedProgressIndicator';
+import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { DeliveryCalculation } from '@/types/phases';
 import { formatCurrency } from '@/utils/calculations';
 import { useTimingConfig } from '@/hooks/useTimingConfig'; // 🤖 [IA] - Hook de timing unificado v1.0.22
@@ -33,6 +34,7 @@ export function Phase2DeliverySection({
   canGoPrevious
 }: Phase2DeliverySectionProps) {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
+  const [showBackConfirmation, setShowBackConfirmation] = useState(false);
 
   const { createTimeoutWithCleanup } = useTimingConfig(); // 🤖 [IA] - Usar timing unificado v1.0.22
   const { deliverySteps, amountToDeliver } = deliveryCalculation;
@@ -40,6 +42,25 @@ export function Phase2DeliverySection({
   const allStepsCompleted = deliverySteps.every(step => completedSteps[step.key]);
   const totalSteps = deliverySteps.length;
   const completedCount = Object.keys(completedSteps).length;
+
+  // 🤖 [IA] - v1.2.24: Función para mostrar modal de confirmación al retroceder
+  const handlePreviousStep = () => {
+    if (currentStepIndex > 0) {
+      setShowBackConfirmation(true);
+    }
+  };
+
+  // 🤖 [IA] - v1.2.24: Función para confirmar retroceso
+  const handleConfirmedPrevious = () => {
+    if (currentStepIndex > 0) {
+      const prevIndex = currentStepIndex - 1;
+      setCurrentStepIndex(prevIndex);
+    }
+    setShowBackConfirmation(false);
+  };
+
+  // 🤖 [IA] - v1.2.24: Calcular si se puede ir al paso anterior
+  const canGoPreviousInternal = currentStepIndex > 0;
 
   // Auto-advance to next incomplete step
   useEffect(() => {
@@ -140,8 +161,8 @@ export function Phase2DeliverySection({
               isCompleted={false}
               onConfirm={handleFieldConfirm}
               onCancel={onCancel}
-              onPrevious={onPrevious}
-              canGoPrevious={canGoPrevious}
+              onPrevious={handlePreviousStep}
+              canGoPrevious={canGoPreviousInternal}
             />
           )}
         </AnimatePresence>
@@ -164,6 +185,19 @@ export function Phase2DeliverySection({
           </div>
         </div>
       )}
+
+      {/* Modal de confirmación para retroceder */}
+      <ConfirmationModal
+        open={showBackConfirmation}
+        onOpenChange={setShowBackConfirmation}
+        title="¿Retroceder al paso anterior?"
+        description="El progreso del paso actual se perderá."
+        warningText="Retrocede si necesitas corregir la cantidad anterior."
+        confirmText="Sí, retroceder"
+        cancelText="Continuar aquí"
+        onConfirm={handleConfirmedPrevious}
+        onCancel={() => setShowBackConfirmation(false)}
+      />
     </motion.div>
   );
 }

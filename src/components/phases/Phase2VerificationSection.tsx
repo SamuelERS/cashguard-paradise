@@ -8,6 +8,7 @@ import { ConstructiveActionButton } from '@/components/shared/ConstructiveAction
 import { DestructiveActionButton } from '@/components/shared/DestructiveActionButton';
 import { NeutralActionButton } from '@/components/ui/neutral-action-button';
 import { Input } from '@/components/ui/input';
+import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 // 🤖 [IA] - FAE-02: PURGA QUIRÚRGICA COMPLETADA - CSS imports eliminados
 // Los 1 archivos CSS están ahora importados globalmente vía index.css:
 // - phase2-confirm-button.css
@@ -38,6 +39,7 @@ export function Phase2VerificationSection({
 }: Phase2VerificationSectionProps) {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [inputValue, setInputValue] = useState('');
+  const [showBackConfirmation, setShowBackConfirmation] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   
   const { createTimeoutWithCleanup } = useTimingConfig(); // 🤖 [IA] - Usar timing unificado v1.0.22
@@ -112,6 +114,31 @@ export function Phase2VerificationSection({
       }
     }
   };
+
+  // 🤖 [IA] - v1.2.24: Función para mostrar modal de confirmación al retroceder
+  const handlePreviousStep = () => {
+    if (currentStepIndex > 0) {
+      setShowBackConfirmation(true);
+    }
+  };
+
+  // 🤖 [IA] - v1.2.24: Función para confirmar retroceso
+  const handleConfirmedPrevious = () => {
+    if (currentStepIndex > 0) {
+      const prevIndex = currentStepIndex - 1;
+      setCurrentStepIndex(prevIndex);
+      setInputValue(''); // Limpiar input
+
+      // Mantener focus en el input
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
+    }
+    setShowBackConfirmation(false);
+  };
+
+  // 🤖 [IA] - v1.2.24: Calcular si se puede ir al paso anterior
+  const canGoPreviousInternal = currentStepIndex > 0;
 
   if (verificationSteps.length === 0) {
     return (
@@ -372,16 +399,15 @@ export function Phase2VerificationSection({
                   </DestructiveActionButton>
                 )}
 
-                {onPrevious && (
-                  <NeutralActionButton
-                    onClick={onPrevious}
-                    disabled={!canGoPrevious}
-                    aria-label="Denominación anterior"
-                  >
-                    <ArrowLeft className="w-4 h-4" />
-                    <span className="ml-2">Anterior</span>
-                  </NeutralActionButton>
-                )}
+                {/* 🤖 [IA] - v1.2.24: Botón Anterior con lógica local */}
+                <NeutralActionButton
+                  onClick={handlePreviousStep}
+                  disabled={!canGoPreviousInternal}
+                  aria-label="Denominación anterior"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  <span className="ml-2">Anterior</span>
+                </NeutralActionButton>
               </div>
             )}
           </motion.div>
@@ -414,6 +440,19 @@ export function Phase2VerificationSection({
           </p>
         </div>
       )}
+
+      {/* Modal de confirmación para retroceder */}
+      <ConfirmationModal
+        open={showBackConfirmation}
+        onOpenChange={setShowBackConfirmation}
+        title="¿Retroceder al paso anterior?"
+        description="El progreso del paso actual se perderá."
+        warningText="Retrocede si necesitas corregir la cantidad anterior."
+        confirmText="Sí, retroceder"
+        cancelText="Continuar aquí"
+        onConfirm={handleConfirmedPrevious}
+        onCancel={() => setShowBackConfirmation(false)}
+      />
     </motion.div>
   );
 }
