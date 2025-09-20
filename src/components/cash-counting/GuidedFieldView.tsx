@@ -473,7 +473,7 @@ export function GuidedFieldView({
 
           {/* 🤖 [IA] - v1.2.26: Absolute positioned footer with visual separation */}
           {(onCancel || onPrevious) && (
-            <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between gap-3 border-t border-white/10 p-4 bg-black/20 backdrop-blur-sm">
+            <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-3 border-t border-white/10 p-4 bg-black/20 backdrop-blur-sm">
               {/* Cancel Button */}
               {onCancel && (
                 <DestructiveActionButton
