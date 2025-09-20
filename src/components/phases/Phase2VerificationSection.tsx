@@ -142,11 +142,22 @@ export function Phase2VerificationSection({
 
       // Ahora retroceder al índice anterior
       setCurrentStepIndex(prevIndex);
-      setInputValue(''); // Limpiar input
+
+      // Restaurar el valor del paso anterior si estaba completado
+      const prevStep = verificationSteps[prevIndex];
+      if (completedSteps[prevStepKey]) {
+        // Si el paso estaba completado, restaurar su valor
+        setInputValue(prevStep.quantity.toString());
+      } else {
+        // Si no estaba completado, limpiar
+        setInputValue('');
+      }
 
       // Mantener focus en el input
       setTimeout(() => {
         inputRef.current?.focus();
+        // Seleccionar el texto para facilitar la edición
+        inputRef.current?.select();
       }, 100);
     }
     setShowBackConfirmation(false);

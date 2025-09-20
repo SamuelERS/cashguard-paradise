@@ -37,6 +37,7 @@ export function Phase2DeliverySection({
 }: Phase2DeliverySectionProps) {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [showBackConfirmation, setShowBackConfirmation] = useState(false);
+  const [stepValues, setStepValues] = useState<Record<string, number>>({}); // 🤖 [IA] - v1.2.24: Track valores ingresados
 
   const { createTimeoutWithCleanup } = useTimingConfig(); // 🤖 [IA] - Usar timing unificado v1.0.22
   const { deliverySteps, amountToDeliver } = deliveryCalculation;
@@ -101,6 +102,12 @@ export function Phase2DeliverySection({
 
     const inputNum = parseInt(value) || 0;
     if (inputNum === currentStep.quantity) {
+      // 🤖 [IA] - v1.2.24: Guardar el valor ingresado antes de completar
+      setStepValues(prev => ({
+        ...prev,
+        [currentStep.key]: inputNum
+      }));
+
       onStepComplete(currentStep.key);
 
       // 🤖 [IA] - v1.2.11: Feedback táctil al confirmar
@@ -169,7 +176,7 @@ export function Phase2DeliverySection({
               key={currentStep.key}
               currentFieldName={currentStep.key}
               currentFieldLabel={currentStep.label}
-              currentFieldValue={0}
+              currentFieldValue={stepValues[currentStep.key] || 0}  // 🤖 [IA] - v1.2.24: Usar valor guardado si existe
               targetQuantity={currentStep.quantity}
               currentFieldType={getCurrentFieldType()}
               isActive={true}
