@@ -385,7 +385,7 @@ export function GuidedFieldView({
             {/* Input y confirmación optimizados */}
             <div>
               {/* Input y botón integrados */}
-              <div className="flex" style={{ gap: 'clamp(8px, 2vw, 16px)' }}>
+              <div className="flex items-center" style={{ gap: 'clamp(8px, 2vw, 16px)' }}>
                 <div className="flex-1 relative">
                   {currentFieldType === 'electronic' && (
                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary font-semibold z-10">

@@ -289,7 +289,7 @@ export function DeliveryFieldView({
 
             {/* Input and confirmation */}
             <div>
-              <div className="flex" style={{ gap: 'clamp(8px, 2vw, 16px)' }}>
+              <div className="flex items-center" style={{ gap: 'clamp(8px, 2vw, 16px)' }}>
                 <div className="flex-1 relative">
                   <Input
                     ref={inputRef}
