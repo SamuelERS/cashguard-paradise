@@ -1,7 +1,8 @@
 // 🤖 [IA] - v1.1.14 - Simplificación de tabs y eliminación de redundancias en Fase 2
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Package, ScrollText, Grid3x3, AlertCircle, DollarSign } from 'lucide-react';
+import { InstructionRule, type RuleState } from '@/components/wizards/InstructionRule';
 // 🤖 [IA] - v1.2.10: Agregado AlertDialog para confirmación de salida
 import {
   AlertDialog,
@@ -29,7 +30,6 @@ import { DeliveryCalculation } from '@/types/phases';
 import { formatCurrency } from '@/utils/calculations';
 import { useTimingConfig } from '@/hooks/useTimingConfig'; // 🤖 [IA] - Hook de timing unificado v1.0.22
 import { useChecklistFlow } from '@/hooks/useChecklistFlow'; // 🤖 [IA] - v1.2.26: Hook especializado para checklist
-import { Checkbox } from '@/components/ui/checkbox'; // 🤖 [IA] - v1.2.10: Checkbox para checklist
 
 interface Phase2ManagerProps {
   deliveryCalculation: DeliveryCalculation;
@@ -314,7 +314,7 @@ export function Phase2Manager({
               <h3 className="font-semibold text-orange-400 text-[clamp(0.875rem,3.5vw,1rem)]">IMPORTANTE</h3>
             </div>
             <p className="text-primary-foreground font-semibold text-[clamp(0.875rem,3.5vw,1rem)]">
-              El sistema dirá cuántas monedas y billetes tomar para entregar, solo debes colocar lo que diga en la bolsa.
+              El sistema dirá cuántas MODEDAS y BILLETES tomar para la entrega.
             </p>
             </div>
 
@@ -331,161 +331,96 @@ export function Phase2Manager({
               </p>
             </div>
 
-            {/* 🤖 [IA] - FASE 2: AnimatePresence para Progressive Revelation canónica */}
-            <AnimatePresence mode="wait">
-              <motion.div
-                className="space-y-fluid-lg"
-                role="group"
-                role="group"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.3 }}
-              >
-                {/* Item 1: Bolsa - FASE 2: Motion component con animación canónica */}
-                <motion.label
-                  className={`checklist-item ${enabledItems.bolsa ? 'enabled' : 'disabled'} ${checkedItems.bolsa ? 'checked' : ''}`}
-                  initial={{ opacity: 0.5, filter: 'blur(8px)', scale: 0.95 }}
-                  animate={{
-                    opacity: enabledItems.bolsa ? 1 : 0.5,
-                    filter: enabledItems.bolsa ? 'blur(0px)' : 'blur(8px)',
-                    scale: enabledItems.bolsa ? 1 : 0.95
-                  }}
-                  transition={{
-                    duration: 0.6,
-                    ease: [0.23, 1, 0.32, 1],
-                    delay: 0
-                  }}
-                  whileHover={enabledItems.bolsa ? { scale: 1.02 } : {}}
-                  whileTap={enabledItems.bolsa ? { scale: 0.98 } : {}}
-                >
-                <Checkbox
-                  checked={checkedItems.bolsa}
-                  onCheckedChange={() => enabledItems.bolsa && handleCheckChange('bolsa')}
-                  disabled={!enabledItems.bolsa}
-                  aria-label="Tengo la bolsa lista para entregar"
-                  className={`transition-colors duration-200 ${checkedItems.bolsa ? 'border-green-400 data-[state=checked]:bg-green-400' : ''}`}
-                />
-                <Package className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)] text-blue-400" />
-                <span className="checklist-item-text">
-                  Tengo la bolsa lista para entregar
-                  {!enabledItems.bolsa && (
-                    <span className="checklist-loader">
-                      <div className="checklist-loader-spinner" />
-                      activando...
-                    </span>
-                  )}
-                </span>
-                </motion.label>
+            {/* 🤖 [IA] - v1.2.31: Progressive Revelation con InstructionRule canónico */}
+            <div className="flex flex-col gap-[clamp(0.75rem,3vw,1rem)]">
+              {/* Item 1: Bolsa */}
+              <InstructionRule
+                rule={{
+                  id: 'bolsa',
+                  title: 'Tengo la bolsa lista para la entrega',
+                  subtitle: enabledItems.bolsa ? '' : '⏱️ Preparando...',
+                  Icon: Package,
+                  colors: {
+                    border: checkedItems.bolsa ? 'border-green-400' : 'border-blue-400',
+                    text: checkedItems.bolsa ? 'text-green-400' : 'text-blue-400'
+                  }
+                }}
+                state={{
+                  isChecked: checkedItems.bolsa,
+                  isBeingReviewed: false,
+                  isEnabled: enabledItems.bolsa,
+                  isHidden: !enabledItems.bolsa
+                }}
+                isCurrent={enabledItems.bolsa && !checkedItems.bolsa}
+                onAcknowledge={() => handleCheckChange('bolsa')}
+              />
 
-                {/* Item 2: Tirro - FASE 2: Motion component con staggered delay */}
-                <motion.label
-                  className={`checklist-item ${enabledItems.tirro ? 'enabled' : 'disabled'} ${checkedItems.tirro ? 'checked' : ''}`}
-                  initial={{ opacity: 0.5, filter: 'blur(8px)', scale: 0.95 }}
-                  animate={{
-                    opacity: enabledItems.tirro ? 1 : 0.5,
-                    filter: enabledItems.tirro ? 'blur(0px)' : 'blur(8px)',
-                    scale: enabledItems.tirro ? 1 : 0.95
-                  }}
-                  transition={{
-                    duration: 0.6,
-                    ease: [0.23, 1, 0.32, 1],
-                    delay: 0.1
-                  }}
-                  whileHover={enabledItems.tirro ? { scale: 1.02 } : {}}
-                  whileTap={enabledItems.tirro ? { scale: 0.98 } : {}}
-                >
-                <Checkbox
-                  checked={checkedItems.tirro}
-                  onCheckedChange={() => enabledItems.tirro && handleCheckChange('tirro')}
-                  disabled={!enabledItems.tirro}
-                  aria-label="Tengo cinta y plumon para rotular"
-                  className={`transition-colors duration-200 ${checkedItems.tirro ? 'border-green-400 data-[state=checked]:bg-green-400' : ''}`}
-                />
-                <ScrollText className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)] text-blue-400" />
-                <span className="checklist-item-text">
-                  Tengo cinta y plumon para rotular
-                  {!enabledItems.tirro && (
-                    <span className={checkedItems.bolsa ? "checklist-loader" : "checklist-item-hint"}>
-                      {checkedItems.bolsa && <div className="checklist-loader-spinner" />}
-                      {checkedItems.bolsa ? 'activando...' : '(marque el anterior)'}
-                    </span>
-                  )}
-                </span>
-                </motion.label>
+              {/* Item 2: Tirro */}
+              <InstructionRule
+                rule={{
+                  id: 'tirro',
+                  title: 'Tengo cinta y plumon para rotular',
+                  subtitle: !enabledItems.tirro ? (checkedItems.bolsa ? '⏱️ Activando...' : '(marque el anterior)') : '',
+                  Icon: ScrollText,
+                  colors: {
+                    border: checkedItems.tirro ? 'border-green-400' : 'border-blue-400',
+                    text: checkedItems.tirro ? 'text-green-400' : 'text-blue-400'
+                  }
+                }}
+                state={{
+                  isChecked: checkedItems.tirro,
+                  isBeingReviewed: false,
+                  isEnabled: enabledItems.tirro,
+                  isHidden: !checkedItems.bolsa
+                }}
+                isCurrent={enabledItems.tirro && !checkedItems.tirro}
+                onAcknowledge={() => handleCheckChange('tirro')}
+              />
 
-                {/* Item 3: Espacio - FASE 2: Motion component con staggered delay */}
-                <motion.label
-                  className={`checklist-item ${enabledItems.espacio ? 'enabled' : 'disabled'} ${checkedItems.espacio ? 'checked' : ''}`}
-                  initial={{ opacity: 0.5, filter: 'blur(8px)', scale: 0.95 }}
-                  animate={{
-                    opacity: enabledItems.espacio ? 1 : 0.5,
-                    filter: enabledItems.espacio ? 'blur(0px)' : 'blur(8px)',
-                    scale: enabledItems.espacio ? 1 : 0.95
-                  }}
-                  transition={{
-                    duration: 0.6,
-                    ease: [0.23, 1, 0.32, 1],
-                    delay: 0.2
-                  }}
-                  whileHover={enabledItems.espacio ? { scale: 1.02 } : {}}
-                  whileTap={enabledItems.espacio ? { scale: 0.98 } : {}}
-                >
-                <Checkbox
-                  checked={checkedItems.espacio}
-                  onCheckedChange={() => enabledItems.espacio && handleCheckChange('espacio')}
-                  disabled={!enabledItems.espacio}
-                  aria-label="Tomare cantidad que sistema diga"
-                  className={`transition-colors duration-200 ${checkedItems.espacio ? 'border-green-400 data-[state=checked]:bg-green-400' : ''}`}
-                />
-                <Grid3x3 className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)] text-blue-400" />
-                <span className="checklist-item-text">
-                  Tomare cantidad que sistema diga
-                  {!enabledItems.espacio && (
-                    <span className={checkedItems.tirro ? "checklist-loader" : "checklist-item-hint"}>
-                      {checkedItems.tirro && <div className="checklist-loader-spinner" />}
-                      {checkedItems.tirro ? 'activando...' : '(marque el anterior)'}
-                    </span>
-                  )}
-                </span>
-                </motion.label>
+              {/* Item 3: Espacio */}
+              <InstructionRule
+                rule={{
+                  id: 'espacio',
+                  title: 'Tomare cantidad que sistema diga',
+                  subtitle: !enabledItems.espacio ? (checkedItems.tirro ? '⏱️ Activando...' : '(marque el anterior)') : '',
+                  Icon: Grid3x3,
+                  colors: {
+                    border: checkedItems.espacio ? 'border-green-400' : 'border-blue-400',
+                    text: checkedItems.espacio ? 'text-green-400' : 'text-blue-400'
+                  }
+                }}
+                state={{
+                  isChecked: checkedItems.espacio,
+                  isBeingReviewed: false,
+                  isEnabled: enabledItems.espacio,
+                  isHidden: !checkedItems.tirro
+                }}
+                isCurrent={enabledItems.espacio && !checkedItems.espacio}
+                onAcknowledge={() => handleCheckChange('espacio')}
+              />
 
-                {/* Item 4: Entendido - FASE 2: Motion component con staggered delay final */}
-                <motion.label
-                  className={`checklist-item ${enabledItems.entendido ? 'enabled' : 'disabled'} ${checkedItems.entendido ? 'checked' : ''}`}
-                  initial={{ opacity: 0.5, filter: 'blur(8px)', scale: 0.95 }}
-                  animate={{
-                    opacity: enabledItems.entendido ? 1 : 0.5,
-                    filter: enabledItems.entendido ? 'blur(0px)' : 'blur(8px)',
-                    scale: enabledItems.entendido ? 1 : 0.95
-                  }}
-                  transition={{
-                    duration: 0.6,
-                    ease: [0.23, 1, 0.32, 1],
-                    delay: 0.3
-                  }}
-                  whileHover={enabledItems.entendido ? { scale: 1.02 } : {}}
-                  whileTap={enabledItems.entendido ? { scale: 0.98 } : {}}
-                >
-                <Checkbox
-                  checked={checkedItems.entendido}
-                  onCheckedChange={() => enabledItems.entendido && handleCheckChange('entendido')}
-                  disabled={!enabledItems.entendido}
-                  aria-label="Estamos listos para continuar"
-                  className={`transition-colors duration-200 ${checkedItems.entendido ? 'border-green-400 data-[state=checked]:bg-green-400' : ''}`}
-                />
-                <AlertCircle className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)] text-blue-400" />
-                <span className="checklist-item-text">
-                  Estamos listos para continuar
-                  {!enabledItems.entendido && (
-                    <span className={checkedItems.espacio ? "checklist-loader" : "checklist-item-hint"}>
-                      {checkedItems.espacio && <div className="checklist-loader-spinner" />}
-                      {checkedItems.espacio ? 'activando...' : '(marque el anterior)'}
-                    </span>
-                  )}
-                </span>
-                </motion.label>
-              </motion.div>
-            </AnimatePresence>
+              {/* Item 4: Entendido */}
+              <InstructionRule
+                rule={{
+                  id: 'entendido',
+                  title: 'Estamos listos para continuar',
+                  subtitle: !enabledItems.entendido ? (checkedItems.espacio ? '⏱️ Activando...' : '(marque el anterior)') : '',
+                  Icon: AlertCircle,
+                  colors: {
+                    border: checkedItems.entendido ? 'border-green-400' : 'border-blue-400',
+                    text: checkedItems.entendido ? 'text-green-400' : 'text-blue-400'
+                  }
+                }}
+                state={{
+                  isChecked: checkedItems.entendido,
+                  isBeingReviewed: false,
+                  isEnabled: enabledItems.entendido,
+                  isHidden: !checkedItems.espacio
+                }}
+                isCurrent={enabledItems.entendido && !checkedItems.entendido}
+                onAcknowledge={() => handleCheckChange('entendido')}
+              />
+            </div>
             </div>
           </div>
 

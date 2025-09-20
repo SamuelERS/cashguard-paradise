@@ -39,7 +39,7 @@ export const GuidedProgressIndicator: React.FC<GuidedProgressIndicatorProps> = (
           </div>
           <div>
             <h3 className="guided-progress-title">
-              📝 CONTEO GUIADO
+              📝 DINERO ES PARA ENTREGAR
             </h3>
             <p className="guided-progress-subtitle">
               {isCompleted ? '✓ Conteo completado' : `Paso ${currentStep} de ${totalSteps}`}
