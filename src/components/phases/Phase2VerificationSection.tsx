@@ -256,7 +256,7 @@ export function Phase2VerificationSection({
             className="glass-morphism-panel p-0 relative border-2 border-primary/30"
           >
             {/* Content Section */}
-            <div className="p-[clamp(12px,3vw,20px)] pb-24">
+            <div className="p-[clamp(12px,3vw,20px)] pb-32">
               {/* Header con imagen de denominación como DeliveryFieldView */}
               <div className="text-center mb-[clamp(16px,4vw,24px)]">
                 {/* Imagen de denominación */}
