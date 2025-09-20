@@ -741,6 +741,7 @@ Firma Digital: ${dataHash}`;
                 <PrimaryActionButton
                   onClick={onComplete}
                   aria-label="Finalizar proceso"
+                  className="h-fluid-3xl min-h-[var(--instruction-fluid-3xl)]"
                 >
                   <CheckCircle />
                   Finalizar
