@@ -1,10 +1,12 @@
 // 🤖 [IA] - v1.2.11 - Sistema anti-fraude: indicadores visuales sin montos
 // 🤖 [IA] - v1.1.14 - Simplificación visual y eliminación de redundancias
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Building, ChevronRight, Check, Banknote, Target, CheckCircle, Coins } from 'lucide-react';
+import { Building, ChevronRight, Check, Banknote, Target, CheckCircle, Coins, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ConstructiveActionButton } from '@/components/shared/ConstructiveActionButton';
+import { DestructiveActionButton } from '@/components/shared/DestructiveActionButton';
+import { NeutralActionButton } from '@/components/ui/neutral-action-button';
 import { Input } from '@/components/ui/input';
 // 🤖 [IA] - FAE-02: PURGA QUIRÚRGICA COMPLETADA - CSS imports eliminados
 // Los 1 archivos CSS están ahora importados globalmente vía index.css:
@@ -36,6 +38,7 @@ export function Phase2VerificationSection({
 }: Phase2VerificationSectionProps) {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [inputValue, setInputValue] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
   
   const { createTimeoutWithCleanup } = useTimingConfig(); // 🤖 [IA] - Usar timing unificado v1.0.22
   const { verificationSteps, denominationsToKeep } = deliveryCalculation;
@@ -50,6 +53,10 @@ export function Phase2VerificationSection({
     if (nextIncompleteIndex !== -1 && nextIncompleteIndex !== currentStepIndex) {
       setCurrentStepIndex(nextIncompleteIndex);
       setInputValue('');
+      // 🤖 [IA] - v1.2.24: Mantener foco al cambiar de paso
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
     }
   }, [completedSteps, verificationSteps, currentStepIndex]);
 
@@ -66,22 +73,27 @@ export function Phase2VerificationSection({
 
   const handleConfirmStep = () => {
     if (!currentStep) return;
-    
+
     const inputNum = parseInt(inputValue) || 0;
     if (inputNum === currentStep.quantity) {
       onStepComplete(currentStep.key);
       setInputValue('');
-      
+
       // 🤖 [IA] - v1.2.11: Vibración haptica si está disponible
       if ('vibrate' in navigator) {
         navigator.vibrate(50);
       }
-      
+
       // Move to next step
       if (!isLastStep) {
         const nextIndex = currentStepIndex + 1;
         setCurrentStepIndex(nextIndex);
       }
+
+      // 🤖 [IA] - v1.2.24: Mantener foco en el input para evitar que se cierre el teclado
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
     }
   };
 
@@ -241,36 +253,39 @@ export function Phase2VerificationSection({
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ type: "spring", stiffness: 260, damping: 20 }}
-            className="glass-verification-field p-5"
+            className="glass-morphism-panel p-0 relative border-2 border-primary/30"
           >
-            {/* Header con imagen de denominación como DeliveryFieldView */}
-            <div className="text-center mb-[clamp(16px,4vw,24px)]">
-              {/* Imagen de denominación */}
-              <div
-                className="flex items-center justify-center mx-auto"
-                style={{
-                  width: 'clamp(234.375px, 58.59vw, 390.625px)',
-                  aspectRatio: '2.4 / 1',
-                  borderRadius: 'clamp(23.44px, 5.86vw, 35.16px)',
-                  backgroundColor: 'transparent'
-                }}
-              >
-                {getIcon()}
+            {/* Content Section */}
+            <div className="p-[clamp(12px,3vw,20px)] pb-24">
+              {/* Header con imagen de denominación como DeliveryFieldView */}
+              <div className="text-center mb-[clamp(16px,4vw,24px)]">
+                {/* Imagen de denominación */}
+                <div
+                  className="flex items-center justify-center mx-auto"
+                  style={{
+                    width: 'clamp(234.375px, 58.59vw, 390.625px)',
+                    aspectRatio: '2.4 / 1',
+                    borderRadius: 'clamp(23.44px, 5.86vw, 35.16px)',
+                    backgroundColor: 'transparent'
+                  }}
+                >
+                  {getIcon()}
+                </div>
+
+                {/* Badge ENTREGAR para Phase 2 */}
+                <div className="glass-status-error inline-block px-4 py-2 rounded-lg mt-4">
+                  <p className="text-sm font-semibold" style={{ color: '#f4212e' }}>
+                    📤 ENTREGAR <span style={{ color: 'white', fontWeight: 'bold', fontSize: '1.4em' }}>{currentStep.quantity}</span>
+                  </p>
+                </div>
               </div>
 
-              {/* Badge QUEDA EN CAJA */}
-              <div className="glass-status-error inline-block px-4 py-2 rounded-lg mt-4">
-                <p className="text-sm font-semibold" style={{ color: '#f4212e' }}>
-                  💰 QUEDA EN CAJA <span style={{ color: 'white', fontWeight: 'bold', fontSize: '1.4em' }}>{currentStep.quantity}</span>
-                </p>
-              </div>
-            </div>
-
-            {/* Input de confirmación - Estilo coherente con DeliveryFieldView */}
-            <div>
+              {/* Input de confirmación - Estilo coherente con DeliveryFieldView */}
+              <div>
               <div className="flex items-center" style={{ gap: 'clamp(8px, 2vw, 16px)' }}>
                 <div className="flex-1 relative">
                   <Input
+                    ref={inputRef}
                     type="tel"
                     inputMode="numeric"
                     pattern="[0-9]*"
@@ -280,8 +295,11 @@ export function Phase2VerificationSection({
                       setInputValue(value);
                     }}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter' && parseInt(inputValue) === currentStep.quantity) {
-                        handleConfirmStep();
+                      if (e.key === 'Enter') {
+                        e.preventDefault(); // 🤖 [IA] - v1.2.24: Prevenir comportamiento default
+                        if (parseInt(inputValue) === currentStep.quantity) {
+                          handleConfirmStep();
+                        }
                       }
                     }}
                     autoCapitalize="off"
@@ -336,7 +354,33 @@ export function Phase2VerificationSection({
                   </div>
                 </motion.div>
               )}
+              </div>
             </div>
+
+            {/* Navigation footer - matching DeliveryFieldView */}
+            {(onCancel || onPrevious) && (
+              <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-3 border-t border-white/10 p-4 bg-black/20 backdrop-blur-sm">
+                {onCancel && (
+                  <DestructiveActionButton
+                    onClick={onCancel}
+                    aria-label="Cancelar verificación y volver"
+                  >
+                    Cancelar
+                  </DestructiveActionButton>
+                )}
+
+                {onPrevious && (
+                  <NeutralActionButton
+                    onClick={onPrevious}
+                    disabled={!canGoPrevious}
+                    aria-label="Denominación anterior"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                    <span className="ml-2">Anterior</span>
+                  </NeutralActionButton>
+                )}
+              </div>
+            )}
           </motion.div>
         );
       })()}
