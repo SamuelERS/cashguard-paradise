@@ -77,7 +77,8 @@ export function Phase2VerificationSection({
     const inputNum = parseInt(inputValue) || 0;
     if (inputNum === currentStep.quantity) {
       onStepComplete(currentStep.key);
-      setInputValue('');
+      // 🤖 [IA] - v1.2.24: No limpiar input inmediatamente para evitar re-render
+      // El siguiente campo limpiará su propio valor
 
       // 🤖 [IA] - v1.2.11: Vibración haptica si está disponible
       if ('vibrate' in navigator) {
@@ -90,16 +91,25 @@ export function Phase2VerificationSection({
         setCurrentStepIndex(nextIndex);
       }
 
-      // 🤖 [IA] - v1.2.24: Mantener foco en el input para evitar que se cierre el teclado
+      // 🤖 [IA] - v1.2.24: Mantener focus inmediatamente como en GuidedFieldView
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+
+      // 🤖 [IA] - Limpiar input después de mantener el focus
       setTimeout(() => {
-        inputRef.current?.focus();
-      }, 100);
+        setInputValue('');
+      }, 50);
     }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
-      handleConfirmStep();
+      // 🤖 [IA] - v1.2.24: Validar antes de confirmar
+      const inputNum = parseInt(inputValue) || 0;
+      if (inputNum === currentStep?.quantity) {
+        handleConfirmStep();
+      }
     }
   };
 
@@ -294,14 +304,7 @@ export function Phase2VerificationSection({
                       const value = e.target.value.replace(/[^0-9]/g, '');
                       setInputValue(value);
                     }}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        e.preventDefault(); // 🤖 [IA] - v1.2.24: Prevenir comportamiento default
-                        if (parseInt(inputValue) === currentStep.quantity) {
-                          handleConfirmStep();
-                        }
-                      }
-                    }}
+                    onKeyDown={handleKeyPress}
                     autoCapitalize="off"
                     autoCorrect="off"
                     autoComplete="off"
