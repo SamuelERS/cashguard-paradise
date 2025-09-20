@@ -341,41 +341,6 @@ export function Phase2VerificationSection({
         );
       })()}
 
-      {/* Completed Steps Summary - 🤖 [IA] - v1.2.24: Glass morphism unificado */}
-      {Object.keys(completedSteps).length > 0 && (
-        <div className="glass-morphism-panel p-6">
-          <h4 className="text-[clamp(0.75rem,3vw,0.875rem)] font-medium mb-[clamp(0.75rem,3vw,1rem)]" style={{ color: 'var(--success-paradise)' }}>
-            ✓ Denominaciones Verificadas
-          </h4>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-[clamp(0.375rem,1.5vw,0.5rem)]">
-            {verificationSteps.map((step) => (
-              <div
-                key={step.key}
-                className="flex items-center gap-[clamp(0.375rem,1.5vw,0.5rem)] p-[clamp(0.375rem,1.5vw,0.5rem)] rounded-[clamp(0.5rem,2vw,0.75rem)] text-[clamp(0.75rem,3vw,0.875rem)] transition-all duration-300"
-                style={{
-                  backgroundColor: completedSteps[step.key]
-                    ? 'rgba(0, 186, 124, 0.1)'
-                    : 'rgba(255, 255, 255, 0.05)',
-                  border: completedSteps[step.key]
-                    ? '1px solid rgba(0, 186, 124, 0.3)'
-                    : '1px solid rgba(255, 255, 255, 0.1)',
-                  color: completedSteps[step.key] ? 'var(--success-paradise)' : 'var(--muted-paradise)'
-                }}
-              >
-                {completedSteps[step.key] ? (
-                  <Check className="w-[clamp(0.875rem,3.5vw,1rem)] h-[clamp(0.875rem,3.5vw,1rem)]" />
-                ) : (
-                  <div className="w-[clamp(0.875rem,3.5vw,1rem)] h-[clamp(0.875rem,3.5vw,1rem)] rounded-full" style={{
-                    border: '2px solid rgba(255, 255, 255, 0.3)'
-                  }} />
-                )}
-                <span>{step.label} × {step.quantity}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
       {/* Final Validation - 🤖 [IA] - v1.2.24: Glass morphism unificado */}
       {allStepsCompleted && (
         <div className="glass-panel-success text-center p-8">
