@@ -264,7 +264,7 @@ export function DeliveryFieldView({
           "border-2 border-primary/30"
         )}>
           {/* Content Section */}
-          <div className="p-[clamp(12px,3vw,20px)] pb-24">
+          <div className="p-[clamp(12px,3vw,20px)] pb-32">
             {/* Header with delivery instruction */}
             <div className="text-center mb-[clamp(16px,4vw,24px)]">
               {/* Denomination image */}
