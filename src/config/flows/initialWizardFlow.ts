@@ -32,8 +32,7 @@ export interface RulesFlowState {
 const protocolRules: ProtocolRule[] = [
   {
     id: 'noDevices',
-    title: '🧾 Gastos Anotados',
-    subtitle: '¿Ya Revisaron todas las salidas?',
+    title: '🧾 ¿Ya Procesaste Todos los Gastos?',
     Icon: AlertTriangle,
     colors: {
       text: 'text-red-500',
@@ -44,8 +43,7 @@ const protocolRules: ProtocolRule[] = [
   },
   {
     id: 'singleCount',
-    title: '💳 Cierres de POS',
-    subtitle: '¿Credomatic y Promerica?',
+    title: '💳 ¿Los Cierres POS Estan Hechos?',
     Icon: Shield,
     colors: {
       text: 'text-red-500',
@@ -56,8 +54,7 @@ const protocolRules: ProtocolRule[] = [
   },
   {
     id: 'differentCashier',
-    title: '🔄 Transferencias Revisadas',
-    subtitle: '¿Hay Transferecias por Procesar?',
+    title: '🔄 ¿Hay Transferecias Pendientes?',
     Icon: CheckCircle,
     colors: {
       text: 'text-red-500',
@@ -68,8 +65,7 @@ const protocolRules: ProtocolRule[] = [
   },
   {
     id: 'activeSystem',
-    title: '👥 Doble Verificación',
-    subtitle: '¿Cajero + Testigo estan Presentes?',
+    title: '👥 ¿Cajero + Testigo estan Presentes?',
     Icon: AlertTriangle,
     colors: {
       text: 'text-orange-400',
@@ -80,8 +76,7 @@ const protocolRules: ProtocolRule[] = [
   },
   {
     id: 'errorConsequence',
-    title: '⚠️ Política de Errores',
-    subtitle: 'Si Cometen Errores - Deberán Reiniciar Conteo de 0',
+    title: '⚠️ Si Cometen Errores - Deberán Reiniciar Todo',
     Icon: AlertTriangle,
     colors: {
       text: 'text-yellow-500',
