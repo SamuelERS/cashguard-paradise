@@ -173,38 +173,34 @@ export function Phase2Manager({
             className="glass-morphism-panel p-4"
           >
             {/* Botones de navegación */}
-            <div className="flex items-center gap-2 justify-center">
-              <Button
-                variant="phase2-tab"
+            <div className="flex items-center gap-3 justify-center">
+              <div
+                className="btn-phase2-tab"
                 data-active={currentSection === 'delivery' ? "true" : "false"}
                 data-state="delivery"
                 data-completed={deliveryCompleted ? "true" : "false"}
-                onClick={() => currentSection !== 'delivery' && !verificationCompleted && setCurrentSection('delivery')}
-                aria-pressed={currentSection === 'delivery'}
-                aria-label="Sección de entrega"
-                >
-                  {deliveryCompleted && (
-                    <span>✓</span>
-                  )}
-                  Entrega
-                </Button>
-                <Button
-                  variant="phase2-tab"
-                  data-active={currentSection === 'verification' ? "true" : "false"}
-                  data-state="verification"
-                  data-completed={verificationCompleted ? "true" : "false"}
-                  data-disabled={!deliveryCompleted ? "true" : "false"}
-                  onClick={() => deliveryCompleted && currentSection !== 'verification' && setCurrentSection('verification')}
-                  disabled={!deliveryCompleted}
-                  aria-pressed={currentSection === 'verification'}
-                  aria-label="Sección de verificación"
-                >
-                  {verificationCompleted && (
-                    <span>✓</span>
-                  )}
-                  Verificar
-                </Button>
+                aria-label="Sección actual: Entrega"
+                role="status"
+              >
+                {deliveryCompleted && (
+                  <span>✓</span>
+                )}
+                Entrega
               </div>
+              <div
+                className="btn-phase2-tab"
+                data-active={currentSection === 'verification' ? "true" : "false"}
+                data-state="verification"
+                data-completed={verificationCompleted ? "true" : "false"}
+                aria-label="Sección actual: Verificar"
+                role="status"
+              >
+                {verificationCompleted && (
+                  <span>✓</span>
+                )}
+                Verificar
+              </div>
+            </div>
           </motion.div>
 
           {/* Section Content */}

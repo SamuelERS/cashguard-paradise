@@ -6,7 +6,7 @@
 
 /* Tab Button - Used for Entrega/Verificar tabs */
 .btn-phase2-tab {
-  @apply flex-1 px-[clamp(0.75rem,3vw,1rem)] py-[clamp(0.375rem,1.5vw,0.5rem)] rounded-[clamp(0.375rem,1.5vw,0.5rem)] transition-all duration-300 font-medium flex items-center justify-center gap-[clamp(0.375rem,1.5vw,0.5rem)] text-[clamp(0.875rem,3.5vw,1rem)];
+  @apply min-w-[clamp(100px,25vw,140px)] px-[clamp(0.75rem,3vw,1rem)] py-[clamp(0.375rem,1.5vw,0.5rem)] rounded-[clamp(0.375rem,1.5vw,0.5rem)] transition-all duration-300 font-medium flex items-center justify-center gap-[clamp(0.375rem,1.5vw,0.5rem)] text-[clamp(0.875rem,3.5vw,1rem)];
 }
 
 .btn-phase2-tab[data-active="true"] {
