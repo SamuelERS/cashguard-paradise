@@ -5,29 +5,25 @@ export const cashCountingInstructions: Instruction[] = [
   {
     id: 'confirmation',
     icon: 'ShieldCheck',
-    title: '🔒 Confirmación Final',
-    description: '¿Estás seguro del valor?',
+    title: 'Saca Los Cierres De Los POS',
     minReviewTimeMs: 3000
   },
   {
     id: 'counting',
     icon: 'Calculator',
-    title: '🧮 Conteo Seguro',
-    description: '¿Contó sin tapar la cámara?',
+    title: 'Muestra Tu Trabajo En La Cámara',
     minReviewTimeMs: 5000
   },
   {
     id: 'ordering',
     icon: 'Box',
-    title: '📦 Caja Ordenada',
-    description: '¿Cada denominación en su depósito?',
+    title: 'Ordena Cada Denominacion En Caja',
     minReviewTimeMs: 4000
   },
   {
     id: 'packaging',
     icon: 'PackagePlus',
-    title: '💰 Paquetes de Monedas',
-    description: '¿Monedas en paquetes estándar?',
+    title: 'Monedas En Paquetes de 10 Unidades',
     minReviewTimeMs: 4000
   },
 ];

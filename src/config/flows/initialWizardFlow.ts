@@ -32,7 +32,7 @@ export interface RulesFlowState {
 const protocolRules: ProtocolRule[] = [
   {
     id: 'noDevices',
-    title: '🧾 ¿Ya Procesaste Todos los Gastos?',
+    title: 'Hagan Conteo Despacio y Eviten Repetir',
     Icon: AlertTriangle,
     colors: {
       text: 'text-red-500',
@@ -43,7 +43,7 @@ const protocolRules: ProtocolRule[] = [
   },
   {
     id: 'singleCount',
-    title: '💳 ¿Los Cierres POS Estan Hechos?',
+    title: 'No Pueden Usar Calculadoras',
     Icon: Shield,
     colors: {
       text: 'text-red-500',
@@ -54,7 +54,7 @@ const protocolRules: ProtocolRule[] = [
   },
   {
     id: 'differentCashier',
-    title: '🔄 ¿Hay Transferecias Pendientes?',
+    title: 'Abran WhatsApp Web Ya Mismo',
     Icon: CheckCircle,
     colors: {
       text: 'text-red-500',
@@ -65,7 +65,7 @@ const protocolRules: ProtocolRule[] = [
   },
   {
     id: 'activeSystem',
-    title: '👥 ¿Cajero + Testigo estan Presentes?',
+    title: 'Cajero y Testigo Deben Estar Presentes',
     Icon: AlertTriangle,
     colors: {
       text: 'text-orange-400',
@@ -76,7 +76,7 @@ const protocolRules: ProtocolRule[] = [
   },
   {
     id: 'errorConsequence',
-    title: '⚠️ Si Cometen Errores - Deberán Reiniciar Todo',
+    title: 'Si Cometen Errores Se Reinicia Todo',
     Icon: AlertTriangle,
     colors: {
       text: 'text-yellow-500',
