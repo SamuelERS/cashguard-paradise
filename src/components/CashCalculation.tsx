@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { PrimaryActionButton } from "@/components/ui/primary-action-button"; // 🤖 [IA] - v2.0.0: Botón de acción primaria estándar
 import { NeutralActionButton } from "@/components/ui/neutral-action-button"; // 🤖 [IA] - v2.0.0: Botón de acción neutral estándar
 import { ConstructiveActionButton } from '@/components/shared/ConstructiveActionButton'; // 🤖 [IA] - v2.0.0: Botón de acción constructiva estándar
+import { ConfirmationModal } from "@/components/ui/confirmation-modal"; // 🤖 [IA] - v1.2.24: Modal de confirmación para Finalizar
 import { calculateCashTotal, calculateChange50, formatCurrency, generateDenominationSummary } from "@/utils/calculations";
 import { copyToClipboard } from "@/utils/clipboard"; // 🤖 [IA] - v1.1.09
 import { toast } from "sonner"; // 🤖 [IA] - v1.1.15 - Migrated to Sonner for consistency
@@ -68,6 +69,7 @@ const CashCalculation = ({
 }: CashCalculationProps) => {
   const [isCalculated, setIsCalculated] = useState(false);
   const [calculationData, setCalculationData] = useState<CalculationData | null>(null); // 🤖 [IA] - v1.2.22: Fixed any type violation
+  const [showFinishConfirmation, setShowFinishConfirmation] = useState(false); // 🤖 [IA] - v1.2.24: Estado para modal de confirmación
 
   const store = getStoreById(storeId);
   const cashier = getEmployeeById(cashierId);
@@ -739,7 +741,7 @@ Firma Digital: ${dataHash}`;
                 </NeutralActionButton>
                 
                 <PrimaryActionButton
-                  onClick={onComplete}
+                  onClick={() => setShowFinishConfirmation(true)} // 🤖 [IA] - v1.2.24: Mostrar modal en lugar de finalizar directamente
                   aria-label="Finalizar proceso"
                   className="h-fluid-3xl min-h-[var(--instruction-fluid-3xl)]"
                 >
@@ -751,6 +753,22 @@ Firma Digital: ${dataHash}`;
           </div>
         </motion.div>
       </div>
+
+      {/* 🤖 [IA] - v1.2.24: Modal de confirmación para finalizar el proceso */}
+      <ConfirmationModal
+        open={showFinishConfirmation}
+        onOpenChange={setShowFinishConfirmation}
+        title="Finalizar Proceso"
+        description="Se cerrará el proceso de conteo de efectivo"
+        warningText="Esta acción no se puede deshacer"
+        confirmText="Sí, Finalizar"
+        cancelText="Continuar"
+        onConfirm={() => {
+          setShowFinishConfirmation(false);
+          onComplete();
+        }}
+        onCancel={() => setShowFinishConfirmation(false)}
+      />
     </div>
   );
 };
