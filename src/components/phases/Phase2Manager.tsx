@@ -324,13 +324,6 @@ export function Phase2Manager({
               Antes de continuar, confirme lo siguiente:
             </p>
 
-            {/* 🤖 [IA] - v1.2.30: Mensaje de activación secuencial usando clases canónicas */}
-            <div className="glass-morphism-panel text-center transition-all duration-300">
-              <p className={`font-medium text-[clamp(0.8rem,3.2vw,0.95rem)] ${enabledItems.bolsa ? 'text-green-400' : 'text-blue-400'}`}>
-                {!enabledItems.bolsa ? '⏱️ Preparando checklist...' : '📋 Verifiquen estemos Listos'}
-              </p>
-            </div>
-
             {/* 🤖 [IA] - v1.2.31: Progressive Revelation con InstructionRule canónico */}
             <div className="flex flex-col gap-[clamp(0.75rem,3vw,1rem)]">
               {/* Item 1: Bolsa */}

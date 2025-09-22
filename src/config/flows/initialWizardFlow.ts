@@ -73,17 +73,6 @@ const protocolRules: ProtocolRule[] = [
       glow: 'shadow-orange-400/20'
     },
     severity: 'warning'
-  },
-  {
-    id: 'errorConsequence',
-    title: 'Si Cometen Errores Se Reinicia Todo',
-    Icon: AlertTriangle,
-    colors: {
-      text: 'text-yellow-500',
-      border: 'border-l-yellow-500',
-      glow: 'shadow-yellow-500/20'
-    },
-    severity: 'warning'
   }
 ];
 
