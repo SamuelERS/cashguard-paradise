@@ -506,7 +506,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
       >
         <div className="p-fluid-lg space-y-fluid-lg">
           <DialogHeader className="text-center space-y-fluid-md">
-            <DialogTitle className="text-primary mb-fluid-md text-[clamp(1.125rem,4.5vw,1.5rem)]">
+            <DialogTitle className="text-primary mb-fluid-md text-[clamp(1.125rem,4.5vw,1.5rem)] text-center">
               {getStepTitle()}
             </DialogTitle>
             <DialogDescription className="sr-only">
