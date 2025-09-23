@@ -3,8 +3,8 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { screen, waitFor, within } from '@testing-library/react';
 import Index from '@/pages/Index';
 import mockData from '../fixtures/mock-data';
-import { 
-  renderWithProviders, 
+import {
+  renderWithProviders,
   completeCashCount,
   completeElectronicPayments,
   verifyPhase2Distribution,
@@ -12,8 +12,10 @@ import {
   verifyFinalReport,
   cleanupMocks,
   waitForAnimation,
-  selectOperation
+  selectOperation,
+  completeSecurityProtocol
 } from '../fixtures/test-helpers';
+import { testUtils } from '../fixtures/test-utils';
 
 /**
  * Tests de integración para el flujo completo de Corte de Caja Nocturno
@@ -43,55 +45,61 @@ describe('🌙 Evening Cut Flow Integration Tests', () => {
     
     // Click on Evening Cut option
     await selectOperation(user, 'evening');
-    
+
     // Should open Initial Wizard with 5 steps
     await waitFor(() => {
       expect(screen.getByText(/Instrucciones Obligatorias Iniciales/)).toBeInTheDocument();
     });
-    
-    // Step 1: Accept protocol
-    const protocolCheckbox = await screen.findByRole('checkbox');
-    await user.click(protocolCheckbox);
-    
-    const nextButton = screen.getByRole('button', { name: /siguiente/i });
-    await user.click(nextButton);
-    
+
+    // Step 1: Complete protocol using centralized helper
+    await completeSecurityProtocol(user);
+
     // Step 2: Select store
-    await waitFor(() => {
-      expect(screen.getByText(/Seleccionar Sucursal/i)).toBeInTheDocument();
-    });
-    
-    const storeOption = screen.getByText('Los Héroes');
+    await waitForAnimation(300);
+    const modal1 = testUtils.withinWizardModal();
+    const storeOption = modal1.getByText('Los Héroes');
     await user.click(storeOption);
-    await user.click(nextButton);
-    
+    const nextButton1 = modal1.getByRole('button', { name: /siguiente/i });
+    await user.click(nextButton1);
+
     // Step 3: Select cashier
     await waitFor(() => {
-      expect(screen.getByText(/Seleccionar Cajero/i)).toBeInTheDocument();
+      const modal = testUtils.withinWizardModal();
+      expect(modal.getByText(/Seleccionar Cajero/i)).toBeInTheDocument();
     });
-    
-    const cashierOption = screen.getByText('Tito Gomez');
+
+    await waitForAnimation(300);
+    const modal2 = testUtils.withinWizardModal();
+    const cashierOption = modal2.getByText('Tito Gomez');
     await user.click(cashierOption);
-    await user.click(nextButton);
-    
+    const nextButton2 = modal2.getByRole('button', { name: /siguiente/i });
+    await user.click(nextButton2);
+
     // Step 4: Select witness
     await waitFor(() => {
-      expect(screen.getByText(/Seleccionar Testigo/i)).toBeInTheDocument();
+      const modal = testUtils.withinWizardModal();
+      expect(modal.getByText(/Seleccionar Testigo/i)).toBeInTheDocument();
     });
-    
-    const witnessOption = screen.getByText('María López');
+
+    await waitForAnimation(300);
+    const modal3 = testUtils.withinWizardModal();
+    const witnessOption = modal3.getByText('María López');
     await user.click(witnessOption);
-    await user.click(nextButton);
-    
+    const nextButton3 = modal3.getByRole('button', { name: /siguiente/i });
+    await user.click(nextButton3);
+
     // Step 5: Enter expected sales
     await waitFor(() => {
-      expect(screen.getByText(/Venta Esperada SICAR/i)).toBeInTheDocument();
+      const modal = testUtils.withinWizardModal();
+      expect(modal.getByText(/Venta Esperada SICAR/i)).toBeInTheDocument();
     });
-    
-    const salesInput = screen.getByRole('textbox');
+
+    await waitForAnimation(300);
+    const modal4 = testUtils.withinWizardModal();
+    const salesInput = modal4.getByRole('textbox');
     await user.type(salesInput, '1250.75');
-    
-    const completeButton = screen.getByRole('button', { name: /completar/i });
+
+    const completeButton = modal4.getByRole('button', { name: /completar/i });
     await user.click(completeButton);
     
     // === PHASE 1: Cash Counting ===

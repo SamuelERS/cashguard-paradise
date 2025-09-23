@@ -1,6 +1,6 @@
 // 🤖 [IA] - v1.1.19: Test helpers for integration testing - SECTOR 3
 import React from 'react';
-import { render, RenderOptions, screen, waitFor } from '@testing-library/react';
+import { render, RenderOptions, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 import { vi } from 'vitest';
@@ -375,19 +375,19 @@ export async function selectOperation(
 ) {
   // The actual button text is "Conteo de Caja" for morning and "Corte de Caja" for evening
   const buttonText = operation === 'morning' ? 'Conteo de Caja' : 'Corte de Caja';
-  
+
   // Wait for the operation selector to be ready
   await waitFor(() => {
     expect(screen.getByText(/Seleccione Operación/)).toBeInTheDocument();
   });
-  
+
   // Wait a bit for animations
   await new Promise(resolve => setTimeout(resolve, 500));
-  
+
   // Find and click the button by its text
   const button = await screen.findByText(buttonText);
   await user.click(button);
-  
+
   // Wait for the modal to appear
   await waitFor(() => {
     if (operation === 'morning') {
@@ -396,6 +396,15 @@ export async function selectOperation(
       expect(screen.getByText(/Instrucciones Obligatorias Iniciales/)).toBeInTheDocument();
     }
   }, { timeout: 5000 });
+}
+
+// 🤖 [IA] - TEST-FIX-40-D: Helper para protocolo que replica el enfoque original manual
+export async function completeSecurityProtocol(
+  user: ReturnType<typeof userEvent.setup>
+) {
+  // Replicar exactamente lo que hacían los tests manuales originales
+  await user.click(await screen.findByRole('checkbox'));
+  await user.click(screen.getByRole('button', { name: /siguiente/i }));
 }
 
 // Export all helpers
@@ -417,5 +426,6 @@ export default {
   cleanupMocks,
   mockNetworkError,
   restoreNetwork,
-  selectOperation
+  selectOperation,
+  completeSecurityProtocol
 };

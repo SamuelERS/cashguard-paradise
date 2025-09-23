@@ -2,11 +2,12 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { screen, waitFor } from '@testing-library/react';
 import Index from '@/pages/Index';
-import { 
-  renderWithProviders, 
+import {
+  renderWithProviders,
   cleanupMocks,
   waitForAnimation
 } from '../fixtures/test-helpers';
+import { testUtils, wizardTestUtils } from '../fixtures/test-utils';
 
 /**
  * Tests de integración simplificados para el flujo de Conteo Matutino
@@ -65,9 +66,10 @@ describe('🌅 Morning Count Flow Simplified Tests', () => {
         expect(screen.getByText(/Conteo de Caja Matutino/)).toBeInTheDocument();
       });
       
-      // Verificar elementos del modal
-      expect(screen.getByText(/Paso 1 de 3/)).toBeInTheDocument();
-      expect(screen.getByText(/Seleccione la Sucursal/)).toBeInTheDocument();
+      // Verificar elementos del modal usando utilities específicas
+      const modal = testUtils.withinWizardModal();
+      expect(modal.getByText(/Paso 1 de 3/)).toBeInTheDocument();
+      expect(modal.getByText(/Seleccione la Sucursal/)).toBeInTheDocument();
     }
   });
 
@@ -120,18 +122,20 @@ describe('🌅 Morning Count Flow Simplified Tests', () => {
     if (card) {
       await user.click(card);
       
-      // Verificar paso 1
+      // Verificar paso 1 usando utilities específicas
       await waitFor(() => {
-        expect(screen.getByText(/Paso 1 de 3/)).toBeInTheDocument();
-        expect(screen.getByText(/Seleccione la Sucursal/)).toBeInTheDocument();
+        const modal = testUtils.withinWizardModal();
+        expect(modal.getByText(/Paso 1 de 3/)).toBeInTheDocument();
+        expect(modal.getByText(/Seleccione la Sucursal/)).toBeInTheDocument();
       });
       
-      // Verificar que el botón Siguiente está presente
-      const nextButton = screen.getByRole('button', { name: /siguiente/i });
+      // Verificar botones usando utilities específicas
+      const modal = testUtils.withinWizardModal();
+      const nextButton = modal.getByRole('button', { name: /siguiente/i });
       expect(nextButton).toBeInTheDocument();
-      
+
       // Verificar que el botón Anterior está deshabilitado en el paso 1
-      const prevButton = screen.getByRole('button', { name: /anterior/i });
+      const prevButton = modal.getByRole('button', { name: /anterior/i });
       expect(prevButton).toBeDisabled();
     }
   });
@@ -182,9 +186,10 @@ describe('🌅 Morning Count Flow Simplified Tests', () => {
     if (card) {
       await user.click(card);
       
-      // Verificar que estamos en paso 1
+      // Verificar que estamos en paso 1 usando utilities específicas
       await waitFor(() => {
-        expect(screen.getByText(/Paso 1 de 3/)).toBeInTheDocument();
+        const modal = testUtils.withinWizardModal();
+        expect(modal.getByText(/Paso 1 de 3/)).toBeInTheDocument();
       });
       
       // El modal debería mantener el título durante todo el flujo

@@ -3,16 +3,18 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { screen, waitFor } from '@testing-library/react';
 import Index from '@/pages/Index';
 import mockData from '../fixtures/mock-data';
-import { 
-  renderWithProviders, 
+import {
+  renderWithProviders,
   completeCashCount,
   completeElectronicPayments,
   cleanupMocks,
   simulateSessionTimeout,
   mockLocalStorage,
   waitForAnimation,
-  selectOperation
+  selectOperation,
+  completeSecurityProtocol
 } from '../fixtures/test-helpers';
+import { testUtils } from '../fixtures/test-utils';
 
 /**
  * Tests de integración para casos límite y validaciones especiales
@@ -36,30 +38,40 @@ describe('🚨 Edge Cases Integration Tests', () => {
     
     it('debe prevenir seleccionar el mismo cajero como testigo', async () => {
       const { user } = renderWithProviders(<Index />);
-      
+
       // Navigate to Evening Cut
       await selectOperation(user, 'evening');
       
-      // Accept protocol
-      await user.click(await screen.findByRole('checkbox'));
-      await user.click(screen.getByRole('button', { name: /siguiente/i }));
-      
       // Select store
-      await user.click(await screen.findByText('Los Héroes'));
-      await user.click(screen.getByRole('button', { name: /siguiente/i }));
-      
+      await waitFor(() => {
+        const modal = testUtils.withinWizardModal();
+        expect(modal.getByText(/Seleccione la Sucursal/)).toBeInTheDocument();
+      });
+
+      const modal2 = testUtils.withinWizardModal();
+      await user.click(await modal2.findByText('Los Héroes'));
+      await user.click(modal2.getByRole('button', { name: /siguiente/i }));
+
       // Select cashier
       const cashierName = 'Tito Gomez';
-      await user.click(await screen.findByText(cashierName));
-      await user.click(screen.getByRole('button', { name: /siguiente/i }));
-      
+      await waitFor(() => {
+        const modal = testUtils.withinWizardModal();
+        expect(modal.getByText(/Seleccione el Cajero/)).toBeInTheDocument();
+      });
+
+      const modal3 = testUtils.withinWizardModal();
+      await user.click(await modal3.findByText(cashierName));
+      await user.click(modal3.getByRole('button', { name: /siguiente/i }));
+
       // Try to select same person as witness
       await waitFor(() => {
-        expect(screen.getByText(/Seleccionar Testigo/i)).toBeInTheDocument();
+        const modal = testUtils.withinWizardModal();
+        expect(modal.getByText(/Seleccionar Testigo/i)).toBeInTheDocument();
       });
-      
+
       // The same person should be disabled or show error
-      const titoOption = screen.getByText(cashierName);
+      const modal4 = testUtils.withinWizardModal();
+      const titoOption = modal4.getByText(cashierName);
       // In jsdom we can't use .closest(), so check the element itself or parent
       const titoParent = titoOption.parentElement;
       
@@ -71,28 +83,47 @@ describe('🚨 Edge Cases Integration Tests', () => {
         await user.click(titoOption);
         
         // Next button should remain disabled or show error
-        const nextButton = screen.getByRole('button', { name: /siguiente/i });
+        const modal5 = testUtils.withinWizardModal();
+        const nextButton = modal5.getByRole('button', { name: /siguiente/i });
         expect(nextButton).toBeDisabled();
       }
     });
 
     it('debe mostrar error si se intenta el mismo cajero y testigo en conteo matutino', async () => {
       const { user } = renderWithProviders(<Index />);
-      
+
       // Navigate to Morning Count
       await selectOperation(user, 'morning');
-      
+
       // Select store
-      await user.click(await screen.findByText('Los Héroes'));
-      await user.click(screen.getByRole('button', { name: /siguiente/i }));
-      
+      await waitFor(() => {
+        const modal = testUtils.withinWizardModal();
+        expect(modal.getByText(/Seleccione la Sucursal/)).toBeInTheDocument();
+      });
+
+      const modal1 = testUtils.withinWizardModal();
+      await user.click(await modal1.findByText('Los Héroes'));
+      await user.click(modal1.getByRole('button', { name: /siguiente/i }));
+
       // Select cashier
       const cashierName = 'Tito Gomez';
-      await user.click(await screen.findByText(cashierName));
-      await user.click(screen.getByRole('button', { name: /siguiente/i }));
-      
+      await waitFor(() => {
+        const modal = testUtils.withinWizardModal();
+        expect(modal.getByText(/Seleccione el Cajero/)).toBeInTheDocument();
+      });
+
+      const modal2 = testUtils.withinWizardModal();
+      await user.click(await modal2.findByText(cashierName));
+      await user.click(modal2.getByRole('button', { name: /siguiente/i }));
+
       // Verify same person cannot be selected as witness
-      const titoOption = screen.queryByText(cashierName);
+      await waitFor(() => {
+        const modal = testUtils.withinWizardModal();
+        expect(modal.getByText(/Seleccionar Testigo/)).toBeInTheDocument();
+      });
+
+      const modal3 = testUtils.withinWizardModal();
+      const titoOption = modal3.queryByText(cashierName);
       if (titoOption) {
         const titoParent = titoOption.parentElement;
         if (titoParent) {
@@ -101,7 +132,8 @@ describe('🚨 Edge Cases Integration Tests', () => {
       }
       
       // Complete button should be disabled if somehow same person selected
-      const completeButton = screen.queryByRole('button', { name: /completar/i });
+      const modal4 = testUtils.withinWizardModal();
+      const completeButton = modal4.queryByRole('button', { name: /completar/i });
       if (completeButton) {
         expect(completeButton).toBeDisabled();
       }
@@ -112,15 +144,23 @@ describe('🚨 Edge Cases Integration Tests', () => {
     
     it('debe mostrar alerta CRÍTICA para faltante > $20 en conteo matutino', async () => {
       const { user } = renderWithProviders(<Index />);
-      
+
       // Setup morning count
       await selectOperation(user, 'morning');
-      await user.click(await screen.findByText('Los Héroes'));
-      await user.click(screen.getByRole('button', { name: /siguiente/i }));
-      await user.click(await screen.findByText('Tito Gomez'));
-      await user.click(screen.getByRole('button', { name: /siguiente/i }));
-      await user.click(await screen.findByText('María López'));
-      await user.click(screen.getByRole('button', { name: /completar/i }));
+
+      const modal1 = testUtils.withinWizardModal();
+      await user.click(await modal1.findByText('Los Héroes'));
+      await user.click(modal1.getByRole('button', { name: /siguiente/i }));
+
+      await waitForAnimation(200);
+      const modal2 = testUtils.withinWizardModal();
+      await user.click(await modal2.findByText('Tito Gomez'));
+      await user.click(modal2.getByRole('button', { name: /siguiente/i }));
+
+      await waitForAnimation(200);
+      const modal3 = testUtils.withinWizardModal();
+      await user.click(await modal3.findByText('María López'));
+      await user.click(modal3.getByRole('button', { name: /completar/i }));
       
       // Count only $25 (shortage of $25)
       const cashCount = {
@@ -448,10 +488,10 @@ describe('🚨 Edge Cases Integration Tests', () => {
       
       // Complete electronic payments to match expected
       await completeElectronicPayments(user, {
-        wompi: 250,
-        chivo: 250,
-        transferencia: 250,
-        tarjeta: 250
+        credomatic: 250,
+        promerica: 250,
+        bankTransfer: 250,
+        paypal: 250
       });
       
       // Confirm totals

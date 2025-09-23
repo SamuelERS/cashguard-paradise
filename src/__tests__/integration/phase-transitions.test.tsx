@@ -3,15 +3,17 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { screen, waitFor } from '@testing-library/react';
 import Index from '@/pages/Index';
 import mockData from '../fixtures/mock-data';
-import { 
-  renderWithProviders, 
+import {
+  renderWithProviders,
   completeCashCount,
   completeElectronicPayments,
   cleanupMocks,
   waitForAnimation,
   verifyButtonState,
-  selectOperation
+  selectOperation,
+  completeSecurityProtocol
 } from '../fixtures/test-helpers';
+import { testUtils } from '../fixtures/test-utils';
 
 /**
  * Tests de integración para las transiciones entre fases
@@ -34,19 +36,33 @@ describe('🔄 Phase Transitions Integration Tests', () => {
     
     it('debe proceder a Phase 2 cuando el total de efectivo es > $50', async () => {
       const { user } = renderWithProviders(<Index />);
-      
+
       // Quick setup for evening cut
       await selectOperation(user, 'evening');
-      await user.click(await screen.findByRole('checkbox'));
-      await user.click(screen.getByRole('button', { name: /siguiente/i }));
-      await user.click(await screen.findByText('Los Héroes'));
-      await user.click(screen.getByRole('button', { name: /siguiente/i }));
-      await user.click(await screen.findByText('Tito Gomez'));
-      await user.click(screen.getByRole('button', { name: /siguiente/i }));
-      await user.click(await screen.findByText('María López'));
-      await user.click(screen.getByRole('button', { name: /siguiente/i }));
-      await user.type(screen.getByRole('textbox'), '500.00');
-      await user.click(screen.getByRole('button', { name: /completar/i }));
+
+      // Complete security protocol
+      await completeSecurityProtocol(user);
+
+      // Navigate through wizard steps
+      await waitForAnimation(300);
+      const modal1 = testUtils.withinWizardModal();
+      await user.click(await modal1.findByText('Los Héroes'));
+      await user.click(modal1.getByRole('button', { name: /siguiente/i }));
+
+      await waitForAnimation(300);
+      const modal2 = testUtils.withinWizardModal();
+      await user.click(await modal2.findByText('Tito Gomez'));
+      await user.click(modal2.getByRole('button', { name: /siguiente/i }));
+
+      await waitForAnimation(300);
+      const modal3 = testUtils.withinWizardModal();
+      await user.click(await modal3.findByText('María López'));
+      await user.click(modal3.getByRole('button', { name: /siguiente/i }));
+
+      await waitForAnimation(300);
+      const modal4 = testUtils.withinWizardModal();
+      await user.type(modal4.getByRole('textbox'), '500.00');
+      await user.click(modal4.getByRole('button', { name: /completar/i }));
       
       // Create cash count > $50
       const cashCount = {
@@ -82,19 +98,33 @@ describe('🔄 Phase Transitions Integration Tests', () => {
 
     it('debe saltar directamente a Phase 3 cuando el total de efectivo es ≤ $50', async () => {
       const { user } = renderWithProviders(<Index />);
-      
+
       // Quick setup for evening cut
       await selectOperation(user, 'evening');
-      await user.click(await screen.findByRole('checkbox'));
-      await user.click(screen.getByRole('button', { name: /siguiente/i }));
-      await user.click(await screen.findByText('Los Héroes'));
-      await user.click(screen.getByRole('button', { name: /siguiente/i }));
-      await user.click(await screen.findByText('Tito Gomez'));
-      await user.click(screen.getByRole('button', { name: /siguiente/i }));
-      await user.click(await screen.findByText('María López'));
-      await user.click(screen.getByRole('button', { name: /siguiente/i }));
-      await user.type(screen.getByRole('textbox'), '100.00');
-      await user.click(screen.getByRole('button', { name: /completar/i }));
+
+      // Complete security protocol
+      await completeSecurityProtocol(user);
+
+      // Navigate through wizard steps
+      await waitForAnimation(300);
+      const modal1 = testUtils.withinWizardModal();
+      await user.click(await modal1.findByText('Los Héroes'));
+      await user.click(modal1.getByRole('button', { name: /siguiente/i }));
+
+      await waitForAnimation(300);
+      const modal2 = testUtils.withinWizardModal();
+      await user.click(await modal2.findByText('Tito Gomez'));
+      await user.click(modal2.getByRole('button', { name: /siguiente/i }));
+
+      await waitForAnimation(300);
+      const modal3 = testUtils.withinWizardModal();
+      await user.click(await modal3.findByText('María López'));
+      await user.click(modal3.getByRole('button', { name: /siguiente/i }));
+
+      await waitForAnimation(300);
+      const modal4 = testUtils.withinWizardModal();
+      await user.type(modal4.getByRole('textbox'), '100.00');
+      await user.click(modal4.getByRole('button', { name: /completar/i }));
       
       // Create cash count = $50
       const cashCount = {
@@ -133,12 +163,22 @@ describe('🔄 Phase Transitions Integration Tests', () => {
       
       // Setup for morning count
       await selectOperation(user, 'morning');
-      await user.click(await screen.findByText('Los Héroes'));
-      await user.click(screen.getByRole('button', { name: /siguiente/i }));
-      await user.click(await screen.findByText('Tito Gomez'));
-      await user.click(screen.getByRole('button', { name: /siguiente/i }));
-      await user.click(await screen.findByText('María López'));
-      await user.click(screen.getByRole('button', { name: /completar/i }));
+
+      // Navigate through wizard steps for morning count
+      await waitForAnimation(300);
+      const modal1 = testUtils.withinWizardModal();
+      await user.click(await modal1.findByText('Los Héroes'));
+      await user.click(modal1.getByRole('button', { name: /siguiente/i }));
+
+      await waitForAnimation(300);
+      const modal2 = testUtils.withinWizardModal();
+      await user.click(await modal2.findByText('Tito Gomez'));
+      await user.click(modal2.getByRole('button', { name: /siguiente/i }));
+
+      await waitForAnimation(300);
+      const modal3 = testUtils.withinWizardModal();
+      await user.click(await modal3.findByText('María López'));
+      await user.click(modal3.getByRole('button', { name: /completar/i }));
       
       // Create cash count > $50 (normally would trigger Phase 2)
       const cashCount = {
@@ -168,11 +208,10 @@ describe('🔄 Phase Transitions Integration Tests', () => {
     
     it('debe deshabilitar el botón "Completar Fase 1" hasta confirmar los totales', async () => {
       const { user } = renderWithProviders(<Index />);
-      
+
       // Setup evening cut
       await selectOperation(user, 'evening');
-      await user.click(await screen.findByRole('checkbox'));
-      await user.click(screen.getByRole('button', { name: /siguiente/i }));
+      await completeSecurityProtocol(user);
       await user.click(await screen.findByText('Los Héroes'));
       await user.click(screen.getByRole('button', { name: /siguiente/i }));
       await user.click(await screen.findByText('Tito Gomez'));
@@ -209,11 +248,10 @@ describe('🔄 Phase Transitions Integration Tests', () => {
 
     it('debe cambiar entre modo guiado y manual sin perder datos', async () => {
       const { user } = renderWithProviders(<Index />);
-      
+
       // Setup evening cut
       await selectOperation(user, 'evening');
-      await user.click(await screen.findByRole('checkbox'));
-      await user.click(screen.getByRole('button', { name: /siguiente/i }));
+      await completeSecurityProtocol(user);
       await user.click(await screen.findByText('Los Héroes'));
       await user.click(screen.getByRole('button', { name: /siguiente/i }));
       await user.click(await screen.findByText('Tito Gomez'));
@@ -267,11 +305,10 @@ describe('🔄 Phase Transitions Integration Tests', () => {
     
     it('debe requerir completar ambas secciones de Phase 2 antes de avanzar', async () => {
       const { user } = renderWithProviders(<Index />);
-      
+
       // Setup with cash > $50
       await selectOperation(user, 'evening');
-      await user.click(await screen.findByRole('checkbox'));
-      await user.click(screen.getByRole('button', { name: /siguiente/i }));
+      await completeSecurityProtocol(user);
       await user.click(await screen.findByText('Los Héroes'));
       await user.click(screen.getByRole('button', { name: /siguiente/i }));
       await user.click(await screen.findByText('Tito Gomez'));
@@ -319,11 +356,10 @@ describe('🔄 Phase Transitions Integration Tests', () => {
 
     it('debe validar que la suma de entrega + verificación = total efectivo', async () => {
       const { user } = renderWithProviders(<Index />);
-      
+
       // Setup with exact $150 cash
       await selectOperation(user, 'evening');
-      await user.click(await screen.findByRole('checkbox'));
-      await user.click(screen.getByRole('button', { name: /siguiente/i }));
+      await completeSecurityProtocol(user);
       await user.click(await screen.findByText('Los Héroes'));
       await user.click(screen.getByRole('button', { name: /siguiente/i }));
       await user.click(await screen.findByText('Tito Gomez'));
@@ -368,18 +404,17 @@ describe('🔄 Phase Transitions Integration Tests', () => {
     
     it('debe mantener los datos del wizard a través de todas las fases', async () => {
       const { user } = renderWithProviders(<Index />);
-      
+
       const wizardData = {
         store: 'Metrocentro',
         cashier: 'Carmen Martínez',
         witness: 'Carlos Rodríguez',
         expectedSales: '2000.00'
       };
-      
+
       // Setup
       await selectOperation(user, 'evening');
-      await user.click(await screen.findByRole('checkbox'));
-      await user.click(screen.getByRole('button', { name: /siguiente/i }));
+      await completeSecurityProtocol(user);
       await user.click(await screen.findByText(wizardData.store));
       await user.click(screen.getByRole('button', { name: /siguiente/i }));
       
@@ -454,11 +489,10 @@ describe('🔄 Phase Transitions Integration Tests', () => {
 
     it('debe preservar los cálculos correctamente entre fases', async () => {
       const { user } = renderWithProviders(<Index />);
-      
+
       // Setup
       await selectOperation(user, 'evening');
-      await user.click(await screen.findByRole('checkbox'));
-      await user.click(screen.getByRole('button', { name: /siguiente/i }));
+      await completeSecurityProtocol(user);
       await user.click(await screen.findByText('Los Héroes'));
       await user.click(screen.getByRole('button', { name: /siguiente/i }));
       await user.click(await screen.findByText('Tito Gomez'));
@@ -487,10 +521,10 @@ describe('🔄 Phase Transitions Integration Tests', () => {
       
       // Electronic to get $224.50
       await completeElectronicPayments(user, {
-        wompi: 100.00,
-        chivo: 50.00,
-        transferencia: 74.50,
-        tarjeta: 0
+        credomatic: 100.00,
+        promerica: 50.00,
+        bankTransfer: 74.50,
+        paypal: 0
       });
       
       // Verify totals in Phase 1
