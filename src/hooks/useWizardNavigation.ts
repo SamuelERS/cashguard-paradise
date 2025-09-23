@@ -129,7 +129,7 @@ export function useWizardNavigation() {
   const getStepTitle = useCallback((step: number): string => {
     switch (step) {
       case 1:
-        return 'Protocolo de Seguridad de Caja';
+        return 'Instrucciones Obligatorias Iniciales';
       case 2:
         return 'Selección de Sucursal';
       case 3:
