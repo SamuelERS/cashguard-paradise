@@ -191,17 +191,6 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
       case 1: // Protocolo Anti-Fraude - Flujo Guiado
         return (
           <div className="glass-morphism-panel space-y-fluid-lg">
-            {/* 🤖 [IA] - v1.3.0: Card IMPORTANTE con información del flujo guiado */}
-            <div className="glass-morphism-panel border border-orange-400/40 border-l-4 border-l-orange-400 text-center shadow-lg shadow-orange-400/10">
-              <div className="flex items-center justify-center gap-fluid-md mb-fluid-md">
-                <AlertTriangle className="w-fluid-lg h-fluid-lg text-orange-400" />
-                <h3 className="font-semibold text-orange-400 text-[clamp(0.875rem,3.5vw,1rem)]">PROTOCOLO OBLIGATORIO</h3>
-              </div>
-              <p className="text-primary-foreground text-[clamp(0.875rem,3.5vw,1rem)] font-medium">
-                Revisa cada regla individualmente
-              </p>
-            </div>
-
             {/* 🤖 [IA] - v1.3.0: Flujo guiado de reglas usando componentes ProtocolRule */}
             <div className="flex flex-col gap-fluid-lg">
               {currentProtocolRules.map((rule, index) => (

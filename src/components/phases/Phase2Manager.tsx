@@ -307,23 +307,8 @@ export function Phase2Manager({
           </AlertDialogHeader>
           {/* Contenido principal envuelto en glass-morphism-panel como InitialWizardModal */}
           <div className="glass-morphism-panel space-y-fluid-lg">
-            {/* Card IMPORTANTE */}
-            <div className="glass-morphism-panel border border-orange-400/40 border-l-4 border-l-orange-400 text-center shadow-lg shadow-orange-400/10">
-            <div className="flex items-center justify-center gap-fluid-md mb-fluid-md">
-              <AlertCircle className="w-fluid-lg h-fluid-lg text-orange-400" />
-              <h3 className="font-semibold text-orange-400 text-[clamp(0.875rem,3.5vw,1rem)]">IMPORTANTE</h3>
-            </div>
-            <p className="text-primary-foreground font-semibold text-[clamp(0.875rem,3.5vw,1rem)]">
-              El sistema dirá cuántas MODEDAS y BILLETES tomar para la entrega.
-            </p>
-            </div>
-
             {/* Checklist de preparación */}
             <div className="flex flex-col gap-fluid-lg">
-            <p className="text-muted-foreground text-[clamp(0.8rem,3.2vw,0.95rem)] text-center">
-              Antes de continuar, confirme lo siguiente:
-            </p>
-
             {/* 🤖 [IA] - v1.2.31: Progressive Revelation con InstructionRule canónico */}
             <div className="flex flex-col gap-[clamp(0.75rem,3vw,1rem)]">
               {/* Item 1: Bolsa */}
