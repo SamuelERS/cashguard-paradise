@@ -12,6 +12,8 @@ interface GuidedProgressIndicatorProps {
   instructionText: string;
   isCompleted: boolean;
   isMorningCount?: boolean;
+  phaseTitle?: string;
+  completedText?: string;
 }
 
 export const GuidedProgressIndicator: React.FC<GuidedProgressIndicatorProps> = ({
@@ -19,7 +21,9 @@ export const GuidedProgressIndicator: React.FC<GuidedProgressIndicatorProps> = (
   totalSteps,
   instructionText,
   isCompleted,
-  isMorningCount = false
+  isMorningCount = false,
+  phaseTitle = "CONTEO DE CAJA",
+  completedText = "Conteo completado"
 }) => {
   // 🤖 [IA] - v1.2.14 - Cálculo de progreso unificado
   const progressPercentage = Math.min((currentStep / totalSteps) * 100, 100);
@@ -39,10 +43,10 @@ export const GuidedProgressIndicator: React.FC<GuidedProgressIndicatorProps> = (
           </div>
           <div>
             <h3 className="guided-progress-title">
-              CONTEO DE CAJA
+              {phaseTitle}
             </h3>
             <p className="guided-progress-subtitle">
-              {isCompleted ? '✓ Conteo completado' : `Paso ${currentStep} de ${totalSteps}`}
+              {isCompleted ? `✓ ${completedText}` : `Paso ${currentStep} de ${totalSteps}`}
             </p>
           </div>
         </div>

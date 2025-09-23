@@ -1,7 +1,7 @@
 // 🤖 [IA] - v1.0.87 - Selector de modo con elementos corporativos integrados
 import { motion } from 'framer-motion';
 import { Sunrise, Moon, ArrowRight, Calculator, Fish } from 'lucide-react';
-import { FloatingParticles } from '@/components/FloatingParticles';
+// 🤖 [IA] - v1.2.24 - FloatingParticles eliminado para mejorar rendimiento
 import { OperationMode, OPERATION_MODES } from '@/types/operation-mode';
 
 interface OperationSelectorProps {
@@ -18,8 +18,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* 🤖 [IA] - v1.0.87 - Partículas flotantes de fondo */}
-      <FloatingParticles />
+      {/* 🤖 [IA] - v1.2.24 - Partículas flotantes eliminadas para mejorar rendimiento */}
       
       {/* 🤖 [IA] - v1.0.87 - Logos corporativos en esquinas superiores */}
       <div className="absolute top-0 left-0 right-0 flex justify-between p-4 md:p-6 lg:p-8 pointer-events-none z-20">

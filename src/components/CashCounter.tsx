@@ -38,7 +38,7 @@ import { GuidedElectronicInputSection } from "@/components/cash-counting/GuidedE
 import { TotalsSummarySection } from "@/components/cash-counting/TotalsSummarySection"; // 🤖 [IA] - v1.0.28
 import { GuidedInstructionsModal } from "@/components/cash-counting/GuidedInstructionsModal"; // 🤖 [IA] - v1.2.8
 import { Phase2Manager } from "@/components/phases/Phase2Manager";
-import { FloatingParticles } from "@/components/FloatingParticles"; // 🤖 [IA] - v1.0.64
+// 🤖 [IA] - v1.2.24 - FloatingParticles eliminado para mejorar rendimiento
 import { MorningVerification } from "@/components/morning-count/MorningVerification"; // 🤖 [IA] - v1.0.84
 import { STORES, EMPLOYEES, getEmployeesByStore } from "@/data/paradise";
 import { CashCount, ElectronicPayments, DENOMINATIONS } from "@/types/cash"; // 🤖 [IA] - v1.0.28: Agregado DENOMINATIONS
@@ -915,7 +915,6 @@ const CashCounter = ({
     <>
       <div className="fixed inset-0 overflow-hidden flex items-center justify-center"
            style={{ touchAction: 'none', overscrollBehavior: 'none', WebkitOverflowScrolling: 'touch' }}>
-        <FloatingParticles />
         
         <div className="relative z-10 container mx-auto px-4 py-2 max-w-4xl">
           {/* 🤖 [IA] - v1.0.3 - Saltar selección si viene del wizard */}

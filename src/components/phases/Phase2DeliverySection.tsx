@@ -165,6 +165,8 @@ export function Phase2DeliverySection({
           }
           isCompleted={allStepsCompleted}
           isMorningCount={false}
+          phaseTitle="ENTREGA A GERENCIA"
+          completedText="Entrega completada"
         />
       </div>
 
