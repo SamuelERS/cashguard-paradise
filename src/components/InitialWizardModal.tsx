@@ -495,31 +495,13 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
       >
         <div className="p-fluid-lg space-y-fluid-lg">
           <DialogHeader className="text-center space-y-fluid-md">
-            <DialogTitle className="text-primary mb-fluid-md text-[clamp(1.125rem,4.5vw,1.5rem)]">
+            <DialogTitle className="text-primary mb-fluid-md text-[clamp(1.125rem,4.5vw,1.5rem)] text-center">
               {getStepTitle()}
             </DialogTitle>
             <DialogDescription className="sr-only">
               Complete los pasos para configurar el corte de caja nocturno
             </DialogDescription>
           </DialogHeader>
-
-          {/* Progress Bar Section */}
-          <div className="mt-fluid-lg mb-fluid-xl">
-            <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
-              <motion.div
-                className="h-full bg-gradient-to-r from-primary to-secondary rounded-full"
-                initial={{ width: 0 }}
-                animate={{ width: `${progressValue}%` }}
-                transition={{ duration: 0.5, ease: "easeOut", delay: 0.2 }}
-              />
-            </div>
-            <div className="flex justify-center mt-fluid-sm">
-              <span className="text-xs">
-                <span className="text-primary font-medium">Preparación de Corte</span>
-                <span className="text-gray-400"> {progressValue}% completado</span>
-              </span>
-            </div>
-          </div>
 
           {/* Step Content */}
           <AnimatePresence mode="wait">
@@ -533,7 +515,6 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               {renderStepContent()}
             </motion.div>
           </AnimatePresence>
-
 
           {/* 🤖 [IA] - v1.2.22: Footer centrado - botones agrupados centro con espaciado consistente */}
           <div className="flex items-center justify-center mt-fluid-2xl pt-fluid-xl border-t border-slate-600 gap-fluid-lg">
