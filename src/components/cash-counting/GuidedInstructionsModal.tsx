@@ -142,7 +142,7 @@ export function GuidedInstructionsModal({
                 transition={{ duration: 0.5, ease: "easeOut", delay: 0.2 }}
               />
             </div>
-            <div className="flex justify-center mt-fluid-sm">
+            <div className="flex justify-center mt-fluid-sm mb-fluid-base">
               <span className="text-xs">
                 <span className="text-primary font-medium">Preparación de Conteo</span>
                 <span className="text-gray-400"> {progressValue}% completado</span>
