@@ -298,7 +298,7 @@ export function Phase2Manager({
       <AlertDialogContent className="glass-morphism-panel w-[clamp(90vw,95vw,95vw)] max-w-[clamp(300px,90vw,540px)] max-h-[clamp(85vh,90vh,90vh)] overflow-y-auto overflow-x-hidden p-0">
         <div className="p-fluid-lg space-y-fluid-lg">
           <AlertDialogHeader className="text-center space-y-fluid-md">
-            <AlertDialogTitle className="text-primary mb-fluid-md text-[clamp(1.125rem,4.5vw,1.5rem)]">
+            <AlertDialogTitle className="text-primary mb-fluid-xl text-[clamp(1.125rem,4.5vw,1.5rem)] text-center">
               Preparar Dinero a Entregar
             </AlertDialogTitle>
             <AlertDialogDescription className="sr-only">

@@ -124,7 +124,7 @@ export function GuidedInstructionsModal({
       >
         <div className="p-fluid-lg space-y-fluid-lg">
           <DialogHeader className="text-center space-y-fluid-md">
-            <DialogTitle className="text-primary mb-fluid-md text-[clamp(1.125rem,4.5vw,1.5rem)] text-center">
+            <DialogTitle className="text-primary mb-fluid-xl text-[clamp(1.125rem,4.5vw,1.5rem)] text-center">
               Instrucciones del Corte de Caja
             </DialogTitle>
             <DialogDescription className="sr-only">
