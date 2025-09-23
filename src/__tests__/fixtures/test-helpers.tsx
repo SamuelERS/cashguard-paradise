@@ -142,34 +142,34 @@ export async function completeCashCount(
 export async function completeElectronicPayments(
   user: ReturnType<typeof userEvent.setup>,
   payments: {
-    wompi?: number;
-    chivo?: number;
-    transferencia?: number;
-    tarjeta?: number;
+    credomatic?: number;
+    promerica?: number;
+    bankTransfer?: number;
+    paypal?: number;
   }
 ) {
-  if (payments.wompi) {
-    const wompiInput = await screen.findByLabelText(/wompi/i);
-    await user.clear(wompiInput);
-    await user.type(wompiInput, payments.wompi.toString());
+  if (payments.credomatic) {
+    const credomaticInput = await screen.findByLabelText(/credomatic/i);
+    await user.clear(credomaticInput);
+    await user.type(credomaticInput, payments.credomatic.toString());
   }
-  
-  if (payments.chivo) {
-    const chivoInput = await screen.findByLabelText(/chivo/i);
-    await user.clear(chivoInput);
-    await user.type(chivoInput, payments.chivo.toString());
+
+  if (payments.promerica) {
+    const promericaInput = await screen.findByLabelText(/promerica/i);
+    await user.clear(promericaInput);
+    await user.type(promericaInput, payments.promerica.toString());
   }
-  
-  if (payments.transferencia) {
-    const transferenciaInput = await screen.findByLabelText(/transferencia/i);
-    await user.clear(transferenciaInput);
-    await user.type(transferenciaInput, payments.transferencia.toString());
+
+  if (payments.bankTransfer) {
+    const bankTransferInput = await screen.findByLabelText(/bankTransfer|transferencia/i);
+    await user.clear(bankTransferInput);
+    await user.type(bankTransferInput, payments.bankTransfer.toString());
   }
-  
-  if (payments.tarjeta) {
-    const tarjetaInput = await screen.findByLabelText(/tarjeta/i);
-    await user.clear(tarjetaInput);
-    await user.type(tarjetaInput, payments.tarjeta.toString());
+
+  if (payments.paypal) {
+    const paypalInput = await screen.findByLabelText(/paypal/i);
+    await user.clear(paypalInput);
+    await user.type(paypalInput, payments.paypal.toString());
   }
 }
 
@@ -378,7 +378,7 @@ export async function selectOperation(
   
   // Wait for the operation selector to be ready
   await waitFor(() => {
-    expect(screen.getByText(/Seleccione el Tipo de Operación/)).toBeInTheDocument();
+    expect(screen.getByText(/Seleccione Operación/)).toBeInTheDocument();
   });
   
   // Wait a bit for animations
@@ -393,7 +393,7 @@ export async function selectOperation(
     if (operation === 'morning') {
       expect(screen.getByText(/Conteo de Caja Matutino/)).toBeInTheDocument();
     } else {
-      expect(screen.getByText(/Protocolo de Seguridad/)).toBeInTheDocument();
+      expect(screen.getByText(/Instrucciones Obligatorias Iniciales/)).toBeInTheDocument();
     }
   }, { timeout: 5000 });
 }

@@ -54,7 +54,7 @@ const protocolRules: ProtocolRule[] = [
   },
   {
     id: 'differentCashier',
-    title: 'Abran WhatsApp Web Ya Mismo',
+    title: 'Abran WhatsApp Web',
     Icon: CheckCircle,
     colors: {
       text: 'text-red-500',

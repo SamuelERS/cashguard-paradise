@@ -11,13 +11,13 @@ export const cashCountingInstructions: Instruction[] = [
   {
     id: 'counting',
     icon: 'Calculator',
-    title: 'Muestra Tu Trabajo En La Cámara',
+    title: 'No Tapes La Cámara',
     minReviewTimeMs: 5000
   },
   {
     id: 'ordering',
     icon: 'Box',
-    title: 'Ordena Cada Denominacion En Caja',
+    title: 'Ordena Por Depósito',
     minReviewTimeMs: 4000
   },
   {

@@ -30,7 +30,7 @@ describe('🌅 Morning Count Flow Simplified Tests', () => {
     
     // Verificar que el selector de operación se muestre
     await waitFor(() => {
-      expect(screen.getByText(/Seleccione el Tipo de Operación/)).toBeInTheDocument();
+      expect(screen.getByText(/Seleccione Operación/)).toBeInTheDocument();
     });
     
     // Verificar que ambas opciones estén presentes
@@ -47,7 +47,7 @@ describe('🌅 Morning Count Flow Simplified Tests', () => {
     
     // Esperar a que aparezca el selector
     await waitFor(() => {
-      expect(screen.getByText(/Seleccione el Tipo de Operación/)).toBeInTheDocument();
+      expect(screen.getByText(/Seleccione Operación/)).toBeInTheDocument();
     });
     
     // Esperar animaciones
@@ -76,7 +76,7 @@ describe('🌅 Morning Count Flow Simplified Tests', () => {
     
     // Abrir el modal
     await waitFor(() => {
-      expect(screen.getByText(/Seleccione el Tipo de Operación/)).toBeInTheDocument();
+      expect(screen.getByText(/Seleccione Operación/)).toBeInTheDocument();
     });
     
     await waitForAnimation();
@@ -99,7 +99,7 @@ describe('🌅 Morning Count Flow Simplified Tests', () => {
       // Verificar que el modal se cerró y volvimos al selector
       await waitFor(() => {
         expect(screen.queryByText(/Conteo de Caja Matutino/)).not.toBeInTheDocument();
-        expect(screen.getByText(/Seleccione el Tipo de Operación/)).toBeInTheDocument();
+        expect(screen.getByText(/Seleccione Operación/)).toBeInTheDocument();
       });
     }
   });
@@ -109,7 +109,7 @@ describe('🌅 Morning Count Flow Simplified Tests', () => {
     
     // Abrir el modal
     await waitFor(() => {
-      expect(screen.getByText(/Seleccione el Tipo de Operación/)).toBeInTheDocument();
+      expect(screen.getByText(/Seleccione Operación/)).toBeInTheDocument();
     });
     
     await waitForAnimation();
@@ -140,7 +140,7 @@ describe('🌅 Morning Count Flow Simplified Tests', () => {
     renderWithProviders(<Index />);
     
     await waitFor(() => {
-      expect(screen.getByText(/Seleccione el Tipo de Operación/)).toBeInTheDocument();
+      expect(screen.getByText(/Seleccione Operación/)).toBeInTheDocument();
     });
     
     // Verificar que los iconos están presentes (Sunrise para morning, Moon para evening)
@@ -159,7 +159,7 @@ describe('🌅 Morning Count Flow Simplified Tests', () => {
     renderWithProviders(<Index />);
     
     await waitFor(() => {
-      expect(screen.getByText(/Seleccione el Tipo de Operación/)).toBeInTheDocument();
+      expect(screen.getByText(/Seleccione Operación/)).toBeInTheDocument();
     });
     
     // Verificar que el mensaje motivacional está presente
@@ -171,7 +171,7 @@ describe('🌅 Morning Count Flow Simplified Tests', () => {
     const { user } = renderWithProviders(<Index />);
     
     await waitFor(() => {
-      expect(screen.getByText(/Seleccione el Tipo de Operación/)).toBeInTheDocument();
+      expect(screen.getByText(/Seleccione Operación/)).toBeInTheDocument();
     });
     
     await waitForAnimation();
@@ -200,7 +200,7 @@ describe('🌅 Morning Count Flow Simplified Tests', () => {
     renderWithProviders(<Index />);
     
     await waitFor(() => {
-      expect(screen.getByText(/Seleccione el Tipo de Operación/)).toBeInTheDocument();
+      expect(screen.getByText(/Seleccione Operación/)).toBeInTheDocument();
     });
     
     // Verificar características del Conteo Matutino

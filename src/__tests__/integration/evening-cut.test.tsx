@@ -46,7 +46,7 @@ describe('🌙 Evening Cut Flow Integration Tests', () => {
     
     // Should open Initial Wizard with 5 steps
     await waitFor(() => {
-      expect(screen.getByText(/Protocolo de Seguridad/)).toBeInTheDocument();
+      expect(screen.getByText(/Instrucciones Obligatorias Iniciales/)).toBeInTheDocument();
     });
     
     // Step 1: Accept protocol

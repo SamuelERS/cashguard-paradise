@@ -125,24 +125,24 @@ export const mockCashCounts = {
 // Mock de pagos electrónicos
 export const mockElectronicPayments = {
   none: {
-    wompi: 0,
-    chivo: 0,
-    transferencia: 0,
-    tarjeta: 0,
+    credomatic: 0,
+    promerica: 0,
+    bankTransfer: 0,
+    paypal: 0,
     total: 0
   },
   normal: {
-    wompi: 150.75,
-    chivo: 89.50,
-    transferencia: 225.00,
-    tarjeta: 487.25,
+    credomatic: 150.75,
+    promerica: 89.50,
+    bankTransfer: 225.00,
+    paypal: 487.25,
     total: 952.50
   },
   high: {
-    wompi: 500.00,
-    chivo: 750.00,
-    transferencia: 1200.00,
-    tarjeta: 2500.00,
+    credomatic: 500.00,
+    promerica: 750.00,
+    bankTransfer: 1200.00,
+    paypal: 2500.00,
     total: 4950.00
   }
 };
@@ -259,10 +259,10 @@ export const testIds = {
   bill100Input: 'bill100-input',
   
   // Electronic payment inputs
-  wompiInput: 'wompi-input',
-  chivoInput: 'chivo-input',
-  transferenciaInput: 'transferencia-input',
-  tarjetaInput: 'tarjeta-input',
+  credomaticInput: 'credomatic-input',
+  promericaInput: 'promerica-input',
+  bankTransferInput: 'bankTransfer-input',
+  paypalInput: 'paypal-input',
   
   // Totals
   totalCashDisplay: 'total-cash-display',

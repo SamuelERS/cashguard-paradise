@@ -520,6 +520,32 @@
     margin-top: var(--space-md);
   }
 
+  /* Ajustes responsivos para el modal del wizard */
+  .wizard-dialog-content {
+    width: min(92vw, 540px);
+    max-width: min(92vw, 540px);
+    margin: 0 auto;
+  }
+
+  @media (min-width: 768px) {
+    .wizard-dialog-content {
+      width: clamp(480px, 48vw, 560px);
+      max-width: clamp(480px, 48vw, 560px);
+    }
+  }
+
+  .wizard-dialog-footer {
+    flex-wrap: wrap;
+    row-gap: var(--space-md);
+    column-gap: var(--space-md);
+  }
+
+  @media (min-width: 480px) {
+    .wizard-dialog-footer {
+      flex-wrap: nowrap;
+    }
+  }
+
   /* 🤖 [IA] - v1.2.14: Clase glass morphism legacy (migrada a glass-morphism-panel) */
   .wizard-glass-element {
     background-color: rgba(36, 36, 36, 0.4);
@@ -2702,4 +2728,3 @@
     transition: filter 0.6s ease-out;
   }
 }
-

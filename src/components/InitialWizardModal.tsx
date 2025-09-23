@@ -491,7 +491,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
       }
     }}>
       <DialogContent
-        className="glass-morphism-panel w-[clamp(90vw,95vw,95vw)] max-w-[clamp(300px,90vw,540px)] max-h-[clamp(85vh,90vh,90vh)] overflow-y-auto overflow-x-hidden p-0 [&>button]:hidden"
+        className="glass-morphism-panel wizard-dialog-content max-h-[clamp(85vh,90vh,90vh)] overflow-y-auto overflow-x-hidden p-0 [&>button]:hidden"
       >
         <div className="p-fluid-lg space-y-fluid-lg">
           <DialogHeader className="text-center space-y-fluid-md">
@@ -517,7 +517,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
           </AnimatePresence>
 
           {/* 🤖 [IA] - v1.2.22: Footer centrado - botones agrupados centro con espaciado consistente */}
-          <div className="flex items-center justify-center mt-fluid-2xl pt-fluid-xl border-t border-slate-600 gap-fluid-lg">
+          <div className="flex items-center justify-center mt-fluid-2xl pt-fluid-xl border-t border-slate-600 gap-fluid-lg wizard-dialog-footer">
             <DestructiveActionButton
               onClick={handleCancelRequest}
             >
