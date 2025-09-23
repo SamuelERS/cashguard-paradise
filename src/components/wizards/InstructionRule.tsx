@@ -236,21 +236,6 @@ const InstructionRuleComponent: React.FC<InstructionRuleProps> = ({
           </span>
         </div>
       )}
-
-      {/* 🤖 [IA] - v1.2.26: FASE 5 - Badge "Toca para revisar" según plan exacto - POSICIÓN CORREGIDA */}
-      {isCurrent && state.isEnabled && !state.isChecked && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.5 }}
-          className="absolute -top-6 -right-2 bg-primary text-primary-foreground text-xs px-2 py-1 rounded-full shadow-lg z-10 min-w-max min-h-[32px] flex items-center"
-          role="status"
-          aria-live="polite"
-          aria-label="Instrucción disponible para revisar"
-        >
-          Toca para revisar
-        </motion.div>
-      )}
     </motion.div>
   );
 };
