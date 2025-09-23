@@ -132,23 +132,6 @@ export function GuidedInstructionsModal({
             </DialogDescription>
           </DialogHeader>
 
-          {/* Progress Bar Section */}
-          <div className="mt-fluid-lg mb-fluid-xl">
-            <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
-              <motion.div
-                className="h-full bg-gradient-to-r from-primary to-secondary rounded-full"
-                initial={{ width: 0 }}
-                animate={{ width: `${progressValue}%` }}
-                transition={{ duration: 0.5, ease: "easeOut", delay: 0.2 }}
-              />
-            </div>
-            <div className="flex justify-center mt-fluid-sm mb-fluid-base">
-              <span className="text-xs">
-                <span className="text-primary font-medium">Preparación de Conteo</span>
-                <span className="text-gray-400"> {progressValue}% completado</span>
-              </span>
-            </div>
-          </div>
 
           {/* Step Content */}
           <div className="glass-morphism-panel space-y-fluid-lg">
