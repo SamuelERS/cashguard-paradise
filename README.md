@@ -262,21 +262,34 @@ If you want to work locally using your own IDE, you can clone this repo and push
 
 The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 
-Follow these steps:
+## 🚀 Getting Started (Development)
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+This project operates under a **Docker-First** philosophy. All development, testing, and execution MUST be performed within the provided Docker environment to ensure consistency.
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+### Prerequisites
 
-# Step 3: Install the necessary dependencies.
-npm i
+- Docker and Docker Compose are installed.
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+### Running the Development Environment
+
+1.  **Build and Start the Container:**
+    From the project root, run the following command. This will build the necessary Docker images and start the development server.
+
+    ```bash
+    docker-compose --profile dev up --build
+    ```
+
+2.  **Initial Setup:**
+    The first time you run this command, `npm install` will run inside the container. This may take several minutes. You can monitor the progress in your terminal. The container's healthcheck will likely show as `(unhealthy)` or `(starting)` during this period. This is normal.
+
+3.  **Accessing the Application:**
+    Once Vite reports that the server is running, the application will be available at:
+    [http://localhost:5173](http://localhost:5173)
+
+4.  **Stopping the Environment:**
+    To stop the containers, press `Ctrl + C` in the terminal where `docker-compose` is running, or run `docker-compose down` from another terminal.
+
+**Note:** The `npm run dev` command is intended for use by the Docker container's internal scripts and should not be run directly on the host machine.
 
 **Edit a file directly in GitHub**
 
