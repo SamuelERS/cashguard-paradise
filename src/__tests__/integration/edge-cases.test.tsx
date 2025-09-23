@@ -41,7 +41,16 @@ describe('🚨 Edge Cases Integration Tests', () => {
 
       // Navigate to Evening Cut
       await selectOperation(user, 'evening');
-      
+
+      // DEBUG: Verificar que llegamos al protocolo
+      console.log('🔍 AFTER selectOperation - Checking for protocol');
+      await waitFor(() => {
+        expect(screen.getByText(/Instrucciones Obligatorias Iniciales/)).toBeInTheDocument();
+      });
+
+      // Complete security protocol (required for evening cut)
+      await completeSecurityProtocol(user);
+
       // Select store
       await waitFor(() => {
         const modal = testUtils.withinWizardModal();

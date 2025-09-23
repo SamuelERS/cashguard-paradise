@@ -384,9 +384,17 @@ export async function selectOperation(
   // Wait a bit for animations
   await new Promise(resolve => setTimeout(resolve, 500));
 
-  // Find and click the button by its text
-  const button = await screen.findByText(buttonText);
-  await user.click(button);
+  // Find the text element and then click on its parent card
+  const textElement = await screen.findByText(buttonText);
+  // Find the clickable card (parent with cursor-pointer class)
+  const card = textElement.closest('div[class*="cursor-pointer"]');
+
+  if (card) {
+    await user.click(card);
+  } else {
+    // Fallback: try clicking the text itself
+    await user.click(textElement);
+  }
 
   // Wait for the modal to appear
   await waitFor(() => {
@@ -398,13 +406,39 @@ export async function selectOperation(
   }, { timeout: 5000 });
 }
 
-// 🤖 [IA] - TEST-FIX-40-D: Helper para protocolo que replica el enfoque original manual
+// 🤖 [IA] - TEST-FIX-40-FINAL: Helper definitivo basado en evidencia forense completa
 export async function completeSecurityProtocol(
   user: ReturnType<typeof userEvent.setup>
 ) {
-  // Replicar exactamente lo que hacían los tests manuales originales
-  await user.click(await screen.findByRole('checkbox'));
-  await user.click(screen.getByRole('button', { name: /siguiente/i }));
+  // Esperar a que aparezca el diálogo del protocolo
+  const dialog = await screen.findByRole('dialog');
+
+  // Completar las 4 reglas del protocolo según evidencia forense
+  // Las reglas tienen aria-label="Regla:..." y aria-pressed="false"
+  for (let i = 0; i < 4; i++) {
+    // Buscar y hacer click en la primera regla no completada
+    const buttons = within(dialog).getAllByRole('button');
+    const uncompletedRule = buttons.find(btn => {
+      const ariaLabel = btn.getAttribute('aria-label') || '';
+      const ariaPressed = btn.getAttribute('aria-pressed');
+      return ariaLabel.includes('Regla:') && ariaPressed === 'false';
+    });
+
+    if (uncompletedRule) {
+      await user.click(uncompletedRule);
+      // Esperar el tiempo de procesamiento del protocolo
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+  }
+
+  // Esperar a que el botón Continuar se habilite y hacer click
+  const continueButton = await waitFor(() => {
+    const btn = within(dialog).getByRole('button', { name: /continuar/i });
+    expect(btn).not.toBeDisabled();
+    return btn;
+  }, { timeout: 5000 });
+
+  await user.click(continueButton);
 }
 
 // Export all helpers
