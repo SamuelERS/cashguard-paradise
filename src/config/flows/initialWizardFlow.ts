@@ -1,4 +1,4 @@
-// 🤖 [IA] - Arquitectura Guiada Basada en Datos v1.0 - InitialWizardFlow Configuration
+// [IA] - Arquitectura Guiada Basada en Datos v1.0 - InitialWizardFlow Configuration
 import { AlertTriangle, Shield, CheckCircle } from 'lucide-react';
 
 export interface ProtocolRule {
@@ -18,7 +18,7 @@ export interface RuleState {
   isChecked: boolean;
   isEnabled: boolean;
   isBeingReviewed: boolean;
-  isHidden?: boolean; // 🤖 [IA] - Estado para revelación progresiva elegante
+  isHidden?: boolean; // [IA] - Estado para revelación progresiva elegante
 }
 
 export interface RulesFlowState {
@@ -27,12 +27,12 @@ export interface RulesFlowState {
   isFlowComplete: boolean;
 }
 
-// 🤖 [IA] - Configuración de datos del flujo de reglas del protocolo
+// [IA] - Configuración de datos del flujo de reglas del protocolo
 // Fuente única de verdad para el flujo guiado secuencial
 const protocolRules: ProtocolRule[] = [
   {
     id: 'noDevices',
-    title: 'Hagan Conteo Despacio y Eviten Repetir',
+    title: 'Si Fallan Repiten Corte',
     Icon: AlertTriangle,
     colors: {
       text: 'text-red-500',
@@ -65,7 +65,7 @@ const protocolRules: ProtocolRule[] = [
   },
   {
     id: 'activeSystem',
-    title: 'Cajero y Testigo Deben Estar Presentes',
+    title: 'Cajero y Testigo Presentes',
     Icon: AlertTriangle,
     colors: {
       text: 'text-orange-400',
@@ -76,10 +76,10 @@ const protocolRules: ProtocolRule[] = [
   }
 ];
 
-// 🤖 [IA] - v3.0.0: Array dinámico para randomización elegante
+// [IA] - v3.0.0: Array dinámico para randomización elegante
 export let currentProtocolRules: ProtocolRule[] = [...protocolRules];
 
-// 🤖 [IA] - v3.0.0: Función shuffle Fisher-Yates para aleatoriedad real
+// [IA] - v3.0.0: Función shuffle Fisher-Yates para aleatoriedad real
 const shuffleRules = (rules: ProtocolRule[]): ProtocolRule[] => {
   const shuffled = [...rules];
   for (let i = shuffled.length - 1; i > 0; i--) {
@@ -89,18 +89,18 @@ const shuffleRules = (rules: ProtocolRule[]): ProtocolRule[] => {
   return shuffled;
 };
 
-// 🤖 [IA] - v3.0.0: Función pública para shuffle + factor sorpresa máximo
+// [IA] - v3.0.0: Función pública para shuffle + factor sorpresa máximo
 export const shuffleProtocolRules = (): ProtocolRule[] => {
   currentProtocolRules = shuffleRules(protocolRules);
-  // 🤖 [IA] - Debug: Console log para verificar orden aleatorio
-  console.log('🎲 [Protocolo] Nuevo orden aleatorio:', currentProtocolRules.map(r => r.title));
+  // [IA] - Debug: Console log para verificar orden aleatorio
+  console.log(' [Protocolo] Nuevo orden aleatorio:', currentProtocolRules.map(r => r.title));
   return currentProtocolRules;
 };
 
-// 🤖 [IA] - v3.0.0: Export de reglas originales para compatibilidad
+// [IA] - v3.0.0: Export de reglas originales para compatibilidad
 export const getOriginalProtocolRules = (): ProtocolRule[] => [...protocolRules];
 
-// 🤖 [IA] - Estados iniciales del flujo con revelación progresiva + randomización
+// [IA] - Estados iniciales del flujo con revelación progresiva + randomización
 export const createInitialRulesState = (): RulesFlowState => ({
   rules: currentProtocolRules.reduce((acc, rule, index) => ({
     ...acc,
@@ -115,7 +115,7 @@ export const createInitialRulesState = (): RulesFlowState => ({
   isFlowComplete: false
 });
 
-// 🤖 [IA] - Configuración de timing específica para el flujo guiado
+// [IA] - Configuración de timing específica para el flujo guiado
 export const RULES_FLOW_TIMING = {
   ruleReview: 3000,     // Tiempo para lectura obligatoria de cada regla (3s para asegurar comprensión)
   nextRuleDelay: 300,   // Delay antes de habilitar siguiente regla

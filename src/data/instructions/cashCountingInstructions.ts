@@ -23,7 +23,7 @@ export const cashCountingInstructions: Instruction[] = [
   {
     id: 'packaging',
     icon: 'PackagePlus',
-    title: 'Monedas En Paquetes de 10 Unidades',
+    title: 'Monedas En Paquetes de 10',
     minReviewTimeMs: 4000
   },
 ];
