@@ -337,8 +337,9 @@ export function Phase2VerificationSection({
 
                 {/* Badge ENTREGAR para Phase 2 */}
                 <div className="glass-status-error inline-block px-4 py-2 rounded-lg mt-4">
-                  <p className="text-sm font-semibold" style={{ color: '#f4212e' }}>
-                    📤 ENTREGAR <span style={{ color: 'white', fontWeight: 'bold', fontSize: '1.4em' }}>{currentStep.quantity}</span>
+                  <p className="text-sm font-semibold" style={{ color: '#22c55e' }}>
+                    {'📤\u00A0\u00A0QUEDA EN CAJA '}
+                    <span style={{ color: 'white', fontWeight: 'bold', fontSize: '1.4em' }}>{currentStep.quantity}</span>
                   </p>
                 </div>
               </div>
