@@ -2010,10 +2010,12 @@
 /* Header principal - Mejor alineación */
 .guided-progress-header {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
-  margin-bottom: var(--spacing-sm);
+  flex-wrap: nowrap;
   gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-sm);
+  /* 🤖 [IA] - v1.2.27: Flex nowrap en móviles para compactar header */
 }
 
 /* Sección izquierda del header */
@@ -2021,6 +2023,9 @@
   display: flex;
   align-items: center;
   gap: var(--spacing-xs);
+  flex: 1 1 auto;
+  min-width: 0;
+  /* 🤖 [IA] - v1.2.27: Permite compresión controlada sin wraps */
 }
 
 /* Badge circular con step number - Sutil y proporcional */
@@ -2064,7 +2069,15 @@
 
 /* Sección de progreso numérico */
 .guided-progress-stats {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-end;
   text-align: right;
+  flex-shrink: 0;
+  white-space: nowrap;
+  gap: 2px;
+  /* 🤖 [IA] - v1.2.27: Estadísticas compactas y alineadas en móviles */
 }
 
 .guided-progress-stats-label {

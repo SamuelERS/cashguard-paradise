@@ -1,63 +1,63 @@
-# 🏠 Reglas de la Casa v2.0
+# 🏠 Reglas de la Casa v3.0
 
-**Documento de referencia para desarrollo con Claude Code en proyectos Paradise System Labs**
+**Documento de referencia para desarrollo con IA en proyectos Paradise System Labs**
 
 Este documento define las reglas fundamentales que **NUNCA se rompen** durante el desarrollo, mantenimiento y evolución de cualquier proyecto en Paradise System Labs. Son la base para un desarrollo consistente, seguro y escalable.
 
 ---
 
-## 🚨 CRÍTICAS (Nunca romper)
+## 🚨 CRÍTICAS (Leyes Inquebrantables)
 
-- **🔒 Preservación total:** No modifiques ni recortes código sin justificación explícita
-- **⚡ Funcionalidad intacta:** No elimines funcionalidades sin evaluar impacto completo
-- **💻 TypeScript estricto:** Cero `any` - interfaces y tipado completos obligatorios
-- **🐳 Docker first:** Todo debe ser containerizable - no introduzcas dependencias que rompan containerización
-- **🔐 Compatibilidad total:** Verifica integración con React + TypeScript + Vite + shadcn/ui + Docker
-
----
-
-## ⚠️ IMPORTANTES (Seguir siempre)
-
-- **🏠 Casa limpia:** Scripts → `/Scripts` | Documentos → `/Documentos MarkDown` (verifica antes de crear)
-- **🔍 Revisar antes de crear:** Consulta lo existente, verifica compatibilidad con código actual  
-- **🗺️ Planificación obligatoria:** Crea **task list** antes de empezar con objetivos específicos y medibles
-- **📝 Documentación sistemática:** Comenta cambios `// 🤖 [IA] - [Razón]` y actualiza .md relevantes
-- **🎯 Versionado consistente:** Actualiza versión en Index.tsx, InitialWizardModal.tsx, CashCounter.tsx, etc.
+- **🔒 Inmutabilidad del Código Base:** No modificar ni recortar código sin una justificación explícita y aprobada.
+- **⚡ Principio de No Regresión:** No eliminar funcionalidades sin una evaluación de impacto completa y una orden directa.
+- **💻 Tipado Estricto y Absoluto:** Cero `any`. Interfaces y tipado completos son obligatorios en todo momento.
+- **🐳 Mentalidad Docker-First:** Todo debe ser containerizable. No introducir dependencias que rompan el aislamiento del entorno.
+- **🔐 Integridad del Stack Tecnológico:** Verificar la integración completa con React, TypeScript, Vite, shadcn/ui y Docker.
 
 ---
 
-## 🔮 FUTURO (En desarrollo)
+## ⚠️ IMPORTANTES (Protocolos Estándar)
 
-- **🔧 Worker:** [PENDIENTE] Incluir en versionado y documentación cuando se implemente
-- **📊 Rate limits:** [FUTURO] Preparar manejo de límites cuando se agreguen APIs externas
-- **🔄 Estado avanzado:** [ROADMAP] Considerar migración a Zustand/Redux cuando el estado crezca
-
----
-
-## 💡 RECOMENDADAS (Buenas prácticas)
-
-- **⚡ Eficiencia:** Crea solo lo necesario, reutiliza componentes, optimiza recursos
-- **🧩 Modularización:** Enfócate en componentes escalables sin saturación en un solo archivo  
-- **🛡️ Manejo de errores:** Gestiona errores correctamente, evita crashes silenciosos
-- **📱 Límites locales:** Respeta localStorage limits, timeouts de animación, memoria del navegador
-- **✅ Build limpio:** Sin errores TypeScript, warnings resueltos, tests pasando
+- **📂 Estructura de Archivos Consistente:** Scripts → `/Scripts` | Documentos → `/Documentos MarkDown`. Verificar la estructura existente antes de crear nuevos archivos.
+- **🔍 Principio de Reutilización (DRY):** Consultar exhaustivamente el código existente para extender o reutilizar soluciones antes de crear nuevas.
+- **🗺️ Planificación Previa Obligatoria (Plan-Mode-On):** Crear una **task list** detallada con objetivos específicos y medibles antes de iniciar cualquier ejecución.
+- **📝 Documentación Activa y Sistemática:** Comentar cambios con el formato `// 🤖 [IA] - [Razón]` y actualizar todos los archivos `.md` relevantes.
+- **🎯 Versionado Semántico y Consistente:** Actualizar los números de versión de forma coherente en todos los puntos designados del proyecto.
 
 ---
 
-## 🧭 Metodología Unificada
+## 🔭 VISIÓN A FUTURO (Roadmap)
 
-**Mantra central:** `Reviso → Planifico → Ejecuto → Documento → Valido`
+- **🔧 Worker:** [PENDIENTE] Incluir en el versionado y la documentación cuando se implemente.
+- **📊 Rate limits:** [FUTURO] Preparar el manejo de límites de tasa para cuando se integren APIs externas.
+- **🔄 Estado avanzado:** [ROADMAP] Considerar la migración a Zustand o Redux si la complejidad del estado lo justifica.
 
-### 📋 Checklist por sesión:
-- [ ] **Task list** creada antes de iniciar
-- [ ] **Compatibilidad** verificada con stack actual
-- [ ] **Documentación** actualizada (comentarios + .md)
-- [ ] **Versionado** aplicado consistentemente  
-- [ ] **Build** exitoso sin errores ni warnings
-- [ ] **Funcionalidad** preservada al 100%
+---
+
+## 💡 BUENAS PRÁCTICAS (Recomendado)
+
+- **⚡ Eficiencia:** Crear solo lo necesario, reutilizar componentes y optimizar el uso de recursos.
+- **🧩 Modularización:** Enfocarse en componentes escalables y cohesivos, evitando la saturación en un solo archivo.
+- **🛡️ Manejo de Errores Robusto:** Gestionar errores de forma explícita para evitar fallos silenciosos.
+- **📱 Límites del Cliente:** Respetar los límites de `localStorage`, timeouts de animación y uso de memoria del navegador.
+- **✅ Build Limpio:** Asegurar cero errores de TypeScript, resolver todos los warnings y garantizar que todos los tests pasen.
+
+---
+
+## 🧭 METODOLOGÍA DE DESARROLLO UNIFICADA
+
+**Mantra central:** `ANALIZO → PLANIFICO → EJECUTO → DOCUMENTO → VALIDO`
+
+### ✅ Checklist de Calidad por Sesión:
+- [ ] **Task list** creada y aprobada antes de iniciar.
+- [ ] **Compatibilidad** verificada con el stack tecnológico actual.
+- [ ] **Documentación** (comentarios de código y archivos .md) actualizada.
+- [ ] **Versionado** aplicado consistentemente.
+- [ ] **Build** exitoso sin errores ni warnings.
+- [ ] **Funcionalidad** crítica preservada al 100%.
 
 ### 🆘 En caso de duda:
-**PARA · PREGUNTA · VERIFICA** (mejor preguntar que romper)
+**PAUSA · PREGUNTA · VALIDA** (Es preferible una pausa para clarificar que una acción que rompa el sistema).
 
 ---
 
@@ -65,15 +65,16 @@ Este documento define las reglas fundamentales que **NUNCA se rompen** durante e
 
 - **GitHub:** [Contador de Monedas](https://github.com/SamuelERS/calculadora-corte-caja)
 - **Notion:** Documentación extendida del proyecto
-- **CLAUDE.md:** Integración específica del proyecto actual
+- **DIRECTOR_IA_ARQUITECTO.md:** Constitución y protocolos específicos del Director Técnico.
 
 ---
 
 ## 📋 Historial de Versiones
 
-- **v2.0:** Adaptación completa para stack React + TypeScript + Vite + shadcn/ui + Docker
-- **v1.0:** Versión original con stack WppConnect + OpenAI + Redis
+- **v3.0:** Refactorización completa a "Reglas Constitucionales". Se formaliza el lenguaje de todas las reglas a un estándar técnico y autoritario.
+- **v2.0:** Adaptación completa para stack React + TypeScript + Vite + shadcn/ui + Docker.
+- **v1.0:** Versión original con stack WppConnect + OpenAI + Redis.
 
 ---
 
-*Última actualización: Diciembre 2024 - CashGuard Paradise v1.0.80*
+*Última actualización: Septiembre 2025 - CashGuard Paradise*

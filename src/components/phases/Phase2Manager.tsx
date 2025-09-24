@@ -315,7 +315,7 @@ export function Phase2Manager({
               <InstructionRule
                 rule={{
                   id: 'bolsa',
-                  title: 'Tengo la bolsa lista para la entrega',
+                  title: 'Bolsa Lista Para Entrega',
                   subtitle: enabledItems.bolsa ? '' : '⏱️ Preparando...',
                   Icon: Package,
                   colors: {
