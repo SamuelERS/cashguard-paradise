@@ -282,7 +282,8 @@ export function DeliveryFieldView({
 
               <div className="glass-status-error inline-block px-4 py-2 rounded-lg mt-4">
                 <p className="text-sm font-semibold" style={{ color: '#f4212e' }}>
-                  📤 ENTREGAR <span style={{ color: 'white', fontWeight: 'bold', fontSize: '1.4em' }}>{targetQuantity}</span>
+                  {'📤\u00A0\u00A0ENTREGAR '}
+                  <span style={{ color: 'white', fontWeight: 'bold', fontSize: '1.6em' }}>{targetQuantity}</span>
                 </p>
               </div>
             </div>

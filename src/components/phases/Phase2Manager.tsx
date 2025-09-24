@@ -337,7 +337,7 @@ export function Phase2Manager({
               <InstructionRule
                 rule={{
                   id: 'tirro',
-                  title: 'Tengo cinta y plumon para rotular',
+                  title: 'Cinta y Rotulador Listo',
                   subtitle: !enabledItems.tirro ? (checkedItems.bolsa ? '⏱️ Activando...' : '(marque el anterior)') : '',
                   Icon: ScrollText,
                   colors: {
@@ -359,7 +359,7 @@ export function Phase2Manager({
               <InstructionRule
                 rule={{
                   id: 'espacio',
-                  title: 'Tomare cantidad que sistema diga',
+                  title: 'Tomar Cantidad Para Bolsa',
                   subtitle: !enabledItems.espacio ? (checkedItems.tirro ? '⏱️ Activando...' : '(marque el anterior)') : '',
                   Icon: Grid3x3,
                   colors: {
