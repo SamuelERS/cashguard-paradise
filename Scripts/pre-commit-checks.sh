@@ -12,6 +12,11 @@ NC='\033[0m'
 
 echo -e "${BLUE}🔍 Running pre-commit checks...${NC}"
 
+# 🤖 [IA] - v3.1.0: Load local environment if exists
+if [ -f ".env.local" ]; then
+    source .env.local
+fi
+
 # Get list of staged files
 STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(ts|tsx|js|jsx)$' || true)
 
@@ -26,8 +31,14 @@ echo "$STAGED_FILES"
 # TypeScript check for staged files only
 echo -e "${BLUE}Running TypeScript check...${NC}"
 
-# 🤖 [IA] - v1.2.21: Docker fallback - Use local validation if Docker unavailable
-if docker info >/dev/null 2>&1; then
+# 🤖 [IA] - v3.1.0: Check for local preference or Docker availability
+if [ "$PREFER_LOCAL_CHECK" = "true" ]; then
+    echo -e "${YELLOW}Using local TypeScript check (PREFER_LOCAL_CHECK=true)${NC}"
+    npx tsc --noEmit || {
+        echo -e "${RED}❌ TypeScript errors found! Please fix before committing.${NC}"
+        exit 1
+    }
+elif docker info >/dev/null 2>&1; then
     # Docker available - use containerized check (original behavior)
     docker run --rm \
         -v "$(pwd)":/app \

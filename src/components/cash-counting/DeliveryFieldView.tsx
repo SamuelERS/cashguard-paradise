@@ -64,7 +64,7 @@ export function DeliveryFieldView({
   const [showError, setShowError] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const { validateInput, getPattern, getInputMode } = useInputValidation();
+  const { validateInput } = useInputValidation();
   const { createTimeoutWithCleanup } = useTimingConfig();
 
   // Calculate denomination value from DENOMINATIONS
@@ -294,9 +294,9 @@ export function DeliveryFieldView({
                 <div className="flex-1 relative">
                   <Input
                     ref={inputRef}
-                    type="tel"
-                    inputMode={getInputMode('integer')}
-                    pattern={getPattern('integer')}
+                    type="text"  // 🤖 [IA] - v3.1.0: Unificado a "text" para teclado decimal consistente
+                    inputMode="decimal"  // 🤖 [IA] - v3.1.0: Forzar teclado decimal en todos los casos
+                    pattern="[0-9]*[.,]?[0-9]*"  // 🤖 [IA] - v3.1.0: Acepta punto y coma para Android
                     value={inputValue}
                     onChange={(e) => handleInputChange(e.target.value)}
                     onKeyDown={handleKeyDown}

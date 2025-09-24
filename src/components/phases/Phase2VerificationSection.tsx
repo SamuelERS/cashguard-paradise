@@ -350,9 +350,9 @@ export function Phase2VerificationSection({
                 <div className="flex-1 relative">
                   <Input
                     ref={inputRef}
-                    type="tel"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
+                    type="text"  // 🤖 [IA] - v3.1.0: Unificado a "text" para teclado decimal consistente
+                    inputMode="decimal"  // 🤖 [IA] - v3.1.0: Forzar teclado decimal en todos los casos
+                    pattern="[0-9]*[.,]?[0-9]*"  // 🤖 [IA] - v3.1.0: Acepta punto y coma para Android
                     value={inputValue}
                     onChange={(e) => {
                       const value = e.target.value.replace(/[^0-9]/g, '');

@@ -32,3 +32,4 @@ playwright/.cache
 test-results
 *.lcov
 .env
+.env.local
