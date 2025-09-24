@@ -93,11 +93,10 @@ const shuffleInstructions = (rules: InstructionRule[]): InstructionRule[] => {
   return shuffled;
 };
 
-// 🤖 [IA] - v1.2.23: Función pública para shuffle + factor sorpresa máximo
+// 🤖 [IA] - v3.1.0: Función desactivada - orden estático de instrucciones
 export const shuffleCashCutInstructions = (): InstructionRule[] => {
-  currentCashCutInstructions = shuffleInstructions(cashCutInstructionsRules);
-  // 🤖 [IA] - Debug: Console log para verificar orden aleatorio
-  console.log('🎲 [Instrucciones] Nuevo orden aleatorio:', currentCashCutInstructions.map(r => r.title));
+  // Mantener orden original sin aleatoriedad
+  currentCashCutInstructions = [...cashCutInstructionsRules];
   return currentCashCutInstructions;
 };
 

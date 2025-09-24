@@ -89,11 +89,10 @@ const shuffleRules = (rules: ProtocolRule[]): ProtocolRule[] => {
   return shuffled;
 };
 
-// [IA] - v3.0.0: Función pública para shuffle + factor sorpresa máximo
+// 🤖 [IA] - v3.1.0: Función desactivada - orden estático de reglas
 export const shuffleProtocolRules = (): ProtocolRule[] => {
-  currentProtocolRules = shuffleRules(protocolRules);
-  // [IA] - Debug: Console log para verificar orden aleatorio
-  console.log(' [Protocolo] Nuevo orden aleatorio:', currentProtocolRules.map(r => r.title));
+  // Mantener orden original sin aleatoriedad
+  currentProtocolRules = [...protocolRules];
   return currentProtocolRules;
 };
 

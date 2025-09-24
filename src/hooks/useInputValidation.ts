@@ -29,12 +29,12 @@ export const useInputValidation = () => {
       }
 
       case 'decimal': {
-        // 🤖 [IA] - Números decimales (pagos electrónicos)
-        const cleanValue = value.replace(/[^\d.]/g, '');
+        // 🤖 [IA] - v3.1.0: Acepta tanto punto como coma para compatibilidad Android
+        const cleanValue = value.replace(/[^\d.,]/g, '').replace(/,/g, '.');
         // Permitir solo un punto decimal
         const parts = cleanValue.split('.');
-        const finalValue = parts.length > 2 
-          ? `${parts[0]}.${parts.slice(1).join('')}` 
+        const finalValue = parts.length > 2
+          ? `${parts[0]}.${parts.slice(1).join('')}`
           : cleanValue;
         
         const isValid = /^\d*\.?\d{0,2}$/.test(finalValue);
@@ -46,11 +46,11 @@ export const useInputValidation = () => {
       }
 
       case 'currency': {
-        // 🤖 [IA] - Formato de moneda (ventas esperadas)
-        const cleanValue = value.replace(/[^\d.]/g, '');
+        // 🤖 [IA] - v3.1.0: Acepta tanto punto como coma para compatibilidad Android
+        const cleanValue = value.replace(/[^\d.,]/g, '').replace(/,/g, '.');
         const parts = cleanValue.split('.');
-        const finalValue = parts.length > 2 
-          ? `${parts[0]}.${parts[1].substring(0, 2)}` 
+        const finalValue = parts.length > 2
+          ? `${parts[0]}.${parts[1].substring(0, 2)}`
           : cleanValue;
         
         const isValid = /^\d*\.?\d{0,2}$/.test(finalValue) && parseFloat(finalValue || '0') >= 0;
