@@ -68,7 +68,7 @@ export function GuidedFieldView({
   const [showError, setShowError] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   
-  const { validateInput, getPattern, getInputMode } = useInputValidation();
+  const { validateInput } = useInputValidation();
   const { createTimeoutWithCleanup } = useTimingConfig();
 
   // Calcular el valor de la denominación actual
@@ -394,9 +394,9 @@ export function GuidedFieldView({
                   )}
                   <Input
                     ref={inputRef}
-                    type="tel"  // 🤖 [IA] - v1.1.15: Cambiado de "text" a "tel" para mejor activación del teclado numérico
-                    inputMode={getInputMode(currentFieldType === 'electronic' ? 'currency' : 'integer')}
-                    pattern={getPattern(currentFieldType === 'electronic' ? 'currency' : 'integer')}
+                    type="text"  // 🤖 [IA] - v3.1.0: Unificado a "text" para teclado decimal consistente
+                    inputMode="decimal"  // 🤖 [IA] - v3.1.0: Forzar teclado decimal en todos los casos
+                    pattern="[0-9]*[.,]?[0-9]*"  // 🤖 [IA] - v3.1.0: Acepta punto y coma para Android
                     value={inputValue}
                     onChange={(e) => handleInputChange(e.target.value)}
                     onKeyDown={handleKeyDown}
