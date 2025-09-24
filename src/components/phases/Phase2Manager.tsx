@@ -182,43 +182,6 @@ export function Phase2Manager({
 
         {/* Área de contenido con sistema coherente */}
         <div className="cash-counter-content">
-          {/* Section Navigation - 🤖 [IA] - v1.2.30: Espaciado optimizado */}
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="glass-morphism-panel p-4"
-          >
-            {/* Botones de navegación */}
-            <div className="flex items-center gap-3 justify-center">
-              <div
-                className="btn-phase2-tab"
-                data-active={currentSection === 'delivery' ? "true" : "false"}
-                data-state="delivery"
-                data-completed={deliveryCompleted ? "true" : "false"}
-                aria-label="Sección actual: Entrega"
-                role="status"
-              >
-                {deliveryCompleted && (
-                  <span>✓</span>
-                )}
-                Entrega
-              </div>
-              <div
-                className="btn-phase2-tab"
-                data-active={currentSection === 'verification' ? "true" : "false"}
-                data-state="verification"
-                data-completed={verificationCompleted ? "true" : "false"}
-                aria-label="Sección actual: Verificar"
-                role="status"
-              >
-                {verificationCompleted && (
-                  <span>✓</span>
-                )}
-                Verificar
-              </div>
-            </div>
-          </motion.div>
-
           {/* Section Content */}
           <AnimatePresence mode="wait">
             {currentSection === 'delivery' && (
