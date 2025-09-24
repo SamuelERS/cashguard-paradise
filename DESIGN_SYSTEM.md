@@ -1,6 +1,6 @@
 # CashGuard Paradise - Design System Canónico
 
-## Action Buttons (Doctrina D.1)
+## Action Buttons (Doctrina D.1) 2
 
 ### Destructive Action Button
 
