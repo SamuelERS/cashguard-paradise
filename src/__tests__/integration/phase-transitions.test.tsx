@@ -10,6 +10,7 @@ import {
   completeGuidedPhase1,
   completeGuidedCashCount,
   completeGuidedElectronicPayments,
+  completeInstructionsModal,
   cleanupMocks,
   waitForAnimation,
   verifyButtonState,
@@ -66,6 +67,9 @@ describe('🔄 Phase Transitions Integration Tests', () => {
       const modal4 = testUtils.withinWizardModal();
       await user.type(modal4.getByRole('textbox'), '500.00');
       await user.click(modal4.getByRole('button', { name: /completar/i }));
+
+      // Complete the mandatory instructions modal
+      await completeInstructionsModal(user);
 
       // Create cash count > $50
       const cashCount = {
@@ -124,14 +128,17 @@ describe('🔄 Phase Transitions Integration Tests', () => {
       const modal4 = testUtils.withinWizardModal();
       await user.type(modal4.getByRole('textbox'), '100.00');
       await user.click(modal4.getByRole('button', { name: /completar/i }));
-      
+
+      // Complete the mandatory instructions modal
+      await completeInstructionsModal(user);
+
       // Create cash count = $50
       const cashCount = {
         ...mockData.cashCounts.empty,
         bill20: 2,  // $40
         bill10: 1   // $10
       }; // Total: $50
-      
+
       // Complete electronic payments for evening count
       const electronicPayments = {
         credomatic: 0.00,
@@ -175,13 +182,16 @@ describe('🔄 Phase Transitions Integration Tests', () => {
       const modal3 = testUtils.withinWizardModal();
       await user.click(await modal3.findByText('María López'));
       await user.click(modal3.getByRole('button', { name: /completar/i }));
-      
+
+      // Complete the mandatory instructions modal
+      await completeInstructionsModal(user);
+
       // Create cash count > $50 (normally would trigger Phase 2)
       const cashCount = {
         ...mockData.cashCounts.empty,
         bill100: 2  // $200
       };
-      
+
       // Use guided mode helpers for Sistema Ciego Anti-Fraude (morning count)
       await completeGuidedPhase1(user, cashCount, undefined, true);
 

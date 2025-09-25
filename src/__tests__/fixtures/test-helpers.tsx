@@ -417,6 +417,39 @@ export async function completeGuidedPhase1(
   }, { timeout: 3000 });
 }
 
+// 🤖 [IA] - v1.2.27: Helper para modal de instrucciones obligatorio - Sistema Ciego Anti-Fraude
+export async function completeInstructionsModal(
+  user: ReturnType<typeof userEvent.setup>
+) {
+  // Esperar que aparezca el modal de instrucciones
+  await waitFor(() => {
+    expect(screen.getByText(/Instrucciones del Corte de Caja/i)).toBeInTheDocument();
+  }, { timeout: 3000 });
+
+  // Marcar todas las reglas como leídas (buscar por role="button" con aria-pressed)
+  const instructionRules = screen.getAllByRole('button', { pressed: false });
+  for (const rule of instructionRules) {
+    const ariaLabel = rule.getAttribute('aria-label');
+    // Solo hacer clic en reglas que son de instrucciones (no otros botones)
+    if (ariaLabel && ariaLabel.includes('Regla:')) {
+      await user.click(rule);
+      await waitForAnimation(1500); // Tiempo mínimo de lectura
+    }
+  }
+
+  // Confirmar inicio del conteo
+  const startButton = await screen.findByRole('button', {
+    name: /comenzar conteo/i
+  });
+  await waitFor(() => expect(startButton).not.toBeDisabled());
+  await user.click(startButton);
+
+  // Verificar que el modal se cerró
+  await waitFor(() => {
+    expect(screen.queryByText(/Instrucciones del Corte de Caja/i)).not.toBeInTheDocument();
+  }, { timeout: 2000 });
+}
+
 // Mock localStorage for testing
 export function mockLocalStorage() {
   const localStorageMock = {
