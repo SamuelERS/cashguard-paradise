@@ -517,39 +517,39 @@ export function restoreNetwork() {
   vi.restoreAllMocks();
 }
 
-// Helper para seleccionar operación (morning count o evening cut)
+// Helper para seleccionar operación (morning count o evening cut) - BUG-HUNTER-QA CORRECTED
 export async function selectOperation(
   user: ReturnType<typeof userEvent.setup>,
   operation: 'morning' | 'evening'
 ) {
-  // The actual button text is "Conteo de Caja" for morning and "Corte de Caja" for evening
-  const buttonText = operation === 'morning' ? 'Conteo de Caja' : 'Corte de Caja';
-
   // Wait for the operation selector to be ready
   await waitFor(() => {
     expect(screen.getByText(/Seleccione Operación/)).toBeInTheDocument();
   });
 
-  // Wait a bit for animations
-  await new Promise(resolve => setTimeout(resolve, 500));
+  // Wait for animations to complete
+  await new Promise(resolve => setTimeout(resolve, 1000));
 
-  // Find the text element and then click on its parent card
-  const textElement = await screen.findByText(buttonText);
-  // Find the clickable card (parent with cursor-pointer class)
-  const card = textElement.closest('div[class*="cursor-pointer"]');
+  // Find the specific operation card by title text first
+  const titleText = operation === 'morning' ? 'Conteo de Caja' : 'Corte de Caja';
+  const titleElement = await screen.findByText(titleText);
 
-  if (card) {
-    await user.click(card);
+  // Get the card container (motion.div with onClick and cursor-pointer)
+  const cardContainer = titleElement.closest('div.cursor-pointer');
+
+  if (cardContainer) {
+    await user.click(cardContainer as HTMLElement);
   } else {
-    // Fallback: try clicking the text itself
-    await user.click(textElement);
+    throw new Error(`No se encontró el card container para ${operation}`);
   }
 
-  // Wait for the modal to appear
+  // Wait for the modal to appear based on operation type
   await waitFor(() => {
     if (operation === 'morning') {
+      // Morning shows MorningCountWizard
       expect(screen.getByText(/Conteo de Caja Matutino/)).toBeInTheDocument();
     } else {
+      // Evening shows InitialWizardModal
       expect(screen.getByText(/Instrucciones Obligatorias Iniciales/)).toBeInTheDocument();
     }
   }, { timeout: 5000 });
@@ -575,8 +575,13 @@ export async function completeSecurityProtocol(
 
     if (uncompletedRule) {
       await user.click(uncompletedRule);
-      // Esperar el tiempo de procesamiento del protocolo
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Esperar el tiempo de procesamiento del protocolo - mejorado bug-hunter-qa
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      // Verificar que la regla se marcó correctamente
+      await waitFor(() => {
+        expect(uncompletedRule).toHaveAttribute('aria-pressed', 'true');
+      }, { timeout: 3000 });
     }
   }
 

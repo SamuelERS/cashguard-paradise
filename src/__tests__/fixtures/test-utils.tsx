@@ -15,16 +15,23 @@ export const testUtils = {
     return within(titleElement.closest('[role="dialog"]') || modal);
   },
 
-  // Selector para elementos dentro del wizard modal
+  // Selector para elementos dentro del wizard modal - optimizado bug-hunter-qa
   withinWizardModal: () => {
     try {
-      // Buscar por el modal que contiene wizard content
+      // Buscar por el modal que contiene contenido de wizard
       const dialogs = screen.getAllByRole('dialog');
+
+      // Priorizar modal con pasos o contenido de wizard
       const wizardDialog = dialogs.find(dialog => {
-        // Buscar elementos que NO tengan clase sr-only
-        const stepElements = within(dialog).queryAllByText(/Paso \d+ de \d+/);
-        return stepElements.some(el => !el.closest('.sr-only'));
+        const content = within(dialog);
+        return content.queryByText(/Paso \d+ de \d+/) ||
+               content.queryByText(/Protocolo/) ||
+               content.queryByText(/Sucursal/) ||
+               content.queryByText(/Cajero/) ||
+               content.queryByText(/Testigo/) ||
+               content.queryByText(/SICAR/);
       });
+
       return wizardDialog ? within(wizardDialog) : within(dialogs[0]);
     } catch {
       return within(screen.getByRole('dialog'));
