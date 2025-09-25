@@ -267,7 +267,7 @@ export function Phase2Manager({
           setShowInstructionsModal(open);
         }}
       >
-      <DialogContent className="glass-morphism-panel wizard-dialog-content w-[clamp(90vw,95vw,95vw)] max-w-[clamp(300px,90vw,540px)] max-h-[clamp(85vh,90vh,90vh)] overflow-y-auto overflow-x-hidden p-0 [&>button]:hidden">
+      <DialogContent className="glass-morphism-panel wizard-dialog-content max-h-[clamp(85vh,90vh,90vh)] overflow-y-auto overflow-x-hidden p-0 [&>button]:hidden">
         <div className="p-fluid-lg space-y-fluid-lg">
           <DialogHeader className="text-center space-y-fluid-md">
             <DialogTitle className="text-primary mb-fluid-md tracking-tight text-[clamp(1.125rem,4.5vw,1.5rem)] text-center">
