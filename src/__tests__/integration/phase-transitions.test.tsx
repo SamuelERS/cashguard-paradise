@@ -37,68 +37,43 @@ describe('🔄 Phase Transitions Integration Tests', () => {
     it('debe proceder a Phase 2 cuando el total de efectivo es > $50', async () => {
       const { user } = renderWithProviders(<Index />);
 
-      // Quick setup for evening cut
-      await selectOperation(user, 'evening');
+      console.log('🔍 DEBUG 0: Initial DOM on page load');
+      screen.debug(document.body, 20000);
 
-      // Complete security protocol
-      await completeSecurityProtocol(user);
-
-      // Navigate through wizard steps
-      await waitForAnimation(300);
-      const modal1 = testUtils.withinWizardModal();
-      await user.click(await modal1.findByText('Los Héroes'));
-      await user.click(modal1.getByRole('button', { name: /siguiente/i }));
-
-      await waitForAnimation(300);
-      const modal2 = testUtils.withinWizardModal();
-      await user.click(await modal2.findByText('Tito Gomez'));
-      await user.click(modal2.getByRole('button', { name: /siguiente/i }));
-
-      await waitForAnimation(300);
-      const modal3 = testUtils.withinWizardModal();
-      await user.click(await modal3.findByText('María López'));
-      await user.click(modal3.getByRole('button', { name: /siguiente/i }));
-
-      await waitForAnimation(300);
-      const modal4 = testUtils.withinWizardModal();
-      await user.type(modal4.getByRole('textbox'), '500.00');
-      await user.click(modal4.getByRole('button', { name: /completar/i }));
-      
-      // Create cash count > $50
-      const cashCount = {
-        ...mockData.cashCounts.empty,
-        bill20: 3,  // $60
-        bill10: 2   // $20
-      }; // Total: $80
-      
-      await completeCashCount(user, cashCount);
-      
-      // Confirm cash total robustly
-      const totalCashSection = screen.getByTestId('total-cash-section');
-      const totalCashConfirm = within(totalCashSection).getByRole('button', { name: /✓|confirmar/i });
-      await user.click(totalCashConfirm);
-
-      // Confirm electronic total robustly
-      await waitForAnimation(300);
-      const totalElectronicSection = screen.getByTestId('total-electronic-section');
-      const totalElectronicConfirm = within(totalElectronicSection).getByRole('button', { name: /✓|confirmar/i });
-      await user.click(totalElectronicConfirm);
-      
-      // Complete Phase 1
-      const completePhase1Button = await screen.findByRole('button', { 
-        name: /completar fase 1/i 
-      });
-      await user.click(completePhase1Button);
-      
-      // Should transition to Phase 2
+      // Wait for operation selector to be ready
       await waitFor(() => {
-        expect(screen.getByText(/Fase 2/i)).toBeInTheDocument();
-        expect(screen.getByText(/División del Efectivo/i)).toBeInTheDocument();
+        expect(screen.getByText(/Seleccione Operación/)).toBeInTheDocument();
       });
-      
-      // Verify we're in Phase 2, not Phase 3
-      expect(screen.queryByText(/Corte de Caja Completado/i)).not.toBeInTheDocument();
-    });
+
+      // Manual selection of evening cut to debug the flow
+      console.log('🔍 DEBUG 0.5: Looking for Corte de Caja button');
+      const corteText = screen.getByText('Corte de Caja');
+      console.log('✅ Found Corte de Caja text element');
+
+      const clickableCard = corteText.closest('div[class*="cursor-pointer"]');
+      if (clickableCard) {
+        console.log('✅ Found clickable card');
+        await user.click(clickableCard);
+      } else {
+        console.log('❌ Clickable card not found, clicking text directly');
+        await user.click(corteText);
+      }
+
+      console.log('🔍 DEBUG 1: DOM after clicking Corte de Caja');
+      screen.debug(document.body, 20000); // Show more content
+
+      // Wait for security protocol dialog to appear
+      try {
+        const dialog = await screen.findByRole('dialog', {}, { timeout: 5000 });
+        console.log('✅ Security protocol dialog found');
+      } catch (error) {
+        console.log('❌ Security protocol dialog NOT FOUND');
+        throw new Error("🔍 DEBUG: Early exit - security dialog not appearing");
+      }
+
+      // EARLY EXIT for debugging - don't proceed with the rest
+      throw new Error("🔍 DEBUG: Early exit to analyze operation selection flow");
+    }, 30000); // Increase timeout to 30 seconds
 
     it('debe saltar directamente a Phase 3 cuando el total de efectivo es ≤ $50', async () => {
       const { user } = renderWithProviders(<Index />);
