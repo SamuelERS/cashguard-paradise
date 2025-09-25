@@ -181,25 +181,23 @@ export function DeliveryFieldView({
       case 'bill': {
         let billImage = '/monedas-recortadas-dolares/billete-1.webp';
 
-        if (currentFieldName === 'five' || currentFieldName === '$5' ||
-            currentFieldLabel?.includes('5') || currentFieldLabel?.includes('$5')) {
+        if (currentFieldName === 'bill1' || currentFieldName === 'one' ||
+            currentFieldLabel === '$1' || currentFieldLabel === 'Billete de $1') {
+          billImage = '/monedas-recortadas-dolares/billete-1.webp';
+        } else if (currentFieldName === 'bill5' || currentFieldName === 'five' ||
+            currentFieldLabel === '$5' || currentFieldLabel === 'Billete de $5') {
           billImage = '/monedas-recortadas-dolares/billete-5.webp';
-        } else if (currentFieldName === 'ten' || currentFieldName === '$10' ||
-            currentFieldLabel?.includes('10') || currentFieldLabel?.includes('$10')) {
+        } else if (currentFieldName === 'bill10' || currentFieldName === 'ten' ||
+            currentFieldLabel === '$10' || currentFieldLabel === 'Billete de $10') {
           billImage = '/monedas-recortadas-dolares/billete-10.webp';
-        } else if (currentFieldName === 'twenty' || currentFieldName === '$20' ||
-            currentFieldLabel?.includes('20') || currentFieldLabel?.includes('$20')) {
+        } else if (currentFieldName === 'bill20' || currentFieldName === 'twenty' ||
+            currentFieldLabel === '$20' || currentFieldLabel === 'Billete de $20') {
           billImage = '/monedas-recortadas-dolares/billete-20.webp';
-        } else if (currentFieldName === 'fifty' || currentFieldName === '$50' ||
-            currentFieldName === 'billete50' || currentFieldLabel?.toLowerCase().includes('50') ||
-            currentFieldLabel?.toLowerCase().includes('cincuenta') ||
-            (currentFieldLabel && /\$?50/.test(currentFieldLabel)) ||
-            currentFieldLabel === 'Billete de $50') {
+        } else if (currentFieldName === 'bill50' || currentFieldName === 'fifty' ||
+            currentFieldLabel === '$50' || currentFieldLabel === 'Billete de $50') {
           billImage = '/monedas-recortadas-dolares/billete-cincuenta-dolares-sobre-fondo-blanco(1).webp';
-        } else if (currentFieldName === 'hundred' || currentFieldName === '$100' ||
-            currentFieldName === 'billete100' || currentFieldLabel?.toLowerCase().includes('100') ||
-            (currentFieldLabel && /\$?100/.test(currentFieldLabel)) ||
-            currentFieldLabel === 'Billete de $100') {
+        } else if (currentFieldName === 'bill100' || currentFieldName === 'hundred' ||
+            currentFieldLabel === '$100' || currentFieldLabel === 'Billete de $100') {
           billImage = '/monedas-recortadas-dolares/billete-100.webp';
         }
 
