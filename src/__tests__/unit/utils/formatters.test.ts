@@ -217,9 +217,9 @@ describe('🎨 Formatters y Utilities - Tests Adicionales', () => {
     });
 
     it('debe manejar undefined y null gracefully', () => {
-      const withUndefined: any = {
+      const withUndefined: Partial<CashCount> = {
         bill20: undefined,
-        bill10: null,
+        bill10: undefined,
         bill5: 5
       };
       

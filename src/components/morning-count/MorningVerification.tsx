@@ -19,6 +19,16 @@ interface MorningVerificationProps {
   onComplete: () => void;
 }
 
+interface VerificationData {
+  totalCash: number;
+  expectedAmount: number;
+  difference: number;
+  isCorrect: boolean;
+  hasShortage: boolean;
+  hasExcess: boolean;
+  timestamp: string;
+}
+
 export function MorningVerification({
   storeId,
   cashierId,
@@ -27,7 +37,7 @@ export function MorningVerification({
   onBack,
   onComplete
 }: MorningVerificationProps) {
-  const [verificationData, setVerificationData] = useState<any>(null);
+  const [verificationData, setVerificationData] = useState<VerificationData | null>(null);
   
   const store = getStoreById(storeId);
   const cashierIn = getEmployeeById(cashierId);

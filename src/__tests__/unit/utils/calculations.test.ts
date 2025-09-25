@@ -52,7 +52,7 @@ describe('💰 calculateCashTotal - Cálculo de Total de Efectivo [CRÍTICO]', (
 
   it('debe manejar valores vacíos/undefined correctamente', () => {
     expect(calculateCashTotal({})).toBe(0);
-    expect(calculateCashTotal({ bill20: undefined } as any)).toBe(0);
+    expect(calculateCashTotal({ bill20: undefined } as CashCount)).toBe(0);
     expect(calculateCashTotal({ bill20: 0 })).toBe(0);
   });
 

@@ -59,7 +59,7 @@ export function GuidedInstructionsModal({
   }, [state.instructionStates, state.instructions.length]);
 
   // 🤖 [IA] - v1.2.26: FASE 2 - Sistema de colores dinámicos por tipo de instrucción
-  const getInstructionColor = useCallback((instruction: any) => {
+  const getInstructionColor = useCallback((instruction: { id: string }) => {
     switch(instruction.id) {
       case 'confirmation':
         return { border: 'red', text: 'text-red-500' };
@@ -146,7 +146,7 @@ export function GuidedInstructionsModal({
                       id: instruction.id,
                       title: instruction.title,
                       subtitle: instruction.description,
-                      Icon: Icons[instruction.icon as keyof typeof Icons] as React.ComponentType<any>,
+                      Icon: Icons[instruction.icon as keyof typeof Icons] as React.ComponentType<React.SVGProps<SVGSVGElement>>,
                       colors: getInstructionColor(instruction)
                     }}
                     state={{

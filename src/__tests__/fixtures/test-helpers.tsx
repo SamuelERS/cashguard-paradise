@@ -192,7 +192,7 @@ export async function navigateToPhase(
 export async function completePhase1(
   user: ReturnType<typeof userEvent.setup>,
   cashCount: CashCount,
-  electronicPayments?: any
+  electronicPayments?: Record<string, number>
 ) {
   await completeCashCount(user, cashCount);
   

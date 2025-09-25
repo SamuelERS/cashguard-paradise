@@ -47,7 +47,7 @@ export interface InstructionRuleProps {
     id: string;
     title: string;
     subtitle: string;
-    Icon: React.ComponentType<any>;
+    Icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
     colors: RuleColors;
   };
   state: RuleState;
