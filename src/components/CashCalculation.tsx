@@ -338,6 +338,52 @@ const CashCalculation = ({
     );
   };
 
+  // Generate remaining cash details for text report
+  const generateRemainingCashDetails = () => {
+    let remainingCash: CashCount;
+
+    // Determine which denominations remain in cash
+    if (!phaseState?.shouldSkipPhase2 && deliveryCalculation?.denominationsToKeep) {
+      // Phase 2 was completed, use the verified denominations to keep
+      remainingCash = deliveryCalculation.denominationsToKeep;
+    } else if (phaseState?.shouldSkipPhase2) {
+      // Phase 2 was skipped (≤$50), all cash remains
+      remainingCash = cashCount;
+    } else {
+      // Fallback: try to calculate $50
+      const changeResult = calculateChange50(cashCount);
+      if (changeResult.possible && changeResult.change) {
+        remainingCash = changeResult.change;
+      } else {
+        remainingCash = cashCount; // If can't make $50, show all
+      }
+    }
+
+    const denominations = [
+      { key: 'penny', label: '1¢ centavo', value: 0.01 },
+      { key: 'nickel', label: '5¢ centavos', value: 0.05 },
+      { key: 'dime', label: '10¢ centavos', value: 0.10 },
+      { key: 'quarter', label: '25¢ centavos', value: 0.25 },
+      { key: 'dollarCoin', label: '$1 moneda', value: 1.00 },
+      { key: 'bill1', label: '$1', value: 1.00 },
+      { key: 'bill5', label: '$5', value: 5.00 },
+      { key: 'bill10', label: '$10', value: 10.00 },
+      { key: 'bill20', label: '$20', value: 20.00 },
+      { key: 'bill50', label: '$50', value: 50.00 },
+      { key: 'bill100', label: '$100', value: 100.00 }
+    ];
+
+    const details = denominations
+      .filter(d => remainingCash[d.key as keyof CashCount] > 0)
+      .map(d => {
+        const quantity = remainingCash[d.key as keyof CashCount];
+        const subtotal = quantity * d.value;
+        return `${d.label} × ${quantity} = ${formatCurrency(subtotal)}`;
+      });
+
+    return details.join('\n');
+  };
+
   const generateCompleteReport = () => {
     try {
       validatePhaseCompletion();
@@ -390,10 +436,8 @@ ${calculationData.difference >= 0 ? '✅ Sobrante' : '⚠️ Faltante'}: ${forma
 
 💼 Cambio para mañana: ${formatCurrency(calculationData.changeResult.total)}
 
-${calculationData.changeResult.possible ? 
-`Detalle del cambio:
-${generateDenominationSummary(calculationData.changeResult.change)}` :
-'❌ No hay suficiente efectivo para cambio de $50.00'}
+DETALLE EN CAJA:
+${generateRemainingCashDetails()}
 
 ${calculationData.hasAlert ? '🚨 ALERTA: Faltante significativo detectado' : ''}
 
