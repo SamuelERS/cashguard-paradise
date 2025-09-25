@@ -3,14 +3,14 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Package, ScrollText, Grid3x3, AlertCircle, DollarSign } from 'lucide-react';
 import { InstructionRule, type RuleState } from '@/components/wizards/InstructionRule';
-// 🤖 [IA] - v1.2.10: Agregado AlertDialog para confirmación de salida
+// 🤖 [IA] - v1.2.10: Agregado modal controlado para confirmación de salida
 import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 // 🤖 [IA] - v1.2.19: Importado ConfirmationModal estandarizado para modal de confirmación
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 // 🤖 [IA] - v1.3.0: Reemplazado botones nativos con componentes Button para estandarización
@@ -257,17 +257,26 @@ export function Phase2Manager({
       />
 
       {/* 🤖 [IA] - v1.2.30: Modal de instrucciones con Glass Morphism v1.2.23 - FASE 1 Doctrina Canónica */}
-      <AlertDialog open={showInstructionsModal} onOpenChange={setShowInstructionsModal}>
-      <AlertDialogContent className="glass-morphism-panel w-[clamp(90vw,95vw,95vw)] max-w-[clamp(300px,90vw,540px)] max-h-[clamp(85vh,90vh,90vh)] overflow-y-auto overflow-x-hidden p-0">
+      <Dialog
+        open={showInstructionsModal}
+        onOpenChange={(open) => {
+          if (!open) {
+            return;
+          }
+
+          setShowInstructionsModal(open);
+        }}
+      >
+      <DialogContent className="glass-morphism-panel wizard-dialog-content w-[clamp(90vw,95vw,95vw)] max-w-[clamp(300px,90vw,540px)] max-h-[clamp(85vh,90vh,90vh)] overflow-y-auto overflow-x-hidden p-0 [&>button]:hidden">
         <div className="p-fluid-lg space-y-fluid-lg">
-          <AlertDialogHeader className="text-center space-y-fluid-md">
-            <AlertDialogTitle className="text-primary mb-fluid-xl text-[clamp(1.125rem,4.5vw,1.5rem)] text-center">
+          <DialogHeader className="text-center space-y-fluid-md">
+            <DialogTitle className="text-primary mb-fluid-md tracking-tight text-[clamp(1.125rem,4.5vw,1.5rem)] text-center">
               Preparar Dinero a Entregar
-            </AlertDialogTitle>
-            <AlertDialogDescription className="sr-only">
+            </DialogTitle>
+            <DialogDescription className="sr-only">
               Complete el proceso de preparación de dinero para entregar
-            </AlertDialogDescription>
-          </AlertDialogHeader>
+            </DialogDescription>
+          </DialogHeader>
           {/* Contenido principal envuelto en glass-morphism-panel como InitialWizardModal */}
           <div className="glass-morphism-panel space-y-fluid-lg">
             {/* Checklist de preparación */}
@@ -366,7 +375,7 @@ export function Phase2Manager({
           </div>
 
           {/* Footer - migrado a div normal como InitialWizardModal */}
-          <div className="flex items-center justify-center mt-fluid-2xl pt-fluid-xl border-t border-slate-600 gap-fluid-lg">
+          <div className="flex items-center justify-center mt-fluid-2xl pt-fluid-xl border-t border-slate-600 gap-fluid-lg wizard-dialog-footer">
             <DestructiveActionButton
               onClick={handleInstructionsCancelRequest}
             >
@@ -376,13 +385,13 @@ export function Phase2Manager({
               onClick={() => setShowInstructionsModal(false)}
               disabled={!allItemsChecked}
             >
-              ✓ Continuar
+              Continuar
               <ArrowRight className="h-4 w-4 ml-2" />
             </ConstructiveActionButton>
           </div>
         </div>
-      </AlertDialogContent>
-    </AlertDialog>
+      </DialogContent>
+    </Dialog>
 
     {/* 🤖 [IA] - Modal de confirmación para cancelar instrucciones */}
     <ConfirmationModal
