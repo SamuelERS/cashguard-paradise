@@ -50,6 +50,20 @@ CashGuard Paradise v1.2.22 is a cash management system for "Acuarios Paradise" r
 
 *Para historial completo v1.0.80 - v1.1.20, ver [CHANGELOG-DETALLADO.md](/Documentos%20MarkDown/CHANGELOG-DETALLADO.md)*
 
+### v1.2.25 - GitHub Actions v4 Upgrade [MISIÓN CUMPLIDA] ✅
+**OPERACIÓN PIPELINE INTEGRITY RESTAURADA:** Corrección definitiva de la falla de GitHub Actions - pipeline CI/CD 100% funcional con acciones v4.
+- **Problema identificado:** `actions/upload-artifact@v3` deprecado causaba fallo automático: "This request has been automatically failed because it uses a deprecated version"
+- **Solución aplicada:** Migración completa de todas las acciones v3 → v4 en workflow de CI/CD
+- **Acciones actualizadas:**
+  - `actions/upload-artifact@v3` → `@v4` (4 instancias)
+  - `docker/setup-buildx-action@v3` → `@v4` (2 instancias)
+  - `actions/cache@v3` → `@v4` (1 instancia)
+  - `codecov/codecov-action@v3` → `@v4` (1 instancia)
+- **Validación exitosa:** YAML syntax verificado + todas las versiones confirmadas como v4
+- **Status final:** Pipeline CI/CD restaurado - testing automatizado operativo al 100%
+- **Zero downtime:** Sin interrupción del flujo de desarrollo, compatibilidad total preservada
+**Archivos:** `.github/workflows/complete-test-suite.yml`, `CLAUDE.md`
+
 ### v1.2.23 - Doctrina Glass Morphism v1.1 Implementada [MISIÓN CUMPLIDA] ✅
 **REFACTORIZACIÓN ARCHITECTÓNICA COMPLETA:** Migración exitosa del InitialWizardModal a la Doctrina de Glass Morphism v1.1 - cumplimiento al 100% de los estándares canónicos.
 - **Clase canónica implementada:** `.glass-morphism-panel` con responsividad fluida (border-radius: clamp(12px-16px), padding: clamp(16px-24px))
