@@ -166,8 +166,9 @@ describe('🔄 Phase Transitions Integration Tests', () => {
 
       // Navigate through wizard steps for morning count
       await waitForAnimation(300);
+      const storeOption = await testUtils.findTextInWizardModal('Los Héroes');
+      await user.click(storeOption);
       const modal1 = testUtils.withinWizardModal();
-      await user.click(await modal1.findByText('Los Héroes'));
       await user.click(modal1.getByRole('button', { name: /siguiente/i }));
 
       await waitForAnimation(300);

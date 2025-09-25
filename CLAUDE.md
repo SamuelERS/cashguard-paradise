@@ -50,6 +50,20 @@ CashGuard Paradise v1.2.22 is a cash management system for "Acuarios Paradise" r
 
 *Para historial completo v1.0.80 - v1.1.20, ver [CHANGELOG-DETALLADO.md](/Documentos%20MarkDown/CHANGELOG-DETALLADO.md)*
 
+### v1.2.27 - Integration Tests Selector Enhancement [PARCIAL] 🔧
+**OPERACIÓN TEST SELECTOR ROBUSTNESS:** Mejora significativa de los selectores de test para resolver conflictos de elementos duplicados - progreso sustancial en estabilidad.
+- **Problema identificado:** Tests fallando con "Found multiple elements with the text: /Paso 1 de 3/" por elementos `sr-only` duplicados
+- **Análisis forense:** Componentes de wizard tienen elementos duplicados (accessibility + visual) con texto idéntico causando ambigüedad en selectores
+- **Mejoras implementadas:**
+  - `testUtils.withinWizardModal()` mejorado para filtrar elementos `sr-only`
+  - `testUtils.getVisibleStepIndicator()` agregado para seleccionar indicadores de paso visibles
+  - `testUtils.findTextInWizardModal()` con timeout extendido para contenido async
+  - `testUtils.findClickableOption()` para elementos interactivos específicos
+- **Tests mejorados:** `morning-count-simplified.test.tsx` - selector "Paso X de Y" corregido ✅
+- **Status:** Selectores más robustos implementados, issue de timeout persiste en algunos tests complejos
+- **Próximo:** Investigación de renders async en wizard components para timeout resolution
+**Archivos:** `src/__tests__/fixtures/test-utils.tsx`, `src/__tests__/integration/morning-count-simplified.test.tsx`, `src/__tests__/integration/phase-transitions.test.tsx`, `CLAUDE.md`
+
 ### v1.2.26 - GitHub Actions Version Correction [MISIÓN CUMPLIDA] ✅
 **OPERACIÓN SURGICAL PIPELINE FIX:** Corrección definitiva de versiones incorrectas en GitHub Actions - pipeline CI/CD 100% funcional con versiones reales.
 - **Problema raíz:** Error "Unable to resolve action `docker/setup-buildx-action@v4`, unable to find version `v4`" - v4 no existe

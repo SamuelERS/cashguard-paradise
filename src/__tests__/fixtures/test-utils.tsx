@@ -20,9 +20,11 @@ export const testUtils = {
     try {
       // Buscar por el modal que contiene wizard content
       const dialogs = screen.getAllByRole('dialog');
-      const wizardDialog = dialogs.find(dialog =>
-        within(dialog).queryByText(/Paso \d+ de \d+/) !== null
-      );
+      const wizardDialog = dialogs.find(dialog => {
+        // Buscar elementos que NO tengan clase sr-only
+        const stepElements = within(dialog).queryAllByText(/Paso \d+ de \d+/);
+        return stepElements.some(el => !el.closest('.sr-only'));
+      });
       return wizardDialog ? within(wizardDialog) : within(dialogs[0]);
     } catch {
       return within(screen.getByRole('dialog'));
@@ -66,16 +68,58 @@ export const testUtils = {
     return within(container as HTMLElement).getByText(text);
   },
 
-  // Buscar el paso específico del wizard
+  // Buscar el paso específico del wizard (elemento visible, no sr-only)
   getWizardStep: (stepNumber: number, totalSteps: number) => {
     const modal = testUtils.withinWizardModal();
-    return modal.getByText(new RegExp(`Paso ${stepNumber} de ${totalSteps}`));
+    const stepElements = modal.getAllByText(new RegExp(`Paso ${stepNumber} de ${totalSteps}`));
+    // Filtrar elementos sr-only y devolver el visible
+    const visibleElement = stepElements.find(el => !el.closest('.sr-only'));
+    return visibleElement || stepElements[0];
   },
 
   // Buscar botón de navegación específico
   getNavigationButton: (action: 'siguiente' | 'anterior' | 'cancelar') => {
     const modal = testUtils.withinWizardModal();
     return modal.getByRole('button', { name: new RegExp(action, 'i') });
+  },
+
+  // Buscar indicador de paso visible (excluyendo sr-only)
+  getVisibleStepIndicator: (stepPattern: RegExp) => {
+    const modal = testUtils.withinWizardModal();
+    const elements = modal.getAllByText(stepPattern);
+    // Filtrar elementos sr-only y devolver el visible
+    const visibleElement = elements.find(el => !el.closest('.sr-only'));
+    return visibleElement || elements[0];
+  },
+
+  // Buscar texto específico excluyendo elementos sr-only
+  getVisibleText: (text: string | RegExp) => {
+    const elements = screen.getAllByText(text);
+    // Filtrar elementos sr-only y devolver el visible
+    const visibleElement = elements.find(el => !el.closest('.sr-only'));
+    return visibleElement || elements[0];
+  },
+
+  // Esperar y encontrar texto específico dentro del modal wizard
+  findTextInWizardModal: async (text: string | RegExp, timeout: number = 10000) => {
+    return await waitFor(async () => {
+      const modal = testUtils.withinWizardModal();
+      return await modal.findByText(text);
+    }, { timeout });
+  },
+
+  // Esperar y encontrar elemento clickeable (como store option) dentro del modal
+  findClickableOption: async (text: string | RegExp, timeout: number = 10000) => {
+    return await waitFor(async () => {
+      const modal = testUtils.withinWizardModal();
+      // Buscar elementos que contengan el texto y sean clickeables
+      const elements = modal.getAllByText(text);
+      const clickableElement = elements.find(el => {
+        const parent = el.closest('button, [role="button"], [tabindex], [onclick]');
+        return parent && !parent.disabled;
+      });
+      return clickableElement || elements[0];
+    }, { timeout });
   }
 };
 
@@ -95,10 +139,11 @@ export const wizardTestUtils = {
 
   // Verificar paso específico del wizard
   expectWizardStep: async (stepNumber: number, totalSteps: number, stepTitle?: string) => {
-    const modal = testUtils.withinWizardModal();
-    expect(modal.getByText(new RegExp(`Paso ${stepNumber} de ${totalSteps}`))).toBeInTheDocument();
+    const stepIndicator = testUtils.getVisibleStepIndicator(new RegExp(`Paso ${stepNumber} de ${totalSteps}`));
+    expect(stepIndicator).toBeInTheDocument();
 
     if (stepTitle) {
+      const modal = testUtils.withinWizardModal();
       expect(modal.getByText(new RegExp(stepTitle, 'i'))).toBeInTheDocument();
     }
   },

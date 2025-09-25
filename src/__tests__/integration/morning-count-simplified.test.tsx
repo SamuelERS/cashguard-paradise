@@ -68,7 +68,7 @@ describe('🌅 Morning Count Flow Simplified Tests', () => {
       
       // Verificar elementos del modal usando utilities específicas
       const modal = testUtils.withinWizardModal();
-      expect(modal.getByText(/Paso 1 de 3/)).toBeInTheDocument();
+      expect(testUtils.getVisibleStepIndicator(/Paso 1 de 3/)).toBeInTheDocument();
       expect(modal.getByText(/Seleccione la Sucursal/)).toBeInTheDocument();
     }
   });
@@ -125,7 +125,7 @@ describe('🌅 Morning Count Flow Simplified Tests', () => {
       // Verificar paso 1 usando utilities específicas
       await waitFor(() => {
         const modal = testUtils.withinWizardModal();
-        expect(modal.getByText(/Paso 1 de 3/)).toBeInTheDocument();
+        expect(testUtils.getVisibleStepIndicator(/Paso 1 de 3/)).toBeInTheDocument();
         expect(modal.getByText(/Seleccione la Sucursal/)).toBeInTheDocument();
       });
       
@@ -189,7 +189,7 @@ describe('🌅 Morning Count Flow Simplified Tests', () => {
       // Verificar que estamos en paso 1 usando utilities específicas
       await waitFor(() => {
         const modal = testUtils.withinWizardModal();
-        expect(modal.getByText(/Paso 1 de 3/)).toBeInTheDocument();
+        expect(testUtils.getVisibleStepIndicator(/Paso 1 de 3/)).toBeInTheDocument();
       });
       
       // El modal debería mantener el título durante todo el flujo
