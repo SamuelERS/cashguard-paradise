@@ -308,15 +308,18 @@ export function Phase2VerificationSection({
           } else {
             let billImage = '/monedas-recortadas-dolares/billete-1.webp';
 
-            if (currentStep.key === 'five') {
+            // Usar estándar canónico: bill1, bill5, bill10, bill20, bill50, bill100
+            if (currentStep.key === 'bill1') {
+              billImage = '/monedas-recortadas-dolares/billete-1.webp';
+            } else if (currentStep.key === 'bill5') {
               billImage = '/monedas-recortadas-dolares/billete-5.webp';
-            } else if (currentStep.key === 'ten') {
+            } else if (currentStep.key === 'bill10') {
               billImage = '/monedas-recortadas-dolares/billete-10.webp';
-            } else if (currentStep.key === 'twenty') {
+            } else if (currentStep.key === 'bill20') {
               billImage = '/monedas-recortadas-dolares/billete-20.webp';
-            } else if (currentStep.key === 'fifty') {
+            } else if (currentStep.key === 'bill50') {
               billImage = '/monedas-recortadas-dolares/billete-cincuenta-dolares-sobre-fondo-blanco(1).webp';
-            } else if (currentStep.key === 'hundred') {
+            } else if (currentStep.key === 'bill100') {
               billImage = '/monedas-recortadas-dolares/billete-100.webp';
             }
 
