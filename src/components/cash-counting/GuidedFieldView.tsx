@@ -186,10 +186,10 @@ export function GuidedFieldView({
   // Obtener el ícono según el tipo
   const getIcon = () => {
     switch (currentFieldType) {
-      case 'coin':
+      case 'coin': {
         // Determinar qué imagen de moneda mostrar basado en currentFieldName
         let coinImage = '/monedas-recortadas-dolares/moneda-centavo-front-inlay.webp';
-        
+
         // Seleccionar la imagen correcta según el nombre del campo
         if (currentFieldName === 'nickel') {
           coinImage = '/monedas-recortadas-dolares/moneda-cinco-centavos-dos-caras.webp';
@@ -200,9 +200,9 @@ export function GuidedFieldView({
         } else if (currentFieldName === 'dollar' || currentFieldName === 'dollarCoin') {
           coinImage = '/monedas-recortadas-dolares/moneda-un-dollar-nueva.webp';
         }
-        
+
         return (
-          <img 
+          <img
             src={coinImage}
             alt={`Moneda de ${currentFieldLabel}`}
             className="object-contain"
@@ -212,7 +212,8 @@ export function GuidedFieldView({
             }}
           />
         );
-      case 'bill':
+      }
+      case 'bill': {
         // 🤖 [IA] - v1.2.24: Simplificado - usar solo identificadores canónicos
         let billImage = '/monedas-recortadas-dolares/billete-1.webp';
 
@@ -238,7 +239,8 @@ export function GuidedFieldView({
             className="object-contain w-full h-full"
           />
         );
-      case 'electronic':
+      }
+      case 'electronic': {
         // 🤖 [IA] - v1.2.28: Detección de tipo de pago electrónico para mostrar logo correspondiente
         const getElectronicLogo = () => {
           switch (currentFieldName) {
@@ -282,6 +284,7 @@ export function GuidedFieldView({
             }}
           />
         );
+      }
       default:
         return null;
     }

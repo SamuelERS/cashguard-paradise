@@ -56,7 +56,7 @@ export const calculateChange50 = (cashCount: CashCount): {
   // Greedy algorithm with backtracking
   const result: Partial<CashCount> = {};
   let remainingCents = TARGET_CENTS;
-  let usedDenominations = [...denominations];
+  const usedDenominations = [...denominations];
 
   for (let i = 0; i < usedDenominations.length && remainingCents > 0; i++) {
     const denom = usedDenominations[i];

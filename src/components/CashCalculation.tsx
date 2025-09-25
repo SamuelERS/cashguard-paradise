@@ -387,14 +387,13 @@ const CashCalculation = ({
   };
 
   const generateCompleteReport = () => {
-    try {
-      validatePhaseCompletion();
-      
-      const denominationDetails = generateDenominationDetails();
-      const dataHash = generateDataHash();
-      const electronicDetails = `Credomatic: ${formatCurrency(electronicPayments.credomatic)}\nPromerica: ${formatCurrency(electronicPayments.promerica)}`;
+    validatePhaseCompletion();
 
-      return `CORTE DE CAJA - ${calculationData.timestamp}
+    const denominationDetails = generateDenominationDetails();
+    const dataHash = generateDataHash();
+    const electronicDetails = `Credomatic: ${formatCurrency(electronicPayments.credomatic)}\nPromerica: ${formatCurrency(electronicPayments.promerica)}`;
+
+    return `CORTE DE CAJA - ${calculationData.timestamp}
 ================================
 Sucursal: ${store?.name}
 Cajero: ${cashier?.name}
@@ -445,9 +444,6 @@ ${calculationData.hasAlert ? '🚨 ALERTA: Faltante significativo detectado' : '
 
 ================================
 Firma Digital: ${dataHash}`;
-    } catch (error) {
-      throw error;
-    }
   };
 
   const generateWhatsAppReport = () => {

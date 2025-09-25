@@ -45,7 +45,7 @@ export function useIsTouchDevice(): boolean {
       // Verificar por capacidad táctil
       const hasTouchScreen = 'ontouchstart' in window || 
                             navigator.maxTouchPoints > 0 ||
-                            // @ts-ignore - msMaxTouchPoints es legacy pero algunos dispositivos lo usan
+                            // @ts-expect-error - msMaxTouchPoints es legacy pero algunos dispositivos lo usan
                             navigator.msMaxTouchPoints > 0;
       
       // Verificar por user agent (como respaldo)

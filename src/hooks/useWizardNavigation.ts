@@ -56,9 +56,10 @@ export function useWizardNavigation() {
         return data.selectedWitness !== '' &&
                data.selectedWitness !== data.selectedCashier;
 
-      case 5: // Venta Esperada
+      case 5: { // Venta Esperada
         const salesValue = parseFloat(data.expectedSales);
         return !isNaN(salesValue) && salesValue > 0;
+      }
 
       default:
         return false;
