@@ -35,6 +35,25 @@ interface DeliveryFieldViewProps {
   canGoPrevious?: boolean;
 }
 
+// Función para convertir labels a texto descriptivo
+const getDenominationDescription = (fieldName: string, fieldLabel: string): string => {
+  const descriptions: Record<string, string> = {
+    'penny': 'Un centavo',
+    'nickel': 'Cinco centavos',
+    'dime': 'Diez centavos',
+    'quarter': 'Veinticinco centavos',
+    'dollarCoin': 'Moneda de un dólar',
+    'bill1': 'Billete de un dólar',
+    'bill5': 'Billete de cinco dólares',
+    'bill10': 'Billete de diez dólares',
+    'bill20': 'Billete de veinte dólares',
+    'bill50': 'Billete de cincuenta dólares',
+    'bill100': 'Billete de cien dólares'
+  };
+
+  return descriptions[fieldName] || fieldLabel;
+};
+
 export function DeliveryFieldView({
   currentFieldName,
   currentFieldLabel,
@@ -181,23 +200,18 @@ export function DeliveryFieldView({
       case 'bill': {
         let billImage = '/monedas-recortadas-dolares/billete-1.webp';
 
-        if (currentFieldName === 'bill1' || currentFieldName === 'one' ||
-            currentFieldLabel === '$1' || currentFieldLabel === 'Billete de $1') {
+        // Estándar canónico: solo verificar identificador único
+        if (currentFieldName === 'bill1') {
           billImage = '/monedas-recortadas-dolares/billete-1.webp';
-        } else if (currentFieldName === 'bill5' || currentFieldName === 'five' ||
-            currentFieldLabel === '$5' || currentFieldLabel === 'Billete de $5') {
+        } else if (currentFieldName === 'bill5') {
           billImage = '/monedas-recortadas-dolares/billete-5.webp';
-        } else if (currentFieldName === 'bill10' || currentFieldName === 'ten' ||
-            currentFieldLabel === '$10' || currentFieldLabel === 'Billete de $10') {
+        } else if (currentFieldName === 'bill10') {
           billImage = '/monedas-recortadas-dolares/billete-10.webp';
-        } else if (currentFieldName === 'bill20' || currentFieldName === 'twenty' ||
-            currentFieldLabel === '$20' || currentFieldLabel === 'Billete de $20') {
+        } else if (currentFieldName === 'bill20') {
           billImage = '/monedas-recortadas-dolares/billete-20.webp';
-        } else if (currentFieldName === 'bill50' || currentFieldName === 'fifty' ||
-            currentFieldLabel === '$50' || currentFieldLabel === 'Billete de $50') {
+        } else if (currentFieldName === 'bill50') {
           billImage = '/monedas-recortadas-dolares/billete-cincuenta-dolares-sobre-fondo-blanco(1).webp';
-        } else if (currentFieldName === 'bill100' || currentFieldName === 'hundred' ||
-            currentFieldLabel === '$100' || currentFieldLabel === 'Billete de $100') {
+        } else if (currentFieldName === 'bill100') {
           billImage = '/monedas-recortadas-dolares/billete-100.webp';
         }
 
@@ -283,6 +297,13 @@ export function DeliveryFieldView({
                   {'📤\u00A0\u00A0ENTREGAR '}
                   <span style={{ color: 'white', fontWeight: 'bold', fontSize: '1.6em' }}>{targetQuantity}</span>
                 </p>
+              </div>
+
+              {/* Etiqueta de denominación descriptiva */}
+              <div className="mt-2">
+                <span className="text-xs text-white/70 font-medium">
+                  {getDenominationDescription(currentFieldName, currentFieldLabel)}
+                </span>
               </div>
             </div>
 

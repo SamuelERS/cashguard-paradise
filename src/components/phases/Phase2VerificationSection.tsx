@@ -29,6 +29,25 @@ interface Phase2VerificationSectionProps {
   canGoPrevious: boolean;
 }
 
+// Función para convertir labels a texto descriptivo
+const getDenominationDescription = (fieldName: string, fieldLabel: string): string => {
+  const descriptions: Record<string, string> = {
+    'penny': 'Un centavo',
+    'nickel': 'Cinco centavos',
+    'dime': 'Diez centavos',
+    'quarter': 'Veinticinco centavos',
+    'dollarCoin': 'Moneda de un dólar',
+    'bill1': 'Billete de un dólar',
+    'bill5': 'Billete de cinco dólares',
+    'bill10': 'Billete de diez dólares',
+    'bill20': 'Billete de veinte dólares',
+    'bill50': 'Billete de cincuenta dólares',
+    'bill100': 'Billete de cien dólares'
+  };
+
+  return descriptions[fieldName] || fieldLabel;
+};
+
 export function Phase2VerificationSection({
   deliveryCalculation,
   onStepComplete,
@@ -341,6 +360,13 @@ export function Phase2VerificationSection({
                     {'📤\u00A0\u00A0QUEDA EN CAJA '}
                     <span style={{ color: 'white', fontWeight: 'bold', fontSize: '1.4em' }}>{currentStep.quantity}</span>
                   </p>
+                </div>
+
+                {/* Etiqueta de denominación descriptiva */}
+                <div className="mt-2">
+                  <span className="text-xs text-white/70 font-medium">
+                    {getDenominationDescription(currentStep.key, currentStep.label)}
+                  </span>
                 </div>
               </div>
 
