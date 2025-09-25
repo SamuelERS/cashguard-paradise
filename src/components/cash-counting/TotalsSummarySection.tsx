@@ -120,7 +120,8 @@ export const TotalsSummarySection = ({
     value,
     isActive,
     isCompleted,
-    inputRef
+    inputRef,
+    "data-testid": dataTestId
   }: {
     icon: typeof DollarSign;
     iconColor: string;
@@ -129,13 +130,14 @@ export const TotalsSummarySection = ({
     isActive: boolean;
     isCompleted: boolean;
     inputRef: React.RefObject<HTMLInputElement>;
+    "data-testid"?: string;
   }) => {
     // Estados mutuamente excluyentes: completado tiene prioridad
     const effectiveIsActive = isCompleted ? false : isActive;
     const fieldState = isCompleted ? 'completed' : effectiveIsActive ? 'active' : 'pending';
     
     return (
-    <div style={{
+    <div data-testid={dataTestId} style={{
       // 🤖 [IA] - v1.2.5: Backgrounds más sólidos para mejor visibilidad en Android
       backgroundColor: fieldState === 'completed' ? 'rgba(0, 186, 124, 0.12)' : 
                        fieldState === 'active' ? 'rgba(10, 132, 255, 0.15)' : 
@@ -283,6 +285,7 @@ export const TotalsSummarySection = ({
       {/* 🤖 [IA] - v1.0.95: Campos con estados mutuamente excluyentes */}
       <div className="space-y-2">
         <TotalField
+          data-testid="total-cash-section"
           icon={DollarSign}
           iconColor="primary"
           label="Total Efectivo"
@@ -291,8 +294,9 @@ export const TotalsSummarySection = ({
           isCompleted={isCashCompleted}
           inputRef={cashInputRef}
         />
-        
+
         <TotalField
+          data-testid="total-electronic-section"
           icon={CreditCard}
           iconColor="accent-primary"
           label="Total Electrónico"

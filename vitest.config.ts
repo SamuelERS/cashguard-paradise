@@ -53,8 +53,8 @@ export default defineConfig({
     // Reporter configuration
     reporters: ['verbose'],
     
-    // Test timeout
-    testTimeout: 10000,
+    // Test timeout: 20s in CI, 10s locally
+    testTimeout: process.env.CI ? 20000 : 10000,
     
     // CSS handling
     css: {

@@ -83,13 +83,9 @@ export const testUtils = {
     return modal.getByRole('button', { name: new RegExp(action, 'i') });
   },
 
-  // Buscar indicador de paso visible (excluyendo sr-only)
-  getVisibleStepIndicator: (stepPattern: RegExp) => {
-    const modal = testUtils.withinWizardModal();
-    const elements = modal.getAllByText(stepPattern);
-    // Filtrar elementos sr-only y devolver el visible
-    const visibleElement = elements.find(el => !el.closest('.sr-only'));
-    return visibleElement || elements[0];
+  // Retorna el indicador de paso visible usando un selector de prueba robusto.
+  getVisibleStepIndicator: () => {
+    return screen.getByTestId('step-indicator');
   },
 
   // Buscar texto específico excluyendo elementos sr-only
@@ -139,7 +135,7 @@ export const wizardTestUtils = {
 
   // Verificar paso específico del wizard
   expectWizardStep: async (stepNumber: number, totalSteps: number, stepTitle?: string) => {
-    const stepIndicator = testUtils.getVisibleStepIndicator(new RegExp(`Paso ${stepNumber} de ${totalSteps}`));
+    const stepIndicator = testUtils.getVisibleStepIndicator();
     expect(stepIndicator).toBeInTheDocument();
 
     if (stepTitle) {

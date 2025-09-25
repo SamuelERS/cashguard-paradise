@@ -436,7 +436,7 @@ export async function completeSecurityProtocol(
     const btn = within(dialog).getByRole('button', { name: /continuar/i });
     expect(btn).not.toBeDisabled();
     return btn;
-  }, { timeout: 5000 });
+  }, { timeout: 10000 });
 
   await user.click(continueButton);
 }

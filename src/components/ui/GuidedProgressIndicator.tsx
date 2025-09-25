@@ -46,7 +46,13 @@ export const GuidedProgressIndicator: React.FC<GuidedProgressIndicatorProps> = (
               {phaseTitle}
             </h3>
             <p className="guided-progress-subtitle">
-              {isCompleted ? `✓ ${completedText}` : `Paso ${currentStep} de ${totalSteps}`}
+              {isCompleted ? (
+                `✓ ${completedText}`
+              ) : (
+                <span data-testid="step-indicator">
+                  Paso {currentStep} de {totalSteps}
+                </span>
+              )}
             </p>
           </div>
         </div>
