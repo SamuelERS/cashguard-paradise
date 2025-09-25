@@ -1,6 +1,14 @@
 // 🤖 [IA] - v1.1.17: E2E tests for PWA installation and functionality
 import { test, expect } from '@playwright/test';
 
+// Type definition for PWA manifest icon
+interface ManifestIcon {
+  src: string;
+  sizes: string;
+  type: string;
+  purpose?: string;
+}
+
 test.describe('PWA Installation and Functionality', () => {
   test('Verify manifest.json is properly configured', async ({ page }) => {
     // Navigate to the app
@@ -29,7 +37,7 @@ test.describe('PWA Installation and Functionality', () => {
     expect(manifest.icons.length).toBeGreaterThan(0);
     
     // Check for required icon sizes
-    const iconSizes = manifest.icons.map((icon: any) => icon.sizes);
+    const iconSizes = manifest.icons.map((icon: ManifestIcon) => icon.sizes);
     expect(iconSizes).toContain('192x192');
     expect(iconSizes).toContain('512x512');
   });

@@ -1,6 +1,38 @@
 // 🤖 [IA] - v1.1.17: Performance metrics tests - Web Vitals and bundle analysis
 import { test, expect } from '@playwright/test';
 
+// Type definitions for performance APIs
+interface LayoutShiftAttribution extends PerformanceEntry {
+  hadRecentInput: boolean;
+  value: number;
+}
+
+interface ResourceMetrics {
+  totalSize: number;
+  jsSize: number;
+  cssSize: number;
+  imageSize: number;
+  fontSize: number;
+  resourceCount: number;
+  loadTime: number;
+}
+
+interface PerformanceMemory {
+  usedJSHeapSize: number;
+  totalJSHeapSize: number;
+  jsHeapSizeLimit: number;
+}
+
+interface PerformanceWithMemory extends Performance {
+  memory?: PerformanceMemory;
+}
+
+interface AnimationMetrics {
+  fps: number;
+  frames: number;
+  duration: number;
+}
+
 test.describe('Performance Metrics', () => {
   test('Core Web Vitals measurements', async ({ page }) => {
     // Navigate and wait for load
@@ -41,8 +73,8 @@ test.describe('Performance Metrics', () => {
         let clsValue = 0;
         new PerformanceObserver((entryList) => {
           for (const entry of entryList.getEntries()) {
-            if (!(entry as any).hadRecentInput) {
-              clsValue += (entry as any).value;
+            if (!(entry as LayoutShiftAttribution).hadRecentInput) {
+              clsValue += (entry as LayoutShiftAttribution).value;
             }
           }
           vitals.cls = clsValue;
@@ -72,7 +104,7 @@ test.describe('Performance Metrics', () => {
   });
 
   test('Bundle size and resource loading', async ({ page }) => {
-    const resourceMetrics: any = {
+    const resourceMetrics: ResourceMetrics = {
       totalSize: 0,
       jsSize: 0,
       cssSize: 0,
@@ -138,11 +170,11 @@ test.describe('Performance Metrics', () => {
     
     // Get initial memory usage
     const initialMemory = await page.evaluate(() => {
-      if ((performance as any).memory) {
+      if ((performance as PerformanceWithMemory).memory) {
         return {
-          usedJSHeapSize: (performance as any).memory.usedJSHeapSize,
-          totalJSHeapSize: (performance as any).memory.totalJSHeapSize,
-          jsHeapSizeLimit: (performance as any).memory.jsHeapSizeLimit
+          usedJSHeapSize: (performance as PerformanceWithMemory).memory.usedJSHeapSize,
+          totalJSHeapSize: (performance as PerformanceWithMemory).memory.totalJSHeapSize,
+          jsHeapSizeLimit: (performance as PerformanceWithMemory).memory.jsHeapSizeLimit
         };
       }
       return null;
@@ -171,11 +203,11 @@ test.describe('Performance Metrics', () => {
     
     // Get memory after interactions
     const finalMemory = await page.evaluate(() => {
-      if ((performance as any).memory) {
+      if ((performance as PerformanceWithMemory).memory) {
         return {
-          usedJSHeapSize: (performance as any).memory.usedJSHeapSize,
-          totalJSHeapSize: (performance as any).memory.totalJSHeapSize,
-          jsHeapSizeLimit: (performance as any).memory.jsHeapSizeLimit
+          usedJSHeapSize: (performance as PerformanceWithMemory).memory.usedJSHeapSize,
+          totalJSHeapSize: (performance as PerformanceWithMemory).memory.totalJSHeapSize,
+          jsHeapSizeLimit: (performance as PerformanceWithMemory).memory.jsHeapSizeLimit
         };
       }
       return null;
@@ -218,8 +250,8 @@ test.describe('Performance Metrics', () => {
     });
     
     console.log('Animation Performance:', animationMetrics);
-    
+
     // Should maintain at least 55 fps (close to 60)
-    expect((animationMetrics as any).fps).toBeGreaterThanOrEqual(55);
+    expect((animationMetrics as AnimationMetrics).fps).toBeGreaterThanOrEqual(55);
   });
 });
