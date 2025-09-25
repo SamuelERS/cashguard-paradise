@@ -188,22 +188,24 @@ export async function navigateToPhase(
   });
 }
 
-// Helper para completar Phase 1
+// Helper para completar Phase 1 - Sistema Ciego Anti-Fraude v1.2.8+
 export async function completePhase1(
   user: ReturnType<typeof userEvent.setup>,
   cashCount: CashCount,
   electronicPayments?: Record<string, number>
 ) {
   await completeCashCount(user, cashCount);
-  
+
   if (electronicPayments) {
     await completeElectronicPayments(user, electronicPayments);
   }
-  
-  const completePhaseButton = await screen.findByRole('button', { 
-    name: /completar fase 1/i 
-  });
-  await user.click(completePhaseButton);
+
+  // Sistema Ciego Anti-Fraude: Auto-completado tras último campo
+  // No hay botón manual - el sistema auto-completa automáticamente
+  await waitFor(() => {
+    // Esperar que desaparezca el modal de conteo (indicador de auto-completado)
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  }, { timeout: 3000 });
 }
 
 // Helper para verificar Phase 2 (delivery/verification)
@@ -299,6 +301,120 @@ export async function verifyFinalReport(
   if (expectedData.hasAlert) {
     expect(screen.getByText(/alerta|faltante/i)).toBeInTheDocument();
   }
+}
+
+// 🤖 [IA] - v1.2.27: HELPERS PARA MODO GUIADO - Sistema Ciego Anti-Fraude
+// Estos helpers simulan el flujo guiado campo por campo, respetando la arquitectura del Sistema Ciego
+
+// Helper para confirmar el campo activo en modo guiado
+export async function confirmGuidedField(
+  user: ReturnType<typeof userEvent.setup>,
+  value: string
+) {
+  // Buscar el input activo dentro del componente guiado
+  const activeInput = await screen.findByRole('textbox', {
+    name: /cantidad|amount|ingrese/i
+  });
+
+  // Limpiar y escribir el valor
+  await user.clear(activeInput);
+  if (value && value !== '0') {
+    await user.type(activeInput, value);
+  }
+
+  // Esperar a que el botón se habilite
+  await waitFor(() => {
+    const confirmButton = screen.getByRole('button', {
+      name: /confirmar cantidad ingresada/i
+    });
+    expect(confirmButton).not.toBeDisabled();
+  }, { timeout: 2000 });
+
+  // Buscar y hacer clic en el botón de confirmación
+  const confirmButton = await screen.findByRole('button', {
+    name: /confirmar cantidad ingresada/i
+  });
+  await user.click(confirmButton);
+
+  // Esperar animación de transición al siguiente campo
+  await waitForAnimation(500);
+}
+
+// Helper para completar conteo de efectivo en modo guiado (campos 1-11)
+export async function completeGuidedCashCount(
+  user: ReturnType<typeof userEvent.setup>,
+  cashCount: CashCount
+) {
+  // Campos 1-5: Monedas
+  await confirmGuidedField(user, cashCount.penny.toString());
+  await confirmGuidedField(user, cashCount.nickel.toString());
+  await confirmGuidedField(user, cashCount.dime.toString());
+  await confirmGuidedField(user, cashCount.quarter.toString());
+  await confirmGuidedField(user, cashCount.dollarCoin.toString());
+
+  // Campos 6-11: Billetes
+  await confirmGuidedField(user, cashCount.bill1.toString());
+  await confirmGuidedField(user, cashCount.bill5.toString());
+  await confirmGuidedField(user, cashCount.bill10.toString());
+  await confirmGuidedField(user, cashCount.bill20.toString());
+  await confirmGuidedField(user, cashCount.bill50.toString());
+  await confirmGuidedField(user, cashCount.bill100.toString());
+}
+
+// Helper para completar pagos electrónicos en modo guiado (campos 12-15)
+export async function completeGuidedElectronicPayments(
+  user: ReturnType<typeof userEvent.setup>,
+  payments: {
+    credomatic?: number;
+    promerica?: number;
+    bankTransfer?: number;
+    paypal?: number;
+  }
+) {
+  // Campo 12: Credomatic
+  await confirmGuidedField(user, (payments.credomatic || 0).toString());
+
+  // Campo 13: Promerica
+  await confirmGuidedField(user, (payments.promerica || 0).toString());
+
+  // Campo 14: Bank Transfer
+  await confirmGuidedField(user, (payments.bankTransfer || 0).toString());
+
+  // Campo 15: PayPal
+  await confirmGuidedField(user, (payments.paypal || 0).toString());
+}
+
+// Helper completo para Phase 1 en modo guiado (Sistema Ciego Anti-Fraude)
+export async function completeGuidedPhase1(
+  user: ReturnType<typeof userEvent.setup>,
+  cashCount: CashCount,
+  electronicPayments?: Record<string, number>,
+  isMorningCount: boolean = false
+) {
+  // Completar conteo de efectivo (campos 1-11)
+  await completeGuidedCashCount(user, cashCount);
+
+  if (!isMorningCount && electronicPayments) {
+    // Solo para evening cut: completar pagos electrónicos (campos 12-15)
+    await completeGuidedElectronicPayments(user, electronicPayments);
+  }
+
+  // Sistema Ciego Anti-Fraude: Esperar auto-completado tras último campo
+  // Morning count: auto-completa tras totalCash (campo 12)
+  // Evening cut: auto-completa tras totalElectronic (campo 17)
+  const expectedLastStep = isMorningCount ? 12 : 17;
+
+  await waitFor(() => {
+    // Esperar que llegue al último paso
+    const stepIndicator = screen.getByTestId('step-indicator');
+    expect(stepIndicator.textContent).toMatch(new RegExp(`Paso ${expectedLastStep} de ${expectedLastStep}`));
+  }, { timeout: 5000 });
+
+  // Esperar auto-completado del Sistema Ciego (100ms timeout + processing)
+  await waitFor(() => {
+    // El modal de conteo debe desaparecer cuando se auto-completa Fase 1
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  }, { timeout: 3000 });
 }
 
 // Mock localStorage for testing

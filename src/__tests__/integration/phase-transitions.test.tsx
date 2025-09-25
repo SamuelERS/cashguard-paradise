@@ -7,6 +7,9 @@ import {
   renderWithProviders,
   completeCashCount,
   completeElectronicPayments,
+  completeGuidedPhase1,
+  completeGuidedCashCount,
+  completeGuidedElectronicPayments,
   cleanupMocks,
   waitForAnimation,
   verifyButtonState,
@@ -71,22 +74,22 @@ describe('🔄 Phase Transitions Integration Tests', () => {
         bill10: 2   // $20
       }; // Total: $80
 
-      await completeCashCount(user, cashCount);
+      // Complete electronic payments for evening count
+      const electronicPayments = {
+        credomatic: 50.00,
+        promerica: 30.00,
+        bankTransfer: 25.00,
+        paypal: 15.00
+      };
 
-      // Sistema Ciego Anti-Fraude: Sin confirmación de totales
-      await waitForAnimation(500); // Tiempo para procesamiento interno
+      // Use guided mode helpers for Sistema Ciego Anti-Fraude
+      await completeGuidedPhase1(user, cashCount, electronicPayments, false);
 
-      // Complete Phase 1
-      const completePhase1Button = await screen.findByRole('button', {
-        name: /completar fase 1/i
-      });
-      await user.click(completePhase1Button);
-
-      // Should transition to Phase 2
+      // Esperar transición automática a Fase 2
       await waitFor(() => {
         expect(screen.getByText(/Fase 2/i)).toBeInTheDocument();
         expect(screen.getByText(/División del Efectivo/i)).toBeInTheDocument();
-      });
+      }, { timeout: 5000 });
 
       // Verify we're in Phase 2, not Phase 3
       expect(screen.queryByText(/Corte de Caja Completado/i)).not.toBeInTheDocument();
@@ -129,28 +132,21 @@ describe('🔄 Phase Transitions Integration Tests', () => {
         bill10: 1   // $10
       }; // Total: $50
       
-      await completeCashCount(user, cashCount);
-      
-      // Confirm totals robustly
-      const totalCashSection = screen.getByTestId('total-cash-section');
-      const totalCashConfirm = within(totalCashSection).getByRole('button', { name: /✓|confirmar/i });
-      await user.click(totalCashConfirm);
+      // Complete electronic payments for evening count
+      const electronicPayments = {
+        credomatic: 0.00,
+        promerica: 0.00,
+        bankTransfer: 0.00,
+        paypal: 0.00
+      };
 
-      await waitForAnimation(300);
-      const totalElectronicSection = screen.getByTestId('total-electronic-section');
-      const totalElectronicConfirm = within(totalElectronicSection).getByRole('button', { name: /✓|confirmar/i });
-      await user.click(totalElectronicConfirm);
-      
-      // Complete Phase 1
-      const completePhase1Button = await screen.findByRole('button', { 
-        name: /completar fase 1/i 
-      });
-      await user.click(completePhase1Button);
-      
-      // Should skip Phase 2 and go to Phase 3
+      // Use guided mode helpers for Sistema Ciego Anti-Fraude
+      await completeGuidedPhase1(user, cashCount, electronicPayments, false);
+
+      // Should skip Phase 2 and go to Phase 3 (≤$50)
       await waitFor(() => {
         expect(screen.getByText(/Corte de Caja Completado/i)).toBeInTheDocument();
-      });
+      }, { timeout: 5000 });
       
       // Verify Phase 2 was skipped
       expect(screen.queryByText(/Fase 2/i)).not.toBeInTheDocument();
@@ -186,18 +182,13 @@ describe('🔄 Phase Transitions Integration Tests', () => {
         bill100: 2  // $200
       };
       
-      await completeCashCount(user, cashCount);
-      
-      // Complete Phase 1
-      const completePhase1Button = await screen.findByRole('button', { 
-        name: /completar fase 1/i 
-      });
-      await user.click(completePhase1Button);
-      
-      // Should skip Phase 2 despite having > $50
+      // Use guided mode helpers for Sistema Ciego Anti-Fraude (morning count)
+      await completeGuidedPhase1(user, cashCount, undefined, true);
+
+      // Should skip Phase 2 despite having > $50 (morning count always skips Phase 2)
       await waitFor(() => {
         expect(screen.getByText(/Conteo Matutino Completado/i)).toBeInTheDocument();
-      });
+      }, { timeout: 5000 });
       
       // Verify Phase 2 was skipped
       expect(screen.queryByText(/Fase 2/i)).not.toBeInTheDocument();
@@ -206,47 +197,9 @@ describe('🔄 Phase Transitions Integration Tests', () => {
 
   describe('Phase Button States & Navigation', () => {
     
-    it('debe deshabilitar el botón "Completar Fase 1" hasta confirmar los totales', async () => {
-      const { user } = renderWithProviders(<Index />);
-
-      // Setup evening cut
-      await selectOperation(user, 'evening');
-      await completeSecurityProtocol(user);
-      await user.click(await screen.findByText('Los Héroes'));
-      await user.click(screen.getByRole('button', { name: /siguiente/i }));
-      await user.click(await screen.findByText('Tito Gomez'));
-      await user.click(screen.getByRole('button', { name: /siguiente/i }));
-      await user.click(await screen.findByText('María López'));
-      await user.click(screen.getByRole('button', { name: /siguiente/i }));
-      await user.type(screen.getByRole('textbox'), '500.00');
-      await user.click(screen.getByRole('button', { name: /completar/i }));
-      
-      // Complete cash count
-      await completeCashCount(user, mockData.cashCounts.exactFifty);
-      await completeElectronicPayments(user, mockData.electronicPayments.normal);
-      
-      // Button should be disabled before confirming totals
-      verifyButtonState(/completar fase 1/i, 'disabled');
-      
-      // Confirm cash total robustly
-      const totalCashSection = screen.getByTestId('total-cash-section');
-      const totalCashConfirm = within(totalCashSection).getByRole('button', { name: /✓|confirmar/i });
-      await user.click(totalCashConfirm);
-
-      // Still disabled until both are confirmed
-      verifyButtonState(/completar fase 1/i, 'disabled');
-
-      // Confirm electronic total robustly
-      await waitForAnimation(300);
-      const totalElectronicSection = screen.getByTestId('total-electronic-section');
-      const totalElectronicConfirm = within(totalElectronicSection).getByRole('button', { name: /✓|confirmar/i });
-      await user.click(totalElectronicConfirm);
-      
-      // Now button should be enabled
-      await waitFor(() => {
-        verifyButtonState(/completar fase 1/i, 'enabled');
-      });
-    });
+    // 🤖 [IA] - v1.2.27: Test obsoleto - Sistema Ciego Anti-Fraude elimina botón manual "Completar Fase 1"
+    // El sistema ahora auto-completa Fase 1 automáticamente tras confirmar último campo
+    // Este test verificaba el estado del botón manual que ya no existe
 
     it('debe cambiar entre modo guiado y manual sin perder datos', async () => {
       const { user } = renderWithProviders(<Index />);
