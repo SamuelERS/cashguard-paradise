@@ -1,6 +1,6 @@
 // 🤖 [IA] - v1.1.19: Integration tests for Phase Transitions - SECTOR 3
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { screen, waitFor } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import Index from '@/pages/Index';
 import mockData from '../fixtures/mock-data';
 import {
@@ -73,11 +73,15 @@ describe('🔄 Phase Transitions Integration Tests', () => {
       
       await completeCashCount(user, cashCount);
       
-      // Confirm cash total
-      const totalCashConfirm = screen.getAllByRole('button', { name: /✓|confirmar/i })[0];
+      // Confirm cash total robustly
+      const totalCashSection = screen.getByTestId('total-cash-section');
+      const totalCashConfirm = within(totalCashSection).getByRole('button', { name: /✓|confirmar/i });
       await user.click(totalCashConfirm);
+
+      // Confirm electronic total robustly
       await waitForAnimation(300);
-      const totalElectronicConfirm = screen.getAllByRole('button', { name: /✓|confirmar/i })[0];
+      const totalElectronicSection = screen.getByTestId('total-electronic-section');
+      const totalElectronicConfirm = within(totalElectronicSection).getByRole('button', { name: /✓|confirmar/i });
       await user.click(totalElectronicConfirm);
       
       // Complete Phase 1
@@ -135,11 +139,14 @@ describe('🔄 Phase Transitions Integration Tests', () => {
       
       await completeCashCount(user, cashCount);
       
-      // Confirm totals
-      const totalCashConfirm = screen.getAllByRole('button', { name: /✓|confirmar/i })[0];
+      // Confirm totals robustly
+      const totalCashSection = screen.getByTestId('total-cash-section');
+      const totalCashConfirm = within(totalCashSection).getByRole('button', { name: /✓|confirmar/i });
       await user.click(totalCashConfirm);
+
       await waitForAnimation(300);
-      const totalElectronicConfirm = screen.getAllByRole('button', { name: /✓|confirmar/i })[0];
+      const totalElectronicSection = screen.getByTestId('total-electronic-section');
+      const totalElectronicConfirm = within(totalElectronicSection).getByRole('button', { name: /✓|confirmar/i });
       await user.click(totalElectronicConfirm);
       
       // Complete Phase 1
@@ -229,16 +236,18 @@ describe('🔄 Phase Transitions Integration Tests', () => {
       // Button should be disabled before confirming totals
       verifyButtonState(/completar fase 1/i, 'disabled');
       
-      // Confirm cash total
-      const totalCashConfirm = screen.getAllByRole('button', { name: /✓|confirmar/i })[0];
+      // Confirm cash total robustly
+      const totalCashSection = screen.getByTestId('total-cash-section');
+      const totalCashConfirm = within(totalCashSection).getByRole('button', { name: /✓|confirmar/i });
       await user.click(totalCashConfirm);
-      
+
       // Still disabled until both are confirmed
       verifyButtonState(/completar fase 1/i, 'disabled');
-      
-      // Confirm electronic total
+
+      // Confirm electronic total robustly
       await waitForAnimation(300);
-      const totalElectronicConfirm = screen.getAllByRole('button', { name: /✓|confirmar/i })[0];
+      const totalElectronicSection = screen.getByTestId('total-electronic-section');
+      const totalElectronicConfirm = within(totalElectronicSection).getByRole('button', { name: /✓|confirmar/i });
       await user.click(totalElectronicConfirm);
       
       // Now button should be enabled
@@ -327,15 +336,18 @@ describe('🔄 Phase Transitions Integration Tests', () => {
       }; // Total: $160
       
       await completeCashCount(user, cashCount);
-      
-      // Complete Phase 1
-      const totalCashConfirm = screen.getAllByRole('button', { name: /✓|confirmar/i })[0];
+
+      // Complete Phase 1 robustly
+      const totalCashSection = screen.getByTestId('total-cash-section');
+      const totalCashConfirm = within(totalCashSection).getByRole('button', { name: /✓|confirmar/i });
       await user.click(totalCashConfirm);
+
       await waitForAnimation(300);
-      const totalElectronicConfirm = screen.getAllByRole('button', { name: /✓|confirmar/i })[0];
+      const totalElectronicSection = screen.getByTestId('total-electronic-section');
+      const totalElectronicConfirm = within(totalElectronicSection).getByRole('button', { name: /✓|confirmar/i });
       await user.click(totalElectronicConfirm);
       await user.click(await screen.findByRole('button', { name: /completar fase 1/i }));
-      
+
       // Should be in Phase 2
       await waitFor(() => {
         expect(screen.getByText(/Fase 2/i)).toBeInTheDocument();
@@ -376,15 +388,18 @@ describe('🔄 Phase Transitions Integration Tests', () => {
       };
       
       await completeCashCount(user, cashCount);
-      
-      // Complete Phase 1
-      const totalCashConfirm = screen.getAllByRole('button', { name: /✓|confirmar/i })[0];
+
+      // Complete Phase 1 robustly
+      const totalCashSection = screen.getByTestId('total-cash-section');
+      const totalCashConfirm = within(totalCashSection).getByRole('button', { name: /✓|confirmar/i });
       await user.click(totalCashConfirm);
+
       await waitForAnimation(300);
-      const totalElectronicConfirm = screen.getAllByRole('button', { name: /✓|confirmar/i })[0];
+      const totalElectronicSection = screen.getByTestId('total-electronic-section');
+      const totalElectronicConfirm = within(totalElectronicSection).getByRole('button', { name: /✓|confirmar/i });
       await user.click(totalElectronicConfirm);
       await user.click(await screen.findByRole('button', { name: /completar fase 1/i }));
-      
+
       // In Phase 2
       await waitFor(() => {
         expect(screen.getByText(/Fase 2/i)).toBeInTheDocument();
@@ -438,11 +453,14 @@ describe('🔄 Phase Transitions Integration Tests', () => {
       // Complete Phase 1 with > $50
       await completeCashCount(user, mockData.cashCounts.moreThanFifty);
       await completeElectronicPayments(user, mockData.electronicPayments.high);
-      
-      const totalCashConfirm = screen.getAllByRole('button', { name: /✓|confirmar/i })[0];
+
+      const totalCashSection = screen.getByTestId('total-cash-section');
+      const totalCashConfirm = within(totalCashSection).getByRole('button', { name: /✓|confirmar/i });
       await user.click(totalCashConfirm);
+
       await waitForAnimation(300);
-      const totalElectronicConfirm = screen.getAllByRole('button', { name: /✓|confirmar/i })[0];
+      const totalElectronicSection = screen.getByTestId('total-electronic-section');
+      const totalElectronicConfirm = within(totalElectronicSection).getByRole('button', { name: /✓|confirmar/i });
       await user.click(totalElectronicConfirm);
       await user.click(await screen.findByRole('button', { name: /completar fase 1/i }));
       
@@ -531,12 +549,15 @@ describe('🔄 Phase Transitions Integration Tests', () => {
       // Verify totals in Phase 1
       expect(screen.getByText(/\$275\.50/)).toBeInTheDocument();
       expect(screen.getByText(/\$224\.50/)).toBeInTheDocument();
-      
-      // Complete Phase 1
-      const totalCashConfirm = screen.getAllByRole('button', { name: /✓|confirmar/i })[0];
+
+      // Complete Phase 1 robustly
+      const totalCashSection = screen.getByTestId('total-cash-section');
+      const totalCashConfirm = within(totalCashSection).getByRole('button', { name: /✓|confirmar/i });
       await user.click(totalCashConfirm);
+
       await waitForAnimation(300);
-      const totalElectronicConfirm = screen.getAllByRole('button', { name: /✓|confirmar/i })[0];
+      const totalElectronicSection = screen.getByTestId('total-electronic-section');
+      const totalElectronicConfirm = within(totalElectronicSection).getByRole('button', { name: /✓|confirmar/i });
       await user.click(totalElectronicConfirm);
       await user.click(await screen.findByRole('button', { name: /completar fase 1/i }));
       
