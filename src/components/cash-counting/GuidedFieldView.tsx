@@ -36,6 +36,25 @@ interface GuidedFieldViewProps {
   canGoPrevious?: boolean;
 }
 
+// 🤖 [IA] - v1.2.24: Función para convertir labels a texto descriptivo
+const getDenominationDescription = (fieldName: string, fieldLabel: string): string => {
+  const descriptions: Record<string, string> = {
+    'penny': 'Un centavo',
+    'nickel': 'Cinco centavos',
+    'dime': 'Diez centavos',
+    'quarter': 'Veinticinco centavos',
+    'dollarCoin': 'Moneda de un dólar',
+    'bill1': 'Billete de un dólar',
+    'bill5': 'Billete de cinco dólares',
+    'bill10': 'Billete de diez dólares',
+    'bill20': 'Billete de veinte dólares',
+    'bill50': 'Billete de cincuenta dólares',
+    'bill100': 'Billete de cien dólares'
+  };
+
+  return descriptions[fieldName] || fieldLabel;
+};
+
 export function GuidedFieldView({
   currentFieldName,
   currentFieldLabel,
@@ -194,62 +213,27 @@ export function GuidedFieldView({
           />
         );
       case 'bill':
-        // Determinar qué imagen de billete mostrar basado en currentFieldName
+        // 🤖 [IA] - v1.2.24: Simplificado - usar solo identificadores canónicos
         let billImage = '/monedas-recortadas-dolares/billete-1.webp';
-        
-        // Asegurarse de mostrar el billete correcto en todos los casos
-        if (currentFieldName === 'five' || 
-            currentFieldName === '$5' ||
-            currentFieldLabel?.includes('5') ||
-            currentFieldLabel?.includes('$5')) {
+
+        // Estándar canónico: solo verificar identificador único
+        if (currentFieldName === 'bill1') {
+          billImage = '/monedas-recortadas-dolares/billete-1.webp';
+        } else if (currentFieldName === 'bill5') {
           billImage = '/monedas-recortadas-dolares/billete-5.webp';
-        } else if (currentFieldName === 'ten' || 
-            currentFieldName === '$10' ||
-            currentFieldLabel?.includes('10') ||
-            currentFieldLabel?.includes('$10')) {
+        } else if (currentFieldName === 'bill10') {
           billImage = '/monedas-recortadas-dolares/billete-10.webp';
-        } else if (currentFieldName === 'twenty' || 
-            currentFieldName === '$20' ||
-            currentFieldLabel?.includes('20') ||
-            currentFieldLabel?.includes('$20')) {
+        } else if (currentFieldName === 'bill20') {
           billImage = '/monedas-recortadas-dolares/billete-20.webp';
-        } else if (currentFieldName === 'fifty' || 
-            currentFieldName === '$50' ||
-            currentFieldName === 'billete50' ||
-            currentFieldLabel?.toLowerCase().includes('50') ||
-            currentFieldLabel?.toLowerCase().includes('cincuenta') ||
-            (currentFieldLabel && /\$?50/.test(currentFieldLabel)) ||
-            currentFieldLabel === 'Billete de $50') {
-          // Billete de $50 con ruta explícita y verificada
+        } else if (currentFieldName === 'bill50') {
           billImage = '/monedas-recortadas-dolares/billete-cincuenta-dolares-sobre-fondo-blanco(1).webp';
-        } else if (currentFieldName === 'hundred' ||
-            currentFieldName === '$100' ||
-            currentFieldName === 'billete100' ||
-            currentFieldLabel?.toLowerCase().includes('100') ||
-            (currentFieldLabel && /\$?100/.test(currentFieldLabel)) ||
-            currentFieldLabel === 'Billete de $100') {
-          // Billete de $100 con ruta verificada
+        } else if (currentFieldName === 'bill100') {
           billImage = '/monedas-recortadas-dolares/billete-100.webp';
         }
-        
-        // Override específico para asegurar que los billetes especiales se muestren correctamente
-        let finalSrc = billImage;
-        
-        // Override para billete de $50
-        if (currentFieldLabel === 'Billete de $50' || 
-           (typeof currentFieldLabel === 'string' && currentFieldLabel.includes('50'))) {
-          finalSrc = '/monedas-recortadas-dolares/billete-cincuenta-dolares-sobre-fondo-blanco(1).webp';
-        }
-        
-        // Override para billete de $100
-        if (currentFieldLabel === 'Billete de $100' || 
-           (typeof currentFieldLabel === 'string' && currentFieldLabel.includes('100'))) {
-          finalSrc = '/monedas-recortadas-dolares/billete-100.webp';
-        }
-            
+
         return (
-          <img 
-            src={finalSrc}
+          <img
+            src={billImage}
             alt={`Billete de ${currentFieldLabel}`}
             className="object-contain w-full h-full"
           />
@@ -381,6 +365,15 @@ export function GuidedFieldView({
                 {getIcon()}
               </div>
             </div>
+
+            {/* 🤖 [IA] - v1.2.24: Etiqueta de denominación descriptiva */}
+            {(currentFieldType === 'coin' || currentFieldType === 'bill') && (
+              <div className="text-center mb-4">
+                <span className="text-xs text-white/70 font-medium">
+                  {getDenominationDescription(currentFieldName, currentFieldLabel)}
+                </span>
+              </div>
+            )}
 
             {/* Input y confirmación optimizados */}
             <div>
