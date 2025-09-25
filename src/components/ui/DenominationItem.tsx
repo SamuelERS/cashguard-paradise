@@ -86,11 +86,11 @@ export const DenominationItem = ({
       transition={{ duration: 0.2 }}
     >
       <div className="flex items-center gap-3">
-        {/* Enhanced Visual representation */}
+        {/* Enhanced Visual representation with Value Label */}
         <div className={cn(
-          "flex-shrink-0",
-          type === "coin" 
-            ? "coin-badge" 
+          "flex-shrink-0 flex flex-col items-center justify-center",
+          type === "coin"
+            ? "coin-badge"
             : "bill-badge"
         )}>
           {type === "coin" ? (
@@ -98,6 +98,9 @@ export const DenominationItem = ({
           ) : (
             <span className="text-sm font-bold">$</span>
           )}
+          <span className="text-xs font-medium mt-0.5 opacity-90">
+            {denomination.name}
+          </span>
         </div>
         
         <Label className={cn(

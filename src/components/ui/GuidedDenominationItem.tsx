@@ -225,11 +225,11 @@ export const GuidedDenominationItem = ({
           )}
         </div>
 
-        {/* Enhanced Visual representation */}
+        {/* Enhanced Visual representation with Value Label */}
         <div className={cn(
-          "flex-shrink-0 transition-all duration-300",
-          type === "coin" 
-            ? "coin-badge" 
+          "flex-shrink-0 flex flex-col items-center justify-center transition-all duration-300",
+          type === "coin"
+            ? "coin-badge"
             : "bill-badge",
           !isAccessible && "grayscale opacity-50 blur-sm"
         )}>
@@ -238,6 +238,9 @@ export const GuidedDenominationItem = ({
           ) : (
             <span className="text-sm font-bold">$</span>
           )}
+          <span className="text-xs font-medium mt-0.5 opacity-90">
+            {denomination.name}
+          </span>
         </div>
         
         <Label className={cn(

@@ -355,7 +355,9 @@ const CashCalculation = ({
       if (changeResult.possible && changeResult.change) {
         remainingCash = changeResult.change;
       } else {
-        remainingCash = cashCount; // If can't make $50, show all
+        // If can't make exact $50, don't show duplicate data
+        // Return empty to avoid confusion
+        return "No se puede hacer cambio exacto de $50.00";
       }
     }
 
