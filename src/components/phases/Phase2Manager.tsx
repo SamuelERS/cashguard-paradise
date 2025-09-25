@@ -3,6 +3,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Package, ScrollText, Grid3x3, AlertCircle, DollarSign } from 'lucide-react';
 import { InstructionRule, type RuleState } from '@/components/wizards/InstructionRule';
+import { WizardGlassCard } from '@/components/wizards/WizardGlassCard';
 // 🤖 [IA] - v1.2.10: Agregado modal controlado para confirmación de salida
 import {
   Dialog,
@@ -267,7 +268,7 @@ export function Phase2Manager({
           setShowInstructionsModal(open);
         }}
       >
-      <DialogContent className="glass-morphism-panel wizard-dialog-content max-h-[clamp(85vh,90vh,90vh)] overflow-y-auto overflow-x-hidden p-0 [&>button]:hidden">
+      <DialogContent className="wizard-dialog-shell wizard-dialog-content max-h-[clamp(85vh,90vh,90vh)] overflow-y-auto overflow-x-hidden p-0 [&>button]:hidden">
         <div className="p-fluid-lg space-y-fluid-lg">
           <DialogHeader className="text-center space-y-fluid-md">
             <DialogTitle className="text-primary mb-fluid-md tracking-tight text-[clamp(1.125rem,4.5vw,1.5rem)] text-center">
@@ -277,8 +278,8 @@ export function Phase2Manager({
               Complete el proceso de preparación de dinero para entregar
             </DialogDescription>
           </DialogHeader>
-          {/* Contenido principal envuelto en glass-morphism-panel como InitialWizardModal */}
-          <div className="glass-morphism-panel space-y-fluid-lg">
+          {/* Contenido principal envuelto en card compartida */}
+          <WizardGlassCard className="space-y-fluid-lg">
             {/* Checklist de preparación */}
             <div className="flex flex-col gap-fluid-lg">
             {/* 🤖 [IA] - v1.2.31: Progressive Revelation con InstructionRule canónico */}
@@ -372,7 +373,7 @@ export function Phase2Manager({
               />
             </div>
             </div>
-          </div>
+          </WizardGlassCard>
 
           {/* Footer - migrado a div normal como InitialWizardModal */}
           <div className="flex items-center justify-center mt-fluid-2xl pt-fluid-xl border-t border-slate-600 gap-fluid-lg wizard-dialog-footer">

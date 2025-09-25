@@ -50,6 +50,7 @@
 @import "./styles/features/wizard-nav-next-button.css";
 @import "./styles/features/wizard-nav-previous-button.css";
 @import "./styles/features/wizard-select-elements.css";
+@import "./styles/features/wizard-typography.css";
 
 /* 🤖 [IA] - Suppressing VS Code CSS warnings for Tailwind CSS directives */
 /* stylelint-disable at-rule-no-unknown */
@@ -525,6 +526,15 @@
     width: min(92vw, 540px);
     max-width: min(92vw, 540px);
     margin: 0 auto;
+  }
+
+  .wizard-dialog-shell {
+    background-color: var(--wizard-dialog-bg, rgba(28, 28, 32, 0.6));
+    backdrop-filter: var(--glass-blur-full) saturate(160%);
+    -webkit-backdrop-filter: var(--glass-blur-full) saturate(160%);
+    border: 1px solid var(--wizard-dialog-border, rgba(255, 255, 255, 0.12));
+    box-shadow: var(--wizard-dialog-shadow, 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08));
+    border-radius: clamp(0.75rem, 3vw, 1rem);
   }
 
   @media (min-width: 768px) {

@@ -5,10 +5,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, MapPin, Users, CheckCircle, Sunrise } from 'lucide-react';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { ConstructiveActionButton } from '@/components/shared/ConstructiveActionButton';
+import { NeutralActionButton } from '@/components/ui/neutral-action-button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { STORES, getEmployeesByStore } from '@/data/paradise';
 import { useTimingConfig } from '@/hooks/useTimingConfig';
+import { WizardGlassCard } from '@/components/wizards/WizardGlassCard';
+import { WizardProgressBar } from '@/components/wizards/WizardProgressBar';
 // 🤖 [IA] - FAE-02: PURGA QUIRÚRGICA COMPLETADA - CSS imports eliminados
 // Los 1 archivos CSS están ahora importados globalmente vía index.css:
 // - morning-gradient-button.css
@@ -87,72 +91,36 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
     switch (currentStep) {
       case 1:
         return (
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: `clamp(20px, ${24 * viewportScale}px, 24px)`,
-            backgroundColor: 'rgba(36, 36, 36, 0.4)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
-            border: '1px solid rgba(255, 255, 255, 0.15)',
-            padding: `clamp(20px, ${28 * viewportScale}px, 28px)`,
-            borderRadius: '16px',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
-          }}>
+          <WizardGlassCard className="space-y-fluid-lg">
             {/* Header del paso */}
-            <div className="flex items-center rounded-lg" style={{
-              gap: `clamp(8px, ${12 * viewportScale}px, 12px)`,
-              padding: `clamp(14px, ${16 * viewportScale}px, 16px)`,
-              backgroundColor: 'rgba(36, 36, 36, 0.4)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
-            }}>
-              <MapPin className="flex-shrink-0" style={{
-                width: `clamp(28px, 7vw, 32px)`,
-                height: `clamp(28px, 7vw, 32px)`,
+            <WizardGlassCard
+              className="flex items-center wizard-inline-gap"
+              style={{ padding: `clamp(14px, ${16 * viewportScale}px, 16px)` }}
+            >
+              <MapPin className="wizard-step-icon flex-shrink-0" style={{
                 background: 'linear-gradient(135deg, #f4a52a 0%, #ffb84d 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text'
               }} />
               <div className="flex-1 min-w-0">
-                <h3 style={{ 
-                  fontWeight: 600,
-                  fontSize: `clamp(1rem, 4vw, 1.25rem)`,
-                  color: '#e1e8ed' 
-                }}>
+                <h3 className="wizard-step-heading">
                   Seleccione la Sucursal
                 </h3>
-                <p style={{
-                  marginTop: `clamp(2px, ${4 * viewportScale}px, 4px)`, 
-                  fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
-                  color: '#8899a6' 
-                }}>
+                <p className="wizard-step-subtitle">
                   Donde se realizará el conteo
                 </p>
               </div>
-            </div>
+            </WizardGlassCard>
 
             {/* Selector de sucursal */}
             <Select value={selectedStore} onValueChange={setSelectedStore}>
               <SelectTrigger 
-                className="focus:ring-orange-500/50 focus:ring-offset-0"
-                style={{
-                  height: `clamp(40px, 10vw, 48px)`,
-                  fontSize: `clamp(0.875rem, 3.5vw, 1rem)`,
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  border: '1px solid rgba(255, 255, 255, 0.3)'
-                }}
+                className="wizard-select-trigger w-full focus:ring-orange-500/50 focus:ring-offset-0"
               >
                 <SelectValue placeholder="Seleccione una sucursal" />
               </SelectTrigger>
-              <SelectContent style={{
-                backgroundColor: 'rgba(36, 36, 36, 0.95)',
-                backdropFilter: 'blur(20px)',
-                border: '1px solid rgba(255, 255, 255, 0.15)'
-              }}>
+              <SelectContent className="wizard-select-content">
                 {STORES.map((store) => (
                   <SelectItem 
                     key={store.id} 
@@ -170,99 +138,60 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                style={{
-                  background: 'rgba(36, 36, 36, 0.4)',
-                  border: '1px solid rgba(0, 186, 124, 0.4)',
-                  borderRadius: '12px',
-                  padding: `clamp(10px, ${12 * viewportScale}px, 12px)`
-                }}
               >
-                <div className="flex items-center" style={{ gap: `clamp(6px, ${8 * viewportScale}px, 8px)` }}>
+                <WizardGlassCard
+                  className="flex items-center wizard-inline-gap"
+                  style={{
+                    borderColor: 'rgba(0, 186, 124, 0.4)',
+                    padding: `clamp(10px, ${12 * viewportScale}px, 12px)`
+                  }}
+                >
                   <CheckCircle style={{ 
                     width: `clamp(16px, 4vw, 20px)`,
                     height: `clamp(16px, 4vw, 20px)`,
                     color: '#00ba7c' 
                   }} />
-                  <span style={{ 
-                    fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
-                    color: '#e1e8ed' 
-                  }}>
+                  <span className="wizard-step-subtitle" style={{ marginTop: 0 }}>
                     Sucursal seleccionada correctamente
                   </span>
-                </div>
+                </WizardGlassCard>
               </motion.div>
             )}
-          </div>
+          </WizardGlassCard>
         );
 
       case 2:
         return (
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: `clamp(20px, ${24 * viewportScale}px, 24px)`,
-            backgroundColor: 'rgba(36, 36, 36, 0.4)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
-            border: '1px solid rgba(255, 255, 255, 0.15)',
-            padding: `clamp(20px, ${28 * viewportScale}px, 28px)`,
-            borderRadius: '16px',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
-          }}>
+          <WizardGlassCard className="space-y-fluid-lg">
             {/* Header del paso */}
-            <div className="flex items-center rounded-lg" style={{
-              gap: `clamp(8px, ${12 * viewportScale}px, 12px)`,
-              padding: `clamp(14px, ${16 * viewportScale}px, 16px)`,
-              backgroundColor: 'rgba(36, 36, 36, 0.4)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
-            }}>
-              <Users className="flex-shrink-0" style={{
-                width: `clamp(28px, 7vw, 32px)`,
-                height: `clamp(28px, 7vw, 32px)`,
+            <WizardGlassCard
+              className="flex items-center wizard-inline-gap"
+              style={{ padding: `clamp(14px, ${16 * viewportScale}px, 16px)` }}
+            >
+              <Users className="wizard-step-icon flex-shrink-0" style={{
                 background: 'linear-gradient(135deg, #f4a52a 0%, #ffb84d 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text'
               }} />
               <div className="flex-1 min-w-0">
-                <h3 style={{ 
-                  fontWeight: 600,
-                  fontSize: `clamp(1rem, 4vw, 1.25rem)`,
-                  color: '#e1e8ed' 
-                }}>
+                <h3 className="wizard-step-heading">
                   Cajero del Día
                 </h3>
-                <p style={{
-                  marginTop: `clamp(2px, ${4 * viewportScale}px, 4px)`, 
-                  fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
-                  color: '#8899a6' 
-                }}>
+                <p className="wizard-step-subtitle">
                   Seleccione cajero del día
                 </p>
               </div>
-            </div>
+            </WizardGlassCard>
 
             {/* Selector de cajero entrante */}
             <Select value={selectedCashierIn} onValueChange={setSelectedCashierIn}>
               <SelectTrigger 
-                className="focus:ring-orange-500/50 focus:ring-offset-0"
-                style={{
-                  height: `clamp(40px, 10vw, 48px)`,
-                  fontSize: `clamp(0.875rem, 3.5vw, 1rem)`,
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  border: '1px solid rgba(255, 255, 255, 0.3)'
-                }}
+                className="wizard-select-trigger w-full focus:ring-orange-500/50 focus:ring-offset-0"
               >
                 <SelectValue placeholder="Seleccione cajero" />
               </SelectTrigger>
-              <SelectContent style={{
-                backgroundColor: 'rgba(36, 36, 36, 0.95)',
-                backdropFilter: 'blur(20px)',
-                border: '1px solid rgba(255, 255, 255, 0.15)'
-              }}>
+              <SelectContent className="wizard-select-content">
                 {availableEmployees.map((employee) => (
                   <SelectItem 
                     key={employee.id} 
@@ -280,99 +209,56 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                style={{
-                  background: 'rgba(36, 36, 36, 0.4)',
-                  border: '1px solid rgba(0, 186, 124, 0.4)',
-                  borderRadius: '12px',
-                  padding: `clamp(10px, ${12 * viewportScale}px, 12px)`
-                }}
               >
-                <div className="flex items-center" style={{ gap: `clamp(6px, ${8 * viewportScale}px, 8px)` }}>
-                  <CheckCircle style={{ 
-                    width: `clamp(16px, 4vw, 20px)`,
-                    height: `clamp(16px, 4vw, 20px)`,
-                    color: '#00ba7c' 
-                  }} />
-                  <span style={{ 
-                    fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
-                    color: '#e1e8ed' 
-                  }}>
+                <WizardGlassCard
+                  className="flex items-center wizard-inline-gap"
+                  style={{
+                    borderColor: 'rgba(0, 186, 124, 0.4)',
+                    padding: `clamp(10px, ${12 * viewportScale}px, 12px)`
+                  }}
+                >
+                  <CheckCircle className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)] text-[#00ba7c]" />
+                  <span className="wizard-step-subtitle" style={{ marginTop: 0 }}>
                     Cajero seleccionado
                   </span>
-                </div>
+                </WizardGlassCard>
               </motion.div>
             )}
-          </div>
+          </WizardGlassCard>
         );
 
       case 3:
         return (
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: `clamp(20px, ${24 * viewportScale}px, 24px)`,
-            backgroundColor: 'rgba(36, 36, 36, 0.4)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
-            border: '1px solid rgba(255, 255, 255, 0.15)',
-            padding: `clamp(20px, ${28 * viewportScale}px, 28px)`,
-            borderRadius: '16px',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
-          }}>
+          <WizardGlassCard className="space-y-fluid-lg">
             {/* Header del paso */}
-            <div className="flex items-center rounded-lg" style={{
-              gap: `clamp(8px, ${12 * viewportScale}px, 12px)`,
-              padding: `clamp(14px, ${16 * viewportScale}px, 16px)`,
-              backgroundColor: 'rgba(36, 36, 36, 0.4)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
-            }}>
-              <Users className="flex-shrink-0" style={{
-                width: `clamp(28px, 7vw, 32px)`,
-                height: `clamp(28px, 7vw, 32px)`,
+            <WizardGlassCard
+              className="flex items-center wizard-inline-gap"
+              style={{ padding: `clamp(14px, ${16 * viewportScale}px, 16px)` }}
+            >
+              <Users className="wizard-step-icon flex-shrink-0" style={{
                 background: 'linear-gradient(135deg, #ffb84d 0%, #f4a52a 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text'
               }} />
               <div className="flex-1 min-w-0">
-                <h3 style={{ 
-                  fontWeight: 600,
-                  fontSize: `clamp(1rem, 4vw, 1.25rem)`,
-                  color: '#e1e8ed' 
-                }}>
+                <h3 className="wizard-step-heading">
                   Seleccione Testigo
                 </h3>
-                <p style={{
-                  marginTop: `clamp(2px, ${4 * viewportScale}px, 4px)`, 
-                  fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
-                  color: '#8899a6' 
-                }}>
+                <p className="wizard-step-subtitle">
                   ¿Quién validará el conteo?
                 </p>
               </div>
-            </div>
+            </WizardGlassCard>
 
             {/* Selector de testigo */}
             <Select value={selectedCashierOut} onValueChange={setSelectedCashierOut}>
               <SelectTrigger 
-                className="focus:ring-orange-500/50 focus:ring-offset-0"
-                style={{
-                  height: `clamp(40px, 10vw, 48px)`,
-                  fontSize: `clamp(0.875rem, 3.5vw, 1rem)`,
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  border: '1px solid rgba(255, 255, 255, 0.3)'
-                }}
+                className="wizard-select-trigger w-full focus:ring-orange-500/50 focus:ring-offset-0"
               >
                 <SelectValue placeholder="Seleccione testigo" />
               </SelectTrigger>
-              <SelectContent style={{
-                backgroundColor: 'rgba(36, 36, 36, 0.95)',
-                backdropFilter: 'blur(20px)',
-                border: '1px solid rgba(255, 255, 255, 0.15)'
-              }}>
+              <SelectContent className="wizard-select-content">
                 {availableEmployees
                   .filter(emp => emp.id !== selectedCashierIn)
                   .map((employee) => (
@@ -392,49 +278,32 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                style={{
-                  background: 'rgba(36, 36, 36, 0.4)',
-                  border: showValidation 
-                    ? '1px solid rgba(0, 186, 124, 0.4)' 
-                    : '1px solid rgba(244, 33, 46, 0.4)',
-                  borderRadius: '12px',
-                  padding: `clamp(10px, ${12 * viewportScale}px, 12px)`
-                }}
               >
-                <div className="flex items-center" style={{ gap: `clamp(6px, ${8 * viewportScale}px, 8px)` }}>
+                <WizardGlassCard
+                  className="flex items-center wizard-inline-gap"
+                  style={{
+                    borderColor: showValidation ? 'rgba(0, 186, 124, 0.4)' : 'rgba(244, 33, 46, 0.4)',
+                    padding: `clamp(10px, ${12 * viewportScale}px, 12px)`
+                  }}
+                >
                   {showValidation ? (
-                    <>
-                      <CheckCircle style={{ 
-                    width: `clamp(16px, 4vw, 20px)`,
-                    height: `clamp(16px, 4vw, 20px)`,
-                    color: '#00ba7c' 
-                  }} />
-                      <span style={{ 
-                    fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
-                    color: '#e1e8ed' 
-                  }}>
-                        Testigo confirmado
-                      </span>
-                    </>
+                    <CheckCircle className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)] text-[#00ba7c]" />
                   ) : (
-                    <>
-                      <X style={{ 
-                        width: `clamp(16px, 4vw, 20px)`,
-                        height: `clamp(16px, 4vw, 20px)`,
-                        color: '#f4212e' 
-                      }} />
-                      <span style={{ 
-                        fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
-                        color: '#f4212e' 
-                      }}>
-                        El testigo debe ser diferente al cajero
-                      </span>
-                    </>
+                    <X className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)] text-[#f4212e]" />
                   )}
-                </div>
+                  <span
+                    className="wizard-step-subtitle"
+                    style={{
+                      marginTop: 0,
+                      color: showValidation ? '#e1e8ed' : '#f4212e'
+                    }}
+                  >
+                    {showValidation ? 'Testigo confirmado' : 'El testigo debe ser diferente al cajero'}
+                  </span>
+                </WizardGlassCard>
               </motion.div>
             )}
-          </div>
+          </WizardGlassCard>
         );
     }
   };
@@ -449,16 +318,9 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
       }
     }}>
       <DialogContent 
-        className="overflow-y-auto overflow-x-hidden p-0 mx-auto [&>button]:hidden"
+        className="wizard-dialog-shell wizard-dialog-content overflow-y-auto overflow-x-hidden p-0 [&>button]:hidden"
         style={{
-          width: '95vw',
-          maxWidth: isMobileDevice ? '95vw' : `clamp(448px, 60vw, 576px)`,
-          maxHeight: isMobileDevice ? '90vh' : '85vh',
-          backgroundColor: 'rgba(25, 25, 25, 0.65)',
-          backdropFilter: 'blur(40px) saturate(180%)',
-          WebkitBackdropFilter: 'blur(40px) saturate(180%)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05)'
+          maxHeight: isMobileDevice ? '90vh' : '85vh'
         }}
       >
         {/* 🤖 [IA] - v1.2.12 - DialogTitle y DialogDescription para accesibilidad */}
@@ -472,17 +334,9 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
         <div style={{ padding: `clamp(16px, ${24 * viewportScale}px, 24px)` }}>
           {/* Header del modal simplificado - 🤖 [IA] - v1.2.13 */}
           <div className="flex items-center justify-between" style={{ marginBottom: `clamp(16px, ${20 * viewportScale}px, 20px)` }}>
-            <div className="flex items-center" style={{ gap: `clamp(8px, ${10 * viewportScale}px, 10px)` }}>
-              <Sunrise style={{ 
-                width: `clamp(24px, 6vw, 28px)`, 
-                height: `clamp(24px, 6vw, 28px)`,
-                color: '#f4a52a' 
-              }} />
-              <h2 style={{ 
-                fontWeight: 700,
-                fontSize: `clamp(1.25rem, 5vw, 1.5rem)`,
-                color: '#e1e8ed' 
-              }}>
+            <div className="flex items-center wizard-inline-gap">
+              <Sunrise className="wizard-step-icon" style={{ color: '#f4a52a' }} />
+              <h2 className="font-bold text-[clamp(1.25rem,5vw,1.5rem)] text-[#e1e8ed]">
                 Conteo de Caja
               </h2>
             </div>
@@ -502,27 +356,17 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
             <div className="flex justify-between items-center" style={{ 
               marginBottom: `clamp(4px, 1vw, 6px)` 
             }}>
-              <span style={{
-                fontSize: `clamp(0.625rem, 2.5vw, 0.75rem)`,
-                color: '#8899a6'
-              }}>
+              <span className="wizard-progress-label">
                 Paso {currentStep} de 3
               </span>
             </div>
             
             {/* Barra de progreso visual */}
-            <div className="relative rounded-full overflow-hidden" style={{
-              backgroundColor: 'rgb(31, 41, 55)', 
-              height: `clamp(6px, 2vw, 8px)`
-            }}>
-              <motion.div
-                className="absolute left-0 top-0 h-full rounded-full"
-                style={{ background: 'linear-gradient(90deg, #f4a52a, #ffb84d)' }}
-                initial={{ width: '33%' }}
-                animate={{ width: `${(currentStep / 3) * 100}%` }}
-                transition={{ duration: 0.3, ease: 'easeInOut' }}
-              />
-            </div>
+            <WizardProgressBar
+              currentStep={currentStep}
+              totalSteps={3}
+              gradient="linear-gradient(90deg, #f4a52a, #ffb84d)"
+            />
           </div>
 
           {/* Contenido del paso actual */}
@@ -539,34 +383,30 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
           </AnimatePresence>
 
           {/* Botones de navegación */}
-          <div className="flex items-center justify-between" style={{ marginTop: `clamp(28px, ${32 * viewportScale}px, 32px)` }}>
-            <Button
-              variant="wizard-nav-previous"
-              size="sm"
+          <div className="flex items-center justify-center mt-fluid-2xl pt-fluid-xl border-t border-slate-600 gap-fluid-lg wizard-dialog-footer">
+            <NeutralActionButton
               onClick={handlePrevious}
               disabled={currentStep === 1}
             >
               Anterior
-            </Button>
+            </NeutralActionButton>
 
             {currentStep < 3 ? (
-              <Button
+              <ConstructiveActionButton
                 onClick={handleNext}
                 disabled={!canGoNext()}
-                variant={canGoNext() ? 'morning-gradient' : 'outline'}
-                size="sm"
+                className="!bg-amber-600 !border-amber-500 hover:!bg-amber-500 !text-amber-50"
               >
                 Siguiente
-              </Button>
+              </ConstructiveActionButton>
             ) : (
-              <Button
+              <ConstructiveActionButton
                 onClick={handleComplete}
                 disabled={!canGoNext()}
-                variant={canGoNext() ? 'morning-gradient' : 'outline'}
-                size="sm"
+                className="!bg-amber-600 !border-amber-500 hover:!bg-amber-500 !text-amber-50"
               >
                 Completar
-              </Button>
+              </ConstructiveActionButton>
             )}
           </div>
         </div>

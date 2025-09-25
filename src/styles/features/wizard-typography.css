@@ -1,0 +1,30 @@
+/* 🤖 [IA] - Wizard Typography Harmonization v1.0 */
+
+.wizard-step-heading {
+  font-weight: 600;
+  font-size: clamp(1rem, 4vw, 1.25rem);
+  line-height: 1.2;
+  color: var(--wizard-heading-color, #e1e8ed);
+}
+
+.wizard-step-subtitle {
+  margin-top: clamp(0.125rem, 1vw, 0.25rem);
+  font-size: clamp(0.75rem, 3vw, 0.875rem);
+  color: var(--wizard-subtitle-color, #8899a6);
+}
+
+.wizard-progress-label {
+  font-size: clamp(0.625rem, 2.5vw, 0.75rem);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--wizard-progress-color, var(--muted-paradise));
+}
+
+.wizard-step-icon {
+  width: clamp(1.75rem, 7vw, 2rem);
+  height: clamp(1.75rem, 7vw, 2rem);
+}
+
+.wizard-inline-gap {
+  gap: clamp(0.5rem, 3vw, 0.75rem);
+}
