@@ -229,7 +229,7 @@ export function useGuidedCounting(operationMode?: OperationMode) { // 🤖 [IA] 
 
     setPendingValue('');
     return true;
-  }, [getCurrentField]);
+  }, [getCurrentField, fieldOrder]);
 
   const resetGuidedCounting = useCallback(() => {
     setGuidedState({
