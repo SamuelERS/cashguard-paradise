@@ -54,19 +54,19 @@ describe('🔄 Phase Transitions Integration Tests', () => {
 
       // Use selectOption helper to handle Select component correctly
       await selectOption(user, 'Selección de sucursal', 'Los Héroes');
-      await user.click(modal1.getByRole('button', { name: /siguiente/i }));
+      await user.click(modal1.getByRole('button', { name: /continuar|siguiente/i }));
 
       // Step 3: Select Cashier
       await waitForAnimation(300);
       const modal2 = testUtils.withinWizardModal();
       await selectOption(user, 'cajero responsable', 'Tito Gomez');
-      await user.click(modal2.getByRole('button', { name: /siguiente/i }));
+      await user.click(modal2.getByRole('button', { name: /continuar|siguiente/i }));
 
       // Step 4: Select Witness
       await waitForAnimation(300);
       const modal3 = testUtils.withinWizardModal();
       await selectOption(user, 'testigo', 'Adonay Torres');
-      await user.click(modal3.getByRole('button', { name: /siguiente/i }));
+      await user.click(modal3.getByRole('button', { name: /continuar|siguiente/i }));
 
       await waitForAnimation(300);
       const modal4 = testUtils.withinWizardModal();
@@ -117,19 +117,19 @@ describe('🔄 Phase Transitions Integration Tests', () => {
       await waitForAnimation(300);
       const modal1 = testUtils.withinWizardModal();
       await selectOption(user, 'Selección de sucursal', 'Los Héroes');
-      await user.click(modal1.getByRole('button', { name: /siguiente/i }));
+      await user.click(modal1.getByRole('button', { name: /continuar|siguiente/i }));
 
       // Step 3: Select Cashier
       await waitForAnimation(300);
       const modal2 = testUtils.withinWizardModal();
       await selectOption(user, 'cajero responsable', 'Tito Gomez');
-      await user.click(modal2.getByRole('button', { name: /siguiente/i }));
+      await user.click(modal2.getByRole('button', { name: /continuar|siguiente/i }));
 
       // Step 4: Select Witness
       await waitForAnimation(300);
       const modal3 = testUtils.withinWizardModal();
       await selectOption(user, 'testigo', 'Adonay Torres');
-      await user.click(modal3.getByRole('button', { name: /siguiente/i }));
+      await user.click(modal3.getByRole('button', { name: /continuar|siguiente/i }));
 
       await waitForAnimation(300);
       const modal4 = testUtils.withinWizardModal();
@@ -177,13 +177,13 @@ describe('🔄 Phase Transitions Integration Tests', () => {
       await waitForAnimation(300);
       const modal1 = testUtils.withinWizardModal();
       await selectOption(user, 'sucursal', 'Los Héroes');
-      await user.click(modal1.getByRole('button', { name: /siguiente/i }));
+      await user.click(modal1.getByRole('button', { name: /continuar|siguiente/i }));
 
       // Step 2: Select Cashier
       await waitForAnimation(300);
       const modal2 = testUtils.withinWizardModal();
       await selectOption(user, 'cajero responsable', 'Tito Gomez');
-      await user.click(modal2.getByRole('button', { name: /siguiente/i }));
+      await user.click(modal2.getByRole('button', { name: /continuar|siguiente/i }));
 
       // Step 3: Select Witness
       await waitForAnimation(300);
@@ -226,11 +226,11 @@ describe('🔄 Phase Transitions Integration Tests', () => {
       await selectOperation(user, 'evening');
       await completeSecurityProtocol(user);
       await selectOption(user, 'sucursal', 'Los Héroes');
-      await user.click(screen.getByRole('button', { name: /siguiente/i }));
+      await user.click(screen.getByRole('button', { name: /continuar|siguiente/i }));
       await selectOption(user, 'cajero responsable', 'Tito Gomez');
-      await user.click(screen.getByRole('button', { name: /siguiente/i }));
+      await user.click(screen.getByRole('button', { name: /continuar|siguiente/i }));
       await selectOption(user, 'testigo', 'Adonay Torres');
-      await user.click(screen.getByRole('button', { name: /siguiente/i }));
+      await user.click(screen.getByRole('button', { name: /continuar|siguiente/i }));
       await user.type(screen.getByRole('textbox'), '200.00');
       await user.click(screen.getByRole('button', { name: /completar/i }));
       
@@ -283,11 +283,11 @@ describe('🔄 Phase Transitions Integration Tests', () => {
       await selectOperation(user, 'evening');
       await completeSecurityProtocol(user);
       await selectOption(user, 'sucursal', 'Los Héroes');
-      await user.click(screen.getByRole('button', { name: /siguiente/i }));
+      await user.click(screen.getByRole('button', { name: /continuar|siguiente/i }));
       await selectOption(user, 'cajero responsable', 'Tito Gomez');
-      await user.click(screen.getByRole('button', { name: /siguiente/i }));
+      await user.click(screen.getByRole('button', { name: /continuar|siguiente/i }));
       await selectOption(user, 'testigo', 'Adonay Torres');
-      await user.click(screen.getByRole('button', { name: /siguiente/i }));
+      await user.click(screen.getByRole('button', { name: /continuar|siguiente/i }));
       await user.type(screen.getByRole('textbox'), '100.00');
       await user.click(screen.getByRole('button', { name: /completar/i }));
       
@@ -337,11 +337,11 @@ describe('🔄 Phase Transitions Integration Tests', () => {
       await selectOperation(user, 'evening');
       await completeSecurityProtocol(user);
       await selectOption(user, 'sucursal', 'Los Héroes');
-      await user.click(screen.getByRole('button', { name: /siguiente/i }));
+      await user.click(screen.getByRole('button', { name: /continuar|siguiente/i }));
       await selectOption(user, 'cajero responsable', 'Tito Gomez');
-      await user.click(screen.getByRole('button', { name: /siguiente/i }));
+      await user.click(screen.getByRole('button', { name: /continuar|siguiente/i }));
       await selectOption(user, 'testigo', 'Adonay Torres');
-      await user.click(screen.getByRole('button', { name: /siguiente/i }));
+      await user.click(screen.getByRole('button', { name: /continuar|siguiente/i }));
       await user.type(screen.getByRole('textbox'), '150.00');
       await user.click(screen.getByRole('button', { name: /completar/i }));
       
@@ -392,20 +392,29 @@ describe('🔄 Phase Transitions Integration Tests', () => {
       };
 
       // Setup
+      console.log('🚀 [DEBUG] Starting selectOperation...');
       await selectOperation(user, 'evening');
+      console.log('✅ [DEBUG] selectOperation completed');
+      screen.debug(document.body, 50000);
+
+      console.log('🔒 [DEBUG] Starting completeSecurityProtocol...');
       await completeSecurityProtocol(user);
+      console.log('✅ [DEBUG] completeSecurityProtocol completed');
+      screen.debug(document.body, 50000);
+
+      console.log('🏪 [DEBUG] Looking for store:', wizardData.store);
       await user.click(await screen.findByText(wizardData.store));
-      await user.click(screen.getByRole('button', { name: /siguiente/i }));
+      await user.click(screen.getByRole('button', { name: /continuar/i }));
       
       await waitFor(() => {
         expect(screen.getByText(wizardData.cashier)).toBeInTheDocument();
       });
       await user.click(screen.getByText(wizardData.cashier));
-      await user.click(screen.getByRole('button', { name: /siguiente/i }));
+      await user.click(screen.getByRole('button', { name: /continuar|siguiente/i }));
       await user.click(await screen.findByText(wizardData.witness));
-      await user.click(screen.getByRole('button', { name: /siguiente/i }));
+      await user.click(screen.getByRole('button', { name: /continuar|siguiente/i }));
       await user.type(screen.getByRole('textbox'), wizardData.expectedSales);
-      await user.click(screen.getByRole('button', { name: /completar/i }));
+      await user.click(screen.getByRole('button', { name: /confirmar/i }));
       
       // Phase 1: Verify data
       await waitFor(() => {
@@ -476,11 +485,11 @@ describe('🔄 Phase Transitions Integration Tests', () => {
       await selectOperation(user, 'evening');
       await completeSecurityProtocol(user);
       await selectOption(user, 'sucursal', 'Los Héroes');
-      await user.click(screen.getByRole('button', { name: /siguiente/i }));
+      await user.click(screen.getByRole('button', { name: /continuar|siguiente/i }));
       await selectOption(user, 'cajero responsable', 'Tito Gomez');
-      await user.click(screen.getByRole('button', { name: /siguiente/i }));
+      await user.click(screen.getByRole('button', { name: /continuar|siguiente/i }));
       await selectOption(user, 'testigo', 'Adonay Torres');
-      await user.click(screen.getByRole('button', { name: /siguiente/i }));
+      await user.click(screen.getByRole('button', { name: /continuar|siguiente/i }));
       await user.type(screen.getByRole('textbox'), '500.00');
       await user.click(screen.getByRole('button', { name: /completar/i }));
       
