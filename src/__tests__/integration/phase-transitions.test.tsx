@@ -225,11 +225,11 @@ describe('🔄 Phase Transitions Integration Tests', () => {
       // Setup evening cut
       await selectOperation(user, 'evening');
       await completeSecurityProtocol(user);
-      await user.click(await screen.findByText('Los Héroes'));
+      await selectOption(user, 'sucursal', 'Los Héroes');
       await user.click(screen.getByRole('button', { name: /siguiente/i }));
-      await user.click(await screen.findByText('Tito Gomez'));
+      await selectOption(user, 'cajero responsable', 'Tito Gomez');
       await user.click(screen.getByRole('button', { name: /siguiente/i }));
-      await user.click(await screen.findByText('María López'));
+      await selectOption(user, 'testigo', 'Adonay Torres');
       await user.click(screen.getByRole('button', { name: /siguiente/i }));
       await user.type(screen.getByRole('textbox'), '200.00');
       await user.click(screen.getByRole('button', { name: /completar/i }));
@@ -282,11 +282,11 @@ describe('🔄 Phase Transitions Integration Tests', () => {
       // Setup with cash > $50
       await selectOperation(user, 'evening');
       await completeSecurityProtocol(user);
-      await user.click(await screen.findByText('Los Héroes'));
+      await selectOption(user, 'sucursal', 'Los Héroes');
       await user.click(screen.getByRole('button', { name: /siguiente/i }));
-      await user.click(await screen.findByText('Tito Gomez'));
+      await selectOption(user, 'cajero responsable', 'Tito Gomez');
       await user.click(screen.getByRole('button', { name: /siguiente/i }));
-      await user.click(await screen.findByText('María López'));
+      await selectOption(user, 'testigo', 'Adonay Torres');
       await user.click(screen.getByRole('button', { name: /siguiente/i }));
       await user.type(screen.getByRole('textbox'), '100.00');
       await user.click(screen.getByRole('button', { name: /completar/i }));
@@ -336,11 +336,11 @@ describe('🔄 Phase Transitions Integration Tests', () => {
       // Setup with exact $150 cash
       await selectOperation(user, 'evening');
       await completeSecurityProtocol(user);
-      await user.click(await screen.findByText('Los Héroes'));
+      await selectOption(user, 'sucursal', 'Los Héroes');
       await user.click(screen.getByRole('button', { name: /siguiente/i }));
-      await user.click(await screen.findByText('Tito Gomez'));
+      await selectOption(user, 'cajero responsable', 'Tito Gomez');
       await user.click(screen.getByRole('button', { name: /siguiente/i }));
-      await user.click(await screen.findByText('María López'));
+      await selectOption(user, 'testigo', 'Adonay Torres');
       await user.click(screen.getByRole('button', { name: /siguiente/i }));
       await user.type(screen.getByRole('textbox'), '150.00');
       await user.click(screen.getByRole('button', { name: /completar/i }));
@@ -475,11 +475,11 @@ describe('🔄 Phase Transitions Integration Tests', () => {
       // Setup
       await selectOperation(user, 'evening');
       await completeSecurityProtocol(user);
-      await user.click(await screen.findByText('Los Héroes'));
+      await selectOption(user, 'sucursal', 'Los Héroes');
       await user.click(screen.getByRole('button', { name: /siguiente/i }));
-      await user.click(await screen.findByText('Tito Gomez'));
+      await selectOption(user, 'cajero responsable', 'Tito Gomez');
       await user.click(screen.getByRole('button', { name: /siguiente/i }));
-      await user.click(await screen.findByText('María López'));
+      await selectOption(user, 'testigo', 'Adonay Torres');
       await user.click(screen.getByRole('button', { name: /siguiente/i }));
       await user.type(screen.getByRole('textbox'), '500.00');
       await user.click(screen.getByRole('button', { name: /completar/i }));
