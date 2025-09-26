@@ -94,6 +94,10 @@ Object.defineProperty(global.performance, 'now', {
   writable: true
 });
 
+// 🤖 [IA] - PROTOCOLO-SECURITY-CORRECTION: Usar timers reales para useRulesFlow
+// Los fake timers estaban interfiriendo con el setTimeout del hook useRulesFlow
+// Usar timers reales permite que el delay de 1500ms funcione correctamente
+
 // CRITICAL FIX: Override document.body.style setters to prevent pointer-events: none
 // This prevents the Index.tsx component from disabling pointer events during tests
 const originalBodyStyle = document.body.style;

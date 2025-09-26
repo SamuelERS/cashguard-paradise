@@ -6,6 +6,7 @@ export const motion = {
   div: React.forwardRef<HTMLDivElement, any>(({
     children,
     onClick,
+    onKeyDown,
     className,
     style,
     initial,
@@ -15,13 +16,26 @@ export const motion = {
     whileHover,
     whileTap,
     variants,
+    role,
+    tabIndex,
+    'aria-label': ariaLabel,
+    'aria-pressed': ariaPressed,
+    'aria-disabled': ariaDisabled,
+    'data-testid': dataTestId,
     ...props
   }, ref) => (
     <div
       ref={ref}
       onClick={onClick}
+      onKeyDown={onKeyDown}
       className={className}
       style={style}
+      role={role}
+      tabIndex={tabIndex}
+      aria-label={ariaLabel}
+      aria-pressed={ariaPressed}
+      aria-disabled={ariaDisabled}
+      data-testid={dataTestId}
       {...props}
     >
       {children}

@@ -80,6 +80,7 @@ const ProtocolRuleComponent = ({ rule, state, isCurrent, onAcknowledge }: Protoc
         visualState !== 'hidden' && "protocol-rule-revealed"
       )}
       onClick={handleClick}
+      data-testid={`protocol-rule-${rule.id}`}
       animate={
         visualState === 'hidden'
           ? { // ESTADO OCULTO - TRANSICIÓN SUAVE
