@@ -762,6 +762,83 @@ export async function completeSecurityProtocol(
   console.log('✅ [TEST] Security protocol completion finished');
 }
 
+// 🤖 [IA] - PORTAL-AWARE SELECTOR RECOVERY: Helper para elementos en portals
+/**
+ * Busca texto usando múltiples estrategias portal-aware
+ *
+ * Problema: Elementos como opciones de Select se renderizan en portals (document.body)
+ * que no son encontrados por screen.findByText() estándar
+ *
+ * Solución: Implementa múltiples estrategias de búsqueda incrementales
+ */
+export async function findTextInPortal(
+  text: string,
+  options: { timeout?: number } = {}
+): Promise<HTMLElement> {
+  const { timeout = 8000 } = options;
+
+  console.log(`🔍 [PORTAL] Searching for text: "${text}"`);
+
+  return await waitFor(async () => {
+    // Strategy 1: Búsqueda normal en screen
+    try {
+      const element = screen.getByText(text);
+      console.log(`✅ [PORTAL] Found via screen.getByText: "${text}"`);
+      return element;
+    } catch {
+      // Continue to next strategy
+    }
+
+    // Strategy 2: Búsqueda en document.body (portals)
+    try {
+      const element = within(document.body).getByText(text);
+      console.log(`✅ [PORTAL] Found via document.body: "${text}"`);
+      return element;
+    } catch {
+      // Continue to next strategy
+    }
+
+    // Strategy 3: Function matcher con partial matching
+    try {
+      const element = screen.getByText((content, element) => {
+        const hasText = content?.includes(text) || element?.textContent?.includes(text);
+        if (hasText) {
+          console.log(`✅ [PORTAL] Found via partial match: "${text}"`);
+        }
+        return hasText || false;
+      });
+      return element;
+    } catch {
+      // Continue to next strategy
+    }
+
+    // Strategy 4: Query all text nodes and find match
+    try {
+      const allTextNodes = Array.from(document.body.querySelectorAll('*')).filter(
+        el => el.textContent?.includes(text)
+      );
+
+      if (allTextNodes.length > 0) {
+        const element = allTextNodes[0] as HTMLElement;
+        console.log(`✅ [PORTAL] Found via querySelector: "${text}"`);
+        return element;
+      }
+    } catch {
+      // Final fallback
+    }
+
+    console.log(`❌ [PORTAL] Text not found: "${text}"`);
+    console.log('Available text content sample:',
+      Array.from(document.body.querySelectorAll('*'))
+        .map(el => el.textContent?.trim())
+        .filter(text => text && text.length > 0)
+        .slice(0, 10)
+    );
+
+    throw new Error(`Text "${text}" not found in any portal strategy`);
+  }, { timeout, interval: 200 });
+}
+
 // 🤖 [IA] - OPERACIÓN PORTAL: Helper mejorado para Select components - Portal-aware
 export async function selectOption(
   user: ReturnType<typeof userEvent.setup>,

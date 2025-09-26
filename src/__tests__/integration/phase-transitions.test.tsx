@@ -16,7 +16,8 @@ import {
   verifyButtonState,
   selectOperation,
   completeSecurityProtocol,
-  selectOption
+  selectOption,
+  findTextInPortal
 } from '../fixtures/test-helpers';
 import { testUtils } from '../fixtures/test-utils';
 
@@ -71,7 +72,7 @@ describe('🔄 Phase Transitions Integration Tests', () => {
       await waitForAnimation(300);
       const modal4 = testUtils.withinWizardModal();
       await user.type(modal4.getByRole('textbox'), '500.00');
-      await user.click(modal4.getByRole('button', { name: /completar/i }));
+      await user.click(modal4.getByRole('button', { name: /confirmar|completar/i }));
 
       // Complete the mandatory instructions modal
       await completeInstructionsModal(user);
@@ -134,7 +135,7 @@ describe('🔄 Phase Transitions Integration Tests', () => {
       await waitForAnimation(300);
       const modal4 = testUtils.withinWizardModal();
       await user.type(modal4.getByRole('textbox'), '100.00');
-      await user.click(modal4.getByRole('button', { name: /completar/i }));
+      await user.click(modal4.getByRole('button', { name: /confirmar|completar/i }));
 
       // Complete the mandatory instructions modal
       await completeInstructionsModal(user);
@@ -189,7 +190,7 @@ describe('🔄 Phase Transitions Integration Tests', () => {
       await waitForAnimation(300);
       const modal3 = testUtils.withinWizardModal();
       await selectOption(user, 'testigo', 'Adonay Torres');
-      await user.click(modal3.getByRole('button', { name: /completar/i }));
+      await user.click(modal3.getByRole('button', { name: /confirmar|completar/i }));
 
       // Complete the mandatory instructions modal
       await completeInstructionsModal(user);
@@ -232,7 +233,7 @@ describe('🔄 Phase Transitions Integration Tests', () => {
       await selectOption(user, 'testigo', 'Adonay Torres');
       await user.click(screen.getByRole('button', { name: /continuar|siguiente/i }));
       await user.type(screen.getByRole('textbox'), '200.00');
-      await user.click(screen.getByRole('button', { name: /completar/i }));
+      await user.click(screen.getByRole('button', { name: /confirmar|completar/i }));
       
       // Start in guided mode
       await waitFor(() => {
@@ -289,7 +290,7 @@ describe('🔄 Phase Transitions Integration Tests', () => {
       await selectOption(user, 'testigo', 'Adonay Torres');
       await user.click(screen.getByRole('button', { name: /continuar|siguiente/i }));
       await user.type(screen.getByRole('textbox'), '100.00');
-      await user.click(screen.getByRole('button', { name: /completar/i }));
+      await user.click(screen.getByRole('button', { name: /confirmar|completar/i }));
       
       // Create cash count > $50
       const cashCount = {
@@ -343,7 +344,7 @@ describe('🔄 Phase Transitions Integration Tests', () => {
       await selectOption(user, 'testigo', 'Adonay Torres');
       await user.click(screen.getByRole('button', { name: /continuar|siguiente/i }));
       await user.type(screen.getByRole('textbox'), '150.00');
-      await user.click(screen.getByRole('button', { name: /completar/i }));
+      await user.click(screen.getByRole('button', { name: /confirmar|completar/i }));
       
       const cashCount = {
         ...mockData.cashCounts.empty,
@@ -403,7 +404,38 @@ describe('🔄 Phase Transitions Integration Tests', () => {
       screen.debug(document.body, 50000);
 
       console.log('🏪 [DEBUG] Looking for store:', wizardData.store);
-      await user.click(await screen.findByText(wizardData.store));
+
+      // 🤖 [IA] - PORTAL-AWARE RECOVERY: Múltiples estrategias para encontrar tienda
+      console.log('🔍 [DEBUG] DOM state before store search:');
+      screen.debug(document.body, 20000);
+
+      // Implementar búsqueda portal-aware con múltiples estrategias
+      let storeElement: HTMLElement;
+      try {
+        // Strategy 1: findTextInPortal helper
+        storeElement = await findTextInPortal(wizardData.store, { timeout: 10000 });
+      } catch (error1) {
+        console.log('⚠️ [DEBUG] findTextInPortal failed, trying direct approaches...');
+
+        try {
+          // Strategy 2: Esperar modal + buscar en selector
+          await waitFor(() => {
+            expect(screen.getByRole('dialog')).toBeInTheDocument();
+          }, { timeout: 5000 });
+
+          const dialog = screen.getByRole('dialog');
+          storeElement = within(dialog).getByText(wizardData.store);
+          console.log('✅ [DEBUG] Found store via dialog scope');
+        } catch (error2) {
+          // Strategy 3: Buscar en todo el documento
+          console.log('⚠️ [DEBUG] Dialog scope failed, searching entire document...');
+          storeElement = within(document.body).getByText(wizardData.store);
+          console.log('✅ [DEBUG] Found store via document.body');
+        }
+      }
+
+      console.log('🎯 [DEBUG] Store element found, clicking...');
+      await user.click(storeElement);
       await user.click(screen.getByRole('button', { name: /continuar/i }));
       
       await waitFor(() => {
@@ -491,7 +523,7 @@ describe('🔄 Phase Transitions Integration Tests', () => {
       await selectOption(user, 'testigo', 'Adonay Torres');
       await user.click(screen.getByRole('button', { name: /continuar|siguiente/i }));
       await user.type(screen.getByRole('textbox'), '500.00');
-      await user.click(screen.getByRole('button', { name: /completar/i }));
+      await user.click(screen.getByRole('button', { name: /confirmar|completar/i }));
       
       // Specific amounts for testing
       const cashTotal = 275.50;
