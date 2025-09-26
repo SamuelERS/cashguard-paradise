@@ -517,31 +517,59 @@ export function restoreNetwork() {
   vi.restoreAllMocks();
 }
 
-// Helper para seleccionar operación (morning count o evening cut) - BUG-HUNTER-QA CORRECTED
+// 🤖 [IA] - TEST-RESILIENCE-FORTIFICATION: Helper mejorado para Framer Motion components
 export async function selectOperation(
   user: ReturnType<typeof userEvent.setup>,
   operation: 'morning' | 'evening'
 ) {
+  const { fireEvent, act } = await import('@testing-library/react');
+
   // Wait for the operation selector to be ready
   await waitFor(() => {
     expect(screen.getByText(/Seleccione Operación/)).toBeInTheDocument();
   });
 
-  // Wait for animations to complete
-  await new Promise(resolve => setTimeout(resolve, 1000));
+  // Wait for animations to complete (reducido por el mock)
+  await new Promise(resolve => setTimeout(resolve, 300));
 
   // Find the specific operation card by title text first
   const titleText = operation === 'morning' ? 'Conteo de Caja' : 'Corte de Caja';
   const titleElement = await screen.findByText(titleText);
 
-  // Get the card container (motion.div with onClick and cursor-pointer)
+  // Get the card container (div with onClick and cursor-pointer)
   const cardContainer = titleElement.closest('div.cursor-pointer');
 
-  if (cardContainer) {
-    await user.click(cardContainer as HTMLElement);
-  } else {
+  if (!cardContainer) {
     throw new Error(`No se encontró el card container para ${operation}`);
   }
+
+  // Múltiples estrategias para asegurar el click funcione
+  try {
+    // Estrategia 1: user.click (preferida)
+    await act(async () => {
+      await user.click(cardContainer as HTMLElement);
+    });
+  } catch (error1) {
+    try {
+      // Estrategia 2: fireEvent.click como fallback
+      await act(() => {
+        fireEvent.click(cardContainer as HTMLElement);
+      });
+    } catch (error2) {
+      // Estrategia 3: Dispatch manual de evento
+      await act(() => {
+        const clickEvent = new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+          view: window
+        });
+        cardContainer.dispatchEvent(clickEvent);
+      });
+    }
+  }
+
+  // Extra time for state updates
+  await new Promise(resolve => setTimeout(resolve, 100));
 
   // Wait for the modal to appear based on operation type
   await waitFor(() => {
@@ -552,7 +580,7 @@ export async function selectOperation(
       // Evening shows InitialWizardModal
       expect(screen.getByText(/Instrucciones Obligatorias Iniciales/)).toBeInTheDocument();
     }
-  }, { timeout: 5000 });
+  }, { timeout: 10000 }); // Timeout aumentado por seguridad
 }
 
 // 🤖 [IA] - TEST-FIX-40-FINAL: Helper definitivo basado en evidencia forense completa

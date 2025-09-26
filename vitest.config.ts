@@ -8,6 +8,8 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      // 🤖 [IA] - TEST-RESILIENCE-FORTIFICATION: Alias para mock de Framer Motion
+      'framer-motion': path.resolve(__dirname, './src/__mocks__/framer-motion.tsx'),
     },
   },
   test: {
@@ -60,6 +62,24 @@ export default defineConfig({
     css: {
       modules: {
         classNameStrategy: 'non-scoped'
+      }
+    },
+
+    // 🤖 [IA] - TEST-RESILIENCE-FORTIFICATION: Configuración para mocks y dependencias (actualizado)
+    server: {
+      deps: {
+        inline: [
+          'framer-motion', // Forzar inline para usar nuestro mock
+          '@testing-library/user-event' // Mejorar compatibilidad con eventos
+        ]
+      }
+    },
+
+    // Pool configuration para mejor performance con mocks
+    pool: 'forks',
+    poolOptions: {
+      forks: {
+        singleFork: true // Evitar conflictos entre workers con mocks globales
       }
     }
   },
