@@ -764,13 +764,16 @@ export async function selectOption(
   let trigger: HTMLElement;
 
   if (typeof triggerSelector === 'string') {
-    // Si es string, buscar por placeholder text
-    const triggerElements = screen.getAllByText('Seleccionar...');
-    // Encontrar el trigger correcto basado en el contexto
-    trigger = triggerElements.find(el => {
-      const parent = el.closest('[data-testid]') || el.closest('div');
-      return parent?.textContent?.toLowerCase().includes(triggerSelector.toLowerCase());
-    }) || triggerElements[0];
+    // 🤖 [IA] - BUG HUNTER QA FIX: Usar role="combobox" en lugar de texto hardcodeado
+    // Buscar por rol ARIA estándar de Radix UI Select
+    const allSelects = screen.getAllByRole('combobox');
+
+    // Filtrar por contexto del contenedor
+    trigger = allSelects.find(select => {
+      const container = select.closest('div');
+      return container?.textContent?.toLowerCase()
+        .includes(triggerSelector.toLowerCase());
+    }) || allSelects[0]; // Fallback al primer select
   } else {
     trigger = triggerSelector();
   }
@@ -787,11 +790,25 @@ export async function selectOption(
   // Esperar un momento para que el dropdown se abra
   await new Promise(resolve => setTimeout(resolve, 100));
 
-  // Paso 2: Buscar la opción en el DOM abierto
+  // Paso 2: Buscar la opción en el DOM abierto usando estrategias múltiples
   await waitFor(async () => {
-    // Buscar en todo el documento por el texto de la opción
-    const optionElements = screen.queryAllByText(optionText, { exact: false });
+    // 🤖 [IA] - Estrategia 1: Buscar por role="option" (estándar ARIA)
+    const optionsByRole = screen.queryAllByRole('option');
+    console.log(`🔍 [TEST] Found ${optionsByRole.length} elements with role="option"`);
 
+    // Buscar la opción específica por texto dentro de elementos con role="option"
+    const targetOption = optionsByRole.find(option =>
+      option.textContent?.toLowerCase().includes(optionText.toLowerCase())
+    );
+
+    if (targetOption) {
+      console.log(`🔍 [TEST] Found target option by role:`, targetOption.textContent);
+      await user.click(targetOption);
+      return;
+    }
+
+    // 🤖 [IA] - Estrategia 2: Buscar por texto como fallback
+    const optionElements = screen.queryAllByText(optionText, { exact: false });
     console.log(`🔍 [TEST] Found ${optionElements.length} elements with text "${optionText}"`);
 
     if (optionElements.length > 0) {
@@ -803,7 +820,7 @@ export async function selectOption(
         el.closest('button')
       ) || optionElements[0]; // Fallback al primer elemento
 
-      console.log(`🔍 [TEST] Clicking on option:`, clickableOption.tagName, clickableOption.textContent);
+      console.log(`🔍 [TEST] Clicking on option by text:`, clickableOption.tagName, clickableOption.textContent);
       await user.click(clickableOption);
       return;
     }
