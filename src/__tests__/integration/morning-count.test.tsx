@@ -161,20 +161,20 @@ describe('🌅 Morning Count Flow Integration Tests', () => {
     await selectOperation(user, 'morning');
     
     // Complete wizard
-    const storeOption = await screen.findByText('Metrocentro');
+    const storeOption = await screen.findByText('Los Héroes');
     await user.click(storeOption);
     await user.click(screen.getByRole('button', { name: /siguiente/i }));
     
-    // Wait for cashier list to load for Metrocentro
+    // Wait for cashier list to load for Los Héroes
     await waitFor(() => {
-      expect(screen.getByText(/Carmen Martínez/)).toBeInTheDocument();
+      expect(screen.getByText(/Tito Gomez/)).toBeInTheDocument();
     });
     
-    const cashierOption = screen.getByText('Carmen Martínez');
+    const cashierOption = screen.getByText('Tito Gomez');
     await user.click(cashierOption);
     await user.click(screen.getByRole('button', { name: /siguiente/i }));
     
-    const witnessOption = await screen.findByText('Carlos Rodríguez');
+    const witnessOption = await screen.findByText('Adonay Torres');
     await user.click(witnessOption);
     await user.click(screen.getByRole('button', { name: /completar/i }));
     
@@ -298,9 +298,9 @@ describe('🌅 Morning Count Flow Integration Tests', () => {
     const { user } = renderWithProviders(<Index />);
     
     const testData = {
-      store: 'Metrocentro',
-      cashier: 'Carmen Martínez',
-      witness: 'Carlos Rodríguez'
+      store: 'Los Héroes',
+      cashier: 'Tito Gomez',
+      witness: 'Adonay Torres'
     };
     
     // Navigate and complete wizard

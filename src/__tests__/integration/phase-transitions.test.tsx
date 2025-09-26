@@ -385,9 +385,9 @@ describe('🔄 Phase Transitions Integration Tests', () => {
       const { user } = renderWithProviders(<Index />);
 
       const wizardData = {
-        store: 'Metrocentro',
-        cashier: 'Carmen Martínez',
-        witness: 'Carlos Rodríguez',
+        store: 'Los Héroes',
+        cashier: 'Tito Gomez',
+        witness: 'Adonay Torres',
         expectedSales: '2000.00'
       };
 

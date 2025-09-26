@@ -175,16 +175,16 @@ describe('🌙 Evening Cut Flow Integration Tests', () => {
     await user.click(protocolCheckbox);
     await user.click(screen.getByRole('button', { name: /siguiente/i }));
     
-    await user.click(await screen.findByText('Metrocentro'));
+    await user.click(await screen.findByText('Los Héroes'));
     await user.click(screen.getByRole('button', { name: /siguiente/i }));
     
     await waitFor(() => {
-      expect(screen.getByText('Carmen Martínez')).toBeInTheDocument();
+      expect(screen.getByText('Tito Gomez')).toBeInTheDocument();
     });
-    await user.click(screen.getByText('Carmen Martínez'));
+    await user.click(screen.getByText('Tito Gomez'));
     await user.click(screen.getByRole('button', { name: /siguiente/i }));
     
-    await user.click(await screen.findByText('Carlos Rodríguez'));
+    await user.click(await screen.findByText('Adonay Torres'));
     await user.click(screen.getByRole('button', { name: /siguiente/i }));
     
     const salesInput = screen.getByRole('textbox');
@@ -350,15 +350,15 @@ describe('🌙 Evening Cut Flow Integration Tests', () => {
     // Complete wizard
     await user.click(await screen.findByRole('checkbox'));
     await user.click(screen.getByRole('button', { name: /siguiente/i }));
-    await user.click(await screen.findByText('Metrocentro'));
+    await user.click(await screen.findByText('Los Héroes'));
     await user.click(screen.getByRole('button', { name: /siguiente/i }));
     
     await waitFor(() => {
-      expect(screen.getByText('Carmen Martínez')).toBeInTheDocument();
+      expect(screen.getByText('Tito Gomez')).toBeInTheDocument();
     });
-    await user.click(screen.getByText('Carmen Martínez'));
+    await user.click(screen.getByText('Tito Gomez'));
     await user.click(screen.getByRole('button', { name: /siguiente/i }));
-    await user.click(await screen.findByText('Carlos Rodríguez'));
+    await user.click(await screen.findByText('Adonay Torres'));
     await user.click(screen.getByRole('button', { name: /siguiente/i }));
     
     const salesInput = screen.getByRole('textbox');
@@ -413,9 +413,9 @@ describe('🌙 Evening Cut Flow Integration Tests', () => {
     const { user } = renderWithProviders(<Index />);
     
     const testData = {
-      store: 'Metrocentro',
-      cashier: 'Carmen Martínez',
-      witness: 'Carlos Rodríguez',
+      store: 'Los Héroes',
+      cashier: 'Tito Gomez',
+      witness: 'Adonay Torres',
       expectedSales: '1500.00'
     };
     

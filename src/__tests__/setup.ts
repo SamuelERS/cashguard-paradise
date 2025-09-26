@@ -230,3 +230,42 @@ if (typeof Element !== 'undefined') {
 
   console.log('🔧 [JSDOM] Polyfills para Radix UI Pointer Capture aplicados exitosamente');
 }
+
+// 🤖 [IA] - POLYFILL EXPANSION v2.0: ScrollIntoView y APIs de Scroll
+// Resuelve: TypeError: candidate?.scrollIntoView is not a function
+/**
+ * Polyfills adicionales para APIs de scroll que Radix UI Select requiere
+ *
+ * Problema: JSDOM no implementa scrollIntoView, scrollTo, scroll APIs
+ * Solución: Implementaciones mock que permiten que Radix UI funcione sin errores
+ *
+ * Referencias:
+ * - Error específico: @radix-ui/react-select/src/select.tsx:590:22
+ * - GitHub Actions log: TypeError: candidate?.scrollIntoView is not a function
+ */
+
+if (typeof Element !== 'undefined') {
+  // Mock de scrollIntoView - hace scroll al elemento para que sea visible
+  if (!Element.prototype.scrollIntoView) {
+    Element.prototype.scrollIntoView = function(options?: ScrollIntoViewOptions | boolean): void {
+      // No-op implementation para testing
+      // En el entorno de testing no necesitamos scroll real
+    };
+  }
+
+  // Mock de scrollTo - hace scroll a coordenadas específicas
+  if (!Element.prototype.scrollTo) {
+    Element.prototype.scrollTo = function(options?: ScrollToOptions | number, y?: number): void {
+      // No-op implementation para testing
+    };
+  }
+
+  // Mock de scroll - alias de scrollTo
+  if (!Element.prototype.scroll) {
+    Element.prototype.scroll = function(options?: ScrollToOptions | number, y?: number): void {
+      // No-op implementation para testing
+    };
+  }
+
+  console.log('🔧 [JSDOM] Polyfills para APIs de Scroll aplicados exitosamente');
+}
