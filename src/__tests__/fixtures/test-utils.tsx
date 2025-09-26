@@ -123,6 +123,37 @@ export const testUtils = {
       });
       return clickableElement || elements[0];
     }, { timeout });
+  },
+
+  // 🤖 [IA] - CORRECIÓN ANTI-FRAGMENTACIÓN: Buscar texto fragmentado across elementos
+  // Resuelve: "text is broken up by multiple elements"
+  getFragmentedText: (text: string | RegExp, container?: HTMLElement) => {
+    const searchContainer = container || screen.getByRole('dialog');
+    const textPattern = typeof text === 'string' ? text : text.source;
+
+    // Buscar elementos que contengan fragmentos del texto
+    const allElements = Array.from(searchContainer.querySelectorAll('*'));
+
+    for (const element of allElements) {
+      // Verificar si el textContent combinado del elemento incluye el texto buscado
+      const fullText = element.textContent?.replace(/\s+/g, ' ').trim() || '';
+
+      if (typeof text === 'string' && fullText.includes(text)) {
+        return element as HTMLElement;
+      } else if (text instanceof RegExp && text.test(fullText)) {
+        return element as HTMLElement;
+      }
+    }
+
+    throw new Error(`Fragmented text "${textPattern}" not found in container`);
+  },
+
+  // 🤖 [IA] - HELPERS ROBUSTOS: Encontrar texto fragmentado dentro del wizard modal
+  findFragmentedTextInWizard: async (text: string | RegExp, timeout: number = 8000) => {
+    return await waitFor(() => {
+      const modal = testUtils.withinWizardModal();
+      return testUtils.getFragmentedText(text, modal.container);
+    }, { timeout });
   }
 };
 

@@ -51,10 +51,10 @@ describe('🚨 Edge Cases Integration Tests', () => {
       // Complete security protocol (required for evening cut)
       await completeSecurityProtocol(user);
 
-      // Select store
-      await waitFor(() => {
-        const modal = testUtils.withinWizardModal();
-        expect(modal.getByText(/Seleccione la Sucursal/)).toBeInTheDocument();
+      // Select store - usando helper robusto anti-fragmentación
+      await waitFor(async () => {
+        const storeElement = await testUtils.findFragmentedTextInWizard(/Seleccione.*Sucursal/i);
+        expect(storeElement).toBeInTheDocument();
       });
 
       const modal2 = testUtils.withinWizardModal();
@@ -104,10 +104,10 @@ describe('🚨 Edge Cases Integration Tests', () => {
       // Navigate to Morning Count
       await selectOperation(user, 'morning');
 
-      // Select store
-      await waitFor(() => {
-        const modal = testUtils.withinWizardModal();
-        expect(modal.getByText(/Seleccione la Sucursal/)).toBeInTheDocument();
+      // Select store - usando helper robusto anti-fragmentación
+      await waitFor(async () => {
+        const storeElement = await testUtils.findFragmentedTextInWizard(/Seleccione.*Sucursal/i);
+        expect(storeElement).toBeInTheDocument();
       });
 
       const modal1 = testUtils.withinWizardModal();

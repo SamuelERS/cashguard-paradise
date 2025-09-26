@@ -48,7 +48,7 @@ if (typeof globalThis !== 'undefined') {
 }
 
 import '@testing-library/jest-dom';
-import { expect, afterEach, vi } from 'vitest';
+import { expect, afterEach, beforeAll, afterAll, vi } from 'vitest';
 import { cleanup } from '@testing-library/react';
 import * as matchers from '@testing-library/jest-dom/matchers';
 
@@ -93,20 +93,26 @@ Object.defineProperty(window, 'sessionStorage', {
   writable: true,
 });
 
-// Mock window.matchMedia for responsive tests
+// 🤖 [IA] - Mock window.matchMedia mejorado para responsive tests
+// Resuelve: Cannot read properties of undefined (reading 'matches')
+const matchMediaMock = vi.fn().mockImplementation((query: string) => ({
+  matches: false,
+  media: query || '',
+  onchange: null,
+  addListener: vi.fn(), // deprecated
+  removeListener: vi.fn(), // deprecated
+  addEventListener: vi.fn(),
+  removeEventListener: vi.fn(),
+  dispatchEvent: vi.fn(),
+}));
+
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: vi.fn().mockImplementation((query: string) => ({
-    matches: false,
-    media: query,
-    onchange: null,
-    addListener: vi.fn(), // deprecated
-    removeListener: vi.fn(), // deprecated
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
-    dispatchEvent: vi.fn(),
-  })),
+  value: matchMediaMock,
 });
+
+// Asegurar que global.matchMedia también esté disponible
+global.matchMedia = matchMediaMock;
 
 // Mock IntersectionObserver for components that use it
 global.IntersectionObserver = vi.fn().mockImplementation(() => ({
@@ -119,12 +125,8 @@ global.IntersectionObserver = vi.fn().mockImplementation(() => ({
   takeRecords: () => [],
 }));
 
-// Mock ResizeObserver for components that use it
-global.ResizeObserver = vi.fn().mockImplementation(() => ({
-  observe: vi.fn(),
-  unobserve: vi.fn(),
-  disconnect: vi.fn(),
-}));
+// 🤖 [IA] - ELIMINADO: Mock duplicado ResizeObserver que sobreescribía implementación robusta
+// La implementación robusta está en líneas 3-48 y debe mantenerse intacta
 
 // 🤖 [IA] - TEST-RESILIENCE-FORTIFICATION: Mocks para animaciones y Framer Motion
 // Mock requestAnimationFrame and cancelAnimationFrame for smooth animations testing
