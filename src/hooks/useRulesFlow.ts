@@ -110,6 +110,10 @@ export const useRulesFlow = () => {
   const [state, dispatch] = useReducer(rulesFlowReducer, createInitialRulesState());
   const { createTimeoutWithCleanup } = useTimingConfig();
 
+  // 🤖 [IA] - STALE CLOSURE FIX: useRef para mantener referencia actual al estado
+  const stateRef = useRef(state);
+  stateRef.current = state;
+
   // 🤖 [IA] - v3.0.0: Inicializar el flujo con randomización para factor sorpresa
   const initializeFlow = useCallback(() => {
     shuffleProtocolRules(); // 🎲 Nuevo orden aleatorio cada vez
@@ -122,7 +126,7 @@ export const useRulesFlow = () => {
   // 🤖 [IA] - Manejar reconocimiento de una regla (con debouncing optimizado)
   const acknowledgeRule = useCallback((ruleId: string, index: number) => {
     // Solo permitir si la regla está habilitada
-    if (!state.rules[ruleId]?.isEnabled) return;
+    if (!stateRef.current.rules[ruleId]?.isEnabled) return;
     
     // Debouncing: prevenir múltiples clicks en 300ms
     if (debounceRef.current[ruleId]) return;
@@ -148,7 +152,7 @@ export const useRulesFlow = () => {
     );
 
     return cleanup;
-  }, [state.rules, createTimeoutWithCleanup]);
+  }, [createTimeoutWithCleanup]); // 🤖 [IA] - STALE CLOSURE FIX: Removido state.rules para evitar stale closure
 
   // 🤖 [IA] - Verificar si el flujo está completo
   const isFlowCompleted = useCallback(() => {

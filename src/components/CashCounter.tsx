@@ -169,7 +169,7 @@ const CashCounter = ({
     const isPhase3 = phaseState.currentPhase === 3;
     
     // Solo aplicar en PWA mode Y no estar en Phase 3
-    if (window.matchMedia('(display-mode: standalone)').matches && !isPhase3) {
+    if (window.matchMedia?.('(display-mode: standalone)')?.matches && !isPhase3) {
       // Guardar estilos originales
       const originalStyles = {
         position: document.body.style.position,

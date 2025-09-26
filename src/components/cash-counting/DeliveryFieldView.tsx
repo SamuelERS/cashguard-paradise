@@ -103,7 +103,7 @@ export function DeliveryFieldView({
 
   useEffect(() => {
     const checkStandalone = () => {
-      const standalone = window.matchMedia('(display-mode: standalone)').matches ||
+      const standalone = window.matchMedia?.('(display-mode: standalone)')?.matches ||
                         ('standalone' in window.navigator && (window.navigator as { standalone?: boolean }).standalone) ||
                         document.referrer.includes('android-app://');
       setIsStandalone(standalone);
