@@ -107,7 +107,9 @@ export function MorningVerification({
         });
       } catch (err) {
         // Usuario canceló el share o error
-        console.log('Share cancelado o no disponible');
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Share cancelado o no disponible');
+        }
       }
     } else {
       // Fallback a copiar al portapapeles

@@ -13,7 +13,9 @@ export async function copyToClipboard(text: string): Promise<{
   if (navigator.clipboard && window.isSecureContext) {
     try {
       await navigator.clipboard.writeText(text);
-      console.log('✅ Copiado usando Clipboard API');
+      if (process.env.NODE_ENV === 'development') {
+        console.log('✅ Copiado usando Clipboard API');
+      }
       return { success: true, method: 'clipboard' };
     } catch (err) {
       console.warn('⚠️ Clipboard API falló, intentando fallback:', err);
@@ -53,7 +55,9 @@ export async function copyToClipboard(text: string): Promise<{
     try {
       success = document.execCommand('copy');
       if (success) {
-        console.log('✅ Copiado usando fallback execCommand');
+        if (process.env.NODE_ENV === 'development') {
+          console.log('✅ Copiado usando fallback execCommand');
+        }
       } else {
         console.error('❌ execCommand retornó false');
       }
