@@ -626,23 +626,19 @@ export async function selectOperation(
 export async function completeSecurityProtocol(
   user: ReturnType<typeof userEvent.setup>
 ) {
-  console.log('🔒 [TEST] Starting security protocol completion...');
   const { act, fireEvent } = await import('@testing-library/react');
 
   // Esperar a que aparezca el diálogo del protocolo
   const dialog = await screen.findByRole('dialog');
-  console.log('✅ [TEST] Dialog found');
 
   // Completar las 4 reglas del protocolo con approach reactivo
   for (let ruleIndex = 0; ruleIndex < 4; ruleIndex++) {
-    console.log(`🔒 [TEST] Processing rule ${ruleIndex + 1}/4...`);
 
     let targetRule: HTMLElement | null = null;
 
     // Buscar la siguiente regla habilitada (no completada)
     await waitFor(() => {
       const protocolRules = within(dialog).queryAllByTestId(/protocol-rule-/);
-      console.log(`📋 [TEST] Found ${protocolRules.length} protocol rules total`);
 
       // Buscar regla con tabIndex >= 0 (habilitada) y aria-pressed="false" (no completada)
       targetRule = protocolRules.find(rule => {
@@ -651,8 +647,6 @@ export async function completeSecurityProtocol(
         const ariaDisabled = rule.getAttribute('aria-disabled') === 'true';
 
         const isClickable = tabIndex >= 0 && !ariaPressed && !ariaDisabled;
-        console.log(`🔍 [TEST] Rule ${rule.getAttribute('data-testid')}: tabIndex=${tabIndex}, pressed=${ariaPressed}, disabled=${ariaDisabled}, clickable=${isClickable}`);
-
         return isClickable;
       }) || null;
 
@@ -667,13 +661,11 @@ export async function completeSecurityProtocol(
       }
 
       if (!targetRule) {
-        console.log(`❌ [TEST] No clickable rule found for iteration ${ruleIndex + 1}`);
         throw new Error(`No clickable rule found for iteration ${ruleIndex + 1}`);
       }
 
-      console.log(`✅ [TEST] Target rule found: ${targetRule.getAttribute('data-testid')}`);
       return targetRule;
-    }, { timeout: 8000, interval: 200 });
+    }, { timeout: 5000, interval: 100 });
 
     if (targetRule) {
       const ruleTestId = targetRule.getAttribute('data-testid');
@@ -683,22 +675,18 @@ export async function completeSecurityProtocol(
       await act(async () => {
         try {
           await user.click(targetRule);
-          console.log(`✅ [TEST] user.click successful on ${ruleTestId}`);
         } catch (clickError) {
-          console.log(`⚠️ [TEST] user.click failed, trying fireEvent...`);
           fireEvent.click(targetRule);
-          console.log(`✅ [TEST] fireEvent.click completed on ${ruleTestId}`);
         }
       });
 
       // Dar tiempo para que React procese el state change
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 300));
+        await new Promise(resolve => setTimeout(resolve, 150));
       });
 
       // Esperar a que la regla sea marcada como completada
       // Usar múltiples indicadores de completación para robustez
-      console.log(`⏱️ [TEST] Waiting for rule ${ruleIndex + 1} completion indicators...`);
 
       await waitFor(() => {
         // Re-query the element to get fresh attributes
@@ -711,33 +699,27 @@ export async function completeSecurityProtocol(
         const hasVisualIndicator = within(updatedRule).queryByText('✓') !== null ||
                                   updatedRule.querySelector('.text-green-400') !== null;
 
-        console.log(`📊 [TEST] Rule ${ruleIndex + 1} completion check:`);
-        console.log(`  - aria-pressed: ${ariaPressed}`);
-        console.log(`  - completion label: ${hasCompletionLabel}`);
-        console.log(`  - visual indicator: ${hasVisualIndicator}`);
-        console.log(`  - full aria-label: ${ariaLabel}`);
+        // Verificación de completación con múltiples indicadores
 
         // Consider rule completed if ANY indicator shows completion
         if (ariaPressed || hasCompletionLabel || hasVisualIndicator) {
-          console.log(`✅ [TEST] Rule ${ruleIndex + 1} marked as completed`);
           return true;
         }
 
-        console.log(`❌ [TEST] Rule ${ruleIndex + 1} not yet completed`);
         throw new Error(`Rule ${ruleIndex + 1} completion not detected`);
       }, {
-        timeout: 8000,
-        interval: 250   // Check every 250ms for better stability
+        timeout: 4000,
+        interval: 150   // Check every 150ms for better responsiveness
       });
 
       // Extra settling time between rules
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 200));
+        await new Promise(resolve => setTimeout(resolve, 100));
       });
     }
   }
 
-  console.log('✅ [TEST] All protocol rules completed, looking for continue button...');
+  // All protocol rules completed, looking for continue button
 
   // Esperar a que el botón Continuar se habilite
   const continueButton = await waitFor(() => {
@@ -745,12 +727,12 @@ export async function completeSecurityProtocol(
     if (!btn || btn.hasAttribute('disabled')) {
       throw new Error('Continue button not found or still disabled');
     }
-    console.log('✅ [TEST] Continue button is enabled');
+    // Continue button is enabled
     return btn;
-  }, { timeout: 10000, interval: 300 });
+  }, { timeout: 5000, interval: 200 });
 
   // Click en continuar
-  console.log('🖱️ [TEST] Clicking continue button...');
+  // Clicking continue button
   await act(async () => {
     try {
       await user.click(continueButton);
@@ -759,7 +741,7 @@ export async function completeSecurityProtocol(
     }
   });
 
-  console.log('✅ [TEST] Security protocol completion finished');
+  // Security protocol completion finished
 }
 
 // 🤖 [IA] - PORTAL-AWARE SELECTOR RECOVERY: Helper para elementos en portals

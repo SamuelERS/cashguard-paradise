@@ -393,24 +393,11 @@ describe('🔄 Phase Transitions Integration Tests', () => {
       };
 
       // Setup
-      console.log('🚀 [DEBUG] Starting selectOperation...');
       await selectOperation(user, 'evening');
-      console.log('✅ [DEBUG] selectOperation completed');
-      screen.debug(document.body, 50000);
-
-      console.log('🔒 [DEBUG] Starting completeSecurityProtocol...');
       await completeSecurityProtocol(user);
-      console.log('✅ [DEBUG] completeSecurityProtocol completed');
-      screen.debug(document.body, 50000);
-
-      console.log('🏪 [DEBUG] Looking for store:', wizardData.store);
 
       // 🤖 [IA] - PORTAL-AWARE RECOVERY: Múltiples estrategias para encontrar tienda
-      console.log('🔍 [DEBUG] DOM state before store search:');
-      screen.debug(document.body, 20000);
-
       // Esperar que el wizard se renderice completamente
-      console.log('⏳ [DEBUG] Waiting for wizard modal to fully render...');
       await waitFor(() => {
         expect(screen.getByRole('dialog')).toBeInTheDocument();
       }, { timeout: 5000 });
@@ -424,7 +411,7 @@ describe('🔄 Phase Transitions Integration Tests', () => {
         // Strategy 1: findTextInPortal helper con timeout extendido
         storeElement = await findTextInPortal(wizardData.store, { timeout: 15000 });
       } catch (error1) {
-        console.log('⚠️ [DEBUG] findTextInPortal failed, trying direct approaches...');
+        // findTextInPortal failed, trying direct approaches
 
         try {
           // Strategy 2: Esperar modal + buscar en selector
@@ -434,16 +421,16 @@ describe('🔄 Phase Transitions Integration Tests', () => {
 
           const dialog = screen.getByRole('dialog');
           storeElement = within(dialog).getByText(wizardData.store);
-          console.log('✅ [DEBUG] Found store via dialog scope');
+          // Found store via dialog scope
         } catch (error2) {
           // Strategy 3: Buscar en todo el documento
-          console.log('⚠️ [DEBUG] Dialog scope failed, searching entire document...');
+          // Dialog scope failed, searching entire document
           storeElement = within(document.body).getByText(wizardData.store);
-          console.log('✅ [DEBUG] Found store via document.body');
+          // Found store via document.body
         }
       }
 
-      console.log('🎯 [DEBUG] Store element found, clicking...');
+      // Store element found, clicking
       await user.click(storeElement);
       await user.click(screen.getByRole('button', { name: /continuar/i }));
       
