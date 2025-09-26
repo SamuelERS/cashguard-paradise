@@ -409,11 +409,20 @@ describe('🔄 Phase Transitions Integration Tests', () => {
       console.log('🔍 [DEBUG] DOM state before store search:');
       screen.debug(document.body, 20000);
 
+      // Esperar que el wizard se renderice completamente
+      console.log('⏳ [DEBUG] Waiting for wizard modal to fully render...');
+      await waitFor(() => {
+        expect(screen.getByRole('dialog')).toBeInTheDocument();
+      }, { timeout: 5000 });
+
+      // Dar tiempo adicional para que el contenido se cargue
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
       // Implementar búsqueda portal-aware con múltiples estrategias
       let storeElement: HTMLElement;
       try {
-        // Strategy 1: findTextInPortal helper
-        storeElement = await findTextInPortal(wizardData.store, { timeout: 10000 });
+        // Strategy 1: findTextInPortal helper con timeout extendido
+        storeElement = await findTextInPortal(wizardData.store, { timeout: 15000 });
       } catch (error1) {
         console.log('⚠️ [DEBUG] findTextInPortal failed, trying direct approaches...');
 

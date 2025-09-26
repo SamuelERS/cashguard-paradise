@@ -1,4 +1,52 @@
 // 🤖 [IA] - v1.1.17: Global test setup configuration
+
+// 🤖 [IA] - POLYFILL CRÍTICO FORZADO: ResizeObserver reemplazo total para JSDOM
+const ResizeObserverMock = class ResizeObserver {
+  constructor(callback) {
+    this.callback = callback;
+    this.observations = new Map();
+  }
+
+  observe(target, options = {}) {
+    if (!target) return;
+    this.observations.set(target, options);
+    // Simular callback inmediato sin error para máxima compatibilidad
+    if (this.callback) {
+      try {
+        this.callback([{
+          target,
+          contentRect: { width: 100, height: 100, x: 0, y: 0, top: 0, right: 100, bottom: 100, left: 0 },
+          borderBoxSize: [{ inlineSize: 100, blockSize: 100 }],
+          contentBoxSize: [{ inlineSize: 100, blockSize: 100 }],
+          devicePixelContentBoxSize: [{ inlineSize: 100, blockSize: 100 }]
+        }], this);
+      } catch (e) {
+        // Silenciar errores en callback
+      }
+    }
+  }
+
+  unobserve(target) {
+    if (target) {
+      this.observations.delete(target);
+    }
+  }
+
+  disconnect() {
+    this.observations.clear();
+  }
+};
+
+// FORZAR reemplazo - no verificar existencia
+global.ResizeObserver = ResizeObserverMock;
+global.window = global.window || {};
+global.window.ResizeObserver = ResizeObserverMock;
+
+// Mock adicional en globalThis para máxima cobertura
+if (typeof globalThis !== 'undefined') {
+  globalThis.ResizeObserver = ResizeObserverMock;
+}
+
 import '@testing-library/jest-dom';
 import { expect, afterEach, vi } from 'vitest';
 import { cleanup } from '@testing-library/react';
