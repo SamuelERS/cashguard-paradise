@@ -752,156 +752,64 @@ export async function completeSecurityProtocol(
   console.log('✅ [TEST] Security protocol completion finished');
 }
 
-// 🤖 [IA] - BARRIDO-FINAL-FASE-1: Helper para Select components de Radix UI
+// 🤖 [IA] - OPERACIÓN PORTAL: Helper mejorado para Select components - Portal-aware
 export async function selectOption(
   user: ReturnType<typeof userEvent.setup>,
   triggerSelector: string | (() => HTMLElement),
   optionText: string
 ) {
   console.log(`🔍 [TEST] Selecting option "${optionText}" from dropdown...`);
-  const { act, fireEvent } = await import('@testing-library/react');
 
-  // Encontrar el trigger - puede ser por aria-label, data-testid, o selector personalizado
+  // Paso 1: Abrir el dropdown clickeando el trigger
   let trigger: HTMLElement;
 
-  if (typeof triggerSelector === 'function') {
-    trigger = triggerSelector();
+  if (typeof triggerSelector === 'string') {
+    // Si es string, buscar por placeholder text
+    const triggerElements = screen.getAllByText('Seleccionar...');
+    // Encontrar el trigger correcto basado en el contexto
+    trigger = triggerElements.find(el => {
+      const parent = el.closest('[data-testid]') || el.closest('div');
+      return parent?.textContent?.toLowerCase().includes(triggerSelector.toLowerCase());
+    }) || triggerElements[0];
   } else {
-    // Múltiples estrategias para encontrar el trigger
-    // 1. Buscar combobox por aria-label
-    trigger = screen.queryByRole('combobox', { name: new RegExp(triggerSelector, 'i') });
-
-    // 2. Buscar combobox sin nombre pero dentro del contexto adecuado
-    if (!trigger) {
-      const modal = screen.getByRole('dialog');
-      const comboboxes = within(modal).queryAllByRole('combobox');
-
-      if (comboboxes.length === 1) {
-        // Solo hay un combobox, es probablemente el correcto
-        trigger = comboboxes[0];
-      } else if (comboboxes.length > 1) {
-        // Múltiples comboboxes, buscar por contexto (texto cercano)
-        trigger = comboboxes.find(cb => {
-          const parent = cb.closest('div');
-          return parent && parent.textContent?.toLowerCase().includes(triggerSelector.toLowerCase());
-        }) || comboboxes[0];
-      }
-    }
-
-    // 3. Fallback a button con nombre
-    if (!trigger) {
-      trigger = screen.queryByRole('button', { name: new RegExp(triggerSelector, 'i') });
-    }
-
-    // 4. Fallback a data-testid
-    if (!trigger) {
-      trigger = screen.queryByTestId(triggerSelector);
-    }
+    trigger = triggerSelector();
   }
 
   if (!trigger) {
-    throw new Error(`No se encontró el trigger con selector: ${triggerSelector}`);
+    throw new Error(`Select trigger not found for "${triggerSelector}"`);
   }
 
-  console.log(`✅ [TEST] Trigger found, opening dropdown...`);
+  console.log(`🔍 [TEST] Found trigger:`, trigger.tagName, trigger.textContent);
 
-  // Hacer click en el trigger para abrir el dropdown
-  await act(async () => {
-    try {
-      await user.click(trigger);
-    } catch (error) {
-      console.log('⚠️ [TEST] user.click failed, trying fireEvent...');
-      fireEvent.click(trigger);
-    }
-  });
+  // Click para abrir el dropdown
+  await user.click(trigger);
 
-  // Esperar a que aparezca el contenido del dropdown y hacer click en la opción
-  console.log(`🔍 [TEST] Looking for option: ${optionText}`);
+  // Esperar un momento para que el dropdown se abra
+  await new Promise(resolve => setTimeout(resolve, 100));
 
+  // Paso 2: Buscar la opción en el DOM abierto
   await waitFor(async () => {
-    // Radix UI renderiza el contenido en un portal, buscar en todo el documento
-    // 1. Buscar por role option directamente
-    let option = screen.queryByRole('option', { name: optionText });
+    // Buscar en todo el documento por el texto de la opción
+    const optionElements = screen.queryAllByText(optionText, { exact: false });
 
-    if (!option) {
-      // 2. Buscar por texto directo (más confiable para Radix UI)
-      option = screen.queryByText(optionText, { exact: false });
+    console.log(`🔍 [TEST] Found ${optionElements.length} elements with text "${optionText}"`);
 
-      // Verificar que está en un contexto de dropdown/select
-      if (option && !option.closest('[role="option"]') && !option.closest('[role="listbox"]')) {
-        // Buscar si hay un elemento padre que sea una opción
-        const optionParent = option.closest('div[data-radix-select-item]') ||
-                           option.closest('div[role="option"]') ||
-                           option.closest('[data-value]');
-        if (optionParent) {
-          option = optionParent as HTMLElement;
-        }
-      }
+    if (optionElements.length > 0) {
+      // Buscar el elemento clickeable más apropiado
+      const clickableOption = optionElements.find(el =>
+        el.getAttribute('role') === 'option' ||
+        el.hasAttribute('data-radix-select-item') ||
+        el.tagName === 'BUTTON' ||
+        el.closest('button')
+      ) || optionElements[0]; // Fallback al primer elemento
+
+      console.log(`🔍 [TEST] Clicking on option:`, clickableOption.tagName, clickableOption.textContent);
+      await user.click(clickableOption);
+      return;
     }
 
-    if (!option) {
-      // 3. Estrategia específica para Radix UI - buscar por data attributes
-      const allOptions = document.querySelectorAll('[data-radix-select-item], [role="option"]');
-      option = Array.from(allOptions).find(el =>
-        el.textContent?.trim() === optionText
-      ) as HTMLElement;
-    }
+    throw new Error(`Option "${optionText}" not found in DOM`);
+  }, { timeout: 3000 });
 
-    if (!option) {
-      // 4. Estrategia final - buscar cualquier texto que coincida exactamente
-      const allTexts = screen.queryAllByText(optionText, { exact: false });
-      option = allTexts.find(el => {
-        // Verificar que no esté en el trigger (que también podría contener el texto)
-        const triggerParent = el.closest('button[role="combobox"]');
-        return !triggerParent;
-      });
-    }
-
-    if (!option) {
-      // Debug: mostrar todas las opciones disponibles
-      const availableOptions = document.querySelectorAll('[role="option"], [data-radix-select-item]');
-      console.log(`❌ [TEST] Available options: ${Array.from(availableOptions).map(el => el.textContent?.trim()).join(', ')}`);
-      throw new Error(`Option "${optionText}" not found`);
-    }
-
-    console.log(`✅ [TEST] Option found: ${optionText}`);
-
-    // Click en la opción
-    await act(async () => {
-      try {
-        await user.click(option);
-        console.log(`✅ [TEST] Successfully selected: ${optionText}`);
-      } catch (error) {
-        console.log('⚠️ [TEST] user.click on option failed, trying fireEvent...');
-        fireEvent.click(option);
-        console.log(`✅ [TEST] Successfully selected via fireEvent: ${optionText}`);
-      }
-    });
-
-    return true;
-  }, { timeout: 8000, interval: 200 });
+  console.log(`🔍 [TEST] Successfully selected "${optionText}"`);
 }
-
-// Export all helpers
-export default {
-  renderWithProviders,
-  completeInitialWizard,
-  completeCashCount,
-  completeElectronicPayments,
-  navigateToPhase,
-  completePhase1,
-  verifyPhase2Distribution,
-  completePhase2,
-  verifyFinalReport,
-  mockLocalStorage,
-  simulateSessionTimeout,
-  waitForAnimation,
-  verifyNotInDocument,
-  verifyButtonState,
-  cleanupMocks,
-  mockNetworkError,
-  restoreNetwork,
-  selectOperation,
-  completeSecurityProtocol,
-  selectOption
-};
