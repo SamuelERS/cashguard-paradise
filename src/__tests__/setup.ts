@@ -187,3 +187,46 @@ afterAll(() => {
   console.error = originalError;
   console.warn = originalWarn;
 });
+
+// 🤖 [IA] - JSDOM POLYFILLS: Compatibilidad con Radix UI Select
+// Resuelve: TypeError: target.hasPointerCapture is not a function
+/**
+ * Polyfills para APIs faltantes en JSDOM que Radix UI Select requiere
+ *
+ * Problema: JSDOM no implementa las APIs de Pointer Capture que Radix UI usa
+ * Solución: Implementaciones mock seguras que permiten que los tests funcionen
+ *
+ * Referencias:
+ * - https://github.com/radix-ui/primitives/issues/420
+ * - https://github.com/jsdom/jsdom/issues/3128
+ * - Error específico: @radix-ui/react-select/src/select.tsx:323:24
+ */
+
+if (typeof Element !== 'undefined') {
+  // Mock de hasPointerCapture - indica si el elemento tiene captura de pointer
+  if (!Element.prototype.hasPointerCapture) {
+    Element.prototype.hasPointerCapture = function(pointerId: number): boolean {
+      // Retorna false como fallback seguro
+      // En el entorno de testing, asumimos que no hay captura activa
+      return false;
+    };
+  }
+
+  // Mock de setPointerCapture - establece captura de pointer en el elemento
+  if (!Element.prototype.setPointerCapture) {
+    Element.prototype.setPointerCapture = function(pointerId: number): void {
+      // No-op implementation
+      // En testing no necesitamos captura real de eventos pointer
+    };
+  }
+
+  // Mock de releasePointerCapture - libera captura de pointer del elemento
+  if (!Element.prototype.releasePointerCapture) {
+    Element.prototype.releasePointerCapture = function(pointerId: number): void {
+      // No-op implementation
+      // En testing no hay captura que liberar
+    };
+  }
+
+  console.log('🔧 [JSDOM] Polyfills para Radix UI Pointer Capture aplicados exitosamente');
+}
