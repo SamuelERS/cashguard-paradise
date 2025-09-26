@@ -15,7 +15,8 @@ import {
   waitForAnimation,
   verifyButtonState,
   selectOperation,
-  completeSecurityProtocol
+  completeSecurityProtocol,
+  selectOption
 } from '../fixtures/test-helpers';
 import { testUtils } from '../fixtures/test-utils';
 
@@ -47,20 +48,24 @@ describe('🔄 Phase Transitions Integration Tests', () => {
       // Complete security protocol
       await completeSecurityProtocol(user);
 
-      // Navigate through wizard steps
+      // Navigate through wizard steps - Step 2: Select Store
       await waitForAnimation(300);
       const modal1 = testUtils.withinWizardModal();
-      await user.click(await modal1.findByText('Los Héroes'));
+
+      // Use selectOption helper to handle Select component correctly
+      await selectOption(user, 'Selección de sucursal', 'Los Héroes');
       await user.click(modal1.getByRole('button', { name: /siguiente/i }));
 
+      // Step 3: Select Cashier
       await waitForAnimation(300);
       const modal2 = testUtils.withinWizardModal();
-      await user.click(await modal2.findByText('Tito Gomez'));
+      await selectOption(user, 'cajero responsable', 'Tito Gomez');
       await user.click(modal2.getByRole('button', { name: /siguiente/i }));
 
+      // Step 4: Select Witness
       await waitForAnimation(300);
       const modal3 = testUtils.withinWizardModal();
-      await user.click(await modal3.findByText('María López'));
+      await selectOption(user, 'testigo', 'Adonay Torres');
       await user.click(modal3.getByRole('button', { name: /siguiente/i }));
 
       await waitForAnimation(300);
@@ -108,20 +113,22 @@ describe('🔄 Phase Transitions Integration Tests', () => {
       // Complete security protocol
       await completeSecurityProtocol(user);
 
-      // Navigate through wizard steps
+      // Navigate through wizard steps - Step 2: Select Store
       await waitForAnimation(300);
       const modal1 = testUtils.withinWizardModal();
-      await user.click(await modal1.findByText('Los Héroes'));
+      await selectOption(user, 'Selección de sucursal', 'Los Héroes');
       await user.click(modal1.getByRole('button', { name: /siguiente/i }));
 
+      // Step 3: Select Cashier
       await waitForAnimation(300);
       const modal2 = testUtils.withinWizardModal();
-      await user.click(await modal2.findByText('Tito Gomez'));
+      await selectOption(user, 'cajero responsable', 'Tito Gomez');
       await user.click(modal2.getByRole('button', { name: /siguiente/i }));
 
+      // Step 4: Select Witness
       await waitForAnimation(300);
       const modal3 = testUtils.withinWizardModal();
-      await user.click(await modal3.findByText('María López'));
+      await selectOption(user, 'testigo', 'Adonay Torres');
       await user.click(modal3.getByRole('button', { name: /siguiente/i }));
 
       await waitForAnimation(300);
@@ -166,21 +173,22 @@ describe('🔄 Phase Transitions Integration Tests', () => {
       // Setup for morning count
       await selectOperation(user, 'morning');
 
-      // Navigate through wizard steps for morning count
+      // Navigate through wizard steps for morning count - Step 1: Select Store
       await waitForAnimation(300);
-      const storeOption = await testUtils.findTextInWizardModal('Los Héroes');
-      await user.click(storeOption);
       const modal1 = testUtils.withinWizardModal();
+      await selectOption(user, 'sucursal', 'Los Héroes');
       await user.click(modal1.getByRole('button', { name: /siguiente/i }));
 
+      // Step 2: Select Cashier
       await waitForAnimation(300);
       const modal2 = testUtils.withinWizardModal();
-      await user.click(await modal2.findByText('Tito Gomez'));
+      await selectOption(user, 'cajero responsable', 'Tito Gomez');
       await user.click(modal2.getByRole('button', { name: /siguiente/i }));
 
+      // Step 3: Select Witness
       await waitForAnimation(300);
       const modal3 = testUtils.withinWizardModal();
-      await user.click(await modal3.findByText('María López'));
+      await selectOption(user, 'testigo', 'Adonay Torres');
       await user.click(modal3.getByRole('button', { name: /completar/i }));
 
       // Complete the mandatory instructions modal

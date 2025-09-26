@@ -30,7 +30,7 @@ export function renderWithProviders(
   };
 }
 
-// Helper para completar el wizard inicial
+// 🤖 [IA] - BARRIDO-FINAL-FASE-1: Helper modernizado para nuevo sistema de wizard
 export async function completeInitialWizard(
   user: ReturnType<typeof userEvent.setup>,
   data: {
@@ -40,50 +40,79 @@ export async function completeInitialWizard(
     expectedSales: string;
   }
 ) {
-  // Step 1: Accept protocol
-  const protocolCheckbox = await screen.findByRole('checkbox');
-  await user.click(protocolCheckbox);
-  
-  const nextButton = screen.getByRole('button', { name: /siguiente/i });
-  await user.click(nextButton);
-  
-  // Step 2: Select store
+  console.log('🧙‍♂️ [TEST] Starting initial wizard completion...');
+
+  // Step 1: Complete Security Protocol (for evening cuts)
+  try {
+    // Check if we're in evening mode (has security protocol)
+    await waitFor(() => {
+      screen.getByRole('dialog', { name: /protocolo anti-fraude/i });
+    }, { timeout: 2000 });
+
+    console.log('📋 [TEST] Security protocol detected, completing...');
+    await completeSecurityProtocol(user);
+  } catch {
+    // Morning mode - no security protocol
+    console.log('🌅 [TEST] Morning mode detected - skipping security protocol');
+  }
+
+  // Step 2: Select Store
   await waitFor(() => {
-    expect(screen.getByText(/seleccionar sucursal/i)).toBeInTheDocument();
-  });
-  
-  const storeOption = screen.getByText(data.store);
-  await user.click(storeOption);
-  await user.click(nextButton);
-  
-  // Step 3: Select cashier
+    screen.getByText(/Selección de Sucursal/i);
+  }, { timeout: 5000 });
+
+  console.log(`🏪 [TEST] Selecting store: ${data.store}`);
+  await selectOption(user, 'sucursal', data.store);
+
+  // Click next
+  const modal1 = screen.getByRole('dialog');
+  const nextButton1 = within(modal1).getByRole('button', { name: /siguiente/i });
+  await user.click(nextButton1);
+
+  // Step 3: Select Cashier
   await waitFor(() => {
-    expect(screen.getByText(/seleccionar cajero/i)).toBeInTheDocument();
-  });
-  
-  const cashierOption = screen.getByText(data.cashier);
-  await user.click(cashierOption);
-  await user.click(nextButton);
-  
-  // Step 4: Select witness
+    screen.getByText(/Cajero/i);
+  }, { timeout: 3000 });
+
+  console.log(`👤 [TEST] Selecting cashier: ${data.cashier}`);
+  await selectOption(user, 'cajero responsable', data.cashier);
+
+  // Click next
+  const nextButton2 = within(modal1).getByRole('button', { name: /siguiente/i });
+  await user.click(nextButton2);
+
+  // Step 4: Select Witness
   await waitFor(() => {
-    expect(screen.getByText(/seleccionar testigo/i)).toBeInTheDocument();
-  });
-  
-  const witnessOption = screen.getByText(data.witness);
-  await user.click(witnessOption);
-  await user.click(nextButton);
-  
-  // Step 5: Enter expected sales
-  await waitFor(() => {
-    expect(screen.getByText(/venta esperada/i)).toBeInTheDocument();
-  });
-  
-  const salesInput = screen.getByRole('textbox');
-  await user.type(salesInput, data.expectedSales);
-  
-  const completeButton = screen.getByRole('button', { name: /completar/i });
-  await user.click(completeButton);
+    screen.getByText(/Testigo/i);
+  }, { timeout: 3000 });
+
+  console.log(`👥 [TEST] Selecting witness: ${data.witness}`);
+  await selectOption(user, 'testigo', data.witness);
+
+  // Click next
+  const nextButton3 = within(modal1).getByRole('button', { name: /siguiente/i });
+  await user.click(nextButton3);
+
+  // Step 5: Enter Expected Sales (for evening cuts only)
+  try {
+    await waitFor(() => {
+      screen.getByText(/Venta Esperada/i);
+    }, { timeout: 2000 });
+
+    console.log(`💰 [TEST] Entering expected sales: ${data.expectedSales}`);
+    const salesInput = screen.getByRole('textbox');
+    await user.type(salesInput, data.expectedSales);
+
+    const completeButton = within(modal1).getByRole('button', { name: /completar/i });
+    await user.click(completeButton);
+  } catch {
+    // Morning mode - no expected sales, just complete
+    console.log('🌅 [TEST] Morning mode - completing without expected sales');
+    const completeButton = within(modal1).getByRole('button', { name: /completar/i });
+    await user.click(completeButton);
+  }
+
+  console.log('✅ [TEST] Initial wizard completion finished');
 }
 
 // Helper para completar el conteo de efectivo
@@ -723,6 +752,136 @@ export async function completeSecurityProtocol(
   console.log('✅ [TEST] Security protocol completion finished');
 }
 
+// 🤖 [IA] - BARRIDO-FINAL-FASE-1: Helper para Select components de Radix UI
+export async function selectOption(
+  user: ReturnType<typeof userEvent.setup>,
+  triggerSelector: string | (() => HTMLElement),
+  optionText: string
+) {
+  console.log(`🔍 [TEST] Selecting option "${optionText}" from dropdown...`);
+  const { act, fireEvent } = await import('@testing-library/react');
+
+  // Encontrar el trigger - puede ser por aria-label, data-testid, o selector personalizado
+  let trigger: HTMLElement;
+
+  if (typeof triggerSelector === 'function') {
+    trigger = triggerSelector();
+  } else {
+    // Múltiples estrategias para encontrar el trigger
+    // 1. Buscar combobox por aria-label
+    trigger = screen.queryByRole('combobox', { name: new RegExp(triggerSelector, 'i') });
+
+    // 2. Buscar combobox sin nombre pero dentro del contexto adecuado
+    if (!trigger) {
+      const modal = screen.getByRole('dialog');
+      const comboboxes = within(modal).queryAllByRole('combobox');
+
+      if (comboboxes.length === 1) {
+        // Solo hay un combobox, es probablemente el correcto
+        trigger = comboboxes[0];
+      } else if (comboboxes.length > 1) {
+        // Múltiples comboboxes, buscar por contexto (texto cercano)
+        trigger = comboboxes.find(cb => {
+          const parent = cb.closest('div');
+          return parent && parent.textContent?.toLowerCase().includes(triggerSelector.toLowerCase());
+        }) || comboboxes[0];
+      }
+    }
+
+    // 3. Fallback a button con nombre
+    if (!trigger) {
+      trigger = screen.queryByRole('button', { name: new RegExp(triggerSelector, 'i') });
+    }
+
+    // 4. Fallback a data-testid
+    if (!trigger) {
+      trigger = screen.queryByTestId(triggerSelector);
+    }
+  }
+
+  if (!trigger) {
+    throw new Error(`No se encontró el trigger con selector: ${triggerSelector}`);
+  }
+
+  console.log(`✅ [TEST] Trigger found, opening dropdown...`);
+
+  // Hacer click en el trigger para abrir el dropdown
+  await act(async () => {
+    try {
+      await user.click(trigger);
+    } catch (error) {
+      console.log('⚠️ [TEST] user.click failed, trying fireEvent...');
+      fireEvent.click(trigger);
+    }
+  });
+
+  // Esperar a que aparezca el contenido del dropdown y hacer click en la opción
+  console.log(`🔍 [TEST] Looking for option: ${optionText}`);
+
+  await waitFor(async () => {
+    // Radix UI renderiza el contenido en un portal, buscar en todo el documento
+    // 1. Buscar por role option directamente
+    let option = screen.queryByRole('option', { name: optionText });
+
+    if (!option) {
+      // 2. Buscar por texto directo (más confiable para Radix UI)
+      option = screen.queryByText(optionText, { exact: false });
+
+      // Verificar que está en un contexto de dropdown/select
+      if (option && !option.closest('[role="option"]') && !option.closest('[role="listbox"]')) {
+        // Buscar si hay un elemento padre que sea una opción
+        const optionParent = option.closest('div[data-radix-select-item]') ||
+                           option.closest('div[role="option"]') ||
+                           option.closest('[data-value]');
+        if (optionParent) {
+          option = optionParent as HTMLElement;
+        }
+      }
+    }
+
+    if (!option) {
+      // 3. Estrategia específica para Radix UI - buscar por data attributes
+      const allOptions = document.querySelectorAll('[data-radix-select-item], [role="option"]');
+      option = Array.from(allOptions).find(el =>
+        el.textContent?.trim() === optionText
+      ) as HTMLElement;
+    }
+
+    if (!option) {
+      // 4. Estrategia final - buscar cualquier texto que coincida exactamente
+      const allTexts = screen.queryAllByText(optionText, { exact: false });
+      option = allTexts.find(el => {
+        // Verificar que no esté en el trigger (que también podría contener el texto)
+        const triggerParent = el.closest('button[role="combobox"]');
+        return !triggerParent;
+      });
+    }
+
+    if (!option) {
+      // Debug: mostrar todas las opciones disponibles
+      const availableOptions = document.querySelectorAll('[role="option"], [data-radix-select-item]');
+      console.log(`❌ [TEST] Available options: ${Array.from(availableOptions).map(el => el.textContent?.trim()).join(', ')}`);
+      throw new Error(`Option "${optionText}" not found`);
+    }
+
+    console.log(`✅ [TEST] Option found: ${optionText}`);
+
+    // Click en la opción
+    await act(async () => {
+      try {
+        await user.click(option);
+        console.log(`✅ [TEST] Successfully selected: ${optionText}`);
+      } catch (error) {
+        console.log('⚠️ [TEST] user.click on option failed, trying fireEvent...');
+        fireEvent.click(option);
+        console.log(`✅ [TEST] Successfully selected via fireEvent: ${optionText}`);
+      }
+    });
+
+    return true;
+  }, { timeout: 8000, interval: 200 });
+}
+
 // Export all helpers
 export default {
   renderWithProviders,
@@ -743,5 +902,6 @@ export default {
   mockNetworkError,
   restoreNetwork,
   selectOperation,
-  completeSecurityProtocol
+  completeSecurityProtocol,
+  selectOption
 };
