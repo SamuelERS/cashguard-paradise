@@ -50,6 +50,20 @@ CashGuard Paradise v1.2.22 is a cash management system for "Acuarios Paradise" r
 
 *Para historial completo v1.0.80 - v1.1.20, ver [CHANGELOG-DETALLADO.md](/Documentos%20MarkDown/CHANGELOG-DETALLADO.md)*
 
+### v1.2.28 - Investigación Profunda Bug Hunter QA + Solución Quirúrgica Test Navigation [PARCIAL] 🔧
+**OPERACIÓN BUG HUNTER QA + SOLUCIÓN QUIRÚRGICA:** Investigación exhaustiva reveló diagnóstico erróneo previo + solución quirúrgica implementada para problema real identificado.
+- **OPERACIÓN PORTAL - Diagnóstico Erróneo:** El problema NO era portales Radix UI Select, sino navegación de tests desde pantalla inicial
+- **Bug Hunter QA - Root Cause Identificado:** Tests buscan `data-testid="step-indicator"` pero componente MorningCountWizard.tsx no lo tenía
+- **Evidencia forense:** Modal SÍ se abre ("Conteo de Caja Matutino" visible) pero falla selector específico línea 360 MorningCountWizard.tsx
+- **Solución quirúrgica implementada:**
+  - ✅ Agregado `data-testid="step-indicator"` a span línea 360 en MorningCountWizard.tsx
+  - ✅ InitialWizardModal.tsx verificado - no requiere data-testid (no tiene indicador "Paso X de Y")
+  - ✅ Modificación mínimamente invasiva - cero impacto funcionalidad producción
+- **Problema restante identificado:** Tests aún fallan con navegación previa - `selectOperation` helper no llega exitosamente al wizard modal
+- **Status:** Solución quirúrgica completada, investigación adicional requerida para problema navegación fundamental
+- **Próximo:** Investigar por qué `selectOperation` y `selectOption` helpers no funcionan en test environment
+**Archivos:** `src/components/morning-count/MorningCountWizard.tsx`, `CLAUDE.md`
+
 ### v1.2.27 - Integration Tests Selector Enhancement [PARCIAL] 🔧
 **OPERACIÓN TEST SELECTOR ROBUSTNESS:** Mejora significativa de los selectores de test para resolver conflictos de elementos duplicados - progreso sustancial en estabilidad.
 - **Problema identificado:** Tests fallando con "Found multiple elements with the text: /Paso 1 de 3/" por elementos `sr-only` duplicados

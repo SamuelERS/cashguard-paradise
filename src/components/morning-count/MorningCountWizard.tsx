@@ -356,7 +356,7 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
             <div className="flex justify-between items-center" style={{ 
               marginBottom: `clamp(4px, 1vw, 6px)` 
             }}>
-              <span className="wizard-progress-label">
+              <span className="wizard-progress-label" data-testid="step-indicator">
                 Paso {currentStep} de 3
               </span>
             </div>
