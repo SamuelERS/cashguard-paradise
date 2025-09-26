@@ -66,9 +66,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: test-results-unit-integration
-          path: |
-            coverage/
-            test-results/
+          path: coverage/
 
   # ========================================
   # Job 2: E2E Tests with Playwright
