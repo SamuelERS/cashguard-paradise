@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- 🤖 [IA] - v1.1.16: Viewport mejorado para PWA con soporte para teclado virtual -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content" />
+    <title>Paradise Cash Control - Sistema Anti-Fraude</title>
+    <meta name="description" content="Sistema de control de caja para Acuarios Paradise con protocolos anti-fraude" />
+    <meta name="author" content="Acuarios Paradise" />
+
+    <!-- PWA Meta Tags -->
+    <meta name="application-name" content="Paradise Cash Control" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <!-- 🤖 [IA] - Meta tag PWA actualizado para compatibilidad con todos los navegadores -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="theme-color" content="#00CED1" />
+    
+    <!-- SEO Meta Tags -->
+    <meta property="og:title" content="Paradise Cash Control - Sistema Anti-Fraude" />
+    <meta property="og:description" content="Sistema profesional de control de caja para prevenir fraude en tiendas de mascotas" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@paradise_sv" />
+    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    
+    <!-- Security Headers -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob:; connect-src 'self' https: wss:;" />
+
+    <!-- 🎯 FONT ELEMENT PROTECTION - Meta tags para prevenir traducción automática -->
+    <meta name="google" content="notranslate" />
+    <meta name="translate" content="no" />
+    <meta http-equiv="Content-Language" content="es" />
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Favicon and Icons -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png" />
+    
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png" />
+    <link rel="apple-touch-icon" sizes="167x167" href="/icons/icon-167x167.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+    
+    <!-- Android Chrome Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512x512.png" />
+    
+    <!-- 🤖 [IA] - v1.1.04: Critical CSS para prevenir flash blanco -->
+    <style>
+      /* Critical CSS - Prevent white flash on load */
+      html, body {
+        background-color: #000000;
+        color: rgba(255, 255, 255, 0.92);
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+      }
+      
+      #root {
+        background-color: #000000;
+        min-height: 100vh;
+        width: 100%;
+      }
+      
+      /* Minimal loading state - pure black */
+      .app-loading {
+        position: fixed;
+        inset: 0;
+        background: #000000;
+        opacity: 1;
+        transition: opacity 0.3s ease-out;
+      }
+      
+      .app-loading.fade-out {
+        opacity: 0;
+        pointer-events: none;
+      }
+    </style>
+    <script type="module" crossorigin src="/assets/index-CObc1or2.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-D-Rchg6d.css">
+  <link rel="manifest" href="/manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="/registerSW.js"></script></head>
+
+  <body>
+    <div id="root">
+      <!-- 🤖 [IA] - v1.1.05: Fondo negro puro minimalista mientras React carga -->
+      <div class="app-loading" id="app-loader"></div>
+    </div>
+  </body>
+</html>
