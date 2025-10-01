@@ -94,15 +94,27 @@ describe('🌅 Morning Count Flow Simplified Tests', () => {
         expect(screen.getByText(/Conteo de Caja Matutino/)).toBeInTheDocument();
       });
       
-      // Buscar y hacer click en el botón de cerrar
-      const closeButton = screen.getByRole('button', { name: /close/i });
-      await user.click(closeButton);
-      
-      // Verificar que el modal se cerró y volvimos al selector
+      // 🤖 [IA] - v1.2.36a: Find custom X button (not hidden Radix default button)
+      // Custom button is in .rounded-full with <X> icon
+      const buttons = screen.getAllByRole('button');
+      const closeButton = buttons.find(btn =>
+        btn.className.includes('rounded-full') &&
+        btn.querySelector('.lucide-x')
+      );
+
+      expect(closeButton).toBeDefined();
+      if (closeButton) {
+        await user.click(closeButton);
+      }
+
+      // 🤖 [IA] - v1.2.36a: Wait for animation (duration-200 = 200ms) before checking closure
+      await waitForAnimation();
+
+      // 🤖 [IA] - v1.2.36a: Modal should close and return to selector
       await waitFor(() => {
-        expect(screen.queryByText(/Conteo de Caja Matutino/)).not.toBeInTheDocument();
+        expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
         expect(screen.getByText(/Seleccione Operación/)).toBeInTheDocument();
-      });
+      }, { timeout: 5000 });
     }
   });
 

@@ -187,6 +187,9 @@ const CashCounter = ({
       (document.body.style as ExtendedCSSStyleDeclaration).webkitOverflowScrolling = 'touch';
       document.body.style.touchAction = 'pan-y'; // 🚨 FIX: Permitir pan vertical en contenedores scrollables
 
+      // 🚨 FIX v1.3.0: WeakMap para tracking de touch sin 'any'
+      const touchStartY = new WeakMap<Touch, number>();
+
       // 🚨 FIX v1.3.0: Prevenir touchmove inteligentemente
       const handleTouchMove = (e: TouchEvent) => {
         const target = e.target as HTMLElement;
@@ -206,25 +209,22 @@ const CashCounter = ({
           const isAtTop = scrollTop === 0;
           const isAtBottom = scrollTop + clientHeight >= scrollHeight;
           
-          // Obtener dirección del touch
+          // Obtener dirección del touch usando WeakMap
           const touch = e.touches[0];
-          const startY = (e as any).startY || touch.clientY;
+          const startY = touchStartY.get(touch) || touch.clientY;
           const deltaY = touch.clientY - startY;
           
           // Prevenir bounce cuando intenta scrollear más allá de los límites
           if ((isAtTop && deltaY > 0) || (isAtBottom && deltaY < 0)) {
             e.preventDefault();
           }
-          
-          // Guardar posición inicial para siguiente evento
-          (e as any).startY = startY;
         }
       };
 
       // Guardar posición inicial del touch
       const handleTouchStart = (e: TouchEvent) => {
         const touch = e.touches[0];
-        (e as any).startY = touch.clientY;
+        touchStartY.set(touch, touch.clientY);
       };
 
       document.addEventListener('touchstart', handleTouchStart, { passive: true });
@@ -900,13 +900,20 @@ const CashCounter = ({
   );
   };
 
-  const renderPhase2 = () => (
-    <Phase2Manager
-      deliveryCalculation={deliveryCalculation}
-      onPhase2Complete={handlePhase2Complete}
-      onBack={handleBackToStart}
-    />
-  );
+  const renderPhase2 = () => {
+    // 🚨 FIX: Validar que deliveryCalculation existe antes de renderizar Phase 2
+    if (!deliveryCalculation) {
+      return null;
+    }
+    
+    return (
+      <Phase2Manager
+        deliveryCalculation={deliveryCalculation}
+        onPhase2Complete={handlePhase2Complete}
+        onBack={handleBackToStart}
+      />
+    );
+  };
 
   // Phase 3: Final Report Generation
   if (phaseState.currentPhase === 3) {
@@ -918,10 +925,15 @@ const CashCounter = ({
           cashierId={selectedCashier}
           witnessId={selectedWitness}
           cashCount={cashCount}
-          onBack={handleBackToStart}
           onComplete={handleCompleteCalculation}
+          onBack={handleBackToStart}
         />
       );
+    }
+    
+    // 🚨 FIX: Validar deliveryCalculation antes de renderizar reporte final
+    if (!deliveryCalculation) {
+      return null;
     }
     
     return (
@@ -954,11 +966,11 @@ const CashCounter = ({
       </div>
       
       {/* 🤖 [IA] - v1.2.12 - Modal fuera del contenedor principal para evitar conflictos aria-hidden */}
+      {/* 🚨 FIX: Removida prop isMorningCount que no existe en GuidedInstructionsModalProps */}
       <GuidedInstructionsModal
         isOpen={showInstructionsModal}
         onConfirm={handleInstructionsConfirm}
         onCancel={handleInstructionsCancel}
-        isMorningCount={isMorningCount}
       />
     </>
   );
