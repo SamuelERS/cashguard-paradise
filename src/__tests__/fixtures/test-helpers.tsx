@@ -341,9 +341,10 @@ export async function confirmGuidedField(
   value: string
 ) {
   // Buscar el input activo dentro del componente guiado
-  const activeInput = await screen.findByRole('textbox', {
-    name: /cantidad|amount|ingrese/i
-  });
+  // 🤖 [IA] - v1.2.35: Simplified to work with accessible labels
+  // Now that inputs have proper <Label> associations, we can find by role directly
+  // Only one textbox is visible at a time in guided mode
+  const activeInput = await screen.findByRole('textbox');
 
   // Limpiar y escribir el valor
   await user.clear(activeInput);
@@ -455,22 +456,50 @@ export async function completeInstructionsModal(
     expect(screen.getByText(/Instrucciones del Corte de Caja/i)).toBeInTheDocument();
   }, { timeout: 3000 });
 
-  // Marcar todas las reglas como leídas (buscar por role="button" con aria-pressed)
-  const instructionRules = screen.getAllByRole('button', { pressed: false });
-  for (const rule of instructionRules) {
-    const ariaLabel = rule.getAttribute('aria-label');
-    // Solo hacer clic en reglas que son de instrucciones (no otros botones)
-    if (ariaLabel && ariaLabel.includes('Regla:')) {
-      await user.click(rule);
-      await waitForAnimation(1500); // Tiempo mínimo de lectura
+  // 🤖 [IA] - v1.2.35: CORREGIDO - Completar instrucciones respetando minReviewTimeMs
+  // El hook useInstructionFlow requiere esperar el tiempo mínimo de revisión para cada instrucción
+  // antes de que se auto-complete y habilite la siguiente (anti-fraud timing validation)
+
+  // Instrucciones con tiempos mínimos requeridos (cashCountingInstructions.ts)
+  const instructionTimings = [3000, 5000, 4000, 4000]; // confirmation, counting, ordering, packaging
+
+  for (let i = 0; i < instructionTimings.length; i++) {
+    // Buscar reglas que estén habilitadas (aria-disabled="false") y no presionadas (pressed: false)
+    await waitFor(() => {
+      const buttons = screen.getAllByRole('button');
+      const enabledRules = buttons.filter(button => {
+        const ariaLabel = button.getAttribute('aria-label');
+        const ariaDisabled = button.getAttribute('aria-disabled');
+        const ariaPressed = button.getAttribute('aria-pressed');
+        return ariaLabel?.includes('Regla:') && ariaDisabled === 'false' && ariaPressed === 'false';
+      });
+
+      expect(enabledRules.length).toBeGreaterThan(0);
+    }, { timeout: 3000 });
+
+    // Click the enabled rule
+    const buttons = screen.getAllByRole('button');
+    const enabledRules = buttons.filter(button => {
+      const ariaLabel = button.getAttribute('aria-label');
+      const ariaDisabled = button.getAttribute('aria-disabled');
+      const ariaPressed = button.getAttribute('aria-pressed');
+      return ariaLabel?.includes('Regla:') && ariaDisabled === 'false' && ariaPressed === 'false';
+    });
+
+    if (enabledRules.length > 0) {
+      await user.click(enabledRules[0]);
     }
+
+    // Esperar el tiempo mínimo requerido para que la instrucción se auto-complete
+    // El hook requiere minReviewTimeMs antes de marcar como 'checked' y habilitar la siguiente
+    await waitForAnimation(instructionTimings[i] + 500); // +500ms buffer for auto-completion
   }
 
   // Confirmar inicio del conteo
   const startButton = await screen.findByRole('button', {
     name: /comenzar conteo/i
   });
-  await waitFor(() => expect(startButton).not.toBeDisabled());
+  await waitFor(() => expect(startButton).not.toBeDisabled(), { timeout: 2000 });
   await user.click(startButton);
 
   // Verificar que el modal se cerró

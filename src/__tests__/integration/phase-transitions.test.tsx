@@ -39,8 +39,9 @@ describe('🔄 Phase Transitions Integration Tests', () => {
   });
 
   describe('Phase 1 → Phase 2 Transitions', () => {
-    
-    it('debe proceder a Phase 2 cuando el total de efectivo es > $50', async () => {
+
+    // 🤖 [IA] - v1.2.35: Timeout extendido a 45s para acomodar tiempo de revisión de instrucciones (16.5s + test setup)
+    it('debe proceder a Phase 2 cuando el total de efectivo es > $50', { timeout: 45000 }, async () => {
       const { user } = renderWithProviders(<Index />);
 
       // Quick setup for evening cut
@@ -105,7 +106,8 @@ describe('🔄 Phase Transitions Integration Tests', () => {
       expect(screen.queryByText(/Corte de Caja Completado/i)).not.toBeInTheDocument();
     });
 
-    it('debe saltar directamente a Phase 3 cuando el total de efectivo es ≤ $50', async () => {
+    // 🤖 [IA] - v1.2.35: Timeout extendido a 45s para acomodar tiempo de revisión de instrucciones (16.5s + test setup)
+    it('debe saltar directamente a Phase 3 cuando el total de efectivo es ≤ $50', { timeout: 45000 }, async () => {
       const { user } = renderWithProviders(<Index />);
 
       // Quick setup for evening cut
@@ -168,7 +170,8 @@ describe('🔄 Phase Transitions Integration Tests', () => {
       expect(screen.queryByText(/División del Efectivo/i)).not.toBeInTheDocument();
     });
 
-    it('debe siempre saltar Phase 2 en conteo matutino sin importar el monto', async () => {
+    // 🤖 [IA] - v1.2.35: Timeout extendido a 45s para acomodar tiempo de revisión de instrucciones (16.5s + test setup)
+    it('debe siempre saltar Phase 2 en conteo matutino sin importar el monto', { timeout: 45000 }, async () => {
       const { user } = renderWithProviders(<Index />);
       
       // Setup for morning count
