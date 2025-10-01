@@ -70,7 +70,7 @@
 ### 🔴 CRÍTICOS (0)
 Ninguno detectado.
 
-### 🟡 IMPORTANTES (3 Activos + 2 Resueltos)
+### 🟡 IMPORTANTES (2 Activos + 3 Resueltos)
 
 #### 1. **Race Condition en Auto-Focus Móvil**
 **Archivo:** `GuidedDenominationItem.tsx` (líneas 163-169)
@@ -108,18 +108,22 @@ const isTablet = useIsMobile(1024); // breakpoint custom
 const isTouchDevice = useIsTouchDevice();
 ```
 
-#### 3. **Tamaños Fijos en CSS que Violan "Reglas de la Casa"**
-**Archivo:** `index.css` y componentes varios
-**Problema:** Múltiples instancias de píxeles fijos que no escalan:
-- Bordes: `borderRadius: '16px'` en lugar de `clamp()`
-- Iconos: `w-6 h-6` fijos en lugar de responsive
-- Padding: `p-4` fijo en lugar de clamp()
-**Impacto:** Diseño no escala proporcionalmente entre dispositivos (360px-430px).
-**Líneas Afectadas:**
-```typescript
-// InitialWizardModal.tsx línea 494
-max-h-[clamp(85vh,90vh,90vh)] // Debería usar dvh para teclado virtual
-```
+#### 3. ✅ **Tamaños Fijos en CSS que Violan "Reglas de la Casa" - RESUELTO**
+**Estado:** ✅ **CORREGIDO** - 01/10/2025
+**Archivos:** `InitialWizardModal.tsx` y `CashCounter.tsx`
+**Problema Original:** Múltiples instancias de píxeles fijos con breakpoints que no escalaban fluidamente:
+- Iconos: `w-6 md:w-8 h-6 md:h-8` (saltos abruptos en 768px)
+- Iconos: `w-8 h-8` fijos sin responsive
+- Tipografía: `text-xl` y `text-lg md:text-xl` (no fluida)
+**Solución Implementada:**
+- ✅ **Iconos grandes (headers):** `w-[clamp(1.5rem,6vw,2rem)]` - escalado fluido 24px→32px
+- ✅ **Iconos medianos:** `w-[clamp(1.25rem,5vw,1.5rem)]` - escalado fluido 20px→24px
+- ✅ **Tipografía headers:** `text-fluid-xl` - usa sistema canónico `clamp(1.125rem,4.5vw,1.5rem)`
+- ✅ **7 headers unificados:** InitialWizardModal (4) + CashCounter (3)
+**Archivos Modificados:**
+- `InitialWizardModal.tsx` - 4 header sections (Steps 2,3,4,5)
+- `CashCounter.tsx` - 3 header sections (Sucursal, Personal, Venta Esperada)
+**Resultado:** Escalado proporcional continuo sin saltos de breakpoint.
 
 #### 4. **Scroll Bloqueado en PWA para Reportes Finales**
 **Archivo:** `CashCounter.tsx` (líneas 185-191)
@@ -145,7 +149,7 @@ if (window.matchMedia?.('(display-mode: standalone)')?.matches && !isPhase3)
 - ✅ `components/morning-count/MorningVerification.tsx` - Ya estaba protegido
 **Resultado:** Los logs solo aparecerán en desarrollo, eliminando impacto en producción.
 
-### 🟢 MENORES (7 Activos + 1 Resuelto)
+### 🟢 MENORES (6 Activos + 2 Resueltos)
 
 #### 6. **Unused Imports y Código Comentado**
 **Múltiples archivos**
@@ -161,12 +165,21 @@ if (window.matchMedia?.('(display-mode: standalone)')?.matches && !isPhase3)
 **Archivos CSS:** Mezcla de kebab-case y camelCase
 **Problema:** Falta de estándar consistente.
 
-#### 9. **Espaciado Inconsistente en Wizard**
+#### 9. ✅ **Espaciado Inconsistente en Wizard - RESUELTO**
+**Estado:** ✅ **CORREGIDO** - 01/10/2025
 **Archivo:** `InitialWizardModal.tsx`
-**Problema:** Steps usan diferentes patrones de padding:
-- Step 2: `p-4` fijo
-- Step 5: `p-3 sm:p-4` responsive
-**Impacto:** Ritmo visual inconsistente.
+**Problema Original:** Steps usaban diferentes patrones de padding y espaciado:
+- Iconos: Mix de `w-4 md:w-5` vs `w-5 md:w-6` (breakpoint-based)
+- Gaps: Mix de `gap-fluid-sm md:gap-fluid-md` vs `gap-2 md:gap-3`
+- Texto: Mix de `text-sm md:text-base` vs `text-xs md:text-sm`
+- Input/Button heights: `h-9 md:h-11` (breakpoint-based)
+**Solución Implementada:**
+- ✅ **Iconos unificados con clamp():** `w-[clamp(1rem,4vw,1.25rem)]` - escala fluida
+- ✅ **Gaps consistentes:** `gap-fluid-md` en todos los mensajes de confirmación
+- ✅ **Tipografía fluida:** `text-fluid-sm`, `text-fluid-xs`, `text-fluid-lg`
+- ✅ **Alturas fluidas:** `h-[clamp(2.25rem,9vw,2.75rem)]` para inputs y botones
+- ✅ **Espaciado fluido:** `gap-fluid-lg`, `gap-fluid-md`, `gap-fluid-xs` consistente
+**Resultado:** Escalado proporcional uniforme en todos los steps del wizard (360px-430px).
 
 #### 10. ✅ **Falta Manejo de Errores en useLocalStorage - RESUELTO**
 **Estado:** ✅ **CORREGIDO** - 01/10/2025
@@ -383,6 +396,22 @@ const CashCalculation = lazy(() => import('./CashCalculation'));
 - ✅ Breakpoint configurable: `useIsMobile(breakpoint)`
 - ✅ Agregado `useIsTouchDevice()` para detección táctil específica
 - ✅ 4 archivos actualizados: App.tsx, CashCounter.tsx, sidebar.tsx, useFieldNavigation.ts
+
+**Bug #3 Resuelto: Tamaños Fijos en CSS**
+- ✅ Convertidos todos los iconos de headers a clamp()
+- ✅ Iconos grandes: `w-[clamp(1.5rem,6vw,2rem)]` (24px→32px)
+- ✅ Iconos medianos: `w-[clamp(1.25rem,5vw,1.5rem)]` (20px→24px)
+- ✅ Tipografía: `text-fluid-xl` reemplaza `text-lg md:text-xl`
+- ✅ 2 archivos modificados: `InitialWizardModal.tsx` (4 headers) + `CashCounter.tsx` (3 headers)
+- ✅ Eliminados 7 breakpoints `md:` innecesarios
+
+**Bug #9 Resuelto: Espaciado Inconsistente en Wizard**
+- ✅ Unificado sistema de espaciado fluido en todos los steps
+- ✅ Iconos con clamp(): `w-[clamp(1rem,4vw,1.25rem)]`
+- ✅ Gaps consistentes: `gap-fluid-md` en todos los mensajes
+- ✅ Tipografía fluida: `text-fluid-sm`, `text-fluid-xs`, `text-fluid-lg`
+- ✅ Alturas fluidas: `h-[clamp(2.25rem,9vw,2.75rem)]`
+- ✅ 1 archivo modificado: `InitialWizardModal.tsx` (11 secciones unificadas)
 
 **Bug #10 Resuelto: Manejo de Errores en useLocalStorage**
 - ✅ Implementada detección automática de disponibilidad de localStorage

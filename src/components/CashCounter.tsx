@@ -475,13 +475,13 @@ const CashCounter = ({
             padding: 'clamp(1rem, 4vw, 1.5rem)'
           }}>
             <div className="flex items-center gap-fluid-sm mb-fluid-lg">
-              <MapPin className="w-8 h-8" style={{
+              <MapPin className="w-[clamp(1.5rem,6vw,2rem)] h-[clamp(1.5rem,6vw,2rem)]" style={{
                 background: primaryGradient,
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text'
               }} />
-              <h3 className="text-xl font-bold" style={{ color: '#e1e8ed' }}>Sucursal</h3>
+              <h3 className="text-fluid-xl font-bold" style={{ color: '#e1e8ed' }}>Sucursal</h3>
             </div>
             <Select value={selectedStore} onValueChange={setSelectedStore}>
               <SelectTrigger className="h-12" style={{
@@ -527,13 +527,13 @@ const CashCounter = ({
             padding: 'clamp(1rem, 4vw, 1.5rem)'
           }}>
             <div className="flex items-center gap-fluid-sm mb-fluid-lg">
-              <Users className="w-8 h-8" style={{
+              <Users className="w-[clamp(1.5rem,6vw,2rem)] h-[clamp(1.5rem,6vw,2rem)]" style={{
                 background: 'linear-gradient(135deg, #00ba7c 0%, #06d6a0 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text'
               }} />
-              <h3 className="text-xl font-bold" style={{ color: '#e1e8ed' }}>Personal</h3>
+              <h3 className="text-fluid-xl font-bold" style={{ color: '#e1e8ed' }}>Personal</h3>
             </div>
             <div className="space-y-fluid-md">
               <div>
@@ -640,13 +640,13 @@ const CashCounter = ({
             padding: 'clamp(1rem, 4vw, 1.5rem)'
           }}>
             <div className="flex items-center gap-fluid-sm mb-fluid-lg">
-              <DollarSign className="w-8 h-8" style={{
+              <DollarSign className="w-[clamp(1.5rem,6vw,2rem)] h-[clamp(1.5rem,6vw,2rem)]" style={{
                 background: 'linear-gradient(135deg, #00ba7c 0%, #06d6a0 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text'
               }} />
-              <h3 className="text-xl font-bold" style={{ color: '#e1e8ed' }}>Venta Esperada del Sistema según SICAR</h3>
+              <h3 className="text-fluid-xl font-bold" style={{ color: '#e1e8ed' }}>Venta Esperada del Sistema según SICAR</h3>
             </div>
             <div className="relative">
               <span className="absolute left-4 top-1/2 -translate-y-1/2 font-medium z-10" style={{ color: '#00ba7c' }}>$</span>

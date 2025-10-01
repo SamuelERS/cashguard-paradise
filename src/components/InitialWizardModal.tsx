@@ -212,10 +212,10 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
           <div className="glass-morphism-panel space-y-fluid-lg">
             {/* 🤖 [IA] - v1.2.12: Header section optimizado */}
             <div className="glass-morphism-panel header-section">
-              <MapPin className="flex-shrink-0 w-6 md:w-8 h-6 md:h-8 bg-gradient-to-br from-blue-500 to-purple-500 bg-clip-text text-transparent" />
+              <MapPin className="flex-shrink-0 w-[clamp(1.5rem,6vw,2rem)] h-[clamp(1.5rem,6vw,2rem)] bg-gradient-to-br from-blue-500 to-purple-500 bg-clip-text text-transparent" />
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-primary-foreground text-lg md:text-xl">Ubicación</h3>
-                <p className="text-muted-foreground text-xs md:text-sm mt-fluid-xs">Sucursal del corte</p>
+                <h3 className="font-semibold text-primary-foreground text-fluid-xl">Ubicación</h3>
+                <p className="text-muted-foreground text-fluid-xs mt-fluid-xs">Sucursal del corte</p>
               </div>
             </div>
 
@@ -249,9 +249,9 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                 animate={{ opacity: 1, y: 0 }}
                 className="glass-morphism-panel border border-green-400/40 shadow-lg shadow-green-400/20"
               >
-                <div className="flex items-center gap-fluid-sm md:gap-fluid-md">
-                  <CheckCircle className="flex-shrink-0 text-green-400 w-4 md:w-5 h-4 md:h-5" />
-                  <span className="font-medium text-primary-foreground text-sm md:text-base">✓ Seleccionada</span>
+                <div className="flex items-center gap-fluid-md">
+                  <CheckCircle className="flex-shrink-0 text-green-400 w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)]" />
+                  <span className="font-medium text-primary-foreground text-fluid-sm">✓ Seleccionada</span>
                 </div>
               </motion.div>
             )}
@@ -264,13 +264,13 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
             {/* 🤖 [IA] - v1.2.12: Header section Cajero optimizado */}
             <div className="glass-morphism-panel header-section">
               <Users
-                className="flex-shrink-0 w-6 md:w-8 h-6 md:h-8 bg-gradient-to-br from-blue-500 to-purple-500 bg-clip-text text-transparent"
+                className="flex-shrink-0 w-[clamp(1.5rem,6vw,2rem)] h-[clamp(1.5rem,6vw,2rem)] bg-gradient-to-br from-blue-500 to-purple-500 bg-clip-text text-transparent"
                 aria-label="Icono de cajero responsable"
                 role="img"
               />
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-primary-foreground text-lg md:text-xl">Cajero</h3>
-                <p className="text-muted-foreground text-xs md:text-sm mt-fluid-xs">¿Quién Cobró este día?</p>
+                <h3 className="font-semibold text-primary-foreground text-fluid-xl">Cajero</h3>
+                <p className="text-muted-foreground text-fluid-xs mt-fluid-xs">¿Quién Cobró este día?</p>
               </div>
             </div>
 
@@ -296,12 +296,12 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                 animate={{ opacity: 1, y: 0 }}
                 className="glass-morphism-panel border border-green-400/40 shadow-lg shadow-green-400/20"
               >
-                <div className="flex items-center gap-fluid-sm md:gap-fluid-md">
+                <div className="flex items-center gap-fluid-md">
                   <CheckCircle
-                    className="flex-shrink-0 text-green-400 w-4 md:w-5 h-4 md:h-5"
+                    className="flex-shrink-0 text-green-400 w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)]"
                     aria-label="Cajero seleccionado correctamente"
                   />
-                  <span className="font-medium text-primary-foreground text-sm md:text-base">✓ Cajero seleccionado</span>
+                  <span className="font-medium text-primary-foreground text-fluid-sm">✓ Cajero seleccionado</span>
                 </div>
               </motion.div>
             )}
@@ -313,10 +313,10 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
           <div className="glass-morphism-panel space-y-fluid-lg">
             {/* 🤖 [IA] - v1.2.12: Header section Testigo optimizado */}
             <div className="glass-morphism-panel header-section">
-              <Shield className="flex-shrink-0 w-6 md:w-8 h-6 md:h-8 text-primary" />
+              <Shield className="flex-shrink-0 w-[clamp(1.5rem,6vw,2rem)] h-[clamp(1.5rem,6vw,2rem)] text-primary" />
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-primary-foreground text-lg md:text-xl">Testigo</h3>
-                <p className="text-muted-foreground text-xs md:text-sm mt-fluid-xs">
+                <h3 className="font-semibold text-primary-foreground text-fluid-xl">Testigo</h3>
+                <p className="text-muted-foreground text-fluid-xs mt-fluid-xs">
                   Selecciona quien Ayudara
                 </p>
               </div>
@@ -347,9 +347,9 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                 animate={{ opacity: 1, scale: 1 }}
                 className="glass-morphism-panel border border-red-500/40 shadow-lg shadow-red-500/20"
               >
-                <div className="flex items-center gap-fluid-sm md:gap-fluid-md">
-                  <AlertTriangle className="flex-shrink-0 text-red-500 w-4 md:w-5 h-4 md:h-5" />
-                  <span className="font-medium text-red-500 text-sm md:text-base">
+                <div className="flex items-center gap-fluid-md">
+                  <AlertTriangle className="flex-shrink-0 text-red-500 w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)]" />
+                  <span className="font-medium text-red-500 text-fluid-sm">
                     El cajero y el testigo deben ser personas diferentes
                   </span>
                 </div>
@@ -363,9 +363,9 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                 animate={{ opacity: 1, y: 0 }}
                 className="glass-morphism-panel border border-green-400/40 shadow-lg shadow-green-400/20"
               >
-                <div className="flex items-center gap-fluid-sm md:gap-fluid-md">
-                  <CheckCircle className="flex-shrink-0 text-green-400 w-4 md:w-5 h-4 md:h-5" />
-                  <span className="font-medium text-primary-foreground text-sm md:text-base">Testigo seleccionado correctamente</span>
+                <div className="flex items-center gap-fluid-md">
+                  <CheckCircle className="flex-shrink-0 text-green-400 w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)]" />
+                  <span className="font-medium text-primary-foreground text-fluid-sm">Testigo seleccionado correctamente</span>
                 </div>
               </motion.div>
             )}
@@ -377,15 +377,15 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
           <div className="glass-morphism-panel space-y-fluid-lg">
             {/* 🤖 [IA] - v1.2.12: Header section Venta Esperada optimizado */}
             <div className="glass-morphism-panel header-section">
-              <DollarSign className="flex-shrink-0 w-5 md:w-6 h-5 md:h-6 bg-gradient-to-br from-green-400 to-emerald-400 bg-clip-text text-transparent" />
+              <DollarSign className="flex-shrink-0 w-[clamp(1.25rem,5vw,1.5rem)] h-[clamp(1.25rem,5vw,1.5rem)] bg-gradient-to-br from-green-400 to-emerald-400 bg-clip-text text-transparent" />
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-primary-foreground text-lg md:text-xl">Ingresa Total Vendido</h3>
+                <h3 className="font-semibold text-primary-foreground text-fluid-xl">Ingresa Total Vendido</h3>
               </div>
             </div>
 
-            <div className="flex flex-col gap-fluid-md md:gap-fluid-lg">
+            <div className="flex flex-col gap-fluid-lg">
               {/* 🤖 [IA] - v1.2.9: Contenedor con grid y variables CSS compartidas para alturas iguales */}
-              <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-fluid-sm md:gap-fluid-md items-center">
+              <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-fluid-md items-center">
                 <div className="glass-morphism-panel relative flex-1 pl-2 flex items-center">
                   <span className="absolute left-6 top-1/2 -translate-y-1/2 font-bold text-green-400 text-base md:text-lg">
                     $
@@ -408,7 +408,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                     placeholder="0.00"
                     aria-label="Ingrese el monto de la venta esperada"
                     className={cn(
-                      "font-semibold bg-transparent border-none text-primary-foreground pl-12 md:pl-14 h-9 md:h-11 text-base md:text-lg neon-glow-success",
+                      "font-semibold bg-transparent border-none text-primary-foreground pl-[clamp(3rem,12vw,3.5rem)] h-[clamp(2.25rem,9vw,2.75rem)] text-fluid-lg neon-glow-success",
                       wizardData.expectedSales && parseFloat(wizardData.expectedSales) > 0 && "border-green-500/50"
                     )}
                     data-valid={!!(wizardData.expectedSales && parseFloat(wizardData.expectedSales) > 0)}
@@ -422,10 +422,10 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                   disabled={!getNavigationState(isFlowCompleted()).isCompleted}
                   aria-label="Confirmar venta esperada"
                   type="button"
-                  className="h-9 md:h-11"
+                  className="h-[clamp(2.25rem,9vw,2.75rem)]"
                 >
-                  <CheckCircle aria-hidden="true" className="w-5 md:w-6 h-5 md:h-6 mr-2 md:mr-3" />
-                  <span>Confirmar</span>
+                  <CheckCircle aria-hidden="true" className="w-[clamp(1.25rem,5vw,1.5rem)] h-[clamp(1.25rem,5vw,1.5rem)] mr-fluid-sm" />
+                  <span className="text-fluid-base">Confirmar</span>
                 </ConstructiveActionButton>
               </div>
               {wizardData.expectedSales && parseFloat(wizardData.expectedSales) <= 0 && (
@@ -441,9 +441,9 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                 animate={{ opacity: 1, y: 0 }}
                 className="glass-morphism-panel border border-green-400/40 shadow-lg shadow-green-400/20"
               >
-                <div className="flex items-center gap-2 md:gap-3">
-                  <CheckCircle className="flex-shrink-0 text-green-400 w-5 md:w-6 h-5 md:h-6" />
-                  <span className="font-medium text-primary-foreground text-sm md:text-base">
+                <div className="flex items-center gap-fluid-md">
+                  <CheckCircle className="flex-shrink-0 text-green-400 w-[clamp(1.25rem,5vw,1.5rem)] h-[clamp(1.25rem,5vw,1.5rem)]" />
+                  <span className="font-medium text-primary-foreground text-fluid-sm">
                     Venta esperada: ${parseFloat(wizardData.expectedSales).toFixed(2)}
                   </span>
                 </div>
@@ -451,21 +451,21 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
             )}
 
             <div className="glass-morphism-panel border-l-4 border-l-blue-500 shadow-lg shadow-blue-500/20">
-              <h4 className="font-semibold text-blue-500 text-sm md:text-base mb-2 md:mb-3">Resumen de Información:</h4>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-1 md:gap-2 text-xs md:text-sm">
-                <div className="flex flex-col gap-1 md:gap-2">
+              <h4 className="font-semibold text-blue-500 text-fluid-sm mb-fluid-sm">Resumen de Información:</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-fluid-sm text-fluid-xs">
+                <div className="flex flex-col gap-fluid-xs">
                   <span className="min-w-0 text-muted-foreground">Sucursal:</span>
                   <span className="font-medium text-left truncate text-primary-foreground">
                     {STORES.find(s => s.id === wizardData.selectedStore)?.name}
                   </span>
                 </div>
-                <div className="flex flex-col gap-1 md:gap-2">
+                <div className="flex flex-col gap-fluid-xs">
                   <span className="min-w-0 text-muted-foreground">Cajero:</span>
                   <span className="font-medium text-left truncate text-primary-foreground">
                     {availableEmployees.find(e => e.id === wizardData.selectedCashier)?.name}
                   </span>
                 </div>
-                <div className="flex flex-col gap-1 md:gap-2">
+                <div className="flex flex-col gap-fluid-xs">
                   <span className="min-w-0 text-muted-foreground">Testigo:</span>
                   <span className="font-medium text-left truncate text-primary-foreground">
                     {availableEmployees.find(e => e.id === wizardData.selectedWitness)?.name}
