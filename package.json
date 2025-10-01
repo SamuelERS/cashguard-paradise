@@ -17,6 +17,7 @@
     "test:coverage:ci": "rm -rf coverage && vitest run --coverage",
     "test:unit": "vitest run src/__tests__/unit",
     "test:integration": "vitest run src/__tests__/integration",
+    "test:e2e": "playwright test --config=e2e/playwright.config.ts",
     "docker:test": "./Scripts/docker-test-commands.sh test",
     "docker:test:build": "./Scripts/docker-test-commands.sh build"
   },

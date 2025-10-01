@@ -90,8 +90,12 @@ jobs:
       - name: Start application for E2E
         run: |
           docker compose -f docker-compose.test.yml --profile e2e up -d cashguard-app
-          sleep 10 # Wait for app to be ready
-      
+          sleep 30 # Wait for app to be ready (Vite puede tardar más en CI)
+
+      - name: Wait for app healthcheck
+        run: |
+          timeout 60 sh -c 'until curl -f http://localhost:5175; do sleep 2; done'
+
       - name: Run E2E tests
         run: |
           docker compose -f docker-compose.test.yml --profile e2e run --rm cashguard-e2e
@@ -122,6 +126,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       
+      # 🤖 [IA] - v1.2.37: Security audit con continue-on-error temporal
+      # TODO: Fix vulnerabilities (vite v7 + vitest v3) y cambiar a false
       - name: Run security audit in Docker
         run: |
           docker run --rm \
@@ -129,7 +135,7 @@ jobs:
             -w /app \
             node:20-alpine \
             sh -c "npm ci && npm audit --audit-level=moderate"
-        continue-on-error: true
+        continue-on-error: true # TODO: Cambiar a false después de resolver CVEs
       
       # 🤖 [IA] - v1.2.36e: Fix TruffleHog BASE == HEAD error
       # Use github.event.before (commit anterior) vs github.sha (commit actual)
