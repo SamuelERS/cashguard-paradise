@@ -19,6 +19,19 @@ import type { CashCount } from '@/types/cash';
  * Mock básico de GuidedFieldView para permitir imports sin errores.
  */
 
+// Interface para el mock de GuidedFieldView
+interface MockGuidedFieldViewProps {
+  currentFieldName?: string;
+  currentStep?: number;
+  totalSteps?: number;
+  completedFields?: Array<{ name: string; quantity: number; total: number }>;
+  isMorningCount?: boolean;
+  onCancel?: () => void;
+  onPrevious?: () => void;
+  canGoPrevious?: boolean;
+  onConfirm?: (value: string) => void;
+}
+
 // Mock mejorado de GuidedFieldView (expone todas las props para validación)
 vi.mock('@/components/cash-counting/GuidedFieldView', () => ({
   GuidedFieldView: ({ 
@@ -31,7 +44,7 @@ vi.mock('@/components/cash-counting/GuidedFieldView', () => ({
     onPrevious,
     canGoPrevious,
     onConfirm
-  }: any) => (
+  }: MockGuidedFieldViewProps) => (
     <div data-testid="guided-field-view">
       <div data-testid="current-field">{currentFieldName}</div>
       <div data-testid="current-step">{currentStep}</div>
