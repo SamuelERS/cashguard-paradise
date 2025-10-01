@@ -18,7 +18,9 @@ export async function copyToClipboard(text: string): Promise<{
       }
       return { success: true, method: 'clipboard' };
     } catch (err) {
-      console.warn('⚠️ Clipboard API falló, intentando fallback:', err);
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('⚠️ Clipboard API falló, intentando fallback:', err);
+      }
       // No retornar aquí, intentar fallback
     }
   }
@@ -59,10 +61,14 @@ export async function copyToClipboard(text: string): Promise<{
           console.log('✅ Copiado usando fallback execCommand');
         }
       } else {
-        console.error('❌ execCommand retornó false');
+        if (process.env.NODE_ENV === 'development') {
+          console.error('❌ execCommand retornó false');
+        }
       }
     } catch (cmdErr) {
-      console.error('❌ Error en execCommand:', cmdErr);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('❌ Error en execCommand:', cmdErr);
+      }
     }
     
     // Limpiar
@@ -78,7 +84,9 @@ export async function copyToClipboard(text: string): Promise<{
       };
     }
   } catch (error) {
-    console.error('❌ Error crítico al copiar:', error);
+    if (process.env.NODE_ENV === 'development') {
+      console.error('❌ Error crítico al copiar:', error);
+    }
     return { 
       success: false, 
       method: 'none',

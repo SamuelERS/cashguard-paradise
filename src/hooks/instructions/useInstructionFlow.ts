@@ -70,7 +70,9 @@ function instructionFlowReducer(state: InstructionFlowState, action: Action): In
 
       // VALIDACIÓN ANTI-FRAUDE:
       if (!instruction || elapsed < instruction.minReviewTimeMs) {
-        console.error(`VALIDATION FAILED: Timing too short for ${instruction?.id}. Required: ${instruction?.minReviewTimeMs}ms, Actual: ${elapsed}ms`);
+        if (process.env.NODE_ENV === 'development') {
+          console.error(`VALIDATION FAILED: Timing too short for ${instruction?.id}. Required: ${instruction?.minReviewTimeMs}ms, Actual: ${elapsed}ms`);
+        }
         return state; // No se actualiza el estado si no se cumple el tiempo
       }
 
