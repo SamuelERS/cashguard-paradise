@@ -131,12 +131,15 @@ jobs:
             sh -c "npm ci && npm audit --audit-level=moderate"
         continue-on-error: true
       
-      - name: Check for secrets
+      # 🤖 [IA] - v1.2.36e: Fix TruffleHog BASE == HEAD error
+      # Use github.event.before (commit anterior) vs github.sha (commit actual)
+      # Esto permite scan de diff en push events
+      - name: TruffleHog Security Scan
         uses: trufflesecurity/trufflehog@main
         with:
-          path: ./
-          base: ${{ github.event.repository.default_branch }}
-          head: HEAD
+          base: ${{ github.event.before }}
+          head: ${{ github.sha }}
+          extra_args: --debug --only-verified
       
       - name: OWASP Dependency Check
         run: |
