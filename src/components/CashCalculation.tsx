@@ -1,5 +1,5 @@
 // 🤖 [IA] - v1.1.09 - Fix botón copiar con fallback robusto
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Calculator, AlertTriangle, CheckCircle, Share, Download, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -77,13 +77,7 @@ const CashCalculation = ({
   const cashier = getEmployeeById(cashierId);
   const witness = getEmployeeById(witnessId);
 
-  useEffect(() => {
-    if (!isCalculated) {
-      performCalculation();
-    }
-  }, []);
-
-  const performCalculation = () => {
+  const performCalculation = useCallback(() => {
     const totalCash = calculateCashTotal(cashCount);
     const totalElectronic = Object.values(electronicPayments).reduce((sum, val) => sum + val, 0);
     const totalGeneral = totalCash + totalElectronic;
@@ -111,7 +105,13 @@ const CashCalculation = ({
     
     setCalculationData(data);
     setIsCalculated(true);
-  };
+  }, [cashCount, electronicPayments, expectedSales]);
+
+  useEffect(() => {
+    if (!isCalculated) {
+      performCalculation();
+    }
+  }, [isCalculated, performCalculation]);
 
   // Security validations before generating reports
   const validatePhaseCompletion = () => {

@@ -1,5 +1,5 @@
 // 🤖 [IA] - v1.1.13 - Mejora visual del detalle de denominaciones con tabla estructurada
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Sunrise, CheckCircle, AlertTriangle, Download, Share, ArrowLeft, Copy, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -43,11 +43,7 @@ export function MorningVerification({
   const cashierIn = getEmployeeById(cashierId);
   const cashierOut = getEmployeeById(witnessId);
   
-  useEffect(() => {
-    performVerification();
-  }, []);
-
-  const performVerification = () => {
+  const performVerification = useCallback(() => {
     const totalCash = calculateCashTotal(cashCount);
     const expectedAmount = 50; // Siempre $50 para cambio
     const difference = totalCash - expectedAmount;
@@ -72,7 +68,11 @@ export function MorningVerification({
     };
     
     setVerificationData(data);
-  };
+  }, [cashCount]);
+
+  useEffect(() => {
+    performVerification();
+  }, [performVerification]);
 
   const handleWhatsApp = () => {
     const report = generateReport();

@@ -1,5 +1,5 @@
 // 🤖 [IA] - v1.2.19 - Phase 1 Navigation System simplified to 2-button layout
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, X, Calculator, Users, MapPin, DollarSign, Sunrise } from "lucide-react";
 // 🤖 [IA] - FAE-02: PURGA QUIRÚRGICA COMPLETADA - CSS imports eliminados
@@ -257,7 +257,7 @@ const CashCounter = ({
       setShowInstructionsModal(true);
       sessionStorage.setItem('current-counting-session', `session-${Date.now()}`);
     }
-  }, [hasInitialData, resetFlow]);
+  }, [hasInitialData, phaseState.phase1Completed, resetFlow]);
   
   // 🤖 [IA] - v1.2.8 - Handler para cuando se confirman las instrucciones
   const handleInstructionsConfirm = () => {
@@ -276,19 +276,6 @@ const CashCounter = ({
     onFlowCancel?.(); // Notificar al padre para navegar de vuelta al inicio
   };
 
-  // 🤖 [IA] - v1.2.8: Sistema Ciego Anti-Fraude: Auto-confirmar todos los totales sin mostrar valores
-  useEffect(() => {
-    // Auto-confirmar totalCash y totalElectronic para mantener sistema ciego
-    if ((currentField === 'totalCash' || currentField === 'totalElectronic') && 
-        phaseState.currentPhase === 1) {
-      // Delay mínimo solo para transición visual suave
-      const timer = setTimeout(() => {
-        handleGuidedFieldConfirm('0');
-      }, 300); // Reducido para flujo más rápido
-      return () => clearTimeout(timer);
-    }
-  }, [currentField, phaseState.currentPhase]);
-
   const handleCashCountChange = (denomination: string, value: string) => {
     const numValue = parseInt(value) || 0;
     setCashCount(prev => ({
@@ -297,7 +284,7 @@ const CashCounter = ({
     }));
   };
 
-  const handleGuidedFieldConfirm = (value: string) => {
+  const handleGuidedFieldConfirm = useCallback((value: string) => {
     // 🤖 [IA] - v1.2.8: Sistema Ciego Anti-Fraude - No mostrar totales durante conteo
     if (currentField === 'totalCash' || currentField === 'totalElectronic') {
       // Auto-avanzar sin mostrar valores para evitar manipulación
@@ -344,7 +331,21 @@ const CashCounter = ({
       // 🤖 [IA] - v1.2.7: Eliminados todos los toasts de confirmación individual
       // Solo mantener vibración háptica como feedback principal
     }
-  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentField, isMorningCount, confirmCurrentField, electronicPayments, cashCount, createTimeoutWithCleanup, isMobile]);
+
+  // 🤖 [IA] - v1.2.8: Sistema Ciego Anti-Fraude: Auto-confirmar todos los totales sin mostrar valores
+  useEffect(() => {
+    // Auto-confirmar totalCash y totalElectronic para mantener sistema ciego
+    if ((currentField === 'totalCash' || currentField === 'totalElectronic') && 
+        phaseState.currentPhase === 1) {
+      // Delay mínimo solo para transición visual suave
+      const timer = setTimeout(() => {
+        handleGuidedFieldConfirm('0');
+      }, 300); // Reducido para flujo más rápido
+      return () => clearTimeout(timer);
+    }
+  }, [currentField, phaseState.currentPhase, handleGuidedFieldConfirm]);
 
   // 🤖 [IA] - v1.0.28: Removido auto-confirm, ahora se maneja con TotalsSummarySection
   // Los totales ahora requieren confirmación manual del usuario para mejor UX
