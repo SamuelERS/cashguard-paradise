@@ -8,11 +8,13 @@ import { ConstructiveActionButton } from '@/components/shared/ConstructiveAction
 import { DestructiveActionButton } from '@/components/shared/DestructiveActionButton';
 import { NeutralActionButton } from '@/components/ui/neutral-action-button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label'; // 🤖 [IA] - v1.2.35: Accessibility labels
 import { DENOMINATIONS } from '@/types/cash';
 import { formatCurrency } from '@/utils/calculations';
 import { useInputValidation } from '@/hooks/useInputValidation';
 import { useTimingConfig } from '@/hooks/useTimingConfig';
 import { usePulseAnimation } from '@/hooks/useVisibleAnimation'; // 🤖 [IA] - v1.2.18: Optimización automática de animaciones
+import { FIELD_LABELS } from '@/hooks/useGuidedCounting'; // 🤖 [IA] - v1.2.35: Accessibility labels
 import { cn } from '@/lib/utils';
 // 🤖 [IA] - FAE-02: PURGA QUIRÚRGICA COMPLETADA - CSS imports eliminados
 // Los 4 archivos CSS están ahora importados globalmente vía index.css:
@@ -86,7 +88,10 @@ export function GuidedFieldView({
   );
   const [showError, setShowError] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  
+
+  // 🤖 [IA] - v1.2.35: Generate unique ID for label-input association (WCAG 2.1)
+  const inputId = `input-${currentFieldName}`;
+
   const { validateInput } = useInputValidation();
   const { createTimeoutWithCleanup } = useTimingConfig();
 
@@ -372,7 +377,7 @@ export function GuidedFieldView({
             {/* 🤖 [IA] - v1.2.24: Etiqueta de denominación descriptiva */}
             {(currentFieldType === 'coin' || currentFieldType === 'bill') && (
               <div className="text-center mb-4">
-                <span className="text-xs text-white/70 font-medium">
+                <span className="text-xs text-white/70 font-medium" aria-hidden="true">
                   {getDenominationDescription(currentFieldName, currentFieldLabel)}
                 </span>
               </div>
@@ -383,12 +388,21 @@ export function GuidedFieldView({
               {/* Input y botón integrados */}
               <div className="flex items-center" style={{ gap: 'clamp(8px, 2vw, 16px)' }}>
                 <div className="flex-1 relative">
+                  {/* 🤖 [IA] - v1.2.35: Accessible label for screen readers (WCAG 2.1) */}
+                  <Label
+                    htmlFor={inputId}
+                    className="sr-only"
+                  >
+                    {FIELD_LABELS[currentFieldName] || currentFieldLabel}
+                  </Label>
+
                   {currentFieldType === 'electronic' && (
                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary font-semibold z-10">
                       $
                     </span>
                   )}
                   <Input
+                    id={inputId}
                     ref={inputRef}
                     type="text"  // 🤖 [IA] - v3.1.0: Unificado a "text" para teclado decimal consistente
                     inputMode="decimal"  // 🤖 [IA] - v3.1.0: Forzar teclado decimal en todos los casos
@@ -399,6 +413,7 @@ export function GuidedFieldView({
                     autoCapitalize="off"  // Prevenir capitalización en iOS
                     autoCorrect="off"     // Desactivar autocorrección
                     autoComplete="off"    // Desactivar autocompletado
+                    aria-describedby={`${inputId}-description`}
                     placeholder={currentFieldType === 'electronic' ? '0.00' : '0'}
                     style={{
                       backgroundColor: 'rgba(255, 255, 255, 0.05)',

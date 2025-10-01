@@ -64,7 +64,8 @@ const EVENING_FIELD_ORDER = [
 // 🤖 [IA] - v1.0.85: Keep original for backward compatibility
 const FIELD_ORDER = EVENING_FIELD_ORDER;
 
-const FIELD_LABELS = {
+// 🤖 [IA] - v1.2.35: Exported for accessibility labels in GuidedFieldView
+export const FIELD_LABELS: Record<string, string> = {
   penny: '1 centavo',
   nickel: '5 centavos',
   dime: '10 centavos',

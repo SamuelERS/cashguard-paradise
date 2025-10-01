@@ -61,6 +61,25 @@
 /* stylelint-enable at-rule-no-unknown */
 
 /* ============================================================================
+ * ♿ WCAG 2.1 ACCESSIBILITY - Screen Reader Only Utility
+ * ============================================================================
+ * 🤖 [IA] - v1.2.35: Added for accessible labels in GuidedFieldView
+ * Standard utility class to hide elements visually while keeping them
+ * accessible to screen readers (WCAG 2.1 Level AA compliance)
+ * ============================================================================ */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ============================================================================
  * 🔒 ARCHIVO CONGELADO - NO AGREGAR MÁS ESTILOS AQUÍ
  * ============================================================================
  * IMPORTANTE: Este archivo index.css está CONGELADO con 2,306 líneas.

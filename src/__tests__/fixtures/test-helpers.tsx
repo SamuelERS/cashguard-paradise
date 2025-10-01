@@ -122,28 +122,28 @@ export async function completeCashCount(
 ) {
   // Input penny count
   if (cashCount.penny > 0) {
-    const pennyInput = await screen.findByLabelText(/1¢ centavo/i);
+    const pennyInput = await screen.findByLabelText(/1 centavo/i);
     await user.clear(pennyInput);
     await user.type(pennyInput, cashCount.penny.toString());
   }
-  
+
   // Input nickel count
   if (cashCount.nickel > 0) {
-    const nickelInput = await screen.findByLabelText(/5¢/i);
+    const nickelInput = await screen.findByLabelText(/5 centavos/i);
     await user.clear(nickelInput);
     await user.type(nickelInput, cashCount.nickel.toString());
   }
-  
+
   // Input dime count
   if (cashCount.dime > 0) {
-    const dimeInput = await screen.findByLabelText(/10¢/i);
+    const dimeInput = await screen.findByLabelText(/10 centavos/i);
     await user.clear(dimeInput);
     await user.type(dimeInput, cashCount.dime.toString());
   }
-  
+
   // Input quarter count
   if (cashCount.quarter > 0) {
-    const quarterInput = await screen.findByLabelText(/25¢/i);
+    const quarterInput = await screen.findByLabelText(/25 centavos/i);
     await user.clear(quarterInput);
     await user.type(quarterInput, cashCount.quarter.toString());
   }
