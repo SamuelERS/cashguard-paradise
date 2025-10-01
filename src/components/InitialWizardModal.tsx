@@ -22,6 +22,7 @@ import { STORES, getEmployeesByStore } from "@/data/paradise";
 // - wizard-nav-next-button.css
 // - wizard-select-elements.css
 import { toast } from "sonner";
+import { TOAST_DURATIONS, TOAST_MESSAGES } from '@/config/toast'; // 🤖 [IA] - v1.3.1
 import { useTimingConfig } from "@/hooks/useTimingConfig"; // 🤖 [IA] - Hook de timing unificado v1.0.22
 import { useInputValidation } from "@/hooks/useInputValidation"; // 🤖 [IA] - v1.0.45: Hook para validación de decimales
 import { ConfirmationModal } from "@/components/ui/confirmation-modal"; // 🤖 [IA] - v2.0.0: Modal de confirmación abstracto
@@ -130,14 +131,18 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
   // 🤖 [IA] - v1.2.26: Manejar siguiente paso - pasar estado de reglas a navegación
   const handleNext = () => {
     if (currentStep === 1 && !isFlowCompleted()) {
-      toast.error("Debe revisar todas las reglas del protocolo");
+      toast.error(TOAST_MESSAGES.ERROR_REVIEW_RULES, {
+        duration: TOAST_DURATIONS.EXTENDED
+      });
       return;
     }
 
     // Pasar el estado de las reglas para validación del paso 1
     const success = goNext(isFlowCompleted());
     if (!success) {
-      toast.error("Complete todos los campos para continuar");
+      toast.error(TOAST_MESSAGES.ERROR_COMPLETE_FIELDS, {
+        duration: TOAST_DURATIONS.EXTENDED
+      });
     }
   };
 

@@ -282,9 +282,38 @@ return cleanup;
 **Problema:** Algunos componentes asumen que props siempre existen.
 **Impacto:** Posibles errores en runtime si props son undefined.
 
-#### 13. **Toast Notifications sin Control de Duración**
-**Problema:** Múltiples toasts con duraciones hardcodeadas.
-**Impacto:** Inconsistencia en UX de notificaciones.
+#### 13. ✅ **Toast Notifications sin Control de Duración - RESUELTO**
+**Estado:** ✅ **CORREGIDO** - 01/10/2025
+**Archivos:** `CashCounter.tsx`, `InitialWizardModal.tsx`, `config/toast.ts` (nuevo)
+**Problema Original:**
+- Duraciones hardcodeadas inconsistentes (`duration: 3000` vs sin especificar)
+- Mensajes duplicados en múltiples archivos
+- No había estándar de duración por tipo de notificación
+**Solución Implementada:**
+- ✅ **Configuración centralizada:** Archivo `/config/toast.ts` con constantes
+- ✅ **Duraciones estándar:** SHORT (2s), NORMAL (4s), LONG (6s), EXTENDED (8s)
+- ✅ **Mensajes unificados:** Constante `TOAST_MESSAGES` para consistencia
+- ✅ **Tipos configurados:** Config por tipo (success, error, info, warning)
+**Constantes Implementadas:**
+```typescript
+export const TOAST_DURATIONS = {
+  SHORT: 2000,    // Éxito simple
+  NORMAL: 4000,   // Informativo (default)
+  LONG: 6000,     // Importante
+  EXTENDED: 8000, // Errores críticos
+};
+
+export const TOAST_MESSAGES = {
+  SUCCESS_PHASE1: "✅ Fase 1 completada correctamente",
+  ERROR_COMPLETE_FIELDS: "Complete todos los campos para continuar",
+  // ... +15 mensajes estándar
+};
+```
+**Archivos Modificados:**
+- `/config/toast.ts` - Nuevo archivo con configuración
+- `CashCounter.tsx` - 11 toast calls estandarizados
+- `InitialWizardModal.tsx` - 2 toast calls estandarizados
+**Resultado:** UX consistente + mensajes unificados + duraciones apropiadas por tipo.
 
 ---
 
@@ -491,6 +520,14 @@ const CashCalculation = lazy(() => import('./CashCalculation'));
 - ✅ Memory leak prevention en 3 componentes
 - ✅ 3 archivos modificados: `GuidedDenominationItem.tsx`, `Phase2VerificationSection.tsx`, `CashCounter.tsx`
 - ✅ Mejor gestión de recursos al desmontar componentes
+
+**Bug #13 Resuelto: Toast Notifications sin Control de Duración**
+- ✅ Configuración centralizada en `/config/toast.ts`
+- ✅ 4 duraciones estándar: SHORT (2s), NORMAL (4s), LONG (6s), EXTENDED (8s)
+- ✅ 17 mensajes unificados en `TOAST_MESSAGES`
+- ✅ 13 toast calls estandarizados en 2 componentes
+- ✅ UX consistente en todas las notificaciones
+- ✅ 3 archivos: 1 nuevo + 2 modificados
 
 **Bug #4 Resuelto: Scroll Bloqueado en PWA**
 - ✅ Sistema anti-bounce inteligente implementado

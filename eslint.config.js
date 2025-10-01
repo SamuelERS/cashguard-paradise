@@ -25,5 +25,24 @@ export default tseslint.config(
       ],
       "@typescript-eslint/no-unused-vars": "off",
     },
+  },
+  // 🤖 [IA] - v1.2.36a: Silenciar warnings react-refresh para archivos específicos
+  {
+    files: ["src/__mocks__/**/*.{ts,tsx}"],
+    rules: {
+      "react-refresh/only-export-components": "off", // Mocks de testing no afectan HMR
+    },
+  },
+  {
+    files: ["src/components/ui/form.tsx"],
+    rules: {
+      "react-refresh/only-export-components": "off", // Patrón shadcn/ui con useFormField hook
+    },
+  },
+  {
+    files: ["src/components/ui/neutral-action-button.tsx"],
+    rules: {
+      "react-refresh/only-export-components": "off", // Patrón shadcn/ui con variants export
+    },
   }
 );

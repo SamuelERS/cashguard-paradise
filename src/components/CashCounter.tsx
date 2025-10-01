@@ -40,15 +40,16 @@ import { GuidedInstructionsModal } from "@/components/cash-counting/GuidedInstru
 import { Phase2Manager } from "@/components/phases/Phase2Manager";
 // 🤖 [IA] - v1.2.24 - FloatingParticles eliminado para mejorar rendimiento
 import { MorningVerification } from "@/components/morning-count/MorningVerification"; // 🤖 [IA] - v1.0.84
-import { STORES, EMPLOYEES, getEmployeesByStore } from "@/data/paradise";
-import { CashCount, ElectronicPayments, DENOMINATIONS } from "@/types/cash"; // 🤖 [IA] - v1.0.28: Agregado DENOMINATIONS
 import { useGuidedCounting } from "@/hooks/useGuidedCounting";
 import { usePhaseManager } from "@/hooks/usePhaseManager";
 import { useIsMobile } from "@/hooks/use-mobile"; // 🤖 [IA] - v2.0.0: Hook unificado de detección móvil
 import { useInstructionsFlow } from "@/hooks/useInstructionsFlow"; // 🤖 [IA] - v1.2.23: Hook para reseteo del flujo de instrucciones
-import { toast } from "sonner";
+import { toast } from 'sonner';
+import { TOAST_DURATIONS, TOAST_MESSAGES } from '@/config/toast'; // 🤖 [IA] - v1.3.1: Configuración centralizada
 import { useTimingConfig } from "@/hooks/useTimingConfig"; // 🤖 [IA] - Hook de timing unificado v1.0.22
 import { OperationMode, OPERATION_MODES } from "@/types/operation-mode"; // 🤖 [IA] - v1.0.81
+import { CashCount, ElectronicPayments, DENOMINATIONS } from "@/types/cash"; // 🤖 [IA] - Tipos de conteo
+import { STORES, getEmployeesByStore } from "@/data/paradise"; // 🤖 [IA] - Datos de la empresa
 import { calculateCashTotal } from "@/utils/calculations"; // 🤖 [IA] - v1.0.84
 
 // 🤖 [IA] - v1.2.22: Interface for webkit-specific CSS properties
@@ -348,7 +349,9 @@ const CashCounter = ({
   // Los totales ahora requieren confirmación manual del usuario para mejor UX
   
   const handleInvalidAccess = () => {
-    toast.error("Debe completar el campo actual antes de continuar");
+    toast.error(TOAST_MESSAGES.ERROR_COMPLETE_CURRENT, {
+      duration: TOAST_DURATIONS.EXTENDED
+    });
   };
 
   const handleElectronicChange = (method: string, value: string) => {
@@ -369,23 +372,27 @@ const CashCounter = ({
     
     // Complete Phase 1 and calculate delivery requirements
     completePhase1(cashCount);
-    toast.success("✅ Fase 1 completada correctamente");
+    toast.success(TOAST_MESSAGES.SUCCESS_PHASE1, {
+      duration: TOAST_DURATIONS.SHORT
+    });
     
     // 🤖 [IA] - v1.0.84: Use local calculation for accurate messages
     // 🤖 [IA] - v1.2.7: Toast de conteo matutino eliminado
     if (isMorningCount) {
       // Transición directa sin notificación
     } else if (willSkipPhase2) {
-      toast.info("💡 Total ≤ $50. Saltando a reporte final.", { duration: 3000 });
+      toast.info(TOAST_MESSAGES.INFO_SKIP_PHASE2, { duration: TOAST_DURATIONS.NORMAL });
     } else {
-      toast.info("💰 Procediendo a división del efectivo (Fase 2)", { duration: 3000 });
+      toast.info(TOAST_MESSAGES.INFO_PROCEED_PHASE2, { duration: TOAST_DURATIONS.NORMAL });
     }
   };
 
   const handlePhase2Complete = () => {
     completePhase2Verification();
-    toast.success("✅ Fase 2 completada correctamente");
-    toast.info("📊 Procediendo a generar reporte final (Fase 3)", { duration: 3000 });
+    toast.success(TOAST_MESSAGES.SUCCESS_PHASE2, {
+      duration: TOAST_DURATIONS.SHORT
+    });
+    toast.info(TOAST_MESSAGES.INFO_PROCEED_PHASE3, { duration: TOAST_DURATIONS.NORMAL });
   };
 
   const handleCompleteCalculation = () => {
@@ -420,11 +427,15 @@ const CashCounter = ({
     if (!canGoPrevious()) {
       // Si está bloqueado, mostrar mensaje mejorado
       if (guidedState.isLocked) {
-        toast.error("🔒 Conteo finalizado - No se puede retroceder en la fase de totales");
+        toast.error(TOAST_MESSAGES.ERROR_LOCKED_TOTALS, {
+          duration: TOAST_DURATIONS.EXTENDED
+        });
         return;
       }
       if (guidedState.currentStep === 1) {
-        toast.info("ℹ️ Ya está en el primer campo");
+        toast.info(TOAST_MESSAGES.INFO_FIRST_FIELD, {
+          duration: TOAST_DURATIONS.SHORT
+        });
         return;
       }
       return;
@@ -436,9 +447,13 @@ const CashCounter = ({
     const success = goPrevious();
     setShowBackConfirmation(false);
     if (success) {
-      toast.success("⬅️ Campo anterior activado - Los valores se mantuvieron");
+      toast.success(TOAST_MESSAGES.SUCCESS_PREVIOUS_FIELD, {
+        duration: TOAST_DURATIONS.SHORT
+      });
     } else {
-      toast.error("⚠️ No se pudo retroceder");
+      toast.error(TOAST_MESSAGES.ERROR_CANNOT_GO_BACK, {
+        duration: TOAST_DURATIONS.EXTENDED
+      });
     }
   };
 
