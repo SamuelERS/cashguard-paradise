@@ -64,9 +64,20 @@ Tras un problema inicial donde el Service Worker no se registraba (probablemente
 
 Ahora, subiremos los archivos generados al servidor para que tu aplicación esté en línea.
 
+**BUILD COMPLETADO (30/09/2025 22:39):**
+- ✅ Build generado exitosamente en `dist/`
+- ✅ Tamaño total: 3.0 MB
+- ✅ PWA artifacts verificados: `sw.js`, `manifest.webmanifest`, `workbox-5ffe50d4.js`
+- ✅ 41 archivos pre-cacheados (2.7 MB)
+- ✅ Assets optimizados: CSS (250 KB) + JS (1.4 MB)
+
+### Métodos de Despliegue Disponibles:
+
+#### OPCIÓN A: SiteGround FTP (Manual)
+
 1.  **[ ] Elegir un método de subida:**
-    *   **Opción A (Recomendado):** Usar un cliente FTP como [FileZilla](https://filezilla-project.org/).
-    *   **Opción B:** Usar el "Administrador de Archivos" (`File Manager`) en el panel de control de SiteGround (Site Tools).
+    *   **Opción A1 (Recomendado):** Usar un cliente FTP como [FileZilla](https://filezilla-project.org/).
+    *   **Opción A2:** Usar el "Administrador de Archivos" (`File Manager`) en el panel de control de SiteGround (Site Tools).
 
 2.  **[ ] Conectar al servidor:** Usa las credenciales FTP (servidor, usuario, contraseña) que te proveyó SiteGround para conectarte.
 
@@ -78,6 +89,30 @@ Ahora, subiremos los archivos generados al servidor para que tu aplicación est�
     *   En el lado local (panel izquierdo en FileZilla), navega hasta la carpeta `dist` de tu proyecto.
     *   Selecciona **todo el contenido** de la carpeta `dist` (NO la carpeta `dist` en sí).
     *   Arrastra y suelta esos archivos dentro de la carpeta `public_html` en el servidor.
+
+#### OPCIÓN B: Docker Production (Servidor Propio/VPS)
+
+Para desplegar con Docker en tu propio servidor:
+
+```bash
+# 1. Construir y ejecutar en modo producción
+docker-compose --profile prod up -d
+
+# 2. Verificar que esté corriendo
+docker ps
+
+# 3. Acceder en: http://localhost:8080
+```
+
+#### OPCIÓN C: Netlify/Vercel (Deployment Automático)
+
+Para deployment automático con Git:
+
+1. Subir código a GitHub
+2. Conectar Netlify/Vercel a tu repositorio
+3. Configurar build command: `npm run build`
+4. Configurar publish directory: `dist`
+5. Agregar variables de entorno (Supabase)
 
 ---
 
