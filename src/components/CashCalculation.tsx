@@ -19,6 +19,7 @@ import { toast } from "sonner"; // 🤖 [IA] - v1.1.15 - Migrated to Sonner for 
 import { CashCount, ElectronicPayments } from "@/types/cash";
 import { PhaseState, DeliveryCalculation } from "@/types/phases";
 import { getStoreById, getEmployeeById } from "@/data/paradise";
+import { DenominationsList } from "@/components/cash-calculation/DenominationsList"; // 🤖 [IA] - v1.0.0: Componente extraído
 
 // 🤖 [IA] - v1.2.22: TypeScript interface for calculation results
 interface CalculationData {
@@ -27,8 +28,9 @@ interface CalculationData {
   totalGeneral: number;
   difference: number;
   changeResult: {
-    canMakeChange: boolean;
-    message: string;
+    change: Partial<CashCount>;
+    total: number;
+    possible: boolean;
   };
   hasAlert: boolean;
   timestamp: string;
@@ -144,9 +146,9 @@ const CashCalculation = ({
       storeId,
       cashierId,
       witnessId,
-      timestamp: calculationData.timestamp,
-      totalCash: calculationData.totalCash,
-      totalElectronic: calculationData.totalElectronic,
+      timestamp: calculationData?.timestamp || '',
+      totalCash: calculationData?.totalCash || 0,
+      totalElectronic: calculationData?.totalElectronic || 0,
       expectedSales,
       phaseCompleted: phaseState?.currentPhase || 3
     };
@@ -177,158 +179,24 @@ const CashCalculation = ({
   };
 
   // Generate display for remaining denominations when Phase 2 was skipped
+  // 🤖 [IA] - v1.0.0: Refactorizado para usar componente reutilizable
   const generateRemainingDenominationsDisplay = (remainingCash: CashCount) => {
-    const denominations = [
-      { key: 'penny', label: '1¢ centavo', value: 0.01 },
-      { key: 'nickel', label: '5¢ centavos', value: 0.05 },
-      { key: 'dime', label: '10¢ centavos', value: 0.10 },
-      { key: 'quarter', label: '25¢ centavos', value: 0.25 },
-      { key: 'dollarCoin', label: '$1 moneda', value: 1.00 },
-      { key: 'bill1', label: '$1', value: 1.00 },
-      { key: 'bill5', label: '$5', value: 5.00 },
-      { key: 'bill10', label: '$10', value: 10.00 },
-      { key: 'bill20', label: '$20', value: 20.00 },
-      { key: 'bill50', label: '$50', value: 50.00 },
-      { key: 'bill100', label: '$100', value: 100.00 }
-    ];
-
-    const items = denominations
-      .filter(d => remainingCash[d.key as keyof CashCount] > 0)
-      .map(d => {
-        const quantity = remainingCash[d.key as keyof CashCount] || 0;
-        const subtotal = quantity * d.value;
-        return (
-          <div key={d.key} className="flex justify-between text-sm bg-success/5 rounded px-3 py-1.5">
-            <span className="font-medium">{d.label}</span>
-            <span className="font-semibold">
-              × {quantity} = {formatCurrency(subtotal)}
-            </span>
-          </div>
-        );
-      });
-
-    // 🤖 [IA] - v1.0.80: Agregar línea de total para mejor claridad
-    const total = calculateCashTotal(remainingCash);
-    
-    return (
-      <>
-        {items}
-        {items.length > 0 && (
-          <>
-            <div className="border-t border-success/30 my-2"></div>
-            <div className="flex justify-between text-sm font-bold text-success px-3">
-              <span>Total en caja:</span>
-              <span>{formatCurrency(total)}</span>
-            </div>
-          </>
-        )}
-      </>
-    );
+    return <DenominationsList denominations={remainingCash} />;
   };
 
-  // Generate display for remaining denominations after Phase 2 completion
+  // 🤖 [IA] - v1.0.0: Refactorizado para usar componente reutilizable
   const generateRemainingDenominationsFromPhase2 = () => {
-    // 🤖 [IA] - v1.0.80: Usar datos verificados de Phase 2 en lugar de recalcular
     if (deliveryCalculation?.denominationsToKeep) {
-      const denominations = [
-        { key: 'penny', label: '1¢ centavo', value: 0.01 },
-        { key: 'nickel', label: '5¢ centavos', value: 0.05 },
-        { key: 'dime', label: '10¢ centavos', value: 0.10 },
-        { key: 'quarter', label: '25¢ centavos', value: 0.25 },
-        { key: 'dollarCoin', label: '$1 moneda', value: 1.00 },
-        { key: 'bill1', label: '$1', value: 1.00 },
-        { key: 'bill5', label: '$5', value: 5.00 },
-        { key: 'bill10', label: '$10', value: 10.00 },
-        { key: 'bill20', label: '$20', value: 20.00 },
-        { key: 'bill50', label: '$50', value: 50.00 },
-        { key: 'bill100', label: '$100', value: 100.00 }
-      ];
-
-      const items = denominations
-        .filter(d => deliveryCalculation.denominationsToKeep[d.key as keyof CashCount] > 0)
-        .map(d => {
-          const quantity = deliveryCalculation.denominationsToKeep[d.key as keyof CashCount] || 0;
-          const subtotal = quantity * d.value;
-          return (
-            <div key={d.key} className="flex justify-between text-sm bg-success/5 rounded px-3 py-1.5">
-              <span className="font-medium">{d.label}</span>
-              <span className="font-semibold">
-                × {quantity} = {formatCurrency(subtotal)}
-              </span>
-            </div>
-          );
-        });
-
-      // 🤖 [IA] - Agregar línea de total al final
-      const total = calculateCashTotal(deliveryCalculation.denominationsToKeep);
-      
-      return (
-        <>
-          {items}
-          {items.length > 0 && (
-            <>
-              <div className="border-t border-success/30 my-2"></div>
-              <div className="flex justify-between text-sm font-bold text-success px-3">
-                <span>Total en caja:</span>
-                <span>{formatCurrency(total)}</span>
-              </div>
-            </>
-          )}
-        </>
-      );
+      return <DenominationsList denominations={deliveryCalculation.denominationsToKeep} />;
     }
-    // Fallback si no hay datos de Phase 2
     return generateCalculated50Display();
   };
 
-  // Generate calculated $50 display as fallback
+  // 🤖 [IA] - v1.0.0: Refactorizado para usar componente reutilizable
   const generateCalculated50Display = () => {
     const changeResult = calculateChange50(cashCount);
     if (changeResult.possible && changeResult.change) {
-      const denominations = [
-        { key: 'penny', label: '1¢ centavo', value: 0.01 },
-        { key: 'nickel', label: '5¢ centavos', value: 0.05 },
-        { key: 'dime', label: '10¢ centavos', value: 0.10 },
-        { key: 'quarter', label: '25¢ centavos', value: 0.25 },
-        { key: 'dollarCoin', label: '$1 moneda', value: 1.00 },
-        { key: 'bill1', label: '$1', value: 1.00 },
-        { key: 'bill5', label: '$5', value: 5.00 },
-        { key: 'bill10', label: '$10', value: 10.00 },
-        { key: 'bill20', label: '$20', value: 20.00 },
-        { key: 'bill50', label: '$50', value: 50.00 },
-        { key: 'bill100', label: '$100', value: 100.00 }
-      ];
-
-      const items = denominations
-        .filter(d => changeResult.change[d.key as keyof CashCount] > 0)
-        .map(d => {
-          const quantity = changeResult.change[d.key as keyof CashCount] || 0;
-          const subtotal = quantity * d.value;
-          return (
-            <div key={d.key} className="flex justify-between text-sm bg-success/5 rounded px-3 py-1.5">
-              <span className="font-medium">{d.label}</span>
-              <span className="font-semibold">
-                × {quantity} = {formatCurrency(subtotal)}
-              </span>
-            </div>
-          );
-        });
-
-      // 🤖 [IA] - v1.0.80: Agregar línea de total para mejor claridad
-      return (
-        <>
-          {items}
-          {items.length > 0 && (
-            <>
-              <div className="border-t border-success/30 my-2"></div>
-              <div className="flex justify-between text-sm font-bold text-success px-3">
-                <span>Total en caja:</span>
-                <span>{formatCurrency(changeResult.total)}</span>
-              </div>
-            </>
-          )}
-        </>
-      );
+      return <DenominationsList denominations={changeResult.change as CashCount} />;
     }
     return (
       <div className="text-center text-warning">
@@ -353,7 +221,7 @@ const CashCalculation = ({
       // Fallback: try to calculate $50
       const changeResult = calculateChange50(cashCount);
       if (changeResult.possible && changeResult.change) {
-        remainingCash = changeResult.change;
+        remainingCash = changeResult.change as CashCount;
       } else {
         // If can't make exact $50, don't show duplicate data
         // Return empty to avoid confusion
@@ -393,7 +261,7 @@ const CashCalculation = ({
     const dataHash = generateDataHash();
     const electronicDetails = `Credomatic: ${formatCurrency(electronicPayments.credomatic)}\nPromerica: ${formatCurrency(electronicPayments.promerica)}`;
 
-    return `CORTE DE CAJA - ${calculationData.timestamp}
+    return `CORTE DE CAJA - ${calculationData?.timestamp || ''}
 ================================
 Sucursal: ${store?.name}
 Cajero: ${cashier?.name}
@@ -408,8 +276,8 @@ ${denominationDetails}
 PAGOS ELECTRÓNICOS:
 ${electronicDetails}
 
-Total Efectivo: ${formatCurrency(calculationData.totalCash)}
-Total Electrónico: ${formatCurrency(calculationData.totalElectronic)}
+Total Efectivo: ${formatCurrency(calculationData?.totalCash || 0)}
+Total Electrónico: ${formatCurrency(calculationData?.totalElectronic || 0)}
 
 ${phaseState?.shouldSkipPhase2 ? 
 `FASE 2 - OMITIDA
@@ -431,16 +299,16 @@ VERIFICACIÓN: ✓ EXITOSA`}
 
 FASE 3 - RESULTADOS FINALES
 -----------------------
-TOTAL GENERAL: ${formatCurrency(calculationData.totalGeneral)}
+TOTAL GENERAL: ${formatCurrency(calculationData?.totalGeneral || 0)}
 🎯 Venta Esperada: ${formatCurrency(expectedSales)}
-${calculationData.difference >= 0 ? '✅ Sobrante' : '⚠️ Faltante'}: ${formatCurrency(Math.abs(calculationData.difference))}
+${(calculationData?.difference || 0) >= 0 ? '✅ Sobrante' : '⚠️ Faltante'}: ${formatCurrency(Math.abs(calculationData?.difference || 0))}
 
-💼 Cambio para mañana: ${formatCurrency(calculationData.changeResult.total)}
+💼 Cambio para mañana: ${formatCurrency(calculationData?.changeResult?.total || 0)}
 
 DETALLE EN CAJA:
 ${generateRemainingCashDetails()}
 
-${calculationData.hasAlert ? '🚨 ALERTA: Faltante significativo detectado' : ''}
+${calculationData?.hasAlert ? '🚨 ALERTA: Faltante significativo detectado' : ''}
 
 ================================
 Firma Digital: ${dataHash}`;
@@ -571,12 +439,12 @@ Firma Digital: ${dataHash}`;
             <h2 className="text-[clamp(1.25rem,5vw,1.75rem)] font-bold text-primary mb-2">Cálculo Completado</h2>
             <p className="text-muted-foreground text-[clamp(0.875rem,3.5vw,1rem)]">Resultados del corte de caja</p>
             <Badge variant="outline" className="mt-2 border-primary text-primary text-[clamp(0.75rem,3vw,0.875rem)]">
-              {calculationData.timestamp}
+              {calculationData?.timestamp || ''}
             </Badge>
           </div>
 
           {/* Alert for significant shortage - 🤖 [IA] - v1.1.08: Glass morphism */}
-          {calculationData.hasAlert && (
+          {calculationData?.hasAlert && (
             <div className="p-[clamp(0.75rem,3vw,1rem)] rounded-[clamp(0.5rem,2vw,0.75rem)] flex items-start gap-3" style={{
               background: 'rgba(244, 33, 46, 0.1)',
               border: '1px solid rgba(244, 33, 46, 0.3)'
@@ -584,7 +452,7 @@ Firma Digital: ${dataHash}`;
               <AlertTriangle className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)] mt-0.5" style={{ color: '#f4212e' }} />
               <div>
                 <p className="font-medium text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#f4212e' }}>
-                  🚨 ALERTA: Faltante significativo detectado (${Math.abs(calculationData.difference).toFixed(2)})
+                  🚨 ALERTA: Faltante significativo detectado (${Math.abs(calculationData?.difference || 0).toFixed(2)})
                 </p>
                 <p className="text-[clamp(0.75rem,3vw,0.875rem)] mt-1" style={{ color: '#8899a6' }}>
                   Se enviará notificación automática al administrador.
@@ -658,20 +526,20 @@ Firma Digital: ${dataHash}`;
                 <div className="flex justify-between">
                   <span className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#8899a6' }}>Efectivo:</span>
                   <span className="font-bold text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#e1e8ed' }}>
-                    {formatCurrency(calculationData.totalCash)}
+                    {formatCurrency(calculationData?.totalCash || 0)}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#8899a6' }}>Electrónico:</span>
                   <span className="font-bold text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#e1e8ed' }}>
-                    {formatCurrency(calculationData.totalElectronic)}
+                    {formatCurrency(calculationData?.totalElectronic || 0)}
                   </span>
                 </div>
                 <div className="border-t border-gray-700 pt-3">
                   <div className="flex justify-between text-[clamp(1rem,4vw,1.125rem)] font-bold">
                     <span style={{ color: '#8899a6' }}>Total General:</span>
                     <span style={{ color: '#0a84ff' }}>
-                      {formatCurrency(calculationData.totalGeneral)}
+                      {formatCurrency(calculationData?.totalGeneral || 0)}
                     </span>
                   </div>
                 </div>
@@ -683,12 +551,12 @@ Firma Digital: ${dataHash}`;
                 </div>
                 <div className="flex justify-between text-[clamp(1rem,4vw,1.125rem)] font-bold">
                   <span style={{ color: '#8899a6' }}>
-                    {calculationData.difference >= 0 ? 'Sobrante:' : 'Faltante:'}
+                    {(calculationData?.difference || 0) >= 0 ? 'Sobrante:' : 'Faltante:'}
                   </span>
                   <span style={{ 
-                    color: calculationData.difference >= 0 ? '#00ba7c' : '#f4212e'
+                    color: (calculationData?.difference || 0) >= 0 ? '#00ba7c' : '#f4212e'
                   }}>
-                    {formatCurrency(Math.abs(calculationData.difference))}
+                    {formatCurrency(Math.abs(calculationData?.difference || 0))}
                   </span>
                 </div>
               </div>
