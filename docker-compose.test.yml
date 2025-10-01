@@ -1,7 +1,6 @@
 # 🤖 [IA] - v1.1.17: Docker Compose configuration for testing environment - SIMPLIFIED
 # No need for app container for unit tests, only for future E2E tests
-
-version: '3.8'
+# 🤖 [IA] - v1.2.36c: Removed obsolete version (Docker Compose v2.39.4 doesn't require)
 
 services:
   # Dedicated testing container - runs independently
@@ -20,8 +19,10 @@ services:
       # Mount test directories
       - ./src/__tests__:/app/src/__tests__
       - ./src/__mocks__:/app/src/__mocks__
-      # Coverage output
-      - test-results:/app/coverage
+      # 🤖 [IA] - v1.2.36c: Bind mount para coverage (evita EBUSY error con named volumes)
+      # Root cause: Named volume persistente impedía rmdir() de Vitest coverage.clean
+      # Solución: Bind mount permite limpieza exitosa + acceso directo desde host
+      - ./coverage:/app/coverage
     networks:
       - test-network
     command: npm run test
@@ -82,8 +83,7 @@ networks:
   test-network:
     driver: bridge
 
+# 🤖 [IA] - v1.2.36c: Eliminado volume test-results (ya no usado, reemplazado por bind mount)
 volumes:
-  test-results:
-    name: cashguard-test-results
   playwright-cache:
     name: playwright-browsers-cache

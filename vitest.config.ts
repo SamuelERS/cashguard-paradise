@@ -25,6 +25,10 @@ export default defineConfig({
     // Coverage configuration
     coverage: {
       provider: 'v8',
+      // 🤖 [IA] - v1.2.36c: Disable clean to avoid EBUSY with Docker mounted directories
+      // Root cause: rmdir() fails on mounted directories (both named volumes and bind mounts)
+      // Solution: Let coverage overwrite existing files instead of removing directory
+      clean: false,
       reporter: ['text', 'json', 'html', 'lcov'],
       exclude: [
         'node_modules/',

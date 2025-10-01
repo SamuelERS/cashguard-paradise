@@ -1,4 +1,4 @@
-# CLAUDE.md v1.2.36a
+# CLAUDE.md v1.2.36c
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
@@ -51,6 +51,37 @@ CashGuard Paradise v1.2.22 is a cash management system for "Acuarios Paradise" r
 ## 📝 Recent Updates
 
 *Para historial completo v1.0.80 - v1.1.20, ver [CHANGELOG-DETALLADO.md](/Documentos%20MarkDown/CHANGELOG-DETALLADO.md)*
+
+### v1.2.36c - Docker Coverage EBUSY Fix [MISIÓN CUMPLIDA] ✅
+**OPERACIÓN DOCKER COVERAGE FIX:** Solución definitiva para error EBUSY al generar coverage reports en contenedor Docker.
+- **Problema identificado:** `Error: EBUSY: resource busy or locked, rmdir '/app/coverage'` (errno -16)
+- **Root cause técnico:**
+  - Vitest ejecuta `coverage.clean = true` por defecto (intenta `rmdir()` antes de generar)
+  - Directorio `/app/coverage` montado en Docker (named volume o bind mount) aparece como "locked"
+  - Syscall `rmdir()` falla con EBUSY incluso con bind mount
+- **Análisis previo ejecutado (Reglas de la Casa):**
+  - ✅ Docker Compose v2.39.4 verificado (>= 2.0, puede eliminar `version: '3.8'`)
+  - ✅ `.gitignore` ya tiene `coverage` configurado (línea 28)
+  - ✅ Named volume `cashguard-test-results` existía pero estaba VACÍO
+  - ✅ Directorio `./coverage/` no existía en host (bind mount crearía automáticamente)
+- **Solución híbrida implementada:**
+  1. ✅ Cambio de named volume a bind mount (`./coverage:/app/coverage`) para acceso directo desde host
+  2. ✅ **Configuración `coverage.clean: false`** en vitest.config.ts (clave de la solución)
+  3. ✅ Eliminado `version: '3.8'` obsoleto de docker-compose.test.yml
+  4. ✅ Limpieza de named volume obsoleto `cashguard-test-results`
+- **Resultado exitoso:**
+  - ✅ Coverage report generado correctamente sin error EBUSY
+  - ✅ Archivos accesibles en `./coverage/` desde host (1.4MB JSON, 176KB LCOV, HTML interactivo)
+  - ✅ `open coverage/index.html` funciona inmediatamente
+  - ✅ Compatible con CI/CD workflows (archivos en workspace)
+  - ✅ Exit code 0 (warnings coverage thresholds esperados, no errores EBUSY)
+- **Beneficios arquitectónicos:**
+  - Coverage reports en `./coverage/` accesibles desde IDE/editor
+  - Cero manual cleanup de Docker volumes requerido
+  - Vitest sobrescribe archivos existentes en lugar de eliminar directorio
+  - Sin warnings Docker Compose obsoletos
+- **Lección aprendida:** Directorios montados en Docker (volumes o bind mounts) no deben ser eliminados por aplicaciones internas, solo sobrescritos
+**Archivos:** `docker-compose.test.yml`, `vitest.config.ts`, `CLAUDE.md`
 
 ### v1.2.36a - Test Suite Recovery Completada [100% PASSING] 🎉
 **OPERACIÓN TEST RECOVERY EXITOSA:** Reparación definitiva de test suite - **121/121 tests passing (100%)** - cero tests fallando.
