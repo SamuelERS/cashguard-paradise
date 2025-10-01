@@ -14,6 +14,7 @@
     "test:ui": "vitest --ui",
     "test:watch": "vitest watch",
     "test:coverage": "vitest run --coverage",
+    "test:coverage:ci": "rm -rf coverage && vitest run --coverage",
     "test:unit": "vitest run src/__tests__/unit",
     "test:integration": "vitest run src/__tests__/integration",
     "docker:test": "./Scripts/docker-test-commands.sh test",
