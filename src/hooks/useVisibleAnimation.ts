@@ -18,13 +18,29 @@ interface UseVisibleAnimationReturn {
 }
 
 /**
- * Hook que detecta cuando un elemento está visible y controla animaciones
- * para optimizar el consumo de batería
+ * 🤖 [IA] - Hook para gestión inteligente de animaciones - v1.2.18
  * 
- * @param options - Opciones de configuración del IntersectionObserver
- * @returns Objeto con estado de visibilidad, ref y métodos de control
+ * @description
+ * Hook que detecta cuando un elemento está visible en el viewport usando IntersectionObserver.
+ * Pausa automáticamente animaciones cuando los elementos salen del viewport para optimizar
+ * batería y rendimiento reduciendo trabajo innecesario de la GPU. Perfecto para listas
+ * largas con animaciones o elementos fuera de vista.
+ * 
+ * @param {UseVisibleAnimationOptions} [options] - Opciones del IntersectionObserver
+ * @param {string} [options.rootMargin='50px'] - Margen para inicio de detección
+ * @param {number} [options.threshold=0.1] - Umbral de visibilidad (0-1)
+ * @param {boolean} [options.enabled=true] - Si el observer está activo
+ * 
+ * @returns {UseVisibleAnimationReturn} Objeto con estado y controles
+ * 
+ * @property {boolean} isVisible - Si el elemento es visible
+ * @property {RefObject} elementRef - Ref para asignar al elemento DOM
+ * @property {function} startAnimation - Fuerza inicio de animación
+ * @property {function} stopAnimation - Fuerza detención de animación
  * 
  * @example
+ * ```tsx
+ * // Caso 1: Pausar animación cuando no está visible
  * const { isVisible, elementRef } = useVisibleAnimation();
  * 
  * <input 
@@ -34,6 +50,23 @@ interface UseVisibleAnimationReturn {
  *     !isVisible && "animation-paused"
  *   )}
  * />
+ * 
+ * // Caso 2: Lista con animaciones optimizadas
+ * const items = data.map(item => {
+ *   const { isVisible, elementRef } = useVisibleAnimation({
+ *     rootMargin: '100px',
+ *     threshold: 0.5
+ *   });
+ *   
+ *   return (
+ *     <div ref={elementRef} className={isVisible ? 'animate' : 'paused'}>
+ *       {item.content}
+ *     </div>
+ *   );
+ * });
+ * ```
+ * 
+ * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API IntersectionObserver API}
  */
 export function useVisibleAnimation(options: UseVisibleAnimationOptions = {}): UseVisibleAnimationReturn {
   const {

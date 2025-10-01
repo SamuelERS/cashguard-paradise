@@ -1,11 +1,39 @@
 import { useState, useCallback } from 'react';
 
-// 🤖 [IA] - v1.1.0: Enhanced with comprehensive error handling
 /**
- * Hook for managing localStorage with robust error handling
- * @param key - localStorage key
- * @param initialValue - fallback value if localStorage fails
- * @returns [storedValue, setValue, error, isAvailable]
+ * 🤖 [IA] - Hook para gestión de localStorage con manejo robusto de errores - v1.1.0
+ * 
+ * @description
+ * Hook que proporciona una interfaz similar a useState pero persistiendo valores en localStorage.
+ * Incluye detección automática de disponibilidad, manejo de QuotaExceededError,
+ * graceful degradation a memoria si localStorage no está disponible, y tracking de errores.
+ * 
+ * @template T - Tipo del valor a almacenar
+ * @param {string} key - Clave de localStorage
+ * @param {T} initialValue - Valor inicial/fallback si localStorage falla
+ * 
+ * @example
+ * ```tsx
+ * const [theme, setTheme, { error, isAvailable }] = useLocalStorage('theme', 'dark');
+ * 
+ * // Usar como useState normal
+ * setTheme('light');
+ * 
+ * // Verificar si localStorage está disponible
+ * if (!isAvailable) {
+ *   console.warn('localStorage no disponible');
+ * }
+ * 
+ * // Verificar errores
+ * if (error) {
+ *   console.error('Error localStorage:', error);
+ * }
+ * ```
+ * 
+ * @returns {[T, (value: T) => void, { error: Error | null, isAvailable: boolean }]}
+ * Array con valor, setter y objeto de metadata
+ * 
+ * @see {@link useTheme} Ejemplo de uso en hook de tema
  */
 export function useLocalStorage<T>(key: string, initialValue: T) {
   // 🤖 [IA] - Check localStorage availability

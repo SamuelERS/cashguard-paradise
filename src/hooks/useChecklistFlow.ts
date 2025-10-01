@@ -1,4 +1,44 @@
-// 🤖 [IA] - v1.2.26: Hook especializado para flujo de checklist progresivo Phase2Manager
+/**
+ * 🤖 [IA] - Hook para flujo de checklist progresivo - v1.2.26
+ * 
+ * @description
+ * Hook especializado para Phase2Manager que implementa un checklist con revelación
+ * progresiva. Los items se revelan secuencialmente a medida que se marcan los anteriores.
+ * Incluye animaciones de activación y control de completitud.
+ * 
+ * @example
+ * ```tsx
+ * const {
+ *   checkedItems,
+ *   enabledItems,
+ *   initializeChecklist,
+ *   handleCheckChange,
+ *   isChecklistComplete
+ * } = useChecklistFlow();
+ * 
+ * // Inicializar checklist
+ * useEffect(() => {
+ *   initializeChecklist();
+ * }, []);
+ * 
+ * // Manejar cambio de checkbox
+ * <Checkbox
+ *   checked={checkedItems.bolsa}
+ *   onCheckedChange={() => handleCheckChange('bolsa')}
+ * />
+ * ```
+ * 
+ * @returns Objeto con estado y funciones de control del checklist
+ * 
+ * @property {ChecklistItems} checkedItems - Items marcados
+ * @property {EnabledItems} enabledItems - Items habilitados para interacción
+ * @property {HiddenItems} hiddenItems - Items ocultos (revelación progresiva)
+ * @property {function} initializeChecklist - Inicializa el checklist
+ * @property {function} handleCheckChange - Marca/desmarca un item
+ * @property {function} isChecklistComplete - Verifica si todos los items están marcados
+ * @property {function} getItemClassName - Obtiene clases CSS para animaciones
+ * @property {function} isItemActivating - Verifica si un item está en animación
+ */
 import { useState, useCallback } from 'react';
 import { useTimingConfig } from './useTimingConfig';
 
