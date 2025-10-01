@@ -1,6 +1,51 @@
-// 🤖 [IA] - v1.0.38 - Hook para navegación del wizard inicial - Eliminación de firma redundante
+/**
+ * 🤖 [IA] - Hook para navegación del wizard inicial - v1.0.38
+ * 
+ * @description
+ * Hook que gestiona la navegación y validación del wizard de configuración inicial
+ * del corte de caja. Maneja 5 pasos: protocolo, sucursal, cajero, testigo y venta esperada.
+ * Incluye validación automática y prevención de avance con datos inválidos.
+ * 
+ * @example
+ * ```tsx
+ * const {
+ *   state,
+ *   goNext,
+ *   goPrevious,
+ *   updateData,
+ *   resetWizard
+ * } = useWizardNavigation();
+ * 
+ * // Actualizar datos del paso actual
+ * updateData({ selectedStore: 'store-1' });
+ * 
+ * // Avanzar al siguiente paso (con validación)
+ * if (goNext()) {
+ *   console.log('Avanzado a paso', state.currentStep);
+ * }
+ * ```
+ * 
+ * @returns Objeto con estado del wizard y funciones de navegación
+ * 
+ * @property {WizardNavigationState} state - Estado completo del wizard
+ * @property {function} goNext - Avanza al siguiente paso si la validación pasa
+ * @property {function} goPrevious - Retrocede al paso anterior
+ * @property {function} updateData - Actualiza los datos del wizard
+ * @property {function} resetWizard - Reinicia el wizard al estado inicial
+ * @property {function} getNavigationState - Obtiene el estado de navegación actual
+ */
 import { useState, useCallback } from 'react';
 
+/**
+ * Datos recopilados durante el wizard
+ * 
+ * @interface WizardData
+ * @property {boolean} rulesAccepted - Si se aceptaron las reglas del protocolo
+ * @property {string} selectedStore - ID de la sucursal seleccionada
+ * @property {string} selectedCashier - ID del cajero seleccionado
+ * @property {string} selectedWitness - ID del testigo seleccionado
+ * @property {string} expectedSales - Venta esperada según SICAR
+ */
 export interface WizardData {
   // Paso 1: Protocolo
   rulesAccepted: boolean;

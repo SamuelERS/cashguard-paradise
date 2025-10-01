@@ -1,4 +1,29 @@
-// 🤖 [IA] - v1.0.81 - Hook para manejar el modo de operación
+/**
+ * 🤖 [IA] - Hook para gestión del modo de operación - v1.0.81
+ * 
+ * @description
+ * Hook que gestiona el modo de operación del corte de caja:
+ * - CASH_COUNT: Conteo matutino (solo efectivo, $50 fijo)
+ * - CASH_CUT: Corte nocturno (efectivo + electrónico, con división)
+ * 
+ * @example
+ * ```tsx
+ * const {
+ *   currentMode,
+ *   selectMode,
+ *   isCashCount,
+ *   getModeInfo
+ * } = useOperationMode();
+ * 
+ * // Seleccionar modo matutino
+ * selectMode(OperationMode.CASH_COUNT);
+ * 
+ * // Obtener información del modo
+ * const info = getModeInfo(); // { title, icon, description }
+ * ```
+ * 
+ * @returns Objeto con modo actual y funciones de control
+ */
 import { useState, useCallback } from 'react';
 import { OperationMode, OPERATION_MODES, OperationModeInfo } from '@/types/operation-mode';
 

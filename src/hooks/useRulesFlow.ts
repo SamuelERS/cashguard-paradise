@@ -2,7 +2,8 @@
 import { useReducer, useCallback, useRef } from 'react';
 import { useTimingConfig } from './useTimingConfig';
 import { 
-  RulesFlowState, 
+  RulesFlowState,
+  RuleState,
   createInitialRulesState, 
   currentProtocolRules,
   shuffleProtocolRules,

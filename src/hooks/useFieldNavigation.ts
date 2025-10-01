@@ -1,8 +1,37 @@
+/**
+ * 🤖 [IA] - Hook para navegación entre campos con Enter - v1.0.21
+ * 
+ * @description
+ * Hook que proporciona navegación automática entre campos de input usando la tecla Enter.
+ * Optimizado para móviles con detección de dispositivo y timing unificado para evitar
+ * race conditions. Busca campos por data-field attribute para navegación precisa.
+ * 
+ * @param {string[]} fields - Array de nombres de campos en orden de navegación
+ * 
+ * @example
+ * ```tsx
+ * const { handleEnterNavigation } = useFieldNavigation([
+ *   'penny', 'nickel', 'dime', 'quarter'
+ * ]);
+ * 
+ * <input
+ *   data-field="penny"
+ *   onKeyPress={handleEnterNavigation('penny', handleConfirm)}
+ * />
+ * ```
+ * 
+ * @returns Objeto con funciones de navegación
+ * 
+ * @property {function} findNextActiveInput - Encuentra el siguiente input activo
+ * @property {function} handleEnterNavigation - Maneja navegación con Enter key
+ * 
+ * @see {@link useIsMobile} Hook de detección móvil unificado (BUG #5 Fix)
+ * @see {@link useTimingConfig} Hook de timing sin race conditions (BUG #6 Fix)
+ */
 import { useCallback } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile'; // 🤖 [IA] - BUG #5 Fix: Usar hook existente
 import { useTimingConfig } from '@/hooks/useTimingConfig'; // 🤖 [IA] - BUG #6 Fix: Timing unificado
 
-/* 🤖 [IA] - Hook para navegación entre campos con Enter - Optimizado para móvil v1.0.21 */
 export const useFieldNavigation = (fields: string[]) => {
   const isMobile = useIsMobile(); // 🤖 [IA] - BUG #5 Fix: Usar detección unificada
   const { createTimeout } = useTimingConfig(); // 🤖 [IA] - BUG #6 Fix: Timing sin race conditions
