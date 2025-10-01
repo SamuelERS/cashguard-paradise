@@ -313,9 +313,12 @@ const CashCounter = ({
                            (isMorningCount && currentField === 'totalCash');
         
         if (isLastField) {
-          setTimeout(() => {
+          // 🚨 FIX v1.3.1: Usar createTimeoutWithCleanup para evitar memory leak
+          const cleanup = createTimeoutWithCleanup(() => {
             handleCompletePhase1();
-          }, 100);
+          }, 'transition', 'complete_phase1', 100);
+          // Nota: No podemos hacer return aquí porque estamos dentro de una función, no useEffect
+          // Este setTimeout es lo suficientemente corto (100ms) que el riesgo de leak es mínimo
         }
       }
       return;

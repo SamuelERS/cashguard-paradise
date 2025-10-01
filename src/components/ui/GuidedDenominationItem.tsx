@@ -145,9 +145,14 @@ export const GuidedDenominationItem = ({
     }
   }, [isActive, fieldName, createTimeoutWithCleanup, isStandalone]);
 
-  // 🤖 [IA] - Cleanup de la navegación cuando se desmonta el componente v1.2.20
+  // 🤖 [IA] - v1.3.1: Cleanup de la navegación cuando se desmonta el componente
   useEffect(() => {
     return () => {
+      // Cleanup del timeout de navegación si el componente se desmonta
+      if (navigationTimeoutRef.current) {
+        navigationTimeoutRef.current();
+        navigationTimeoutRef.current = undefined;
+      }
     };
   }, []);
 
@@ -282,9 +287,10 @@ export const GuidedDenominationItem = ({
             if (isStandalone && isActive) {
               // Prevenir comportamiento por defecto y forzar focus
               e.stopPropagation();
-              setTimeout(() => {
+              // 🚨 FIX v1.3.1: Usar requestAnimationFrame en lugar de setTimeout
+              requestAnimationFrame(() => {
                 e.currentTarget.focus();
-              }, 50);
+              });
             }
           }}
           autoCapitalize="off"  // Prevenir capitalización en iOS

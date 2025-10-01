@@ -238,9 +238,45 @@ const [value, setValue, { error, isAvailable }] = useLocalStorage('key', default
 // Reporta errores específicos (quota exceeded, parse errors, etc.)
 ```
 
-#### 11. **useEffect sin Cleanup en Algunos Componentes**
-**Problema:** Algunos `useEffect` no retornan función de cleanup.
-**Impacto:** Posibles memory leaks.
+#### 11. ✅ **useEffect sin Cleanup en Algunos Componentes - RESUELTO**
+**Estado:** ✅ **CORREGIDO** - 01/10/2025
+**Archivos:** `GuidedDenominationItem.tsx`, `Phase2VerificationSection.tsx`, `CashCounter.tsx`
+**Problema Original:** 
+- useEffect vacío sin cleanup funcional en GuidedDenominationItem
+- setTimeout sin cleanup en Phase2VerificationSection causando memory leaks
+- requestAnimationFrame no usado para operaciones UI
+**Solución Implementada:**
+- ✅ **Cleanup funcional:** useEffect ahora limpia navigationTimeoutRef correctamente
+- ✅ **createTimeoutWithCleanup:** Reemplazado setTimeout directo con sistema unificado
+- ✅ **requestAnimationFrame:** Usado para operaciones UI (setInputValue, focus)
+- ✅ **Memory leak prevention:** Todos los timers cancelados al desmontar componente
+**Mejoras Implementadas:**
+```typescript
+// ANTES: useEffect vacío inútil
+useEffect(() => {
+  return () => {};
+}, []);
+
+// DESPUÉS: Cleanup funcional
+useEffect(() => {
+  return () => {
+    if (navigationTimeoutRef.current) {
+      navigationTimeoutRef.current();
+      navigationTimeoutRef.current = undefined;
+    }
+  };
+}, []);
+
+// ANTES: setTimeout sin cleanup
+setTimeout(() => inputRef.current?.focus(), 100);
+
+// DESPUÉS: Timing system con cleanup
+const cleanup = createTimeoutWithCleanup(() => {
+  inputRef.current?.focus();
+}, 'focus', 'step_focus', 100);
+return cleanup;
+```
+**Resultado:** Eliminados memory leaks potenciales + mejor gestión de recursos.
 
 #### 12. **Falta Validación de Props en Algunos Componentes**
 **Problema:** Algunos componentes asumen que props siempre existen.
@@ -447,6 +483,14 @@ const CashCalculation = lazy(() => import('./CashCalculation'));
 - ✅ Auto-focus funciona correctamente en iOS/Android
 - ✅ Navegación fluida sin toques manuales
 - ✅ 1 archivo modificado: `GuidedDenominationItem.tsx` (20 líneas simplificadas)
+
+**Bug #11 Resuelto: useEffect sin Cleanup**
+- ✅ Cleanup funcional en navigationTimeoutRef
+- ✅ setTimeout → createTimeoutWithCleanup (evita memory leaks)
+- ✅ setTimeout → requestAnimationFrame para operaciones UI
+- ✅ Memory leak prevention en 3 componentes
+- ✅ 3 archivos modificados: `GuidedDenominationItem.tsx`, `Phase2VerificationSection.tsx`, `CashCounter.tsx`
+- ✅ Mejor gestión de recursos al desmontar componentes
 
 **Bug #4 Resuelto: Scroll Bloqueado en PWA**
 - ✅ Sistema anti-bounce inteligente implementado

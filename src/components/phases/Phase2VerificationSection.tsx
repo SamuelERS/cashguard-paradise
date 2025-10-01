@@ -76,12 +76,13 @@ export function Phase2VerificationSection({
     if (nextIncompleteIndex !== -1 && nextIncompleteIndex !== currentStepIndex) {
       setCurrentStepIndex(nextIncompleteIndex);
       setInputValue('');
-      // 🤖 [IA] - v1.2.24: Mantener foco al cambiar de paso
-      setTimeout(() => {
+      // 🚨 FIX v1.3.1: Usar createTimeoutWithCleanup para evitar memory leak
+      const cleanup = createTimeoutWithCleanup(() => {
         inputRef.current?.focus();
-      }, 100);
+      }, 'focus', 'verification_step_focus', 100);
+      return cleanup;
     }
-  }, [completedSteps, verificationSteps, currentStepIndex]);
+  }, [completedSteps, verificationSteps, currentStepIndex, createTimeoutWithCleanup]);
 
   // Complete section when all steps are done
   useEffect(() => {
@@ -119,10 +120,10 @@ export function Phase2VerificationSection({
         inputRef.current.focus();
       }
 
-      // 🤖 [IA] - Limpiar input después de mantener el focus
-      setTimeout(() => {
+      // 🚨 FIX v1.3.1: requestAnimationFrame es más adecuado que setTimeout para UI
+      requestAnimationFrame(() => {
         setInputValue('');
-      }, 50);
+      });
     }
   };
 
@@ -444,28 +445,25 @@ export function Phase2VerificationSection({
             </div>
 
             {/* Navigation footer - matching DeliveryFieldView */}
-            {(onCancel || onPrevious) && (
-              <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-3 border-t border-white/10 p-4 bg-black/20 backdrop-blur-sm">
-                {onCancel && (
-                  <DestructiveActionButton
-                    onClick={onCancel}
-                    aria-label="Cancelar verificación y volver"
-                  >
-                    Cancelar
-                  </DestructiveActionButton>
-                )}
+            {/* 🚨 FIX v1.3.1: onCancel y onPrevious son props requeridas, condición removida */}
+            <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-3 border-t border-white/10 p-4 bg-black/20 backdrop-blur-sm">
+              <DestructiveActionButton
+                onClick={onCancel}
+                aria-label="Cancelar verificación y volver"
+              >
+                Cancelar
+              </DestructiveActionButton>
 
-                {/* 🤖 [IA] - v1.2.24: Botón Anterior con lógica local */}
-                <NeutralActionButton
-                  onClick={handlePreviousStep}
-                  disabled={!canGoPreviousInternal}
-                  aria-label="Denominación anterior"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                  <span className="ml-2">Anterior</span>
-                </NeutralActionButton>
-              </div>
-            )}
+              {/* 🤖 [IA] - v1.2.24: Botón Anterior con lógica local */}
+              <NeutralActionButton
+                onClick={handlePreviousStep}
+                disabled={!canGoPreviousInternal}
+                aria-label="Denominación anterior"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <span className="ml-2">Anterior</span>
+              </NeutralActionButton>
+            </div>
           </motion.div>
         );
       })()}
