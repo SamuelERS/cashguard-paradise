@@ -70,7 +70,7 @@
 ### 🔴 CRÍTICOS (0)
 Ninguno detectado.
 
-### 🟡 IMPORTANTES (2 Activos + 3 Resueltos)
+### 🟡 IMPORTANTES (1 Activo + 4 Resueltos)
 
 #### 1. **Race Condition en Auto-Focus Móvil**
 **Archivo:** `GuidedDenominationItem.tsx` (líneas 163-169)
@@ -125,16 +125,32 @@ const isTouchDevice = useIsTouchDevice();
 - `CashCounter.tsx` - 3 header sections (Sucursal, Personal, Venta Esperada)
 **Resultado:** Escalado proporcional continuo sin saltos de breakpoint.
 
-#### 4. **Scroll Bloqueado en PWA para Reportes Finales**
-**Archivo:** `CashCounter.tsx` (líneas 185-191)
-**Problema:** `document.body.style.position = 'fixed'` bloquea scroll incluso para containers scrollables.
-**Impacto:** Reportes finales largos no son scrollables en PWA.
-**Solución Implementada:** Excepción para Phase 3 y atributo `data-scrollable`.
+#### 4. ✅ **Scroll Bloqueado en PWA para Reportes Finales - RESUELTO**
+**Estado:** ✅ **CORREGIDO** - 01/10/2025
+**Archivo:** `CashCounter.tsx` (líneas 166-247)
+**Problema Original:** 
+- `position: 'fixed'` en body bloqueaba scroll de contenedores internos
+- Phase 3 excluida completamente permitía overscroll bounce no deseado
+- Reportes finales largos no eran scrollables en PWA
+**Solución Implementada:**
+- ✅ **Scroll granular:** Body siempre fixed, contenedores internos scrollables
+- ✅ **Anti-bounce inteligente:** Detecta límites de scroll (top/bottom)
+- ✅ **touchAction optimizado:** `pan-y` permite scroll vertical en contenedores
+- ✅ **Touch tracking:** Calcula dirección de scroll para prevenir overscroll selectivamente
+- ✅ **Selectores específicos:** `.overflow-y-auto`, `[data-scrollable]`, `.morning-verification-container`, `.cash-calculation-container`
+**Mejoras:**
 ```typescript
-// Línea 169: Excluye Phase 3 pero podría mejorarse
-const isPhase3 = phaseState.currentPhase === 3;
-if (window.matchMedia?.('(display-mode: standalone)')?.matches && !isPhase3)
+// v1.3.0: Sistema inteligente anti-bounce
+const isAtTop = scrollTop === 0;
+const isAtBottom = scrollTop + clientHeight >= scrollHeight;
+const deltaY = touch.clientY - startY;
+
+// Prevenir bounce solo cuando intenta scrollear más allá de límites
+if ((isAtTop && deltaY > 0) || (isAtBottom && deltaY < 0)) {
+  e.preventDefault();
+}
 ```
+**Resultado:** Scroll fluido en reportes largos + prevención de bounce no deseado.
 
 #### 5. ✅ **Console.log en Código de Producción - RESUELTO**
 **Estado:** ✅ **CORREGIDO** - 01/10/2025
@@ -404,6 +420,14 @@ const CashCalculation = lazy(() => import('./CashCalculation'));
 - ✅ Tipografía: `text-fluid-xl` reemplaza `text-lg md:text-xl`
 - ✅ 2 archivos modificados: `InitialWizardModal.tsx` (4 headers) + `CashCounter.tsx` (3 headers)
 - ✅ Eliminados 7 breakpoints `md:` innecesarios
+
+**Bug #4 Resuelto: Scroll Bloqueado en PWA**
+- ✅ Sistema anti-bounce inteligente implementado
+- ✅ Detecta límites de scroll (top/bottom) por contenedor
+- ✅ Touch tracking para calcular dirección (deltaY)
+- ✅ Body fixed + contenedores scrollables (`pan-y`)
+- ✅ 4 selectores específicos: `.overflow-y-auto`, `[data-scrollable]`, containers
+- ✅ 1 archivo modificado: `CashCounter.tsx` (81 líneas mejoradas)
 
 **Bug #9 Resuelto: Espaciado Inconsistente en Wizard**
 - ✅ Unificado sistema de espaciado fluido en todos los steps

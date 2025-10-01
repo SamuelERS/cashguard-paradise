@@ -163,13 +163,10 @@ const CashCounter = ({
   const { createTimeout, createTimeoutWithCleanup } = useTimingConfig(); // 🤖 [IA] - Usar timing unificado v1.0.22
   const availableEmployees = selectedStore ? getEmployeesByStore(selectedStore) : [];
 
-  // 🤖 [IA] - v1.2.9 - Component-specific PWA scroll prevention
+  // 🤖 [IA] - v1.3.0 - Component-specific PWA scroll prevention (mejorado para Phase 3)
   useEffect(() => {
-    // 🚨 FIX: No aplicar scroll blocking en Phase 3 (reportes finales)
-    const isPhase3 = phaseState.currentPhase === 3;
-    
-    // Solo aplicar en PWA mode Y no estar en Phase 3
-    if (window.matchMedia?.('(display-mode: standalone)')?.matches && !isPhase3) {
+    // Solo aplicar en PWA mode
+    if (window.matchMedia?.('(display-mode: standalone)')?.matches) {
       // Guardar estilos originales
       const originalStyles = {
         position: document.body.style.position,
@@ -177,45 +174,77 @@ const CashCounter = ({
         height: document.body.style.height,
         overflow: document.body.style.overflow,
         overscrollBehavior: document.body.style.overscrollBehavior,
-        webkitOverflowScrolling: (document.body.style as ExtendedCSSStyleDeclaration).webkitOverflowScrolling, // 🤖 [IA] - v1.2.22: Fixed any type
+        webkitOverflowScrolling: (document.body.style as ExtendedCSSStyleDeclaration).webkitOverflowScrolling,
         touchAction: document.body.style.touchAction
       };
 
-      // Aplicar estilos para prevenir scroll
+      // Aplicar estilos para prevenir scroll del body (siempre, incluso en Phase 3)
       document.body.style.position = 'fixed';
       document.body.style.width = '100%';
       document.body.style.height = '100%';
       document.body.style.overflow = 'hidden';
       document.body.style.overscrollBehavior = 'none';
-      (document.body.style as ExtendedCSSStyleDeclaration).webkitOverflowScrolling = 'touch'; // 🤖 [IA] - v1.2.22: Fixed any type
-      document.body.style.touchAction = 'none';
+      (document.body.style as ExtendedCSSStyleDeclaration).webkitOverflowScrolling = 'touch';
+      document.body.style.touchAction = 'pan-y'; // 🚨 FIX: Permitir pan vertical en contenedores scrollables
 
-      // Prevenir touchmove
+      // 🚨 FIX v1.3.0: Prevenir touchmove inteligentemente
       const handleTouchMove = (e: TouchEvent) => {
-        // Solo prevenir si el target no es un elemento scrollable dentro del modal
         const target = e.target as HTMLElement;
-        const scrollableContainer = target.closest('.overflow-y-auto, [data-scrollable]');
+        
+        // Buscar contenedor scrollable más cercano
+        const scrollableContainer = target.closest('.overflow-y-auto, [data-scrollable], .morning-verification-container, .cash-calculation-container');
+        
         if (!scrollableContainer) {
+          // No hay contenedor scrollable, prevenir bounce del body
           e.preventDefault();
+        } else {
+          // Hay contenedor scrollable, verificar si está en los límites de scroll
+          const element = scrollableContainer as HTMLElement;
+          const { scrollTop, scrollHeight, clientHeight } = element;
+          
+          // Calcular si está intentando hacer overscroll
+          const isAtTop = scrollTop === 0;
+          const isAtBottom = scrollTop + clientHeight >= scrollHeight;
+          
+          // Obtener dirección del touch
+          const touch = e.touches[0];
+          const startY = (e as any).startY || touch.clientY;
+          const deltaY = touch.clientY - startY;
+          
+          // Prevenir bounce cuando intenta scrollear más allá de los límites
+          if ((isAtTop && deltaY > 0) || (isAtBottom && deltaY < 0)) {
+            e.preventDefault();
+          }
+          
+          // Guardar posición inicial para siguiente evento
+          (e as any).startY = startY;
         }
       };
 
+      // Guardar posición inicial del touch
+      const handleTouchStart = (e: TouchEvent) => {
+        const touch = e.touches[0];
+        (e as any).startY = touch.clientY;
+      };
+
+      document.addEventListener('touchstart', handleTouchStart, { passive: true });
       document.addEventListener('touchmove', handleTouchMove, { passive: false });
 
-      // Cleanup: restaurar estilos originales y remover event listener
+      // Cleanup: restaurar estilos originales y remover event listeners
       return () => {
         document.body.style.position = originalStyles.position;
         document.body.style.width = originalStyles.width;
         document.body.style.height = originalStyles.height;
         document.body.style.overflow = originalStyles.overflow;
         document.body.style.overscrollBehavior = originalStyles.overscrollBehavior;
-        (document.body.style as ExtendedCSSStyleDeclaration).webkitOverflowScrolling = originalStyles.webkitOverflowScrolling; // 🤖 [IA] - v1.2.22: Fixed any type
+        (document.body.style as ExtendedCSSStyleDeclaration).webkitOverflowScrolling = originalStyles.webkitOverflowScrolling;
         document.body.style.touchAction = originalStyles.touchAction;
 
+        document.removeEventListener('touchstart', handleTouchStart);
         document.removeEventListener('touchmove', handleTouchMove);
       };
     }
-  }, [phaseState.currentPhase]); // 🚨 FIX: Dependencia en currentPhase para reactivar cuando cambie
+  }, [phaseState.currentPhase]); // Reactivar cuando cambie la fase
 
   // 🤖 [IA] - v1.0.3 - Auto-iniciar Fase 1 si viene del wizard
   // 🤖 [IA] - v1.2.8 - Mostrar modal de instrucciones antes de iniciar
