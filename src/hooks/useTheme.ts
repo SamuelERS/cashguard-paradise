@@ -3,8 +3,9 @@ import { useLocalStorage } from './useLocalStorage';
 
 type Theme = 'dark' | 'light';
 
+// 🤖 [IA] - v1.1.0: Updated to use enhanced useLocalStorage with error handling
 export function useTheme() {
-  const [theme, setTheme] = useLocalStorage<Theme>('theme', 'dark');
+  const [theme, setTheme, { error, isAvailable }] = useLocalStorage<Theme>('theme', 'dark');
 
   useEffect(() => {
     const root = window.document.documentElement;
@@ -16,5 +17,12 @@ export function useTheme() {
     setTheme(theme === 'dark' ? 'light' : 'dark');
   };
 
-  return { theme, setTheme, toggleTheme };
+  // 🤖 [IA] - Log warning if localStorage is unavailable
+  useEffect(() => {
+    if (!isAvailable && process.env.NODE_ENV === 'development') {
+      console.warn('localStorage is not available. Theme changes will not persist.');
+    }
+  }, [isAvailable]);
+
+  return { theme, setTheme, toggleTheme, isLocalStorageAvailable: isAvailable, localStorageError: error };
 }

@@ -43,7 +43,7 @@ describe('🚨 Edge Cases Integration Tests', () => {
       const { user } = renderWithProviders(<Index />);
 
       // 🤖 [IA] - v1.2.36a: Test validates wizard prevents cashier = witness
-      // Uses morning operation (simpler, no security protocol step)
+      // Uses morning operation + Radix UI Select portal pattern
 
       const cashierName = 'Tito Gomez';
 
@@ -52,22 +52,46 @@ describe('🚨 Edge Cases Integration Tests', () => {
 
       const modal = testUtils.withinWizardModal();
 
-      // Step 1: Store
-      await user.click(await modal.findByText('Los Héroes'));
+      // Step 1: Store - Wait for step indicator, select, advance
+      // 🤖 [IA] - v1.2.36a: Use data-testid to avoid "multiple elements" error
+      await waitFor(() => {
+        const indicator = screen.getByTestId('step-indicator');
+        expect(indicator).toHaveTextContent(/Paso 1 de 3/);
+      }, { timeout: 3000 });
+
+      const storeSelect = await modal.findByRole('combobox');
+      await user.click(storeSelect);
+
+      const storeOption = await screen.findByText('Los Héroes', {}, { timeout: 3000 });
+      await user.click(storeOption);
       await user.click(modal.getByRole('button', { name: /siguiente/i }));
 
-      await waitForAnimation(200);
+      // Step 2: Cashier - Wait for step 2 indicator
+      await waitFor(() => {
+        const indicator = screen.getByTestId('step-indicator');
+        expect(indicator).toHaveTextContent(/Paso 2 de 3/);
+      }, { timeout: 3000 });
 
-      // Step 2: Cashier
       const modal2 = testUtils.withinWizardModal();
-      await user.click(await modal2.findByText(cashierName));
+      const cashierSelect = await modal2.findByRole('combobox');
+      await user.click(cashierSelect);
+
+      const cashierOption = await screen.findByText(cashierName, {}, { timeout: 3000 });
+      await user.click(cashierOption);
       await user.click(modal2.getByRole('button', { name: /siguiente/i }));
 
-      await waitForAnimation(200);
+      // Step 3: Witness - Wait for step 3 indicator (DUPLICATE selection)
+      await waitFor(() => {
+        const indicator = screen.getByTestId('step-indicator');
+        expect(indicator).toHaveTextContent(/Paso 3 de 3/);
+      }, { timeout: 3000 });
 
-      // Step 3: Witness (SAME as cashier - should trigger validation)
       const modal3 = testUtils.withinWizardModal();
-      await user.click(await modal3.findByText(cashierName)); // ← DUPLICATE
+      const witnessSelect = await modal3.findByRole('combobox');
+      await user.click(witnessSelect);
+
+      const witnessOption = await screen.findByText(cashierName, {}, { timeout: 3000 });
+      await user.click(witnessOption);
 
       // Verify validation: button disabled
       await waitFor(() => {
@@ -84,8 +108,8 @@ describe('🚨 Edge Cases Integration Tests', () => {
     it('debe mostrar error si se intenta el mismo cajero y testigo en conteo matutino', async () => {
       const { user } = renderWithProviders(<Index />);
 
-      // 🤖 [IA] - v1.2.36a: Test validates wizard prevents cashier = witness (morning count)
-      // Uses testUtils.withinWizardModal() pattern (same as Test 10)
+      // 🤖 [IA] - v1.2.36a: Test validates wizard prevents cashier = witness
+      // Uses Radix UI Select portal pattern
 
       const cashierName = 'Tito Gomez';
 
@@ -94,22 +118,45 @@ describe('🚨 Edge Cases Integration Tests', () => {
 
       const modal = testUtils.withinWizardModal();
 
-      // Step 1: Store
-      await user.click(await modal.findByText('Los Héroes'));
+      // Step 1: Store - Wait for step 1 indicator
+      await waitFor(() => {
+        const indicator = screen.getByTestId('step-indicator');
+        expect(indicator).toHaveTextContent(/Paso 1 de 3/);
+      }, { timeout: 3000 });
+
+      const storeSelect = await modal.findByRole('combobox');
+      await user.click(storeSelect);
+
+      const storeOption = await screen.findByText('Los Héroes', {}, { timeout: 3000 });
+      await user.click(storeOption);
       await user.click(modal.getByRole('button', { name: /siguiente/i }));
 
-      await waitForAnimation(200);
+      // Step 2: Cashier - Wait for step 2 indicator
+      await waitFor(() => {
+        const indicator = screen.getByTestId('step-indicator');
+        expect(indicator).toHaveTextContent(/Paso 2 de 3/);
+      }, { timeout: 3000 });
 
-      // Step 2: Cashier
       const modal2 = testUtils.withinWizardModal();
-      await user.click(await modal2.findByText(cashierName));
+      const cashierSelect = await modal2.findByRole('combobox');
+      await user.click(cashierSelect);
+
+      const cashierOption = await screen.findByText(cashierName, {}, { timeout: 3000 });
+      await user.click(cashierOption);
       await user.click(modal2.getByRole('button', { name: /siguiente/i }));
 
-      await waitForAnimation(200);
+      // Step 3: Witness - Wait for step 3 indicator (DUPLICATE)
+      await waitFor(() => {
+        const indicator = screen.getByTestId('step-indicator');
+        expect(indicator).toHaveTextContent(/Paso 3 de 3/);
+      }, { timeout: 3000 });
 
-      // Step 3: Witness (SAME as cashier - should trigger validation)
       const modal3 = testUtils.withinWizardModal();
-      await user.click(await modal3.findByText(cashierName)); // ← DUPLICATE
+      const witnessSelect = await modal3.findByRole('combobox');
+      await user.click(witnessSelect);
+
+      const witnessOption = await screen.findByText(cashierName, {}, { timeout: 3000 });
+      await user.click(witnessOption); // ← DUPLICATE
 
       // Verify validation: button disabled
       await waitFor(() => {
