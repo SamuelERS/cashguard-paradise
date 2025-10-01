@@ -1,8 +1,50 @@
-// 🤖 [IA] - v1.2.19: Extended with backward navigation and anti-fraud locking
+/**
+ * 🤖 [IA] - Hook para conteo guiado paso a paso - v1.2.19
+ * 
+ * @description
+ * Hook que gestiona el flujo de conteo guiado de efectivo y pagos electrónicos.
+ * Implementa navegación secuencial con anti-fraud locking y soporte para
+ * modo matutino (solo efectivo) y modo nocturno (efectivo + electrónicos).
+ * 
+ * @example
+ * ```tsx
+ * const {
+ *   state,
+ *   confirmCurrentField,
+ *   goPrevious,
+ *   canGoPrevious,
+ *   resetCounting
+ * } = useGuidedCounting('evening');
+ * 
+ * // Confirmar campo actual
+ * const success = confirmCurrentField(
+ *   '25',
+ *   handleCashChange,
+ *   handleElectronicChange,
+ *   cashCount,
+ *   electronicPayments
+ * );
+ * ```
+ * 
+ * @see {@link MORNING_FIELD_ORDER} Orden de campos para conteo matutino
+ * @see {@link EVENING_FIELD_ORDER} Orden de campos para conteo nocturno
+ */
 import { useState, useCallback } from 'react';
 import { CashCount, ElectronicPayments, DENOMINATIONS } from '@/types/cash';
 import { OperationMode } from '@/types/operation-mode'; // 🤖 [IA] - v1.0.85
 
+/**
+ * Estado del conteo guiado
+ * 
+ * @interface GuidedCountingState
+ * @property {number} currentStep - Paso actual (0-indexed)
+ * @property {number} totalSteps - Total de pasos en el flujo
+ * @property {Set<number>} completedSteps - Set de pasos completados
+ * @property {boolean} isCompleted - Si el conteo está completado
+ * @property {string[]} fieldOrder - Orden de los campos según modo
+ * @property {boolean} isLocked - Lock anti-fraude después de pagos electrónicos
+ * @property {number | null} lastElectronicStep - Paso donde inician pagos electrónicos
+ */
 export interface GuidedCountingState {
   currentStep: number;
   totalSteps: number;
@@ -85,6 +127,23 @@ export const FIELD_LABELS: Record<string, string> = {
   totalElectronic: 'Electrónico Total'
 };
 
+/**
+ * Hook useGuidedCounting - Gestión de conteo guiado
+ * 
+ * @param {OperationMode} [operationMode] - Modo de operación (CASH_COUNT para matutino, EVENING_CUT para nocturno)
+ * @returns Objeto con estado y funciones de navegación
+ * 
+ * @property {GuidedCountingState} state - Estado actual del conteo
+ * @property {function} getCurrentField - Obtiene el campo actual
+ * @property {function} getCurrentFieldLabel - Obtiene la etiqueta del campo actual
+ * @property {function} isFieldActive - Verifica si un campo está activo
+ * @property {function} isFieldCompleted - Verifica si un campo está completado
+ * @property {function} isFieldAccessible - Verifica si un campo es accesible
+ * @property {function} confirmCurrentField - Confirma el valor del campo actual
+ * @property {function} canGoPrevious - Verifica si puede retroceder
+ * @property {function} goPrevious - Retrocede al campo anterior
+ * @property {function} resetCounting - Reinicia el conteo
+ */
 export function useGuidedCounting(operationMode?: OperationMode) { // 🤖 [IA] - v1.0.85
   // 🤖 [IA] - v1.0.85: Use appropriate field order based on operation mode
   const fieldOrder = operationMode === OperationMode.CASH_COUNT 
@@ -103,24 +162,67 @@ export function useGuidedCounting(operationMode?: OperationMode) { // 🤖 [IA] 
 
   const [pendingValue, setPendingValue] = useState<string>('');
 
+  /**
+   * Obtiene el nombre del campo actual en el flujo
+   * 
+   * @returns {string} Nombre del campo (ej: 'penny', 'bill1', 'credomatic')
+   * 
+   * @example
+   * const fieldName = getCurrentField(); // 'penny'
+   */
   const getCurrentField = useCallback(() => {
     return fieldOrder[guidedState.currentStep - 1];
   }, [guidedState.currentStep, fieldOrder]);
 
+  /**
+   * Obtiene la etiqueta legible del campo actual
+   * 
+   * @returns {string} Etiqueta en español (ej: '1 centavo', '$5', 'Credomatic')
+   * 
+   * @example
+   * const label = getCurrentFieldLabel(); // '1 centavo'
+   */
   const getCurrentFieldLabel = useCallback(() => {
     const field = getCurrentField();
     return FIELD_LABELS[field as keyof typeof FIELD_LABELS];
   }, [getCurrentField]);
 
+  /**
+   * Verifica si un campo es el campo activo actual
+   * 
+   * @param {string} fieldName - Nombre del campo a verificar
+   * @returns {boolean} true si el campo está activo
+   * 
+   * @example
+   * const isActive = isFieldActive('penny'); // true si penny es el campo actual
+   */
   const isFieldActive = useCallback((fieldName: string) => {
     return getCurrentField() === fieldName;
   }, [getCurrentField]);
 
+  /**
+   * Verifica si un campo ya ha sido completado
+   * 
+   * @param {string} fieldName - Nombre del campo a verificar
+   * @returns {boolean} true si el campo fue completado
+   * 
+   * @example
+   * const completed = isFieldCompleted('penny'); // true si ya se completó
+   */
   const isFieldCompleted = useCallback((fieldName: string) => {
     const fieldIndex = FIELD_ORDER.indexOf(fieldName);
     return guidedState.completedSteps.has(fieldIndex + 1);
   }, [guidedState.completedSteps]);
 
+  /**
+   * Verifica si un campo es accesible (activo o completado)
+   * 
+   * @param {string} fieldName - Nombre del campo a verificar
+   * @returns {boolean} true si el campo es accesible
+   * 
+   * @example
+   * const accessible = isFieldAccessible('penny');
+   */
   const isFieldAccessible = useCallback((fieldName: string) => {
     return isFieldActive(fieldName) || isFieldCompleted(fieldName);
   }, [isFieldActive, isFieldCompleted]);

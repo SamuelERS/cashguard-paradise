@@ -1,3 +1,46 @@
+/**
+ * 🤖 [IA] - Hook para gestión de fases del corte de caja - v1.0.82
+ * 
+ * @description
+ * Hook que gestiona las 3 fases del proceso de corte de caja:
+ * - Fase 1: Conteo de efectivo y pagos electrónicos
+ * - Fase 2: División y verificación del efectivo (opcional, si > $50)
+ * - Fase 3: Reporte final
+ * 
+ * Implementa lógica de skip automático de Fase 2 para conteos matutinos
+ * o cuando el total de efectivo es menor o igual a $50.
+ * 
+ * @example
+ * ```tsx
+ * const {
+ *   phaseState,
+ *   deliveryCalculation,
+ *   completePhase1,
+ *   completePhase2Verification,
+ *   resetAllPhases
+ * } = usePhaseManager(OperationMode.EVENING_CUT);
+ * 
+ * // Completar fase 1
+ * completePhase1(cashCount);
+ * 
+ * // Verificar si debe saltar fase 2
+ * if (phaseState.shouldSkipPhase2) {
+ *   // Ir directo a fase 3
+ * }
+ * ```
+ * 
+ * @param {OperationMode} [operationMode] - Modo de operación (CASH_COUNT o EVENING_CUT)
+ * @returns Objeto con estado de fases y funciones de control
+ * 
+ * @property {PhaseState} phaseState - Estado general de las fases
+ * @property {Phase2State} phase2State - Estado detallado de fase 2
+ * @property {DeliveryCalculation | null} deliveryCalculation - Cálculo de división de efectivo
+ * @property {function} startPhase1 - Inicia la fase 1
+ * @property {function} completePhase1 - Completa fase 1 y calcula fase 2
+ * @property {function} completePhase2Verification - Completa fase 2
+ * @property {function} setCurrentPhase - Cambia la fase actual
+ * @property {function} resetAllPhases - Reinicia todas las fases
+ */
 import { useState, useCallback } from 'react';
 import { PhaseState, Phase2State, DeliveryCalculation } from '@/types/phases';
 import { CashCount } from '@/types/cash';

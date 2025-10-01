@@ -1,6 +1,40 @@
+/**
+ * 🤖 [IA] - Hook para validación unificada de entrada - v1.0.21
+ * 
+ * @description
+ * Hook que proporciona validación consistente para diferentes tipos de input numéricos.
+ * Maneja validación de enteros (denominaciones), decimales (cantidades) y moneda (precios).
+ * Incluye compatibilidad con punto y coma para Android.
+ * 
+ * @example
+ * ```tsx
+ * const { validateInput, getPattern, getInputMode } = useInputValidation();
+ * 
+ * // Validar cantidad entera
+ * const result = validateInput('25', 'integer');
+ * if (result.isValid) {
+ *   console.log(result.cleanValue); // '25'
+ * }
+ * 
+ * // Obtener pattern HTML5
+ * <input pattern={getPattern('decimal')} inputMode={getInputMode('decimal')} />
+ * ```
+ * 
+ * @returns Objeto con funciones de validación
+ * 
+ * @property {function} validateInput - Valida y limpia un valor de input
+ * @property {function} getPattern - Obtiene el pattern HTML5 apropiado
+ * @property {function} getInputMode - Obtiene el inputMode apropiado
+ */
 import { useCallback } from 'react';
 
-/* 🤖 [IA] - Hook para validación unificada de entrada - v1.0.21 */
+/**
+ * Tipos de input soportados
+ * 
+ * - `integer`: Solo números enteros (ej: cantidad de billetes/monedas)
+ * - `decimal`: Números con hasta 2 decimales (ej: 10.50)
+ * - `currency`: Valores monetarios con validación de formato
+ */
 export type InputType = 'integer' | 'decimal' | 'currency';
 
 export interface ValidationResult {
