@@ -70,7 +70,7 @@
 ### 🔴 CRÍTICOS (0)
 Ninguno detectado.
 
-### 🟡 IMPORTANTES (4 Activos + 1 Resuelto)
+### 🟡 IMPORTANTES (3 Activos + 2 Resueltos)
 
 #### 1. **Race Condition en Auto-Focus Móvil**
 **Archivo:** `GuidedDenominationItem.tsx` (líneas 163-169)
@@ -83,13 +83,30 @@ e.preventDefault();
 e.stopPropagation();
 ```
 
-#### 2. **Detección de Móvil Duplicada**
-**Archivos:** `useIsMobile.ts` vs `useFieldNavigation.ts`
-**Problema:** Dos sistemas diferentes de detección móvil:
-- `useIsMobile`: Usa `window.matchMedia` (768px breakpoint) ✅
-- `useFieldNavigation`: Usa regex `navigator.userAgent` ❌
-**Impacto:** Inconsistencia entre componentes, lógica duplicada.
-**Solución Propuesta:** Unificar usando solo `useIsMobile`.
+#### 2. ✅ **Detección de Móvil Duplicada - RESUELTO**
+**Estado:** ✅ **CORREGIDO** - 01/10/2025
+**Problema Original:** Dos hooks diferentes con lógica duplicada:
+- `use-mobile.tsx`: Usa `window.matchMedia` (Shadcn UI style)
+- `useIsMobile.ts`: Usa `resize` event listener (menos eficiente)
+**Solución Implementada:**
+- ✅ **Hook unificado:** Consolidado en `/hooks/use-mobile.tsx`
+- ✅ **Best practices combinadas:** matchMedia API + breakpoint configurable
+- ✅ **useIsTouchDevice agregado:** Detecta capacidades táctiles específicamente
+- ✅ **4 archivos actualizados:** App.tsx, CashCounter.tsx, sidebar.tsx, useFieldNavigation.ts
+- ✅ **Archivo duplicado eliminado:** useIsMobile.ts removido completamente
+**Mejoras de Performance:**
+- `matchMedia` API más eficiente que `resize` event listener
+- Event listener único en lugar de múltiples
+- Breakpoint configurable: `useIsMobile(breakpoint)` con default 768px
+**Nueva API:**
+```typescript
+// Detección por ancho de pantalla (optimizado con matchMedia)
+const isMobile = useIsMobile(); // default 768px
+const isTablet = useIsMobile(1024); // breakpoint custom
+
+// Detección de dispositivos táctiles (touch vs mouse)
+const isTouchDevice = useIsTouchDevice();
+```
 
 #### 3. **Tamaños Fijos en CSS que Violan "Reglas de la Casa"**
 **Archivo:** `index.css` y componentes varios
@@ -275,12 +292,14 @@ button.addEventListener('click', handleConfirm);
 const { keepKeyboardOpen } = useMobileKeyboard();
 ```
 
-#### 2. **Unificar Detección de Móvil**
+#### 2. ✅ **Unificar Detección de Móvil - COMPLETADO**
+**Estado:** ✅ **RESUELTO** el 01/10/2025
 **Impacto:** Medio - Código duplicado y inconsistente
-**Solución:**
-- Eliminar regex de `useFieldNavigation`
-- Usar exclusivamente `useIsMobile()` hook
-- Actualizar 6 componentes afectados
+**Solución Implementada:**
+- ✅ Hook unificado en `/hooks/use-mobile.tsx`
+- ✅ Archivo duplicado `useIsMobile.ts` eliminado
+- ✅ 4 componentes actualizados con imports correctos
+- ✅ API mejorada con breakpoint configurable + useIsTouchDevice
 
 #### 3. ✅ **Limpiar Console.log de Producción - COMPLETADO**
 **Estado:** ✅ **RESUELTO** el 01/10/2025
@@ -356,6 +375,14 @@ const CashCalculation = lazy(() => import('./CashCalculation'));
 - ✅ Implementado patrón consistente: `if (process.env.NODE_ENV === 'development')`
 - ✅ Verificado que archivos de test mantienen logs (aceptable)
 - ✅ Performance mejorada: logs eliminados del bundle de producción
+
+**Bug #2 Resuelto: Detección de Móvil Duplicada**
+- ✅ Unificado en hook único: `/hooks/use-mobile.tsx`
+- ✅ Eliminado archivo duplicado: `useIsMobile.ts`
+- ✅ matchMedia API (mejor performance que resize listener)
+- ✅ Breakpoint configurable: `useIsMobile(breakpoint)`
+- ✅ Agregado `useIsTouchDevice()` para detección táctil específica
+- ✅ 4 archivos actualizados: App.tsx, CashCounter.tsx, sidebar.tsx, useFieldNavigation.ts
 
 **Bug #10 Resuelto: Manejo de Errores en useLocalStorage**
 - ✅ Implementada detección automática de disponibilidad de localStorage

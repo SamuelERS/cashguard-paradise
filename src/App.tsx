@@ -5,7 +5,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import { FloatingOrbs } from "@/components/FloatingOrbs";
-import { useIsMobile } from "@/hooks/useIsMobile"; // 🤖 [IA] - v1.0.47: Detección móvil para toasts
+import { useIsMobile } from "@/hooks/use-mobile"; // 🤖 [IA] - v2.0.0: Hook unificado de detección móvil
 
 const queryClient = new QueryClient();
 

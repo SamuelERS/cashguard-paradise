@@ -44,7 +44,7 @@ import { STORES, EMPLOYEES, getEmployeesByStore } from "@/data/paradise";
 import { CashCount, ElectronicPayments, DENOMINATIONS } from "@/types/cash"; // 🤖 [IA] - v1.0.28: Agregado DENOMINATIONS
 import { useGuidedCounting } from "@/hooks/useGuidedCounting";
 import { usePhaseManager } from "@/hooks/usePhaseManager";
-import { useIsMobile } from "@/hooks/useIsMobile"; // 🤖 [IA] - v1.0.46: Hook para detectar móvil
+import { useIsMobile } from "@/hooks/use-mobile"; // 🤖 [IA] - v2.0.0: Hook unificado de detección móvil
 import { useInstructionsFlow } from "@/hooks/useInstructionsFlow"; // 🤖 [IA] - v1.2.23: Hook para reseteo del flujo de instrucciones
 import { toast } from "sonner";
 import { useTimingConfig } from "@/hooks/useTimingConfig"; // 🤖 [IA] - Hook de timing unificado v1.0.22
