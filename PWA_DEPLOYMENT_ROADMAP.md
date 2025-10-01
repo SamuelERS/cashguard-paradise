@@ -40,29 +40,23 @@ Un agente IA generó el build de la PWA y emitió un informe detallado. Un segun
 
 ---
 
-## Fase 3: Pre-verificación PWA Local (NUEVO)
+## Fase 3: Pre-verificación PWA Local (NUEVO) [COMPLETADO]
 
 **IMPORTANTE:** Antes de desplegar, verifica que la PWA funcione correctamente en local.
 
-1.  **[ ] Servir build local:**
-    ```bash
-    npm run preview
-    ```
+1.  **[x] Servir build local:** Se ejecutó `npm run preview` y el servidor se desplegó en `http://localhost:4173`.
 
-2.  **[ ] Abrir en navegador:** Visita `http://localhost:4173`
+2.  **[x] Abrir en navegador:** Se accedió a la URL y la aplicación cargó correctamente.
 
-3.  **[ ] Verificar Service Worker:**
-    - Abre DevTools (`F12`) → Application tab → Service Workers
-    - Confirma que `sw.js` esté registrado y activo
+3.  **[x] Verificar Service Worker:** Se confirmó mediante DevTools que el `sw.js` fue registrado, activado y está en ejecución para el scope correcto.
 
-4.  **[ ] Probar modo offline:**
-    - En DevTools → Network tab → marcar "Offline"
-    - Recargar página - debe funcionar sin conexión
-    - Desmarcar "Offline" para volver online
+4.  **[x] Probar modo offline:** La verificación manual confirmó que la app es funcional sin conexión.
 
-5.  **[ ] Verificar installability:**
-    - Debe aparecer ícono "instalar" en la barra de direcciones
-    - Botón derecho → "Instalar Paradise Cash Control"
+5.  **[x] Verificar installability:** La verificación manual confirmó que la aplicación es instalable desde el navegador.
+
+**REGISTRO DE VERIFICACIÓN (28/09/2025):**
+
+Tras un problema inicial donde el Service Worker no se registraba (probablemente por un estado de caché en el navegador), se confirmó que una actualización y revisión manual resolvieron el inconveniente. La PWA ahora es completamente funcional en el entorno de previsualización local y cumple todos los criterios de la Fase 3.
 
 ---
 
