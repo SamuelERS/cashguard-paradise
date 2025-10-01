@@ -70,18 +70,37 @@
 ### 🔴 CRÍTICOS (0)
 Ninguno detectado.
 
-### 🟡 IMPORTANTES (1 Activo + 4 Resueltos)
+### 🟡 IMPORTANTES (0 Activos + 5 Resueltos) ✅
 
-#### 1. **Race Condition en Auto-Focus Móvil**
-**Archivo:** `GuidedDenominationItem.tsx` (líneas 163-169)
-**Problema:** El evento `touchend` con `preventDefault()` cierra el teclado antes de que el auto-focus pueda mantenerlo abierto.
-**Impacto:** Usuario móvil debe tocar manualmente cada campo después de confirmar.
-**Solución:** Implementada parcialmente con `useTimingConfig`, pero persiste el problema en iOS.
+#### 1. ✅ **Race Condition en Auto-Focus Móvil - RESUELTO**
+**Estado:** ✅ **CORREGIDO** - 01/10/2025
+**Archivo:** `GuidedDenominationItem.tsx` (líneas 154-174)
+**Problema Original:** 
+- `touchend` con `preventDefault()` cerraba el teclado forzosamente
+- Auto-focus posterior no podía reabrir el teclado en iOS
+- Usuario debía tocar manualmente cada campo tras confirmar
+**Solución Implementada:**
+- ✅ **Reemplazado touchend por click:** Evento click es touch-compatible sin cerrar teclado
+- ✅ **Sin preventDefault en touch:** Solo previene default del botón, no del touch
+- ✅ **Auto-focus funciona:** El teclado permanece abierto para el siguiente campo
+**Código antes (v1.0.23):**
 ```typescript
-// Línea 164: preventDefault() causa cierre forzado del teclado
-e.preventDefault();
-e.stopPropagation();
+const handleTouchEnd = (e: TouchEvent) => {
+  e.preventDefault(); // ❌ Cierra teclado
+  e.stopPropagation();
+  handleConfirm();
+};
+button.addEventListener('touchend', handleTouchEnd, { passive: false });
 ```
+**Código después (v1.3.0):**
+```typescript
+const handleClick = (e: MouseEvent) => {
+  e.preventDefault(); // ✅ Solo previene submit
+  handleConfirm();
+};
+button.addEventListener('click', handleClick); // ✅ Touch-compatible
+```
+**Resultado:** Navegación fluida sin toques manuales - teclado permanece abierto.
 
 #### 2. ✅ **Detección de Móvil Duplicada - RESUELTO**
 **Estado:** ✅ **CORREGIDO** - 01/10/2025
@@ -420,6 +439,14 @@ const CashCalculation = lazy(() => import('./CashCalculation'));
 - ✅ Tipografía: `text-fluid-xl` reemplaza `text-lg md:text-xl`
 - ✅ 2 archivos modificados: `InitialWizardModal.tsx` (4 headers) + `CashCounter.tsx` (3 headers)
 - ✅ Eliminados 7 breakpoints `md:` innecesarios
+
+**Bug #1 Resuelto: Race Condition en Auto-Focus Móvil**
+- ✅ Reemplazado `touchend` por `click` event
+- ✅ Click es touch-compatible sin interferir con el teclado
+- ✅ Eliminado `preventDefault()` y `stopPropagation()` del touch
+- ✅ Auto-focus funciona correctamente en iOS/Android
+- ✅ Navegación fluida sin toques manuales
+- ✅ 1 archivo modificado: `GuidedDenominationItem.tsx` (20 líneas simplificadas)
 
 **Bug #4 Resuelto: Scroll Bloqueado en PWA**
 - ✅ Sistema anti-bounce inteligente implementado

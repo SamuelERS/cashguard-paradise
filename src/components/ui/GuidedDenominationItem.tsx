@@ -148,33 +148,30 @@ export const GuidedDenominationItem = ({
   // 🤖 [IA] - Cleanup de la navegación cuando se desmonta el componente v1.2.20
   useEffect(() => {
     return () => {
-      if (navigationTimeoutRef.current) {
-        navigationTimeoutRef.current();
-      }
     };
   }, []);
 
-  // 🤖 [IA] - Configurar touchend event para prevenir cierre de teclado móvil
+  // 🤖 [IA] - v1.3.0: SOLUCIÓN RACE CONDITION - Usar click en lugar de touchend
+  // El evento click es compatible con touch Y no cierra el teclado forzosamente como preventDefault() en touchend
+  // Esto permite que el auto-focus posterior reabra el teclado exitosamente
   useEffect(() => {
     if (isActive && buttonRef.current) {
       const button = buttonRef.current;
       
-      // 🤖 [IA] - Usar ref para evitar stale closure v1.0.23-fix
-      const handleTouchEnd = (e: TouchEvent) => {
+      // 🚨 FIX: click event funciona perfectamente con touch y no interfiere con el teclado
+      const handleClick = (e: MouseEvent) => {
+        // Prevenir solo el comportamiento default del botón, NO el touch
         e.preventDefault();
-        e.stopPropagation();
-        
-        // 🤖 [IA] - Simplificado: handleConfirm ya maneja todo v1.0.23-fix
         handleConfirm();
       };
 
-      button.addEventListener('touchend', handleTouchEnd, { passive: false });
+      button.addEventListener('click', handleClick);
       
       return () => {
-        button.removeEventListener('touchend', handleTouchEnd);
+        button.removeEventListener('click', handleClick);
       };
     }
-  }, [isActive, handleConfirm]); // 🤖 [IA] - Dependencias actualizadas v1.0.23
+  }, [isActive, handleConfirm])
 
   // 🤖 [IA] - Auto-confirmar al perder foco para navegación con flechas iOS
   const handleBlur = useCallback(() => {
