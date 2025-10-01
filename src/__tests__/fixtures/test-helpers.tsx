@@ -347,18 +347,25 @@ export async function confirmGuidedField(
   const activeInput = await screen.findByRole('textbox');
 
   // Limpiar y escribir el valor
+  // 🤖 [IA] - v1.2.36a: Fixed to allow "0" values (Sistema Ciego Anti-Fraude requires confirming ALL fields)
   await user.clear(activeInput);
-  if (value && value !== '0') {
+  if (value !== undefined && value !== null) {
     await user.type(activeInput, value);
+
+    // Wait for value to reflect in input
+    await waitFor(() => {
+      expect(activeInput).toHaveValue(value);
+    }, { timeout: 1000 });
   }
 
   // Esperar a que el botón se habilite
+  // 🤖 [IA] - v1.2.36a: Extended timeout from 2000ms to 3000ms for reliability
   await waitFor(() => {
     const confirmButton = screen.getByRole('button', {
       name: /confirmar cantidad ingresada/i
     });
     expect(confirmButton).not.toBeDisabled();
-  }, { timeout: 2000 });
+  }, { timeout: 3000 });
 
   // Buscar y hacer clic en el botón de confirmación
   const confirmButton = await screen.findByRole('button', {

@@ -12,7 +12,10 @@ import {
   mockLocalStorage,
   waitForAnimation,
   selectOperation,
-  completeSecurityProtocol
+  completeSecurityProtocol,
+  completeInstructionsModal,
+  completeGuidedCashCount,
+  confirmGuidedField
 } from '../fixtures/test-helpers';
 import { testUtils } from '../fixtures/test-utils';
 
@@ -272,7 +275,7 @@ describe('🚨 Edge Cases Integration Tests', () => {
     
     it('debe prevenir valores negativos en campos de conteo', async () => {
       const { user } = renderWithProviders(<Index />);
-      
+
       // Quick setup for evening cut
       await selectOperation(user, 'evening');
       await user.click(await screen.findByRole('checkbox'));
@@ -285,15 +288,18 @@ describe('🚨 Edge Cases Integration Tests', () => {
       await user.click(screen.getByRole('button', { name: /siguiente/i }));
       await user.type(screen.getByRole('textbox'), '100.00');
       await user.click(screen.getByRole('button', { name: /completar/i }));
-      
-      // Try to enter negative values
-      const pennyInput = await screen.findByLabelText(/1¢ centavo/i);
-      await user.type(pennyInput, '-5');
-      
+
+      // 🤖 [IA] - v1.2.36a: Wait for instruction modal to complete (Sistema Ciego Anti-Fraude)
+      await completeInstructionsModal(user);
+
+      // Try to enter negative values in guided mode
+      const activeInput = await screen.findByRole('textbox');
+      await user.type(activeInput, '-5');
+
       // Value should be 0 or positive only
-      expect(pennyInput).not.toHaveValue(-5);
-      expect(parseInt((pennyInput as HTMLInputElement).value) || 0).toBeGreaterThanOrEqual(0);
-    });
+      expect(activeInput).not.toHaveValue('-5');
+      expect(parseInt((activeInput as HTMLInputElement).value) || 0).toBeGreaterThanOrEqual(0);
+    }, 45000); // 🤖 [IA] - v1.2.36a: Extended timeout for instruction modal (16.5s) + validation
 
     it('debe validar formato de venta esperada SICAR', async () => {
       const { user } = renderWithProviders(<Index />);
@@ -325,7 +331,7 @@ describe('🚨 Edge Cases Integration Tests', () => {
 
     it('debe limitar valores máximos razonables en campos de conteo', async () => {
       const { user } = renderWithProviders(<Index />);
-      
+
       // Quick setup
       await selectOperation(user, 'morning');
       await user.click(await screen.findByText('Los Héroes'));
@@ -334,45 +340,58 @@ describe('🚨 Edge Cases Integration Tests', () => {
       await user.click(screen.getByRole('button', { name: /siguiente/i }));
       await user.click(await screen.findByText('María López'));
       await user.click(screen.getByRole('button', { name: /completar/i }));
-      
-      // Try to enter unreasonably large values
-      const bill100Input = await screen.findByLabelText(/\$100/i);
-      await user.type(bill100Input, '999999');
-      
+
+      // 🤖 [IA] - v1.2.36a: Wait for instruction modal to complete
+      await completeInstructionsModal(user);
+
+      // Try to enter unreasonably large values in guided mode
+      const activeInput = await screen.findByRole('textbox');
+      await user.type(activeInput, '999999');
+
       // Should have some reasonable limit
-      const value = parseInt((bill100Input as HTMLInputElement).value);
+      const value = parseInt((activeInput as HTMLInputElement).value);
       expect(value).toBeLessThanOrEqual(9999); // Reasonable max
-    });
+    }, 45000); // 🤖 [IA] - v1.2.36a: Extended timeout for instruction modal
   });
 
   describe('Session Management', () => {
     
     it('debe manejar timeout de sesión después de 30 minutos de inactividad', async () => {
       const { user } = renderWithProviders(<Index />);
-      
+
       // Start a session
       await selectOperation(user, 'evening');
       await user.click(await screen.findByRole('checkbox'));
       await user.click(screen.getByRole('button', { name: /siguiente/i }));
-      
+      await user.click(await screen.findByText('Los Héroes'));
+      await user.click(screen.getByRole('button', { name: /siguiente/i }));
+      await user.click(await screen.findByText('Tito Gomez'));
+      await user.click(screen.getByRole('button', { name: /siguiente/i }));
+      await user.click(await screen.findByText('María López'));
+      await user.click(screen.getByRole('button', { name: /siguiente/i }));
+      await user.type(screen.getByRole('textbox'), '100.00');
+      await user.click(screen.getByRole('button', { name: /completar/i }));
+
+      // 🤖 [IA] - v1.2.36a: Wait for instruction modal and start counting
+      await completeInstructionsModal(user);
+
+      // Do partial guided count (just first field)
+      await confirmGuidedField(user, '5');
+
       // Simulate 30 minutes of inactivity
       simulateSessionTimeout(30 * 60 * 1000);
-      
+
       // Try to continue - should show timeout or reset
-      const nextButton = screen.queryByRole('button', { name: /siguiente/i });
-      
-      if (nextButton) {
-        await user.click(nextButton);
-        
+      await waitFor(() => {
         // Should either:
         // 1. Show timeout message
         const timeoutMessage = screen.queryByText(/sesión.*expirado|timeout/i);
         // 2. Or reset to initial state
         const operationSelector = screen.queryByText(/Conteo Matutino/);
-        
+
         expect(timeoutMessage || operationSelector).toBeTruthy();
-      }
-    });
+      });
+    }, 45000); // 🤖 [IA] - v1.2.36a: Extended timeout for instruction modal + partial count
   });
 
   describe('Data Persistence', () => {
