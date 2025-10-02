@@ -250,14 +250,23 @@ const CashCounter = ({
 
   // 🤖 [IA] - v1.0.3 - Auto-iniciar Fase 1 si viene del wizard
   // 🤖 [IA] - v1.2.8 - Mostrar modal de instrucciones antes de iniciar
+  // 🤖 [IA] - v1.2.39 - Skip GuidedInstructionsModal en Morning Count (instrucciones ya vistas en Wizard)
   useEffect(() => {
     if (hasInitialData && !phaseState.phase1Completed) {
-      // 🤖 [IA] - v1.2.23: Siempre mostrar instrucciones y resetear flujo interno
       resetFlow(); // Limpiar estado persistente del flujo Wizard v3
-      setShowInstructionsModal(true);
-      sessionStorage.setItem('current-counting-session', `session-${Date.now()}`);
+
+      if (isMorningCount) {
+        // Morning Count: Ir directo a Fase 1 (instrucciones ya confirmadas en MorningCountWizard)
+        setInstructionsAcknowledged(true);
+        startPhase1();
+        sessionStorage.setItem('current-counting-session', `session-${Date.now()}`);
+      } else {
+        // Evening Cut: Mostrar modal de instrucciones (comportamiento original)
+        setShowInstructionsModal(true);
+        sessionStorage.setItem('current-counting-session', `session-${Date.now()}`);
+      }
     }
-  }, [hasInitialData, phaseState.phase1Completed, resetFlow]);
+  }, [hasInitialData, phaseState.phase1Completed, resetFlow, isMorningCount, startPhase1]);
   
   // 🤖 [IA] - v1.2.8 - Handler para cuando se confirman las instrucciones
   const handleInstructionsConfirm = () => {

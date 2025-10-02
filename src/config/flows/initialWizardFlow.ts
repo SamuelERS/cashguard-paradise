@@ -1,5 +1,14 @@
 // [IA] - Arquitectura Guiada Basada en Datos v1.0 - InitialWizardFlow Configuration
-import { AlertTriangle, Shield, CheckCircle } from 'lucide-react';
+// 🤖 [IA] - v1.2.38: Agregados iconos para Morning Count Protocol
+import {
+  AlertTriangle,
+  Shield,
+  CheckCircle,
+  MessageCircle,  // 🆕 WhatsApp Web
+  Coins,          // 🆕 Verificación física
+  Calculator,     // 🆕 No calculadoras
+  BellRing        // 🆕 Reporte anomalías (BellAlert no existe, usando BellRing)
+} from 'lucide-react';
 
 export interface ProtocolRule {
   id: string;
@@ -29,10 +38,13 @@ export interface RulesFlowState {
 
 // [IA] - Configuración de datos del flujo de reglas del protocolo
 // Fuente única de verdad para el flujo guiado secuencial
+
+// 🤖 [IA] - EVENING CUT PROTOCOL - Protocolo para corte nocturno (InitialWizardModal)
 const protocolRules: ProtocolRule[] = [
   {
     id: 'noDevices',
     title: 'Si Fallan Repiten Corte',
+    subtitle: '',
     Icon: AlertTriangle,
     colors: {
       text: 'text-red-500',
@@ -44,6 +56,7 @@ const protocolRules: ProtocolRule[] = [
   {
     id: 'singleCount',
     title: 'No Pueden Usar Calculadoras',
+    subtitle: '',
     Icon: Shield,
     colors: {
       text: 'text-red-500',
@@ -55,6 +68,7 @@ const protocolRules: ProtocolRule[] = [
   {
     id: 'differentCashier',
     title: 'Abran WhatsApp Web',
+    subtitle: '',
     Icon: CheckCircle,
     colors: {
       text: 'text-red-500',
@@ -66,6 +80,7 @@ const protocolRules: ProtocolRule[] = [
   {
     id: 'activeSystem',
     title: 'Cajero y Testigo Presentes',
+    subtitle: '',
     Icon: AlertTriangle,
     colors: {
       text: 'text-orange-400',
@@ -76,8 +91,64 @@ const protocolRules: ProtocolRule[] = [
   }
 ];
 
+// 🤖 [IA] - v1.2.38: MORNING COUNT PROTOCOL - Protocolo para conteo matutino (MorningCountWizard)
+// 🎨 [IA] - v1.2.39: Uniformidad total AZUL para máxima profesionalidad (estándar UX moderno)
+const morningRules: ProtocolRule[] = [
+  {
+    id: 'whatsappReady',
+    title: 'Abran WhatsApp Web',
+    subtitle: 'Mantener comunicación activa durante el conteo',
+    Icon: MessageCircle,
+    colors: {
+      text: 'text-blue-400',
+      border: 'border-l-blue-400',
+      glow: 'shadow-blue-400/20'
+    },
+    severity: 'warning'
+  },
+  {
+    id: 'physicalVerification',
+    title: 'Verifica Cada 🪙 y 💵',
+    subtitle: 'Cada moneda en su casilla correspondiente',
+    Icon: Coins,
+    colors: {
+      text: 'text-blue-400',
+      border: 'border-l-blue-400',
+      glow: 'shadow-blue-400/20'
+    },
+    severity: 'warning'
+  },
+  {
+    id: 'noExternalTools',
+    title: 'No Usar Calculadoras',
+    subtitle: 'Cálculos únicamente en la aplicación',
+    Icon: Calculator,
+    colors: {
+      text: 'text-blue-400',
+      border: 'border-l-blue-400',
+      glow: 'shadow-blue-400/20'
+    },
+    severity: 'warning'
+  },
+  {
+    id: 'reportAnomalies',
+    title: 'Reportar Anomalías',
+    subtitle: 'Notificar cualquier diferencia inmediatamente',
+    Icon: BellRing,
+    colors: {
+      text: 'text-blue-400',
+      border: 'border-l-blue-400',
+      glow: 'shadow-blue-400/20'
+    },
+    severity: 'warning'
+  }
+];
+
 // [IA] - v3.0.0: Array dinámico para randomización elegante
 export let currentProtocolRules: ProtocolRule[] = [...protocolRules];
+
+// 🤖 [IA] - v1.2.38: Export para Morning Count Protocol
+export let morningProtocolRules: ProtocolRule[] = [...morningRules];
 
 // [IA] - v3.0.0: Función shuffle Fisher-Yates para aleatoriedad real
 const shuffleRules = (rules: ProtocolRule[]): ProtocolRule[] => {
@@ -89,19 +160,42 @@ const shuffleRules = (rules: ProtocolRule[]): ProtocolRule[] => {
   return shuffled;
 };
 
-// 🤖 [IA] - v3.1.0: Función desactivada - orden estático de reglas
+// 🤖 [IA] - v3.1.0: Función desactivada - orden estático de reglas (Evening Cut)
 export const shuffleProtocolRules = (): ProtocolRule[] => {
   // Mantener orden original sin aleatoriedad
   currentProtocolRules = [...protocolRules];
   return currentProtocolRules;
 };
 
+// 🤖 [IA] - v1.2.38: Función para Morning Count (sin randomización)
+export const shuffleMorningRules = (): ProtocolRule[] => {
+  // Mantener orden original sin aleatoriedad
+  morningProtocolRules = [...morningRules];
+  return morningProtocolRules;
+};
+
 // [IA] - v3.0.0: Export de reglas originales para compatibilidad
 export const getOriginalProtocolRules = (): ProtocolRule[] => [...protocolRules];
+export const getOriginalMorningRules = (): ProtocolRule[] => [...morningRules]; // 🤖 [IA] - v1.2.38
 
 // [IA] - Estados iniciales del flujo con revelación progresiva + randomización
 export const createInitialRulesState = (): RulesFlowState => ({
   rules: currentProtocolRules.reduce((acc, rule, index) => ({
+    ...acc,
+    [rule.id]: {
+      isChecked: false,
+      isEnabled: index === 0, // Solo la primera regla está habilitada inicialmente
+      isBeingReviewed: false,
+      isHidden: index > 0 // Reglas futuras ocultas para revelación progresiva
+    }
+  }), {}),
+  currentRuleIndex: 0,
+  isFlowComplete: false
+});
+
+// 🤖 [IA] - v1.2.38: Estados iniciales para Morning Count Protocol
+export const createInitialMorningRulesState = (): RulesFlowState => ({
+  rules: morningProtocolRules.reduce((acc, rule, index) => ({
     ...acc,
     [rule.id]: {
       isChecked: false,

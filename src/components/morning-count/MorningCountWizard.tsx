@@ -1,6 +1,7 @@
 // 🤖 [IA] - v1.0.92 - Wizard con Frosted Glass Premium balanceado
 // 🤖 [IA] - v1.2.12 - Corrección de accesibilidad con DialogTitle y DialogDescription
-import { useState, useEffect } from 'react';
+// 🤖 [IA] - v1.2.38 - Integración Protocolo de Seguridad (Paso 0) + 4 pasos totales
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, MapPin, Users, CheckCircle, Sunrise } from 'lucide-react';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -12,7 +13,11 @@ import { Badge } from '@/components/ui/badge';
 import { STORES, getEmployeesByStore } from '@/data/paradise';
 import { useTimingConfig } from '@/hooks/useTimingConfig';
 import { WizardGlassCard } from '@/components/wizards/WizardGlassCard';
-import { WizardProgressBar } from '@/components/wizards/WizardProgressBar';
+import { useMorningRulesFlow } from '@/hooks/useMorningRulesFlow'; // 🤖 [IA] - v1.2.38: Hook para protocolo matutino
+import { morningProtocolRules } from '@/config/flows/initialWizardFlow'; // 🤖 [IA] - v1.2.38: Configuración reglas matutino
+import { ProtocolRule } from '@/components/wizards/ProtocolRule'; // 🤖 [IA] - v1.2.38: Componente UI de reglas
+import { toast } from 'sonner'; // 🤖 [IA] - v1.2.38: Notificaciones
+import { TOAST_DURATIONS, TOAST_MESSAGES } from '@/config/toast'; // 🤖 [IA] - v1.2.38: Mensajes toast
 // 🤖 [IA] - FAE-02: PURGA QUIRÚRGICA COMPLETADA - CSS imports eliminados
 // Los 1 archivos CSS están ahora importados globalmente vía index.css:
 // - morning-gradient-button.css
@@ -29,16 +34,33 @@ interface MorningCountWizardProps {
 }
 
 export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCountWizardProps) {
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(0); // 🤖 [IA] - v1.2.38: Paso inicial 0 (Protocolo)
   const [selectedStore, setSelectedStore] = useState('');
   const [selectedCashierIn, setSelectedCashierIn] = useState(''); // Cajero entrante
   const [selectedCashierOut, setSelectedCashierOut] = useState(''); // Testigo
   const [showValidation, setShowValidation] = useState(false);
-  
+
   const { createTimeoutWithCleanup } = useTimingConfig();
+
+  // 🤖 [IA] - v1.2.38: Hook para flujo guiado del Protocolo Matutino
+  const {
+    state: rulesFlowState,
+    initializeFlow,
+    acknowledgeRule,
+    isFlowCompleted,
+    getRuleState,
+    resetFlow
+  } = useMorningRulesFlow();
 
   // Obtener empleados disponibles según la sucursal
   const availableEmployees = selectedStore ? getEmployeesByStore(selectedStore) : [];
+
+  // 🤖 [IA] - v1.2.38: Inicializar flujo de reglas cuando se abre el modal
+  useEffect(() => {
+    if (isOpen) {
+      initializeFlow();
+    }
+  }, [isOpen, initializeFlow]);
 
   // Validar que los cajeros sean diferentes
   useEffect(() => {
@@ -47,27 +69,39 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
     }
   }, [selectedCashierIn, selectedCashierOut]);
 
+  // 🤖 [IA] - v1.2.38: Validación actualizada para 4 pasos (0-3)
   const canGoNext = () => {
     switch (currentStep) {
-      case 1:
+      case 0: // Protocolo de Seguridad
+        return isFlowCompleted();
+      case 1: // Sucursal
         return selectedStore !== '';
-      case 2:
+      case 2: // Cajero
         return selectedCashierIn !== '';
-      case 3:
+      case 3: // Testigo
         return selectedCashierOut !== '' && selectedCashierIn !== selectedCashierOut;
       default:
         return false;
     }
   };
 
+  // 🤖 [IA] - v1.2.38: Navegación actualizada para 4 pasos + validación de protocolo
   const handleNext = () => {
+    // Validar paso 0 (Protocolo) antes de continuar
+    if (currentStep === 0 && !isFlowCompleted()) {
+      toast.error(TOAST_MESSAGES.ERROR_REVIEW_RULES, {
+        duration: TOAST_DURATIONS.EXTENDED
+      });
+      return;
+    }
+
     if (currentStep < 3) {
       setCurrentStep(currentStep + 1);
     }
   };
 
   const handlePrevious = () => {
-    if (currentStep > 1) {
+    if (currentStep > 0) { // 🤖 [IA] - v1.2.38: Permitir retroceder hasta paso 0
       setCurrentStep(currentStep - 1);
     }
   };
@@ -82,14 +116,37 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
       });
     }
   };
-  
+
+  // 🤖 [IA] - v1.2.38: Manejar reconocimiento de reglas del protocolo (memoizado)
+  const handleRuleAcknowledge = useCallback((ruleId: string, index: number) => {
+    acknowledgeRule(ruleId, index);
+  }, [acknowledgeRule]);
+
   // 🤖 [IA] - v1.2.11 - Detección de viewport y escala proporcional
   const viewportScale = typeof window !== 'undefined' ? Math.min(window.innerWidth / 430, 1) : 1;
   const isMobileDevice = typeof window !== 'undefined' && window.innerWidth < 768;
 
   const renderStepContent = () => {
     switch (currentStep) {
-      case 1:
+      case 0: // 🤖 [IA] - v1.2.38: Paso 0 - Protocolo de Seguridad Matutino
+        return (
+          <WizardGlassCard className="space-y-fluid-lg">
+            {/* 🤖 [IA] - v1.2.38: Flujo guiado de reglas matutinas */}
+            <div className="flex flex-col gap-fluid-lg">
+              {morningProtocolRules.map((rule, index) => (
+                <ProtocolRule
+                  key={rule.id}
+                  rule={rule}
+                  state={getRuleState(rule.id)}
+                  isCurrent={index === rulesFlowState.currentRuleIndex}
+                  onAcknowledge={() => handleRuleAcknowledge(rule.id, index)}
+                />
+              ))}
+            </div>
+          </WizardGlassCard>
+        );
+
+      case 1: // 🤖 [IA] - v1.2.38: Paso 1 - Selección de Sucursal (anteriormente caso 1)
         return (
           <WizardGlassCard className="space-y-fluid-lg">
             {/* Header del paso */}
@@ -160,7 +217,7 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
           </WizardGlassCard>
         );
 
-      case 2:
+      case 2: // 🤖 [IA] - v1.2.38: Paso 2 - Selección de Cajero (anteriormente caso 2)
         return (
           <WizardGlassCard className="space-y-fluid-lg">
             {/* Header del paso */}
@@ -227,7 +284,7 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
           </WizardGlassCard>
         );
 
-      case 3:
+      case 3: // 🤖 [IA] - v1.2.38: Paso 3 - Selección de Testigo (anteriormente caso 3)
         return (
           <WizardGlassCard className="space-y-fluid-lg">
             {/* Header del paso */}
@@ -324,11 +381,12 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
         }}
       >
         {/* 🤖 [IA] - v1.2.12 - DialogTitle y DialogDescription para accesibilidad */}
+        {/* 🤖 [IA] - v1.2.38 - Actualizado a 4 pasos (0-3) */}
         <DialogTitle className="sr-only">
-          Conteo de Caja Matutino - Paso {currentStep} de 3
+          Conteo de Caja Matutino - Paso {currentStep + 1} de 4
         </DialogTitle>
         <DialogDescription className="sr-only">
-          Complete los pasos para realizar el conteo matutino del cambio de caja. Este proceso verificará el fondo inicial de $50 para el inicio del turno.
+          Complete los pasos para realizar el conteo matutino del cambio de caja. Paso 1: Protocolo de Seguridad, Pasos 2-4: Información del conteo. Este proceso verificará el fondo inicial de $50 para el inicio del turno.
         </DialogDescription>
         
         <div style={{ padding: `clamp(16px, ${24 * viewportScale}px, 24px)` }}>
@@ -350,12 +408,12 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
             </Button>
           </div>
 
-          {/* Indicador de paso - 🤖 [IA] - v1.2.13 + v1.2.38 Eliminación quirúrgica barra progreso */}
+          {/* Indicador de paso - 🤖 [IA] - v1.2.13 + v1.2.38 (4 pasos totales) */}
           <div style={{ marginBottom: `clamp(20px, ${24 * viewportScale}px, 24px)` }}>
             {/* Texto del paso */}
             <div className="flex justify-between items-center">
               <span className="wizard-progress-label" data-testid="step-indicator">
-                Paso {currentStep} de 3
+                Paso {currentStep + 1} de 4
               </span>
             </div>
           </div>
@@ -373,11 +431,11 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
             </motion.div>
           </AnimatePresence>
 
-          {/* Botones de navegación */}
+          {/* Botones de navegación - 🤖 [IA] - v1.2.38: Actualizado para 4 pasos */}
           <div className="flex items-center justify-center mt-fluid-2xl pt-fluid-xl border-t border-slate-600 gap-fluid-lg wizard-dialog-footer">
             <NeutralActionButton
               onClick={handlePrevious}
-              disabled={currentStep === 1}
+              disabled={currentStep === 0}
             >
               Anterior
             </NeutralActionButton>
@@ -388,7 +446,7 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
                 disabled={!canGoNext()}
                 className="!bg-amber-600 !border-amber-500 hover:!bg-amber-500 !text-amber-50"
               >
-                Siguiente
+                Continuar
               </ConstructiveActionButton>
             ) : (
               <ConstructiveActionButton
