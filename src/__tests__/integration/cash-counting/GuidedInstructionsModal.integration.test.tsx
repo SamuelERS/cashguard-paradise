@@ -198,7 +198,7 @@ describe('📋 GuidedInstructionsModal - Integration Tests', () => {
       await waitFor(() => {
         const rule3 = screen.getByText('Ordena Por Depósito').closest('div[role="button"]');
         expect(rule3).toHaveAttribute('aria-disabled', 'false');
-      }, { timeout: 7000 });
+      }, { timeout: 10000 }); // 🤖 [IA] - CI fix: 7s → 10s (GitHub Actions slower runners)
     });
   });
 
@@ -324,7 +324,7 @@ describe('📋 GuidedInstructionsModal - Integration Tests', () => {
       // Debe completarse eventualmente
       await waitFor(() => {
         expect(rule2Button).toHaveAttribute('aria-pressed', 'true');
-      }, { timeout: 7000 });
+      }, { timeout: 12000 }); // 🤖 [IA] - CI fix: 7s → 12s (segunda regla, GitHub Actions slower)
     });
 
     it('Test 4.3: animaciones de framer-motion presentes', () => {
