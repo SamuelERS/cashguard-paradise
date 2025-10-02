@@ -33,3 +33,6 @@ test-results
 *.lcov
 .env
 .env.local
+
+# Test artifacts y reportes descargados
+Pruebas Test GitHub/
