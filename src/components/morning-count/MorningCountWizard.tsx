@@ -350,23 +350,14 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
             </Button>
           </div>
 
-          {/* Progress bar con indicador de paso - 🤖 [IA] - v1.2.13 */}
+          {/* Indicador de paso - 🤖 [IA] - v1.2.13 + v1.2.38 Eliminación quirúrgica barra progreso */}
           <div style={{ marginBottom: `clamp(20px, ${24 * viewportScale}px, 24px)` }}>
-            {/* Texto del paso sobre la barra */}
-            <div className="flex justify-between items-center" style={{ 
-              marginBottom: `clamp(4px, 1vw, 6px)` 
-            }}>
+            {/* Texto del paso */}
+            <div className="flex justify-between items-center">
               <span className="wizard-progress-label" data-testid="step-indicator">
                 Paso {currentStep} de 3
               </span>
             </div>
-            
-            {/* Barra de progreso visual */}
-            <WizardProgressBar
-              currentStep={currentStep}
-              totalSteps={3}
-              gradient="linear-gradient(90deg, #f4a52a, #ffb84d)"
-            />
           </div>
 
           {/* Contenido del paso actual */}
