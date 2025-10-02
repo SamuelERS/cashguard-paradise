@@ -107,6 +107,8 @@ export function useInstructionFlow() {
 
   // 🤖 [IA] - v1.2.26: FASE 3 - Auto-completion tras minReviewTimeMs
   useEffect(() => {
+    const timeouts: NodeJS.Timeout[] = [];
+
     // Buscar instrucciones en estado 'reviewing' para auto-completar
     Object.entries(state.instructionStates).forEach(([instructionId, instructionState]) => {
       if (instructionState === 'reviewing') {
@@ -122,13 +124,20 @@ export function useInstructionFlow() {
           } else {
             // Programar auto-completion para cuando cumpla el tiempo
             const remainingTime = instruction.minReviewTimeMs - elapsed;
-            setTimeout(() => {
+            const timeout = setTimeout(() => {
               dispatch({ type: 'COMPLETE_INSTRUCTION', payload: { instructionId } });
             }, remainingTime);
+            timeouts.push(timeout);
           }
         }
       }
     });
+
+    // 🤖 [IA] - FIX: Cleanup para prevenir race conditions en CI
+    // Cancelar todos los timeouts cuando el efecto se re-ejecuta o el componente se desmonta
+    return () => {
+      timeouts.forEach(timeout => clearTimeout(timeout));
+    };
   }, [state.instructionStates, state.instructions, state.timingData]);
 
   return {
