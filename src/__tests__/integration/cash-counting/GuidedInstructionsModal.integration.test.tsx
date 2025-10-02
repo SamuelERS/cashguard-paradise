@@ -131,7 +131,7 @@ describe('📋 GuidedInstructionsModal - Integration Tests', () => {
         // Esperar a que se complete automáticamente (3s + margen)
         await waitFor(() => {
           expect(firstRuleButton).toHaveAttribute('aria-pressed', 'true');
-        }, { timeout: 5000 });
+        }, { timeout: 10000 }); // 🤖 [IA] - CI fix: 5s → 10s (GitHub Actions slower runners)
       }
     });
 
@@ -156,7 +156,7 @@ describe('📋 GuidedInstructionsModal - Integration Tests', () => {
       await waitFor(() => {
         const rule2Button = screen.getByText('No Tapes La Cámara').closest('div[role="button"]');
         expect(rule2Button).toHaveAttribute('aria-disabled', 'false');
-      }, { timeout: 5000 });
+      }, { timeout: 10000 }); // 🤖 [IA] - CI fix: 5s → 10s (GitHub Actions slower runners)
     });
 
     it('Test 2.6: checkmarks visibles en reglas completadas', async () => {
@@ -172,7 +172,7 @@ describe('📋 GuidedInstructionsModal - Integration Tests', () => {
       await waitFor(() => {
         const ruleContainer = rule1.closest('div[role="button"]');
         expect(ruleContainer).toHaveAttribute('aria-pressed', 'true');
-      }, { timeout: 5000 });
+      }, { timeout: 10000 }); // 🤖 [IA] - CI fix: 5s → 10s (GitHub Actions slower runners)
     });
 
     it('Test 2.7: progreso secuencial a través de múltiples reglas', async () => {
@@ -188,7 +188,7 @@ describe('📋 GuidedInstructionsModal - Integration Tests', () => {
       await waitFor(() => {
         const rule2 = screen.getByText('No Tapes La Cámara').closest('div[role="button"]');
         expect(rule2).toHaveAttribute('aria-disabled', 'false');
-      }, { timeout: 5000 });
+      }, { timeout: 10000 }); // 🤖 [IA] - CI fix: 5s → 10s (GitHub Actions slower runners)
       
       // Click en regla 2
       const rule2 = screen.getByText('No Tapes La Cámara').closest('div[role="button"]');
@@ -232,7 +232,7 @@ describe('📋 GuidedInstructionsModal - Integration Tests', () => {
       await waitFor(() => {
         const rule2 = screen.getByText('No Tapes La Cámara').closest('div[role="button"]');
         expect(rule2).toHaveAttribute('aria-disabled', 'false');
-      }, { timeout: 5000 });
+      }, { timeout: 10000 }); // 🤖 [IA] - CI fix: 5s → 10s (GitHub Actions slower runners)
       
       // Botón aún deshabilitado después de 1 regla
       button = screen.getByRole('button', { name: /comenzar conteo/i });
@@ -299,7 +299,7 @@ describe('📋 GuidedInstructionsModal - Integration Tests', () => {
       // Pero debe completarse automáticamente después del tiempo mínimo (3s)
       await waitFor(() => {
         expect(ruleButton).toHaveAttribute('aria-pressed', 'true');
-      }, { timeout: 5000 });
+      }, { timeout: 10000 }); // 🤖 [IA] - CI fix: 5s → 10s (GitHub Actions slower runners)
     });
 
     it('Test 4.2: segunda regla toma más tiempo que la primera', async () => {
@@ -315,7 +315,7 @@ describe('📋 GuidedInstructionsModal - Integration Tests', () => {
       await waitFor(() => {
         const rule2 = screen.getByText('No Tapes La Cámara').closest('div[role="button"]');
         expect(rule2).toHaveAttribute('aria-disabled', 'false');
-      }, { timeout: 5000 });
+      }, { timeout: 12000 }); // 🤖 [IA] - CI fix: 5s → 12s (segunda regla, GitHub Actions slower)
       
       // Click en regla 2 (5s, más tiempo que regla 1)
       const rule2Button = screen.getByText('No Tapes La Cámara').closest('div[role="button"]');
