@@ -338,8 +338,93 @@ describe('🧭 useFieldNavigation Hook - Integration Tests (CRITICAL)', () => {
   // ========================================
   // GRUPO 2: Focus Management (5 tests)
   // ========================================
-  describe.skip('🎯 GRUPO 2: Focus Management', () => {
-    // Tests a implementar en siguientes iteraciones
+  describe('🎯 GRUPO 2: Focus Management', () => {
+
+    it('Test 2.1: should apply focus to target field correctly', () => {
+      const { container } = setup({ fields: ['penny', 'nickel', 'dime'] });
+      const { result } = renderHook(() => useFieldNavigation(['penny', 'nickel', 'dime']));
+
+      const nickelInput = container.querySelector('[data-field="nickel"]') as HTMLInputElement;
+
+      act(() => {
+        result.current.focusField('nickel');
+      });
+
+      expect(document.activeElement).toBe(nickelInput);
+    });
+
+    it('Test 2.2: should scroll into view on mobile devices', () => {
+      const { container } = setup({
+        fields: ['penny', 'nickel', 'dime'],
+        isMobile: true
+      });
+
+      const { result } = renderHook(() => useFieldNavigation(['penny', 'nickel', 'dime']));
+
+      const nickelInput = container.querySelector('[data-field="nickel"]') as HTMLInputElement;
+      const scrollIntoViewSpy = vi.spyOn(nickelInput, 'scrollIntoView');
+
+      act(() => {
+        result.current.focusField('nickel');
+      });
+
+      expect(scrollIntoViewSpy).toHaveBeenCalledWith({
+        behavior: 'smooth',
+        block: 'center'
+      });
+    });
+
+    it('Test 2.3: should not scroll into view on desktop', () => {
+      const { container } = setup({
+        fields: ['penny', 'nickel', 'dime'],
+        isMobile: false
+      });
+
+      const { result } = renderHook(() => useFieldNavigation(['penny', 'nickel', 'dime']));
+
+      const nickelInput = container.querySelector('[data-field="nickel"]') as HTMLInputElement;
+      const scrollIntoViewSpy = vi.spyOn(nickelInput, 'scrollIntoView');
+
+      act(() => {
+        result.current.focusField('nickel');
+      });
+
+      expect(document.activeElement).toBe(nickelInput); // Focus aplicado
+      expect(scrollIntoViewSpy).not.toHaveBeenCalled(); // Sin scroll en desktop
+    });
+
+    it('Test 2.4: should select text automatically on focus', () => {
+      const { container } = setup({ fields: ['penny', 'nickel', 'dime'] });
+      const { result } = renderHook(() => useFieldNavigation(['penny', 'nickel', 'dime']));
+
+      const nickelInput = container.querySelector('[data-field="nickel"]') as HTMLInputElement;
+      nickelInput.value = '250'; // Input con valor existente
+
+      const selectSpy = vi.spyOn(nickelInput, 'select');
+
+      act(() => {
+        result.current.focusField('nickel');
+      });
+
+      expect(document.activeElement).toBe(nickelInput);
+      expect(selectSpy).toHaveBeenCalled(); // Texto seleccionado automáticamente
+    });
+
+    it('Test 2.5: should handle focus on non-existent field gracefully', () => {
+      setup({ fields: ['penny', 'nickel', 'dime'] });
+      const { result } = renderHook(() => useFieldNavigation(['penny', 'nickel', 'dime']));
+
+      const activeBeforeFocus = document.activeElement;
+
+      // Intentar enfocar campo inexistente
+      act(() => {
+        result.current.focusField('nonexistent-field');
+      });
+
+      // No debe causar error, activeElement no cambia
+      expect(document.activeElement).toBe(activeBeforeFocus);
+    });
+
   });
 
   // ========================================
