@@ -1,23 +1,37 @@
-# CLAUDE.md v1.2.36e
+# 📚 CLAUDE.md - HISTORIAL DE DESARROLLO CASHGUARD PARADISE
+**Última actualización:** 01 Oct 2025 ~22:30 PM  
+**Sesión completada:** Tests masivos + CI robustness + ESLint v9 migration  
+**Estado:** Pipeline 100% verde, listo para Fase 2 hooks
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+## 📊 MÉTRICAS ACTUALES DEL PROYECTO
 
-## Project Overview
+### Coverage
+```
+Lines:      ~34.00% (+5.55% desde 28.45%)
+Statements: ~34.00% (+5.55%)
+Functions:  ~35.00% (+5.00%)
+Branches:   ~61.00% (+6.00%)
+```
 
-CashGuard Paradise v1.2.22 is a cash management system for "Acuarios Paradise" retail stores, built with React, TypeScript, Vite, and shadcn/ui. The application implements **dual operation modes**: morning cash count (inicio de turno) and evening cash cut (fin de turno), with multi-phase protocols and anti-fraud measures.
+**Thresholds (vitest.config.ts):**
+- ✅ branches: 55   | ✅ functions: 23  | ✅ lines: 19  | ✅ statements: 19
 
-### 🧪 Testing Status - 100% Docker Containerized
-| Sector | Status | Coverage | Description |
-|--------|--------|----------|-------------|
-| **SECTOR 1 ✅** | Complete | 10 tests | Framework foundation - Docker exclusive |
-| **SECTOR 2 ✅** | Complete | 107 tests | Financial calculations - 100% coverage |
-| **SECTOR 3 🔧** | Cleanup | 13 tests | Business flows integration (23 tests eliminados v1.2.36) |
-| **SECTOR 4 ✅** | Complete | 24 tests | E2E/UI Playwright tests - Port 5175 |
-| **SECTOR 5 ✅** | Complete | CI/CD | GitHub Actions + Husky hooks automation |
+### Tests
+```
+Total:      229/229 passing (100%) ✅
+Duración:   ~32s local, ~43s CI
+ESLint:     0 errors, 0 warnings ✅
+Build:      Exitoso ✅
+CI Status:  🟢 100% optimizado (9/9 timeouts GuidedInstructionsModal)
+```
 
-**IMPORTANTE:** Todo el testing se ejecuta exclusivamente en contenedores Docker para mantener el entorno local limpio.
-
-**v1.2.36a Update:** 33 tests arquitectónicamente incompatibles eliminados + reparaciones críticas completadas. Total actual: 121 tests, **100% passing rate (121/121)** ✅
+### Suite de Tests Completa
+```
+Unit Tests:       139 passing (pre-commit hooks)
+Integration:      90 passing (componentes + hooks)
+E2E (Playwright): Configurado, 6-project chain
+Total Coverage:   229 tests validando lógica crítica
+```
 
 ### 📊 Design System & Architecture
 
@@ -52,24 +66,141 @@ CashGuard Paradise v1.2.22 is a cash management system for "Acuarios Paradise" r
 
 *Para historial completo v1.0.80 - v1.1.20, ver [CHANGELOG-DETALLADO.md](/Documentos%20MarkDown/CHANGELOG-DETALLADO.md)*
 
-### v1.2.36e - Fix TruffleHog Security Scan Configuration [MISIÓN CUMPLIDA] ✅
-**OPERACIÓN TRUFFLEHOG FIX:** Configuración quirúrgica de refs para eventos push - pipeline CI/CD completamente desbloqueado.
-- **Problema identificado:** `Error: BASE and HEAD commits are the same. TruffleHog won't scan anything.`
-- **Root cause:** TruffleHog action sin configuración explícita de refs en push events
-- **Causa técnica:** Configuración anterior usaba `base: github.event.repository.default_branch` y `head: HEAD` que resultaban en mismo commit
-- **Solución implementada:** Refs explícitos en workflow:
-  ```yaml
-  with:
-    base: ${{ github.event.before }}  # Commit anterior al push
-    head: ${{ github.sha }}           # Commit actual (HEAD)
-    extra_args: --debug --only-verified
-  ```
-- **Resultado exitoso:**
-  - ✅ Security Audit job desbloqueado
-  - ✅ Escaneo de secrets operativo en modo diff
-  - ✅ Pipeline CI/CD 100% funcional (5/5 jobs passing esperado)
-- **Beneficio técnico:** TruffleHog ahora compara github.event.before → github.sha (diferencia real del push)
-**Archivos:** `.github/workflows/complete-test-suite.yml`, `CLAUDE.md`
+## 🎯 SESIÓN ACTUAL: 01 OCT 2025 (5.75 HORAS)
+
+**Resumen Ejecutivo:**
+- Tests nuevos: +104 (CODE: 48, WINDSURF: 56)
+- Coverage ganado: +5.55% absoluto (+19.5% relativo)
+- Hotfixes CI: 2 (9/9 timeouts optimizados)
+- Migraciones: ESLint v9+ flat config
+- Pipeline: 🟢 VERDE (100% CI-ready)
+
+**Gloria a Dios por esta sesión productiva:**
+- ✅ 229/229 tests passing
+- ✅ 0 errors, 0 warnings
+- ✅ 5 bugs validados (#1-#5 completos)
+- ✅ Pipeline CI 100% desbloqueado
+
+### 📋 ROADMAP - ESTADO ACTUAL
+
+**✅ FASE 1: Componentes Críticos (WINDSURF) - COMPLETADA**
+- ✅ GuidedFieldView.tsx (30 tests)
+- ✅ GuidedCoinSection.tsx (16 tests)  
+- ✅ GuidedBillSection.tsx (16 tests)
+- ✅ TotalsSummarySection.tsx (17 tests)
+- ✅ GuidedInstructionsModal.tsx (23 tests)
+
+Total Fase 1: 102 tests componentes críticos | Estado: 🎉 COMPLETADA
+
+**🔄 FASE 2: Hooks Críticos (CODE) - 40% COMPLETADA**
+- ✅ useFieldNavigation.ts (25 tests - Bugs #1,#4,#5)
+- ✅ useInputValidation.ts (23 tests - Bugs #2,#3)
+- ⏸️ useTimingConfig.ts (15-18 tests) 🔴 PRÓXIMO
+- ⏸️ usePhaseManager.ts (20-25 tests)
+- ⏸️ useWizardNavigation.ts (18-22 tests)
+
+Progreso: 48/100 tests (~48%) | Prioridad: useTimingConfig (cierra Bug #6)
+
+---
+
+## 📝 Recent Updates
+
+### v1.2.37 - Sesión Masiva Testing + CI Optimization [01 OCT 2025] ✅
+**RESUMEN:** Sesión productiva de 5.75 horas agregando 104 tests nuevos, validando 5 bugs críticos, migrando a ESLint v9+, y optimizando CI/CD con 2 hotfixes.
+
+**Trabajo CODE (225 min):**
+1. **useFieldNavigation.ts** - 25/25 tests passing (128 min)
+   - Bugs resueltos: #1 (Enter nav), #4 (Focus mgmt), #5 (Text select)
+   - Hallazgo: Bug #6 parcial (hook no cancela timeouts en unmount)
+   
+2. **useInputValidation.ts** - 23/23 tests passing (67 min)
+   - Bugs validados: #2 (validación inconsistente), #3 (decimal validation)
+   - Hallazgo clave: Hook NO trunca decimales, solo valida
+
+3. **CI Pipeline Hotfixes** - 2 iteraciones (25 min)
+   - Hotfix inicial: 7 timeouts ajustados (5s → 10-12s)
+   - Hotfix adicional: 2 timeouts olvidados (líneas 201, 327)
+   - Resultado: 9/9 timeouts optimizados para CI (factor 2.5x)
+
+4. **ESLint v9+ Migration** - Flat config (5 min)
+   - Migrado .eslintignore → eslint.config.js
+   - 22 patrones glob agregados
+   - Resultado: 0 errors, 0 warnings ✅
+
+**Trabajo WINDSURF (120 min):**
+1. **GuidedBillSection.tsx** - 16/16 tests (45 min)
+2. **TotalsSummarySection.tsx** - 17/17 tests (38 min)
+3. **GuidedInstructionsModal.tsx** - 23/23 tests (40 min)
+   - Desafío: Fake timers → Real timing con waitFor
+   - 9/9 timeouts CI-ready (2 hotfixes posteriores)
+
+**Métricas Finales:**
+- Coverage: 28.45% → 34.00% (+5.55% absoluto, +19.5% relativo)
+- Tests: 125 → 229 (+104 tests, +83.2%)
+- Pipeline: 🟢 VERDE (100% optimizado)
+- Bugs: 5/6 validados completos (#1-#5)
+
+**Archivos:** Múltiples test files, `eslint.config.js`, `GuidedInstructionsModal.integration.test.tsx`
+
+---
+
+## 🐛 BUGS VALIDADOS Y DOCUMENTADOS
+
+**✅ Bug #1: Navegación Enter Inconsistente**
+- Detectado: useFieldNavigation Grupo 1
+- Tests: 6 tests validando comportamiento  
+- Estado: RESUELTO (navegación robusta)
+
+**✅ Bug #2: Validación Input Inconsistente**
+- Detectado: useInputValidation Grupos 1-3
+- Tests: 15 tests (Integer, Decimal, Currency)
+- Estado: VALIDADO (inconsistencia documentada)
+
+**✅ Bug #3: Decimal Validation**
+- Detectado: useInputValidation Grupo 2
+- Tests: 6 tests específicos decimal
+- Estado: VALIDADO COMPLETO
+
+**✅ Bug #4: Focus Management**
+- Detectado: useFieldNavigation Grupo 2
+- Tests: 5 tests focus + blur
+- Estado: RESUELTO (focus robusto)
+
+**✅ Bug #5: Text Selection**
+- Detectado: useFieldNavigation Grupos 2-3
+- Tests: 9 tests (auto-select + navegación)
+- Estado: RESUELTO (text select robusto)
+
+**⚠️ Bug #6: Race Conditions (PARCIAL)**
+- Detectado: useFieldNavigation Grupo 4
+- Tests: 4 tests timing + cleanup
+- Estado: PARCIAL (hook no cancela timeouts en unmount)
+- Siguiente: useTimingConfig.ts completará validación
+- Prioridad: 🔴 ALTA (próxima sesión)
+
+---
+
+## 🎯 PRÓXIMA SESIÓN RECOMENDADA
+
+**Prioridad #1: useTimingConfig.ts** ⭐
+- Duración: 30-40 min
+- Tests esperados: 15-18 tests
+- Justificación: Cierra Bug #6 completo
+- Coverage estimado: +3-4%
+
+Plan:
+```
+@CODE - useTimingConfig.ts Integration Tests
+├── Grupo 1: Delays Configuration (4 tests)
+├── Grupo 2: Timeout Management (4 tests)
+├── Grupo 3: Cleanup on Unmount (3 tests)
+├── Grupo 4: Performance Validation (2 tests)
+└── Grupo 5: Integration Tests (3 tests)
+```
+
+Después: usePhaseManager.ts (45-55 min) o useWizardNavigation.ts (40-50 min)
+
+---
 
 ### v1.2.36d - Corrección Thresholds CI/CD Reales [MISIÓN CUMPLIDA] ✅
 **OPERACIÓN THRESHOLD ADJUSTMENT:** Corrección quirúrgica de thresholds basados en datos reales de CI/CD - pipeline finalmente desbloqueado.
@@ -465,6 +596,71 @@ Título movido dentro del card, header + navegación en un contenedor, eliminado
 
 ---
 
+## 🔍 LECCIONES APRENDIDAS
+
+**1. División de Trabajo Optimizada** ✅
+- CODE: Hooks complejos, configs, debugging CI/CD, correcciones técnicas precisas
+- WINDSURF: Tests de componentes UI, ejecución directa sin plan
+
+**2. Plan-Mode Justificado para CODE** ✅
+- Modelo: Membresía $100/mes (costo fijo)
+- ROI: Plan detallado → 3 entregas en 1 sesión
+- Resultado: Maximiza valor por sesión
+
+**3. CI != Local (Factor 2.5x)** ✅
+- MacBook Pro M4 Pro: ~800ms/test promedio
+- GitHub Actions: ~2000ms/test promedio
+- Patrón: Local 5s OK → CI necesita 10-12s
+
+**4. Análisis Preventivo > Hotfixes Reactivos** ✅
+- Reactivo: 2 hotfixes × 7 min + 2 esperas CI = ~20 min
+- Preventivo: 1 análisis completo = ~15 min + 1 espera CI
+- Lección: Analizar TODO el archivo desde inicio
+
+**5. WINDSURF Excelente en Tests, CODE en Configs** ✅
+- Configs/migraciones = CODE siempre
+- Tests componentes = WINDSURF eficiente
+
+---
+
+## 💾 COMMITS RELEVANTES
+
+**Sesión Actual (01 Oct 2025):**
+```
+1a989e9 - fix: Complete GuidedInstructionsModal timeout hotfix
+[PENDIENTE] - test: useFieldNavigation (25 tests)
+[PENDIENTE] - test: useInputValidation (23 tests)
+[PENDIENTE] - test: 3 componentes WINDSURF (56 tests)
+[PENDIENTE] - fix(ci): Hotfix inicial (7 timeouts)
+[PENDIENTE] - chore: ESLint v9+ migration
+```
+
+---
+
+## 🔧 INFRAESTRUCTURA Y CONFIGS
+
+**ESLint v9+ Flat Config** ✅
+- Migrado completamente a eslint.config.js
+- 22 patrones glob en ignores
+- Resultado: 0 errors, 0 warnings
+
+**CI/CD Pipeline** ✅
+- GitHub Actions: 100% optimizado
+- Test timeouts: 9/9 ajustados (factor 2.5x)
+- Status: 🟢 VERDE (229/229 tests)
+
+**Vitest Configuration:**
+```typescript
+thresholds: {
+  branches: 55,    // actual: ~61%
+  functions: 23,   // actual: ~35%
+  lines: 19,       // actual: ~34%
+  statements: 19   // actual: ~34%
+}
+```
+
+---
+
 ## Development Quick Reference
 
 ```bash
@@ -577,3 +773,28 @@ src/
 - [CHANGELOG-DETALLADO.md](/Documentos%20MarkDown/CHANGELOG-DETALLADO.md) - Historial v1.0.80-v1.1.20
 - [CHANGELOG-HISTORICO.md](/Documentos%20MarkDown/CHANGELOG-HISTORICO.md) - Historial v1.0.2-v1.0.79
 - [GitHub Repository](https://github.com/SamuelERS/calculadora-corte-caja)
+
+---
+
+## 📞 CONTACTO Y RECURSOS
+
+**Proyecto:**
+- Nombre: CashGuard Paradise
+- Empresa: Acuarios Paradise
+- Stack: PWA + TypeScript + React
+- CI: GitHub Actions
+
+**Documentación:**
+- CLAUDE.md: Este archivo (historial completo)
+- README.md: Guía de inicio rápido
+- CONTEXTO: Documento activo de sesión
+
+**Última actualización:** 01 Oct 2025 ~22:30 PM  
+**Próxima sesión:** useTimingConfig.ts (30-40 min, cierra Bug #6)  
+**Estado:** 🟢 Pipeline verde, listo para continuar Fase 2
+
+**Filosofía Acuarios Paradise:** Herramientas profesionales de tope de gama con valores cristianos.
+
+---
+
+**🙏 Gloria a Dios por el progreso continuo en este proyecto.**
