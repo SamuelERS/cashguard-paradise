@@ -3,6 +3,7 @@
 // 🤖 [IA] - v1.2.38 - Integración Protocolo de Seguridad (Paso 0) + 4 pasos totales
 // 🤖 [IA] - v1.2.41f - Modal de confirmación de cierre implementado
 // 🤖 [IA] - v1.2.41g - Migración a Doctrina Glass Morphism v1.1 (glass-morphism-panel)
+// 🤖 [IA] - v1.2.41h - Glass Morphism Enhanced: 72% móvil/62% desktop + blur responsivo
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, MapPin, Users, CheckCircle, Sunrise } from 'lucide-react';

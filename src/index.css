@@ -469,26 +469,39 @@
     border-radius: clamp(0.5rem, 2vw, 0.75rem);
   }
 
-  /* 🤖 [IA] - FASE 4: FLUIDEZ DOCTRINAL - Clase canónica estratificada */
+  /* 🤖 [IA] - v1.2.41h: Glass Morphism Panel - Hybrid Performance Optimized */
+  /* Propuesta C: Mejor legibilidad + Performance móvil + Accesibilidad WCAG 2.1 AA */
   .glass-morphism-panel {
-    /* Fondo semi-transparente */
-    background-color: rgba(36, 36, 36, 0.4);
+    /* Fondo más sólido para mejor legibilidad (72% móvil) */
+    background-color: rgba(28, 28, 32, 0.72);
 
-    /* Difuminado del fondo (Backdrop Filter) */
-    backdrop-filter: var(--glass-blur-full);
-    -webkit-backdrop-filter: var(--glass-blur-full);
+    /* Blur reducido para mejor FPS en móviles (12px) */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
 
-    /* Borde sutil */
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    /* Borde más visible (22% opacidad) */
+    border: 1px solid rgba(255, 255, 255, 0.22);
 
-    /* Sombras duales para profundidad */
+    /* Sombra con más presencia y profundidad */
     box-shadow:
-      rgba(0, 0, 0, 0.2) 0px 4px 24px,       /* Sombra exterior */
-      rgba(255, 255, 255, 0.1) 0px 1px 0px inset; /* Brillo interior sutil */
+      0 10px 25px rgba(0, 0, 0, 0.4),           /* Sombra exterior sólida */
+      inset 0 1px 0 rgba(255, 255, 255, 0.12);  /* Brillo superior */
 
     /* --- RESPONSIVIDAD FLUIDA V1.1 --- */
     border-radius: clamp(0.75rem, 3vw, 1rem); /* 12px a 16px */
     padding: clamp(1rem, 4vw, 1.5rem);       /* 16px a 24px */
+  }
+
+  /* 🤖 [IA] - v1.2.41h: Desktop - Blur completo cuando hardware aguanta */
+  @media (min-width: 768px) {
+    .glass-morphism-panel {
+      /* Más transparente en desktop (62% opacidad) */
+      background-color: rgba(28, 28, 32, 0.62);
+
+      /* Blur completo + saturación en desktop */
+      backdrop-filter: blur(20px) saturate(140%);
+      -webkit-backdrop-filter: blur(20px) saturate(140%);
+    }
   }
 
   /* 🤖 [IA] - v1.2.22: Glass morphism para headers con dimensiones específicas */
@@ -717,11 +730,13 @@
     .wizard-glass-element,
     .wizard-header-section,
     .wizard-success-feedback,
-    .wizard-error-feedback,
-    .glass-morphism-panel {
+    .wizard-error-feedback {
       backdrop-filter: var(--glass-blur-medium) !important;
       -webkit-backdrop-filter: var(--glass-blur-medium) !important;
     }
+
+    /* 🤖 [IA] - v1.2.41h: .glass-morphism-panel removido de override */
+    /* Ahora usa blur responsivo: 12px móvil, 20px desktop */
     
     /* Dropdown and form elements */
     .glass-dropdown {
