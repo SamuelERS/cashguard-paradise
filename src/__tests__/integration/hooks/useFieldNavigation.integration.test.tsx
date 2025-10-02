@@ -164,7 +164,7 @@ describe('🧭 useFieldNavigation Hook - Integration Tests (CRITICAL)', () => {
           key: 'Enter',
           preventDefault: vi.fn(),
           stopPropagation: vi.fn()
-        } as any);
+        } as unknown as React.KeyboardEvent<HTMLInputElement>);
         await new Promise(resolve => setTimeout(resolve, 150)); // Wait for timing
       });
 
@@ -187,7 +187,7 @@ describe('🧭 useFieldNavigation Hook - Integration Tests (CRITICAL)', () => {
           key: 'Enter',
           preventDefault: vi.fn(),
           stopPropagation: vi.fn()
-        } as any);
+        } as unknown as React.KeyboardEvent<HTMLInputElement>);
         await new Promise(resolve => setTimeout(resolve, 150));
       });
 
@@ -215,7 +215,7 @@ describe('🧭 useFieldNavigation Hook - Integration Tests (CRITICAL)', () => {
           key: 'Enter',
           preventDefault: vi.fn(),
           stopPropagation: vi.fn()
-        } as any);
+        } as unknown as React.KeyboardEvent<HTMLInputElement>);
         await new Promise(resolve => setTimeout(resolve, 150));
       });
 
@@ -261,7 +261,7 @@ describe('🧭 useFieldNavigation Hook - Integration Tests (CRITICAL)', () => {
           key: 'Enter',
           preventDefault: vi.fn(),
           stopPropagation: vi.fn()
-        } as any);
+        } as unknown as React.KeyboardEvent<HTMLInputElement>);
       });
 
       expect(mockCreateTimeout).toHaveBeenCalledWith(
@@ -294,7 +294,7 @@ describe('🧭 useFieldNavigation Hook - Integration Tests (CRITICAL)', () => {
           key: 'Enter',
           preventDefault: vi.fn(),
           stopPropagation: vi.fn()
-        } as any);
+        } as unknown as React.KeyboardEvent<HTMLInputElement>);
         await new Promise(resolve => setTimeout(resolve, 150));
       });
 
@@ -326,7 +326,7 @@ describe('🧭 useFieldNavigation Hook - Integration Tests (CRITICAL)', () => {
           key: 'Enter',
           preventDefault,
           stopPropagation
-        } as any);
+        } as unknown as React.KeyboardEvent<HTMLInputElement>);
       });
 
       expect(preventDefault).toHaveBeenCalled();
