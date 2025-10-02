@@ -10,10 +10,10 @@ import { TotalsSummarySection } from '@/components/cash-counting/TotalsSummarySe
 // Mock framer-motion
 vi.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    p: ({ children, ...props }: any) => <p {...props}>{children}</p>
+    div: ({ children, ...props }: React.ComponentProps<'div'>) => <div {...props}>{children}</div>,
+    p: ({ children, ...props }: React.ComponentProps<'p'>) => <p {...props}>{children}</p>
   },
-  AnimatePresence: ({ children }: any) => <>{children}</>
+  AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>
 }));
 
 // Mock useTimingConfig
