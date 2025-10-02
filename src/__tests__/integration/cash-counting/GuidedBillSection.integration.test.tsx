@@ -20,11 +20,14 @@ import type { CashCount } from '@/types/cash';
  */
 
 // Interface para el mock de GuidedFieldView
+// 🤖 [REFACTOR] - Actualizado para reflejar interfaz real de GuidedFieldViewProps
 interface MockGuidedFieldViewProps {
   currentFieldName?: string;
-  currentStep?: number;
-  totalSteps?: number;
-  completedFields?: Array<{ name: string; quantity: number; total: number }>;
+  currentFieldLabel?: string;
+  currentFieldValue?: number;
+  currentFieldType?: 'coin' | 'bill' | 'electronic';
+  isActive?: boolean;
+  isCompleted?: boolean;
   isMorningCount?: boolean;
   onCancel?: () => void;
   onPrevious?: () => void;
@@ -33,12 +36,15 @@ interface MockGuidedFieldViewProps {
 }
 
 // Mock mejorado de GuidedFieldView (expone todas las props para validación)
+// 🤖 [REFACTOR] - Mock actualizado para arquitectura consolidada
 vi.mock('@/components/cash-counting/GuidedFieldView', () => ({
   GuidedFieldView: ({ 
-    currentFieldName, 
-    currentStep, 
-    totalSteps,
-    completedFields,
+    currentFieldName,
+    currentFieldLabel,
+    currentFieldValue,
+    currentFieldType,
+    isActive,
+    isCompleted,
     isMorningCount,
     onCancel,
     onPrevious,
@@ -47,9 +53,11 @@ vi.mock('@/components/cash-counting/GuidedFieldView', () => ({
   }: MockGuidedFieldViewProps) => (
     <div data-testid="guided-field-view">
       <div data-testid="current-field">{currentFieldName}</div>
-      <div data-testid="current-step">{currentStep}</div>
-      <div data-testid="total-steps">{totalSteps}</div>
-      <div data-testid="completed-fields-count">{completedFields?.length || 0}</div>
+      <div data-testid="current-field-label">{currentFieldLabel}</div>
+      <div data-testid="current-field-value">{currentFieldValue}</div>
+      <div data-testid="current-field-type">{currentFieldType}</div>
+      <div data-testid="is-active">{String(!!isActive)}</div>
+      <div data-testid="is-completed">{String(!!isCompleted)}</div>
       <div data-testid="is-morning-count">{String(isMorningCount || false)}</div>
       <div data-testid="has-on-cancel">{String(!!onCancel)}</div>
       <div data-testid="has-on-previous">{String(!!onPrevious)}</div>
@@ -181,18 +189,19 @@ describe('💵 GuidedBillSection - Integration Tests (FASE 1)', () => {
       expect(counterElement).toHaveClass('text-text-secondary');
     });
 
-    it('Test 2.4: debe calcular currentStep correctamente según campo activo', () => {
+    it('Test 2.4: debe pasar correctamente el campo activo a GuidedFieldView', () => {
+      // 🤖 [REFACTOR] - Test actualizado para nueva arquitectura consolidada
       // Setup: Probar con diferentes billetes activos
       const testCases = [
-        { fieldName: 'bill1', expectedStep: 6 },   // Después de 5 monedas
-        { fieldName: 'bill5', expectedStep: 7 },
-        { fieldName: 'bill10', expectedStep: 8 },
-        { fieldName: 'bill20', expectedStep: 9 },
-        { fieldName: 'bill50', expectedStep: 10 },
-        { fieldName: 'bill100', expectedStep: 11 },
+        { fieldName: 'bill1' },
+        { fieldName: 'bill5' },
+        { fieldName: 'bill10' },
+        { fieldName: 'bill20' },
+        { fieldName: 'bill50' },
+        { fieldName: 'bill100' },
       ];
 
-      testCases.forEach(({ fieldName, expectedStep }) => {
+      testCases.forEach(({ fieldName }) => {
         const { unmount } = render(
           <GuidedBillSection
             cashCount={createBaseCashCount()}
@@ -204,11 +213,11 @@ describe('💵 GuidedBillSection - Integration Tests (FASE 1)', () => {
           />
         );
 
-        // Assertions: Verificar que GuidedFieldView recibe currentStep correcto
+        // Assertions: Verificar que GuidedFieldView recibe props correctas
         expect(screen.getByTestId('guided-field-view')).toBeInTheDocument();
-        expect(screen.getByTestId('current-step')).toHaveTextContent(expectedStep.toString());
-        expect(screen.getByTestId('total-steps')).toHaveTextContent('17');
         expect(screen.getByTestId('current-field')).toHaveTextContent(fieldName);
+        expect(screen.getByTestId('current-field-type')).toHaveTextContent('bill');
+        expect(screen.getByTestId('is-active')).toHaveTextContent('true');
 
         unmount();
       });
@@ -259,9 +268,9 @@ describe('💵 GuidedBillSection - Integration Tests (FASE 1)', () => {
       const footer = screen.getByText(/💵 Total en billetes: \$76\.00/);
       expect(footer).toBeInTheDocument();
       
-      // Verificar clases del footer
-      expect(footer).toHaveClass('bg-success/10');
+      // 🤖 [REFACTOR] - Verificar clase de color de texto (bg ahora es inline style)
       expect(footer).toHaveClass('text-success');
+      expect(footer).toHaveClass('text-center');
     });
 
     it('Test 5.2: debe aplicar tabIndex secuencial a items del grid', () => {
@@ -393,10 +402,11 @@ describe('💵 GuidedBillSection - Integration Tests (FASE 1)', () => {
       // Assertions: Verificar que se renderiza GuidedFieldView
       expect(screen.getByTestId('guided-field-view')).toBeInTheDocument();
       
-      // Verificar que recibe los props correctos
+      // 🤖 [REFACTOR] - Verificar que recibe los props correctos (sin currentStep/totalSteps)
       expect(screen.getByTestId('current-field')).toHaveTextContent('bill10');
-      expect(screen.getByTestId('current-step')).toHaveTextContent('8'); // bill10 es el 8vo campo (5 monedas + 3 billetes)
-      expect(screen.getByTestId('total-steps')).toHaveTextContent('17');
+      expect(screen.getByTestId('current-field-type')).toHaveTextContent('bill');
+      expect(screen.getByTestId('is-active')).toHaveTextContent('true');
+      expect(screen.getByTestId('is-completed')).toHaveTextContent('false');
       
       // Verificar que NO se renderiza el grid view
       expect(screen.queryByText('Billetes')).not.toBeInTheDocument();
@@ -621,8 +631,9 @@ describe('💵 GuidedBillSection - Integration Tests (FASE 1)', () => {
       expect(secondRender).toBeInTheDocument();
       expect(screen.getByTestId('current-field')).toHaveTextContent('bill5');
       
-      // Verificar que currentStep cambió de 6 (bill1) a 7 (bill5)
-      expect(screen.getByTestId('current-step')).toHaveTextContent('7');
+      // 🤖 [REFACTOR] - Verificar props actualizadas (sin currentStep)
+      expect(screen.getByTestId('current-field-type')).toHaveTextContent('bill');
+      expect(screen.getByTestId('is-active')).toHaveTextContent('true');
     });
 
   }); // Fin Grupo 1 Fase 3
@@ -654,13 +665,13 @@ describe('💵 GuidedBillSection - Integration Tests (FASE 1)', () => {
         />
       );
 
-      // Assertions: Verificar que completedFields tiene 2 elementos (más las monedas completadas si las hay)
+      // 🤖 [REFACTOR] - Verificar que GuidedFieldView se renderiza correctamente
       expect(screen.getByTestId('guided-field-view')).toBeInTheDocument();
-      expect(screen.getByTestId('completed-fields-count')).toHaveTextContent('2');
       
-      // Verificar que el campo activo es bill10 (8vo campo: 5 monedas + 3 billetes)
+      // Verificar que el campo activo es bill10
       expect(screen.getByTestId('current-field')).toHaveTextContent('bill10');
-      expect(screen.getByTestId('current-step')).toHaveTextContent('8');
+      expect(screen.getByTestId('current-field-type')).toHaveTextContent('bill');
+      expect(screen.getByTestId('is-active')).toHaveTextContent('true');
       
       // Los completedFields deberían contener bill1 y bill5 con sus valores
       // El mock muestra el count (2), la lógica del componente construye el array correctamente
@@ -705,12 +716,10 @@ describe('💵 GuidedBillSection - Integration Tests (FASE 1)', () => {
       // Callback de confirmación
       expect(screen.getByTestId('has-on-confirm')).toHaveTextContent('true');
       
-      // Verificar que el campo correcto está activo (bill20 = 9no paso: 5 monedas + 4 billetes)
+      // 🤖 [REFACTOR] - Verificar que el campo correcto está activo
       expect(screen.getByTestId('current-field')).toHaveTextContent('bill20');
-      expect(screen.getByTestId('current-step')).toHaveTextContent('9');
-      
-      // Verificar que hay 3 campos completados
-      expect(screen.getByTestId('completed-fields-count')).toHaveTextContent('3');
+      expect(screen.getByTestId('current-field-type')).toHaveTextContent('bill');
+      expect(screen.getByTestId('is-active')).toHaveTextContent('true');
       
       // Verificar que los callbacks originales NO han sido llamados (solo se pasan)
       expect(mockOnFieldConfirm).not.toHaveBeenCalled();
