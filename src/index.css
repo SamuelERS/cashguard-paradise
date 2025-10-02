@@ -471,13 +471,14 @@
 
   /* 🤖 [IA] - v1.2.41h: Glass Morphism Panel - Hybrid Performance Optimized */
   /* Propuesta C: Mejor legibilidad + Performance móvil + Accesibilidad WCAG 2.1 AA */
+  /* 🤖 [IA] - v1.2.41i: Fix móvil - !important para prevenir override de bg-background */
   .glass-morphism-panel {
     /* Fondo más sólido para mejor legibilidad (72% móvil) */
-    background-color: rgba(28, 28, 32, 0.72);
+    background-color: rgba(28, 28, 32, 0.72) !important;
 
     /* Blur reducido para mejor FPS en móviles (12px) */
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
 
     /* Borde más visible (22% opacidad) */
     border: 1px solid rgba(255, 255, 255, 0.22);
@@ -493,14 +494,15 @@
   }
 
   /* 🤖 [IA] - v1.2.41h: Desktop - Blur completo cuando hardware aguanta */
+  /* 🤖 [IA] - v1.2.41i: Fix móvil - !important para prevenir override */
   @media (min-width: 768px) {
     .glass-morphism-panel {
       /* Más transparente en desktop (62% opacidad) */
-      background-color: rgba(28, 28, 32, 0.62);
+      background-color: rgba(28, 28, 32, 0.62) !important;
 
       /* Blur completo + saturación en desktop */
-      backdrop-filter: blur(20px) saturate(140%);
-      -webkit-backdrop-filter: blur(20px) saturate(140%);
+      backdrop-filter: blur(20px) saturate(140%) !important;
+      -webkit-backdrop-filter: blur(20px) saturate(140%) !important;
     }
   }
 
