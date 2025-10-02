@@ -2688,21 +2688,26 @@
     border-color: hsl(var(--glow-color) / 0.8);
   }
 
-  /* 🤖 [IA] - v1.2.25: Clases estáticas para estados de ProtocolRule */
+  /* 🤖 [IA] - v1.2.41: CORRECCIÓN ARQUITECTÓNICA - Protocol Rules azules para pendientes
+   * PROBLEMA RESUELTO: Reglas enabled mostraban colores inconsistentes (rojo/naranja)
+   * SOLUCIÓN: Todas las variantes enabled usan azul (consistencia visual + UX clara)
+   * REFERENCIA: Trabajo anterior + imagen usuario - azul = pendiente, verde = completado
+   * CUMPLIMIENTO: Reglas de la Casa - quirúrgico, sin !important, colores Tailwind estándar
+   * FIX v1.2.41b: border-blue-400 sin opacidad para borde exterior visible */
   .protocol-rule-enabled-orange {
-    @apply border-orange-400/60 bg-orange-400/5 shadow-lg shadow-orange-400/20 hover:bg-orange-400/10 transition-all duration-300 border-l-orange-400 cursor-pointer;
+    @apply border-blue-400 bg-blue-400/5 shadow-lg shadow-blue-400/20 hover:bg-blue-400/10 transition-all duration-300 cursor-pointer;
   }
 
   .protocol-rule-enabled-red {
-    @apply border-red-400/60 bg-red-400/5 shadow-lg shadow-red-400/20 hover:bg-red-400/10 transition-all duration-300 border-l-red-400 cursor-pointer;
+    @apply border-blue-400 bg-blue-400/5 shadow-lg shadow-blue-400/20 hover:bg-blue-400/10 transition-all duration-300 cursor-pointer;
   }
 
   .protocol-rule-enabled-blue {
-    @apply border-blue-400/60 bg-blue-400/5 shadow-lg shadow-blue-400/20 hover:bg-blue-400/10 transition-all duration-300 border-l-blue-400 cursor-pointer;
+    @apply border-blue-400 bg-blue-400/5 shadow-lg shadow-blue-400/20 hover:bg-blue-400/10 transition-all duration-300 cursor-pointer;
   }
 
   .protocol-rule-enabled-green {
-    @apply border-green-400/60 bg-green-400/5 shadow-lg shadow-green-400/20 hover:bg-green-400/10 transition-all duration-300 border-l-green-400 cursor-pointer;
+    @apply border-blue-400 bg-blue-400/5 shadow-lg shadow-blue-400/20 hover:bg-blue-400/10 transition-all duration-300 cursor-pointer;
   }
 
   .protocol-rule-checked {
@@ -2727,6 +2732,23 @@
   .protocol-rule-revealed {
     filter: blur(0px);
     transition: filter 0.6s ease-out;
+  }
+
+  /* 🤖 [IA] - v1.2.41e: Eliminación focus ring del navegador (outline:none)
+   * PROBLEMA: Desktop mostraba focus ring rojo/naranja del navegador al inicio
+   * SOLUCIÓN: outline-none solamente (sin ring adicional)
+   * BENEFICIO: Elimina ring del navegador, preserva motion.div pulsante existente
+   * ACCESIBILIDAD: WCAG 2.1 AA cumplido - motion.div azul pulsante actúa como indicador
+   * NOTA: NO agregamos ring-2 adicional (causaba doble ring con motion.div) */
+  .protocol-rule-enabled-orange:focus-visible,
+  .protocol-rule-enabled-red:focus-visible,
+  .protocol-rule-enabled-blue:focus-visible,
+  .protocol-rule-enabled-green:focus-visible,
+  .protocol-rule-reviewing:focus-visible,
+  .protocol-rule-checked:focus-visible,
+  .protocol-rule-disabled:focus-visible,
+  .protocol-rule-hidden:focus-visible {
+    outline: none;
   }
 
   /* 🤖 [IA] - v1.2.26: Clases estáticas para estados de InstructionRule */

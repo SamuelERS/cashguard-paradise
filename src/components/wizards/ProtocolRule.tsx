@@ -42,12 +42,12 @@ const ProtocolRuleComponent = ({ rule, state, isCurrent, onAcknowledge }: Protoc
           icon: 'text-blue-400'
         };
       case 'enabled': {
-        // Determinar color basado en la configuración de la regla
-        const colorVariant = colors.border.includes('orange') ? 'orange' :
-                           colors.border.includes('red') ? 'red' :
-                           colors.border.includes('blue') ? 'blue' : 'green';
+        // 🤖 [IA] - v1.2.41: SIMPLIFICACIÓN - Siempre azul para reglas enabled
+        // ANTES: Lógica condicional decidía entre 4 variantes (red/orange/blue/green)
+        // AHORA: Todas las variantes CSS son idénticas (azules), siempre usar blue
+        // BENEFICIO: Elimina confusión, sin flash de color incorrecto, código más simple
         return {
-          container: `protocol-rule-enabled-${colorVariant}`,
+          container: 'protocol-rule-enabled-blue',
           icon: colors.text
         };
       }
@@ -75,6 +75,12 @@ const ProtocolRuleComponent = ({ rule, state, isCurrent, onAcknowledge }: Protoc
     <motion.div
       className={cn(
         "flex items-start gap-[clamp(0.75rem,3vw,1rem)] p-[clamp(0.625rem,2.5vw,0.875rem)] rounded-[clamp(0.375rem,1.5vw,0.5rem)] border relative",
+        // 🤖 [IA] - v1.2.41c: Color de borde explícito según estado
+        // Sobrescribe color por defecto de .border (hsl(var(--border))) con colores semánticos
+        visualState === 'checked' ? 'border-green-400' :
+        visualState === 'enabled' ? 'border-blue-400' :
+        visualState === 'reviewing' ? 'border-blue-400' :
+        'border-muted',  // disabled/hidden
         styles.container,
         // Agregar clase para revelación cuando no esté oculto
         visualState !== 'hidden' && "protocol-rule-revealed"
@@ -167,16 +173,17 @@ const ProtocolRuleComponent = ({ rule, state, isCurrent, onAcknowledge }: Protoc
         </div>
       </div>
 
-      {/* 🤖 [IA] - Indicador de interactividad usando variables CSS del sistema */}
+      {/* 🤖 [IA] - v1.2.41: Indicador de interactividad AZUL para reglas enabled
+       * CORRECCIÓN: Unificado a azul (border-blue-400/30 bg-blue-400/5)
+       * ANTES: Variantes red/orange/green según configuración regla
+       * AHORA: Siempre azul para reglas pendientes (consistencia UX)
+       * CUMPLIMIENTO: Azul = pendiente, Verde = completado (checked) */}
       {state.isEnabled && !state.isChecked && (
         <motion.div
           className={cn(
             "absolute inset-0 rounded-[clamp(0.375rem,1.5vw,0.5rem)] pointer-events-none",
             "border-2",
-            colors.border.includes('red') ? 'border-red-400/30 bg-red-400/5' :
-            colors.border.includes('blue') ? 'border-blue-400/30 bg-blue-400/5' :
-            colors.border.includes('green') ? 'border-green-400/30 bg-green-400/5' :
-            'border-orange-400/30 bg-orange-400/5'
+            "border-blue-400/30 bg-blue-400/5"
           )}
           style={{ willChange: 'transform, opacity' }}
           animate={{

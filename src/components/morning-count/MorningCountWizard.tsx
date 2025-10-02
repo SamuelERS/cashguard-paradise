@@ -1,6 +1,8 @@
 // 🤖 [IA] - v1.0.92 - Wizard con Frosted Glass Premium balanceado
 // 🤖 [IA] - v1.2.12 - Corrección de accesibilidad con DialogTitle y DialogDescription
 // 🤖 [IA] - v1.2.38 - Integración Protocolo de Seguridad (Paso 0) + 4 pasos totales
+// 🤖 [IA] - v1.2.41f - Modal de confirmación de cierre implementado
+// 🤖 [IA] - v1.2.41g - Migración a Doctrina Glass Morphism v1.1 (glass-morphism-panel)
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, MapPin, Users, CheckCircle, Sunrise } from 'lucide-react';
@@ -10,6 +12,7 @@ import { ConstructiveActionButton } from '@/components/shared/ConstructiveAction
 import { NeutralActionButton } from '@/components/ui/neutral-action-button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
+import { ConfirmationModal } from "@/components/ui/confirmation-modal"; // 🤖 [IA] - v1.2.41f: Modal de confirmación
 import { STORES, getEmployeesByStore } from '@/data/paradise';
 import { useTimingConfig } from '@/hooks/useTimingConfig';
 import { WizardGlassCard } from '@/components/wizards/WizardGlassCard';
@@ -39,6 +42,7 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
   const [selectedCashierIn, setSelectedCashierIn] = useState(''); // Cajero entrante
   const [selectedCashierOut, setSelectedCashierOut] = useState(''); // Testigo
   const [showValidation, setShowValidation] = useState(false);
+  const [showCancelConfirmation, setShowCancelConfirmation] = useState(false); // 🤖 [IA] - v1.2.41f: Estado para modal de confirmación
 
   const { createTimeoutWithCleanup } = useTimingConfig();
 
@@ -121,6 +125,20 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
   const handleRuleAcknowledge = useCallback((ruleId: string, index: number) => {
     acknowledgeRule(ruleId, index);
   }, [acknowledgeRule]);
+
+  // 🤖 [IA] - v1.2.41f: Handlers para confirmación de cierre
+  const handleCancelClick = () => {
+    setShowCancelConfirmation(true);
+  };
+
+  const handleConfirmedClose = () => {
+    setShowCancelConfirmation(false);
+    onClose();
+  };
+
+  const handleCancelClose = () => {
+    setShowCancelConfirmation(false);
+  };
 
   // 🤖 [IA] - v1.2.11 - Detección de viewport y escala proporcional
   const viewportScale = typeof window !== 'undefined' ? Math.min(window.innerWidth / 430, 1) : 1;
@@ -374,8 +392,8 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
         return;
       }
     }}>
-      <DialogContent 
-        className="wizard-dialog-shell wizard-dialog-content overflow-y-auto overflow-x-hidden p-0 [&>button]:hidden"
+      <DialogContent
+        className="glass-morphism-panel wizard-dialog-content overflow-y-auto overflow-x-hidden p-0 [&>button]:hidden"
         style={{
           maxHeight: isMobileDevice ? '90vh' : '85vh'
         }}
@@ -401,7 +419,7 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
             <Button
               variant="ghost"
               size="icon-sm"
-              onClick={onClose}
+              onClick={handleCancelClick}
               className="rounded-full"
             >
               <X className="icon-responsive-sm" />
@@ -460,6 +478,19 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
           </div>
         </div>
       </DialogContent>
+
+      {/* 🤖 [IA] - v1.2.41f: Modal de confirmación de cierre */}
+      <ConfirmationModal
+        open={showCancelConfirmation}
+        onOpenChange={setShowCancelConfirmation}
+        title="Cancelar Conteo Matutino"
+        description="Se perderá todo el progreso del protocolo de seguridad y la información ingresada"
+        warningText="Esta acción no se puede deshacer"
+        confirmText="Sí, Cancelar"
+        cancelText="Continuar Conteo"
+        onConfirm={handleConfirmedClose}
+        onCancel={handleCancelClose}
+      />
     </Dialog>
   );
 }
