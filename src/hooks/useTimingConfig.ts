@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 
 /**
  * 🤖 [IA] - Hook para timing unificado - Solución BUG #6 - v1.0.21
@@ -212,6 +212,13 @@ export const useTimingConfig = () => {
       }
     };
   }, [getDelay, cancelTimeout]);
+
+  // 🤖 [IA] - FIX BUG #6: Cleanup automático de todos los timeouts en unmount
+  useEffect(() => {
+    return () => {
+      cancelAllTimeouts();
+    };
+  }, [cancelAllTimeouts]);
 
   return {
     getDelay,
