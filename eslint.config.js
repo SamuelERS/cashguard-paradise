@@ -5,7 +5,28 @@ import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  { ignores: ["dist"] },
+  {
+    ignores: [
+      "dist",
+      "dist-ssr",
+      "dist-backup-*",
+      "coverage",
+      ".nyc_output",
+      "playwright-report",
+      "playwright/.cache",
+      "test-results",
+      "Pruebas Test GitHub",
+      "node_modules",
+      // 🤖 [IA] - ESLint v9+ flat config - Comprehensive glob patterns for generated directories
+      "**/.vinxi/**",
+      "**/dist/**",
+      "**/build/**",
+      "**/coverage/**",
+      "**/playwright-report/**",
+      "**/test-results/**",
+      "public/mockServiceWorker.js"
+    ]
+  },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ["**/*.{ts,tsx}"],
