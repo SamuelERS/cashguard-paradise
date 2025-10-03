@@ -123,6 +123,7 @@ export function GuidedInstructionsModal({
 
         <div className="p-fluid-lg space-y-fluid-lg">
           {/* 🤖 [IA] - v1.2.41U: Header estilo MorningCount/InitialWizard - CheckCircle verde + título + botón X */}
+          {/* 🤖 [IA] - v1.2.41AB: Subtítulo agregado para coherencia con otros modales */}
           <div className="flex items-center justify-between mb-fluid-md">
             <div className="flex items-center gap-fluid-md">
               <CheckCircle
@@ -130,9 +131,14 @@ export function GuidedInstructionsModal({
                 style={{ color: '#10b981' }}
                 aria-label="Icono de instrucciones de conteo"
               />
-              <h2 className="font-bold text-[clamp(1.25rem,5vw,1.5rem)] text-[#e1e8ed]">
-                Instrucciones de Conteo
-              </h2>
+              <div className="flex flex-col">
+                <h2 className="font-bold text-[clamp(1.25rem,5vw,1.5rem)] text-[#e1e8ed] leading-tight">
+                  Instrucciones de Conteo
+                </h2>
+                <p className="text-[clamp(0.625rem,2.5vw,0.75rem)] text-[#8899a6] mt-[clamp(0.125rem,0.5vw,0.25rem)]">
+                  Preparativos antes de contar efectivo
+                </p>
+              </div>
             </div>
             <Button
               variant="ghost"

@@ -1,5 +1,6 @@
 // 🤖 [IA] - v1.2.24: ARMONIZACIÓN COMPLETA - Migración a DeliveryFieldView para consistency con Phase 1
 // Reemplaza implementación text-only por componente visual rico con imágenes
+// 🤖 [IA] - v1.2.44: Mensaje transición automática mejorado para claridad UX
 // 🤖 [IA] - v1.2.11 - Sistema anti-fraude: indicadores visuales sin montos
 // 🤖 [IA] - v1.2.5 - Mejoras de visibilidad y espaciado en Android
 // 🤖 [IA] - v1.1.14 - Reorganización de flujo vertical y eliminación de redundancias
@@ -204,7 +205,7 @@ export function Phase2DeliverySection({
               Total separado: {formatCurrency(amountToDeliver)}
             </p>
             <p className="text-sm font-medium text-primary">
-              Verificando entrega...
+              Procediendo a verificación automática...
             </p>
           </div>
         </div>

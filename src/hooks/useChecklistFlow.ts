@@ -1,11 +1,17 @@
 /**
- * 🤖 [IA] - Hook para flujo de checklist progresivo - v1.2.26
- * 
+ * 🤖 [IA] - Hook para flujo de checklist progresivo - v1.2.45
+ * 🔧 [FIX] - Refactorizado con flat timeout pattern para prevenir race conditions
+ *
  * @description
  * Hook especializado para Phase2Manager que implementa un checklist con revelación
  * progresiva. Los items se revelan secuencialmente a medida que se marcan los anteriores.
  * Incluye animaciones de activación y control de completitud.
- * 
+ *
+ * ⚠️ CAMBIO CRÍTICO v1.2.45:
+ * - Eliminados nested timeouts (causaban freeze en mobile)
+ * - Implementado flat timeout pattern con useEffect
+ * - Cada progresión usa timeout independiente cancelable
+ *
  * @example
  * ```tsx
  * const {
@@ -15,21 +21,21 @@
  *   handleCheckChange,
  *   isChecklistComplete
  * } = useChecklistFlow();
- * 
+ *
  * // Inicializar checklist
  * useEffect(() => {
  *   initializeChecklist();
  * }, []);
- * 
+ *
  * // Manejar cambio de checkbox
  * <Checkbox
  *   checked={checkedItems.bolsa}
  *   onCheckedChange={() => handleCheckChange('bolsa')}
  * />
  * ```
- * 
+ *
  * @returns Objeto con estado y funciones de control del checklist
- * 
+ *
  * @property {ChecklistItems} checkedItems - Items marcados
  * @property {EnabledItems} enabledItems - Items habilitados para interacción
  * @property {HiddenItems} hiddenItems - Items ocultos (revelación progresiva)
@@ -39,7 +45,7 @@
  * @property {function} getItemClassName - Obtiene clases CSS para animaciones
  * @property {function} isItemActivating - Verifica si un item está en animación
  */
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useTimingConfig } from './useTimingConfig';
 
 interface ChecklistItems {
@@ -104,43 +110,73 @@ export const useChecklistFlow = () => {
     return cleanup;
   }, [createTimeoutWithCleanup]);
 
-  // 🤖 [IA] - Manejar cambio de estado de un checkbox
+  // 🤖 [IA] - v1.2.45: FLAT TIMEOUT PATTERN - Progresión Bolsa → Tirro (600ms reveal)
+  useEffect(() => {
+    if (checkedItems.bolsa && hiddenItems.tirro) {
+      const cleanup = createTimeoutWithCleanup(() => {
+        setHiddenItems(prev => ({ ...prev, tirro: false }));
+      }, 'transition', 'checklist_tirro_reveal', 600);
+      return cleanup;
+    }
+  }, [checkedItems.bolsa, hiddenItems.tirro, createTimeoutWithCleanup]);
+
+  // 🤖 [IA] - v1.2.45: FLAT TIMEOUT PATTERN - Progresión Bolsa → Tirro (2000ms enable)
+  useEffect(() => {
+    if (checkedItems.bolsa && !hiddenItems.tirro && !enabledItems.tirro) {
+      const cleanup = createTimeoutWithCleanup(() => {
+        setEnabledItems(prev => ({ ...prev, tirro: true }));
+      }, 'transition', 'checklist_tirro_enable', 2000);
+      return cleanup;
+    }
+  }, [checkedItems.bolsa, hiddenItems.tirro, enabledItems.tirro, createTimeoutWithCleanup]);
+
+  // 🤖 [IA] - v1.2.45: FLAT TIMEOUT PATTERN - Progresión Tirro → Espacio (600ms reveal)
+  useEffect(() => {
+    if (checkedItems.tirro && checkedItems.bolsa && hiddenItems.espacio) {
+      const cleanup = createTimeoutWithCleanup(() => {
+        setHiddenItems(prev => ({ ...prev, espacio: false }));
+      }, 'transition', 'checklist_espacio_reveal', 600);
+      return cleanup;
+    }
+  }, [checkedItems.tirro, checkedItems.bolsa, hiddenItems.espacio, createTimeoutWithCleanup]);
+
+  // 🤖 [IA] - v1.2.45: FLAT TIMEOUT PATTERN - Progresión Tirro → Espacio (2000ms enable)
+  useEffect(() => {
+    if (checkedItems.tirro && checkedItems.bolsa && !hiddenItems.espacio && !enabledItems.espacio) {
+      const cleanup = createTimeoutWithCleanup(() => {
+        setEnabledItems(prev => ({ ...prev, espacio: true }));
+      }, 'transition', 'checklist_espacio_enable', 2000);
+      return cleanup;
+    }
+  }, [checkedItems.tirro, checkedItems.bolsa, hiddenItems.espacio, enabledItems.espacio, createTimeoutWithCleanup]);
+
+  // 🤖 [IA] - v1.2.45: FLAT TIMEOUT PATTERN - Progresión Espacio → Entendido (600ms reveal)
+  useEffect(() => {
+    if (checkedItems.espacio && checkedItems.tirro && checkedItems.bolsa && hiddenItems.entendido) {
+      const cleanup = createTimeoutWithCleanup(() => {
+        setHiddenItems(prev => ({ ...prev, entendido: false }));
+      }, 'transition', 'checklist_entendido_reveal', 600);
+      return cleanup;
+    }
+  }, [checkedItems.espacio, checkedItems.tirro, checkedItems.bolsa, hiddenItems.entendido, createTimeoutWithCleanup]);
+
+  // 🤖 [IA] - v1.2.45: FLAT TIMEOUT PATTERN - Progresión Espacio → Entendido (2000ms enable)
+  useEffect(() => {
+    if (checkedItems.espacio && checkedItems.tirro && checkedItems.bolsa && !hiddenItems.entendido && !enabledItems.entendido) {
+      const cleanup = createTimeoutWithCleanup(() => {
+        setEnabledItems(prev => ({ ...prev, entendido: true }));
+      }, 'transition', 'checklist_entendido_enable', 2000);
+      return cleanup;
+    }
+  }, [checkedItems.espacio, checkedItems.tirro, checkedItems.bolsa, hiddenItems.entendido, enabledItems.entendido, createTimeoutWithCleanup]);
+
+  // 🤖 [IA] - v1.2.45: Manejar cambio de estado de checkbox (SIMPLIFICADO - sin nested timeouts)
   const handleCheckChange = useCallback((item: keyof ChecklistItems) => {
     if (!enabledItems[item]) return;
 
-    const newCheckedState = { ...checkedItems, [item]: !checkedItems[item] };
-    setCheckedItems(newCheckedState);
-
-    // 🤖 [IA] - Lógica de revelación progresiva con timing
-    if (item === 'bolsa' && newCheckedState.bolsa && hiddenItems.tirro) {
-      // Revelar tirro después de 600ms (tiempo de animación)
-      createTimeoutWithCleanup(() => {
-        setHiddenItems(prev => ({ ...prev, tirro: false }));
-        // Activar después de otros 2s
-        createTimeoutWithCleanup(() => {
-          setEnabledItems(prev => ({ ...prev, tirro: true }));
-        }, 'transition', 'checklist_tirro_enable', 2000);
-      }, 'transition', 'checklist_tirro_reveal', 600);
-    }
-
-    if (item === 'tirro' && newCheckedState.tirro && newCheckedState.bolsa && hiddenItems.espacio) {
-      createTimeoutWithCleanup(() => {
-        setHiddenItems(prev => ({ ...prev, espacio: false }));
-        createTimeoutWithCleanup(() => {
-          setEnabledItems(prev => ({ ...prev, espacio: true }));
-        }, 'transition', 'checklist_espacio_enable', 2000);
-      }, 'transition', 'checklist_espacio_reveal', 600);
-    }
-
-    if (item === 'espacio' && newCheckedState.espacio && newCheckedState.tirro && newCheckedState.bolsa && hiddenItems.entendido) {
-      createTimeoutWithCleanup(() => {
-        setHiddenItems(prev => ({ ...prev, entendido: false }));
-        createTimeoutWithCleanup(() => {
-          setEnabledItems(prev => ({ ...prev, entendido: true }));
-        }, 'transition', 'checklist_entendido_enable', 2000);
-      }, 'transition', 'checklist_entendido_reveal', 600);
-    }
-  }, [checkedItems, enabledItems, hiddenItems, createTimeoutWithCleanup]);
+    setCheckedItems(prev => ({ ...prev, [item]: !prev[item] }));
+    // ✅ Progresión automática manejada por useEffect independientes arriba
+  }, [enabledItems]);
 
   // 🤖 [IA] - Verificar si todos los items están completos
   const isChecklistComplete = useCallback(() => {

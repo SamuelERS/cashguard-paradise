@@ -1,5 +1,6 @@
 // 🤖 [IA] - v1.2.26: FASE 3 - Estados Visuales Avanzados migrados de ProtocolRule
 // Componente controlado con lógica de estados avanzada + performance optimizada
+// 🔧 [FIX] - v1.2.45: Animaciones infinitas limitadas a 3 ciclos (12s total) para prevenir overhead móvil
 import React, { useMemo, useCallback, memo } from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { motion } from 'framer-motion';
@@ -135,11 +136,11 @@ const InstructionRuleComponent: React.FC<InstructionRuleProps> = ({
               }
             }
           : visualState === 'enabled' && isCurrent
-          ? { // ESTADO ACTIVO - ANIMACIÓN DE PULSO
+          ? { // ESTADO ACTIVO - ANIMACIÓN DE PULSO (v1.2.45: limitada a 3 ciclos)
               opacity: 1,
               scale: [1, 1.02, 1],
               transition: {
-                scale: { duration: 2, repeat: Infinity, repeatType: "reverse" as const },
+                scale: { duration: 2, repeat: 3, repeatType: "reverse" as const }, // 🔧 [FIX] v1.2.45: 3 ciclos = 12s total
                 opacity: { duration: 0.6, ease: "easeOut" }
               }
             }
@@ -197,7 +198,7 @@ const InstructionRuleComponent: React.FC<InstructionRuleProps> = ({
         <motion.div
           className="font-semibold text-primary-foreground text-[clamp(0.875rem,3.5vw,1rem)] leading-tight"
           animate={state.isBeingReviewed ? { opacity: [1, 0.7, 1] } : {}}
-          transition={{ duration: 1, repeat: state.isBeingReviewed ? Infinity : 0 }}
+          transition={{ duration: 1, repeat: state.isBeingReviewed ? 3 : 0 }} // 🔧 [FIX] v1.2.45: 3 ciclos = 6s total
         >
           {rule.title}
         </motion.div>
@@ -224,7 +225,7 @@ const InstructionRuleComponent: React.FC<InstructionRuleProps> = ({
           }}
           transition={{
             duration: 2,
-            repeat: Infinity,
+            repeat: 3, // 🔧 [FIX] v1.2.45: 3 ciclos = 12s total (antes Infinity)
             repeatType: "reverse"
           }}
         />

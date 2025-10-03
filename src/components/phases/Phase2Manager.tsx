@@ -128,9 +128,10 @@ export function Phase2Manager({
     }));
   };
 
-  const handleDeliverySectionComplete = () => {
-    setDeliveryCompleted(true);
-  };
+  // 🤖 [IA] - v1.2.46: handleDeliverySectionComplete ELIMINADO
+  // RAZÓN: Redundante con handleDeliveryStepComplete (líneas 114-120)
+  // Causaba race condition: deliveryCompleted marcado dos veces → useEffect no se disparaba
+  // Sistema de steps individuales maneja completitud automáticamente
 
   const handleVerificationStepComplete = (stepKey: string) => {
     setVerificationProgress(prev => ({
@@ -198,7 +199,7 @@ export function Phase2Manager({
                   deliveryCalculation={deliveryCalculation}
                   onStepComplete={handleDeliveryStepComplete}
                   onStepUncomplete={handleDeliveryStepUncomplete}
-                  onSectionComplete={handleDeliverySectionComplete}
+                  onSectionComplete={() => {}} // 🤖 [IA] - v1.2.46: NOOP - handleDeliveryStepComplete maneja completitud
                   completedSteps={deliveryProgress}
                   onCancel={() => setShowExitConfirmation(true)}
                   onPrevious={() => {}}
@@ -228,21 +229,8 @@ export function Phase2Manager({
             )}
           </AnimatePresence>
 
-          {/* Manual section switch - only show when delivery is complete */}
-          {deliveryCompleted && currentSection === 'delivery' && !verificationCompleted && (
-            <div className="flex justify-center">
-              <Button
-                variant="phase2-verify"
-                onClick={() => setCurrentSection('verification')}
-                aria-label="Verificar efectivo y continuar"
-                className="px-6"
-              >
-                <span>Verificar</span>
-                <span className="hidden sm:inline ml-1">Efectivo</span>
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-            </div>
-          )}
+          {/* 🤖 [IA] - v1.2.44: Botón manual eliminado - transición automática implementada en Phase2DeliverySection */}
+          {/* La transición de delivery → verification ocurre automáticamente tras completar separación (línea 91-97 Phase2DeliverySection) */}
         </div>
       </div>
 
@@ -270,7 +258,8 @@ export function Phase2Manager({
           setShowInstructionsModal(open);
         }}
       >
-      <DialogContent className="wizard-dialog-shell wizard-dialog-content max-h-[clamp(85vh,90vh,90vh)] overflow-y-auto overflow-x-hidden p-0 [&>button]:hidden">
+      {/* 🤖 [IA] - v1.2.41AC: Corregido wizard-dialog-shell → glass-morphism-panel para coherencia transparencias */}
+      <DialogContent className="glass-morphism-panel wizard-dialog-content max-h-[clamp(85vh,90vh,90vh)] overflow-y-auto overflow-x-hidden p-0 [&>button]:hidden">
         {/* 🤖 [IA] - v1.2.41Z: DialogTitle/Description solo para accesibilidad */}
         <DialogTitle className="sr-only">
           Preparar Dinero a Entregar
