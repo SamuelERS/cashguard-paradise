@@ -1,7 +1,7 @@
 # 📚 CLAUDE.md - HISTORIAL DE DESARROLLO CASHGUARD PARADISE
-**Última actualización:** 02 Oct 2025 ~21:45 PM
-**Sesión completada:** Sistema de colores unificado + Título responsive
-**Estado:** 100% coherencia visual (Azul → Naranja → Verde) + UX mobile optimizado
+**Última actualización:** 02 Oct 2025 ~22:15 PM
+**Sesión completada:** Coherencia iconográfica completa ProtocolRule
+**Estado:** 100% semántica visual (MessageSquare + RefreshCw) + UX profesional
 
 ## 📊 MÉTRICAS ACTUALES DEL PROYECTO
 
@@ -104,6 +104,44 @@ Progreso: 48/100 tests (~48%) | Prioridad: useTimingConfig (cierra Bug #6)
 ---
 
 ## 📝 Recent Updates
+
+### v1.2.41W - Coherencia Iconográfica ProtocolRule [02 OCT 2025] ✅
+**OPERACIÓN SEMANTIC ICONS:** Mejora de coherencia semántica en iconos de ProtocolRule (InitialWizardModal + MorningCountWizard) - MessageSquare + RefreshCw para semántica visual profesional.
+- **Contexto:** Usuario solicitó revisión de iconos en screenshots para coherencia con texto
+- **Análisis iconos actuales vs sugeridos:**
+  - ✅ **Regla 1 "Cajero y Testigo Presentes":** `Users` 👥 - **Perfecto** (múltiples personas)
+  - ⚠️ **Regla 2 "Abran WhatsApp Web":** `MessageCircle` 💬 → `MessageSquare` 📱 (interfaz cuadrada WhatsApp)
+  - ✅ **Regla 3 "No Usar Calculadoras":** `Calculator` 🧮 - **Perfecto** (semántica directa)
+  - ⚠️ **Regla 4 "Si Fallan Repiten Corte":** `RotateCcw` 🔄 → `RefreshCw` ↻ (reinicio completo desde cero)
+- **Decisión técnica:** Cambiar solo 2 iconos (MessageSquare + RefreshCw) para máxima coherencia semántica
+- **Cambios quirúrgicos implementados:**
+  - ✅ **Imports (líneas 8, 12):**
+    - `MessageCircle` → `MessageSquare` (WhatsApp interfaz cuadrada)
+    - `RotateCcw` → `RefreshCw` (reinicio completo vs solo retroceso)
+  - ✅ **protocolRules Evening Cut (líneas 65, 89):**
+    - Regla 2: `MessageSquare` con comment "📱 v1.2.41W: WhatsApp Web (interfaz cuadrada)"
+    - Regla 4: `RefreshCw` con comment "↻ v1.2.41W: Reinicio completo desde cero"
+  - ✅ **morningRules Morning Count (línea 106):**
+    - Regla 1: `MessageSquare` con comment "📱 v1.2.41W: WhatsApp Web coherente"
+  - ✅ **Version comment (línea 46):**
+    - Actualizado a v1.2.41W con descripción clara
+- **Build exitoso:** Hash JS `PWy7yI_v` (1,418.39 kB), Hash CSS `C4W5hViH` (sin cambios - solo JS)
+- **Coherencia 100% lograda - Semántica visual:**
+  - ✅ **MessageSquare:** WhatsApp = aplicación de mensajería cuadrada (no circular MessageCircle)
+  - ✅ **RefreshCw:** "Repiten desde cero" = refresh completo circular (no solo retroceso RotateCcw)
+  - ✅ **Consistencia Evening + Morning:** Mismo icono WhatsApp en ambos protocolos
+- **Beneficios UX profesionales:**
+  - ✅ **Semántica visual mejorada:** Iconos representan exactamente la acción/concepto
+  - ✅ **Coherencia total:** Morning Count y Evening Cut usan mismo icono WhatsApp
+  - ✅ **Affordance clara:** RefreshCw = ciclo completo (no confusión con retroceso)
+  - ✅ **Zero breaking changes:** Solo cambio visual de iconos (misma interface)
+- **Validación de orden lógico:**
+  - ✅ **Orden cronológico perfecto:** Prerequisitos → Preparación → Restricciones → Consecuencias
+  - ✅ **No requiere cambios:** Flujo ya es óptimo según análisis
+- **Estándares cumplidos:** Nielsen Norman Group ✅, Material Design 3 ✅, Lucide React Icons Best Practices ✅
+**Archivos:** `src/config/flows/initialWizardFlow.ts` (líneas 8, 12, 46, 65, 89, 106), `CLAUDE.md`
+
+---
 
 ### v1.2.41V - Sistema de Colores Unificado + Título Responsive [02 OCT 2025] ✅
 **OPERACIÓN COLOR CONSISTENCY + MOBILE UX:** Unificación completa del sistema de colores a azul único + acortamiento de título para pantallas móviles - coherencia total con ProtocolRule.

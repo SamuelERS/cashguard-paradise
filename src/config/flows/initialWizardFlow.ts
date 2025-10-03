@@ -5,11 +5,11 @@ import {
   AlertTriangle,
   Shield,
   CheckCircle,
-  MessageCircle,  // 💬 WhatsApp Web (Morning + Evening)
+  MessageSquare,  // 📱 WhatsApp Web (Morning + Evening) - v1.2.41W
   Coins,          // 🪙 Verificación física (Morning)
   Calculator,     // 🧮 No calculadoras (Morning + Evening)
   BellRing,       // 🔔 Reporte anomalías (Morning)
-  RotateCcw,      // 🔄 Si Fallan Repiten Corte (Evening)
+  RefreshCw,      // ↻ Repiten desde cero (Evening) - v1.2.41W
   Users           // 👥 Cajero y Testigo Presentes (Evening)
 } from 'lucide-react';
 
@@ -43,8 +43,7 @@ export interface RulesFlowState {
 // Fuente única de verdad para el flujo guiado secuencial
 
 // 🤖 [IA] - EVENING CUT PROTOCOL - Protocolo para corte nocturno (InitialWizardModal)
-// 🤖 [IA] - v1.2.41L: Coherencia iconográfica - iconos alineados con significado de cada regla
-// 🤖 [IA] - v1.2.41M: Textos 2 líneas + reordenamiento lógico (prerequisitos → consecuencias)
+// 🤖 [IA] - v1.2.41W: Coherencia iconográfica (MessageSquare + RefreshCw)
 const protocolRules: ProtocolRule[] = [
   {
     id: 'activeSystem',
@@ -62,7 +61,7 @@ const protocolRules: ProtocolRule[] = [
     id: 'differentCashier',
     title: 'Abran WhatsApp Web',
     subtitle: 'Mantener comunicación activa durante el conteo',
-    Icon: MessageCircle,  // 💬 Preparación: Comunicación
+    Icon: MessageSquare,  // 📱 v1.2.41W: WhatsApp Web (interfaz cuadrada)
     colors: {
       text: 'text-red-500',
       border: 'border-l-red-500',
@@ -86,7 +85,7 @@ const protocolRules: ProtocolRule[] = [
     id: 'noDevices',
     title: 'Si Fallan Repiten Corte',
     subtitle: 'El proceso debe reiniciarse desde cero',
-    Icon: RotateCcw,  // 🔄 Consecuencia: Qué pasa si fallan
+    Icon: RefreshCw,  // ↻ v1.2.41W: Reinicio completo desde cero
     colors: {
       text: 'text-orange-400',
       border: 'border-l-orange-400',
@@ -103,7 +102,7 @@ const morningRules: ProtocolRule[] = [
     id: 'whatsappReady',
     title: 'Abran WhatsApp Web',
     subtitle: 'Mantener comunicación activa durante el conteo',
-    Icon: MessageCircle,
+    Icon: MessageSquare,  // 📱 v1.2.41W: WhatsApp Web coherente
     colors: {
       text: 'text-blue-400',
       border: 'border-l-blue-400',
