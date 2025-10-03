@@ -1,8 +1,9 @@
 // 🤖 [IA] - v1.1.14 - Simplificación de tabs y eliminación de redundancias en Fase 2
 // 🤖 [IA] - v1.2.41Z: Migración header modal a patrón canónico (icono + subtítulo + botón X)
+// 🤖 [IA] - v1.2.41AA: Footer único botón + subtítulos 2 líneas + iconos semánticos
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Package, ScrollText, Grid3x3, AlertCircle, DollarSign, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Package, ScrollText, Grid3x3, AlertCircle, DollarSign, X, Pencil, Banknote, CheckCircle2 } from 'lucide-react';
 import { InstructionRule, type RuleState } from '@/components/wizards/InstructionRule';
 import { WizardGlassCard } from '@/components/wizards/WizardGlassCard';
 // 🤖 [IA] - v1.2.10: Agregado modal controlado para confirmación de salida
@@ -313,12 +314,12 @@ export function Phase2Manager({
             <div className="flex flex-col gap-fluid-lg">
             {/* 🤖 [IA] - v1.2.31: Progressive Revelation con InstructionRule canónico */}
             <div className="flex flex-col gap-[clamp(0.75rem,3vw,1rem)]">
-              {/* Item 1: Bolsa */}
+              {/* Item 1: Bolsa - 🤖 [IA] v1.2.41AA: Subtítulo estático informativo */}
               <InstructionRule
                 rule={{
                   id: 'bolsa',
                   title: 'Bolsa Lista Para Entrega',
-                  subtitle: enabledItems.bolsa ? '' : '⏱️ Preparando...',
+                  subtitle: 'Preparar bolsa plástica o de tela',
                   Icon: Package,
                   colors: {
                     border: checkedItems.bolsa ? 'border-green-400' : 'border-blue-400',
@@ -335,13 +336,13 @@ export function Phase2Manager({
                 onAcknowledge={() => handleCheckChange('bolsa')}
               />
 
-              {/* Item 2: Tirro */}
+              {/* Item 2: Tirro - 🤖 [IA] v1.2.41AA: Subtítulo + icono Pencil semántico */}
               <InstructionRule
                 rule={{
                   id: 'tirro',
                   title: 'Cinta y Rotulador Listo',
-                  subtitle: !enabledItems.tirro ? (checkedItems.bolsa ? '⏱️ Activando...' : '(marque el anterior)') : '',
-                  Icon: ScrollText,
+                  subtitle: 'Tener cinta adhesiva y marcador',
+                  Icon: Pencil,
                   colors: {
                     border: checkedItems.tirro ? 'border-green-400' : 'border-blue-400',
                     text: checkedItems.tirro ? 'text-green-400' : 'text-blue-400'
@@ -357,13 +358,13 @@ export function Phase2Manager({
                 onAcknowledge={() => handleCheckChange('tirro')}
               />
 
-              {/* Item 3: Espacio */}
+              {/* Item 3: Espacio - 🤖 [IA] v1.2.41AA: Subtítulo + icono Banknote semántico */}
               <InstructionRule
                 rule={{
                   id: 'espacio',
                   title: 'Tomar Cantidad Para Bolsa',
-                  subtitle: !enabledItems.espacio ? (checkedItems.tirro ? '⏱️ Activando...' : '(marque el anterior)') : '',
-                  Icon: Grid3x3,
+                  subtitle: 'Contar y separar dinero calculado',
+                  Icon: Banknote,
                   colors: {
                     border: checkedItems.espacio ? 'border-green-400' : 'border-blue-400',
                     text: checkedItems.espacio ? 'text-green-400' : 'text-blue-400'
@@ -379,13 +380,13 @@ export function Phase2Manager({
                 onAcknowledge={() => handleCheckChange('espacio')}
               />
 
-              {/* Item 4: Entendido */}
+              {/* Item 4: Entendido - 🤖 [IA] v1.2.41AA: Subtítulo + icono CheckCircle2 semántico */}
               <InstructionRule
                 rule={{
                   id: 'entendido',
                   title: 'Estamos listos para continuar',
-                  subtitle: !enabledItems.entendido ? (checkedItems.espacio ? '⏱️ Activando...' : '(marque el anterior)') : '',
-                  Icon: AlertCircle,
+                  subtitle: 'Verificar que todo esté preparado',
+                  Icon: CheckCircle2,
                   colors: {
                     border: checkedItems.entendido ? 'border-green-400' : 'border-blue-400',
                     text: checkedItems.entendido ? 'text-green-400' : 'text-blue-400'
@@ -404,13 +405,8 @@ export function Phase2Manager({
             </div>
           </WizardGlassCard>
 
-          {/* Footer - migrado a div normal como InitialWizardModal */}
-          <div className="flex items-center justify-center mt-fluid-2xl pt-fluid-xl border-t border-slate-600 gap-fluid-lg wizard-dialog-footer">
-            <DestructiveActionButton
-              onClick={handleInstructionsCancelRequest}
-            >
-              Cancelar
-            </DestructiveActionButton>
+          {/* 🤖 [IA] - v1.2.41AA: Footer con único botón centrado (X button maneja cierre) */}
+          <div className="flex items-center justify-center mt-fluid-2xl pt-fluid-xl border-t border-slate-600">
             <ConstructiveActionButton
               onClick={() => setShowInstructionsModal(false)}
               disabled={!allItemsChecked}
