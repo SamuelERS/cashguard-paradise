@@ -161,13 +161,11 @@ const InstructionRuleComponent: React.FC<InstructionRuleProps> = ({
       aria-disabled={state.isHidden}
     >
       {/* 🤖 [IA] - v1.2.26: FASE 4 - Contenedor del icono con animaciones */}
+      {/* 🎯 [COHERENCE] - v1.2.41AE: Rotación eliminada para coherencia con todos los modales */}
       <div className="flex-shrink-0 relative">
-        <motion.div
-          animate={visualState === 'reviewing' ? { rotate: [0, 360] } : {}}
-          transition={{ duration: 1, ease: "easeInOut" }}
-        >
+        <div>
           <IconComponent className={cn("w-5 h-5", styles.icon)} />
-        </motion.div>
+        </div>
 
         {/* 🤖 [IA] - v1.2.26: FASE 5 - Indicadores de estado animados según plan exacto */}
         {state.isChecked && (

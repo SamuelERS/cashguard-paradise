@@ -1,7 +1,7 @@
 # 📚 CLAUDE.md - HISTORIAL DE DESARROLLO CASHGUARD PARADISE
-**Última actualización:** 03 Oct 2025 ~02:15 AM
-**Sesión completada:** Migración Doctrina D.5 Phase2Manager Modal - 100% Compliant
-**Estado:** Todos los modales wizard ahora cumplen 100% Doctrina D.5
+**Última actualización:** 03 Oct 2025 ~02:45 AM
+**Sesión completada:** Coherencia Visual 100% - Eliminación rotaciones + Doctrina D.5 Complete
+**Estado:** Todos los modales wizard: Doctrina D.5 ✅ + Coherencia visual ✅
 
 ## 📊 MÉTRICAS ACTUALES DEL PROYECTO
 
@@ -63,6 +63,45 @@ Total Coverage:   229 tests validando lógica crítica
 ---
 
 ## 📝 Recent Updates
+
+### v1.2.41AE - Eliminación Rotaciones Iconos - Coherencia 100% [MISIÓN CUMPLIDA] ✨
+**OPERACIÓN COHERENCIA VISUAL:** Eliminación quirúrgica de rotaciones de iconos en TODOS los modales wizard para lograr comportamiento 100% consistente + performance mejorado.
+- **Problema identificado:** Inconsistencia visual - 2 modales con rotación icono vs 1 sin rotación (mismo componente base)
+- **Análisis técnico:**
+  - **ProtocolRule (InitialWizardModal):** Rotación 360° (1s) durante `isBeingReviewed` ✅
+  - **InstructionRule (GuidedInstructionsModal):** Rotación 360° (1s) durante `reviewing` ✅
+  - **InstructionRule (Phase2Manager):** Sin rotación (`isBeingReviewed: false` hardcoded) ❌
+- **Decisión arquitectónica:** Eliminar rotaciones de TODOS por coherencia + performance
+- **Justificación técnica:**
+  1. **Función ≠ Forma:** Timing anti-fraude funciona sin rotación visual (countdown en background)
+  2. **Performance:** Menos overhead animaciones móviles (alineado con v1.2.45 limited animations)
+  3. **UX más clara:** Badge Eye + tiempo = suficiente feedback, sin distracción visual
+  4. **Build size:** Eliminación animación rotate = -0.17KB bundle (1,419.49 → 1,419.32 KB)
+- **Cambios quirúrgicos implementados:**
+  1. **ProtocolRule.tsx** (líneas 131-135):
+     - `motion.div` con `rotate: [0, 360]` → `div` estático
+     - Comentario coherencia: `[COHERENCE] v1.2.41AE`
+  2. **InstructionRule.tsx** (líneas 164-168):
+     - `motion.div` con `rotate: [0, 360]` → `div` estático
+     - Comentario coherencia: `[COHERENCE] v1.2.41AE`
+- **Funcionalidad preservada:**
+  - ✅ Badge Eye durante `reviewing` (modales con timing)
+  - ✅ Badge CheckCircle al completar (todos)
+  - ✅ Border azul → verde (todos)
+  - ✅ Texto opacity fade durante `reviewing` (modales con timing)
+  - ✅ Timing anti-fraude intacto (3000-5000ms)
+- **Estado final - Coherencia 100%:**
+  ```
+  ✅ InitialWizardModal: Sin rotación icono | Badge Eye ✅ | Timing 3000ms ✅
+  ✅ GuidedInstructionsModal: Sin rotación icono | Badge Eye ✅ | Timing 3000-5000ms ✅
+  ✅ Phase2Manager: Sin rotación icono | Sin badge Eye | Check instantáneo ✅
+  ```
+- **Beneficios:**
+  - ✅ **Coherencia visual:** Todos los modales comportamiento idéntico
+  - ✅ **Performance:** Menos animaciones Framer Motion activas
+  - ✅ **Simplicidad:** Código más limpio (-6 líneas motion.div)
+  - ✅ **Focus UX:** Usuario se enfoca en badges de estado (Eye/CheckCircle) no en icono girando
+**Archivos:** `ProtocolRule.tsx`, `InstructionRule.tsx`, `CLAUDE.md`
 
 ### v1.2.41AD - Phase2Manager Modal → Doctrina D.5 Compliance [MISIÓN CUMPLIDA] 🎯
 **OPERACIÓN ARQUITECTÓNICA EXITOSA:** Migración quirúrgica de Phase2Manager modal para cumplir 100% Doctrina D.5 (Arquitectura Wizard V3) - separación completa UI/Lógica/Datos.

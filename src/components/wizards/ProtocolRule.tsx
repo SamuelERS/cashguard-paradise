@@ -128,13 +128,11 @@ const ProtocolRuleComponent = ({ rule, state, isCurrent, onAcknowledge }: Protoc
       }}
     >
       {/* 🤖 [IA] - Contenedor del icono con estado dinámico */}
+      {/* 🎯 [COHERENCE] - v1.2.41AE: Rotación eliminada para coherencia con todos los modales */}
       <div className="flex-shrink-0 relative">
-        <motion.div
-          animate={state.isBeingReviewed ? { rotate: [0, 360] } : {}}
-          transition={{ duration: 1, ease: "easeInOut" }}
-        >
+        <div>
           <Icon className={cn("w-5 h-5", styles.icon)} />
-        </motion.div>
+        </div>
         
         {/* 🤖 [IA] - Indicador visual de estado */}
         {state.isChecked && (
