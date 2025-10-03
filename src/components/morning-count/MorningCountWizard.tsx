@@ -7,7 +7,8 @@
 // 🤖 [IA] - v1.2.41i - Fix móvil definitivo: !important + bg-background removido
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, MapPin, Users, CheckCircle, Sunrise } from 'lucide-react';
+import { X, MapPin, Users, CheckCircle, Sunrise, ArrowLeft, ArrowRight } from 'lucide-react';
+// 🤖 [IA] - v1.2.41S: Flechas direccionales para navegación profesional
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { ConstructiveActionButton } from '@/components/shared/ConstructiveActionButton';
@@ -452,11 +453,13 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
           </AnimatePresence>
 
           {/* Botones de navegación - 🤖 [IA] - v1.2.38: Actualizado para 4 pasos */}
+          {/* 🤖 [IA] - v1.2.41S: Footer con navegación profesional + flechas direccionales (← Anterior | Continuar →) */}
           <div className="flex items-center justify-center mt-fluid-2xl pt-fluid-xl border-t border-slate-600 gap-fluid-lg wizard-dialog-footer">
             <NeutralActionButton
               onClick={handlePrevious}
               disabled={currentStep === 0}
             >
+              <ArrowLeft className="h-4 w-4 mr-2" />
               Anterior
             </NeutralActionButton>
 
@@ -467,6 +470,7 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
                 className="!bg-amber-600 !border-amber-500 hover:!bg-amber-500 !text-amber-50"
               >
                 Continuar
+                <ArrowRight className="h-4 w-4 ml-2" />
               </ConstructiveActionButton>
             ) : (
               <ConstructiveActionButton

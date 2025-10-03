@@ -6,7 +6,8 @@ import {
   Shield, AlertTriangle, CheckCircle,
   MapPin, Users, DollarSign, ArrowRight,
   Moon,        // 🆕 v1.2.41N: Icono Evening Cut
-  X            // 🆕 v1.2.41N: Botón cerrar
+  X,           // 🆕 v1.2.41N: Botón cerrar
+  ArrowLeft    // 🆕 v1.2.41R: Flecha para botón Anterior
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button"; // 🆕 v1.2.41N: Botón cerrar
@@ -561,12 +562,13 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
             </motion.div>
           </AnimatePresence>
 
-          {/* 🤖 [IA] - v1.2.41Q: Footer con navegación profesional (patrón MorningCount) - SIEMPRE 2 botones visibles */}
+          {/* 🤖 [IA] - v1.2.41R: Footer con navegación profesional + flechas direccionales (← Anterior | Continuar →) */}
           <div className="flex items-center justify-center mt-fluid-2xl pt-fluid-xl border-t border-slate-600 gap-fluid-lg wizard-dialog-footer">
             <NeutralActionButton
               onClick={handlePrevious}
               disabled={currentStep === 1}
             >
+              <ArrowLeft className="h-4 w-4 mr-2" />
               Anterior
             </NeutralActionButton>
 

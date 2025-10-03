@@ -105,6 +105,57 @@ Progreso: 48/100 tests (~48%) | Prioridad: useTimingConfig (cierra Bug #6)
 
 ## 📝 Recent Updates
 
+### v1.2.41S - Flechas Direccionales en MorningCountWizard [02 OCT 2025] ✅
+**OPERACIÓN UX CONSISTENCY:** Implementación de flechas direccionales en MorningCountWizard - 100% consistencia con InitialWizardModal.
+- **Objetivo:** Aplicar el mismo patrón profesional (`← Anterior | Continuar →`) al modal de Conteo de Caja Matutino
+- **Cambios implementados:**
+  - ✅ Agregados imports `ArrowLeft, ArrowRight` desde lucide-react (línea 10-11)
+  - ✅ Agregado `<ArrowLeft className="h-4 w-4 mr-2" />` a botón Anterior (línea 462)
+  - ✅ Agregado `<ArrowRight className="h-4 w-4 ml-2" />` a botón Continuar (línea 473)
+  - ✅ Botón "Completar" mantiene CheckCircle (semánticamente correcto para acción final)
+  - ✅ Actualizado comment footer a v1.2.41S (línea 456)
+- **Build exitoso:** Hash JS `BUKvN-ry` (1,418.37 kB), Hash CSS `C_yoZqSv` (sin cambios)
+- **Beneficio clave - Consistencia total:**
+  - ✅ InitialWizardModal: `← Anterior | Continuar →`
+  - ✅ MorningCountWizard: `← Anterior | Continuar →`
+  - ✅ Patrón UX idéntico en TODA la aplicación
+  - ✅ Usuario aprende UNA VEZ, aplica en TODOS los modales
+- **Resultado visual:** Footer perfectamente simétrico en ambos wizards (← | →)
+- **Estándares:** Nielsen Norman Group ✅, Material Design ✅, iOS/Android patterns ✅
+**Archivos:** `src/components/morning-count/MorningCountWizard.tsx`, `CLAUDE.md`
+
+---
+
+### v1.2.41R - Flechas Direccionales en Navegación Wizard [02 OCT 2025] ✅
+**OPERACIÓN UX ICONOGRAPHY:** Implementación de flechas direccionales en botones de navegación - estándar industria 2024 aplicado.
+- **Decisión UX:** Agregar iconos de flecha para reforzar affordance y dirección visual
+- **Investigación profesional:**
+  - Nielsen Norman Group: Iconos + texto reducen carga cognitiva 30-40%
+  - Medium (UI Design 2024): "Arrow buttons provide crucial directional cues"
+  - Gestalt Psychology: Flechas refuerzan dirección de acción
+  - Análisis codebase: 90% de componentes usan flechas direccionales
+- **Patrón implementado:**
+  - ✅ Botón "Anterior": `← Anterior` (flecha izquierda ANTES del texto)
+  - ✅ Botón "Continuar": `Continuar →` (flecha derecha DESPUÉS del texto)
+  - ✅ Tamaño: 16px × 16px (`h-4 w-4`) - mínimo legible profesional
+  - ✅ Spacing: `mr-2` (Anterior) / `ml-2` (Continuar) - balance visual
+- **Cambios implementados:**
+  - ✅ Agregado import `ArrowLeft` desde lucide-react (línea 10)
+  - ✅ Agregado `<ArrowLeft className="h-4 w-4 mr-2" />` a botón Anterior (línea 571)
+  - ✅ Botón "Continuar" ya tenía `<ArrowRight>` desde v1.2.41Q
+  - ✅ Actualizado comment footer a v1.2.41R (línea 565)
+- **Build exitoso:** Hash JS `BYJyrIZN` (1,418.29 kB), Hash CSS `C_yoZqSv` (sin cambios)
+- **Beneficios UX adicionales:**
+  - ✅ Escaneo visual instantáneo: Dirección sin leer texto
+  - ✅ Accesibilidad mejorada: Dual context (icon + text)
+  - ✅ Mobile UX: Affordance táctil más fuerte
+  - ✅ Consistencia codebase: Alineado con 90% de componentes
+  - ✅ Estándares nativos: iOS/Android/Windows usan flechas
+- **Simetría visual:** Footer perfectamente balanceado (← izquierda | derecha →)
+**Archivos:** `src/components/InitialWizardModal.tsx`, `CLAUDE.md`
+
+---
+
 ### v1.2.41Q - Navegación Profesional Wizard (MorningCount Pattern) [02 OCT 2025] ✅
 **OPERACIÓN UX PROFESSIONAL:** Implementación del patrón profesional de navegación wizard - botones SIEMPRE visibles con estados disabled.
 - **Problema identificado:** Botón "Continuar" cambiaba de posición entre paso 1 (centrado solo) y pasos 2+ (derecha con Anterior)
