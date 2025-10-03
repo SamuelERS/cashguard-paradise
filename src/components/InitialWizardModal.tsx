@@ -150,6 +150,13 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
     }
   };
 
+  // 🤖 [IA] - v1.2.41Q: Manejar paso anterior con modal de confirmación (patrón MorningCount)
+  const handlePrevious = () => {
+    if (currentStep > 1) {
+      setShowBackConfirmation(true);
+    }
+  };
+
   // Manejar completar el wizard
   const handleComplete = () => {
     const wizardState = getNavigationState(isFlowCompleted());
@@ -554,16 +561,15 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
             </motion.div>
           </AnimatePresence>
 
-          {/* 🤖 [IA] - v1.2.41O: Footer centrado con navegación (X button en header elimina necesidad de Cancelar) */}
+          {/* 🤖 [IA] - v1.2.41Q: Footer con navegación profesional (patrón MorningCount) - SIEMPRE 2 botones visibles */}
           <div className="flex items-center justify-center mt-fluid-2xl pt-fluid-xl border-t border-slate-600 gap-fluid-lg wizard-dialog-footer">
-            {canGoPrevious && (
-              <NeutralActionButton
-                onClick={() => setShowBackConfirmation(true)}
-              >
-                Anterior
-              </NeutralActionButton>
-            )}
-            
+            <NeutralActionButton
+              onClick={handlePrevious}
+              disabled={currentStep === 1}
+            >
+              Anterior
+            </NeutralActionButton>
+
             {currentStep < totalSteps && (
               <ConstructiveActionButton
                 onClick={handleNext}

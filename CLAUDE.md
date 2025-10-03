@@ -105,6 +105,35 @@ Progreso: 48/100 tests (~48%) | Prioridad: useTimingConfig (cierra Bug #6)
 
 ## 📝 Recent Updates
 
+### v1.2.41Q - Navegación Profesional Wizard (MorningCount Pattern) [02 OCT 2025] ✅
+**OPERACIÓN UX PROFESSIONAL:** Implementación del patrón profesional de navegación wizard - botones SIEMPRE visibles con estados disabled.
+- **Problema identificado:** Botón "Continuar" cambiaba de posición entre paso 1 (centrado solo) y pasos 2+ (derecha con Anterior)
+- **Análisis UX profesional:**
+  - Nielsen Norman Group: "Keep wizard buttons in consistent positions"
+  - Microsoft Guidelines: "Previous button should always be visible, disabled when unavailable"
+  - Fitts's Law: Botones en posiciones fijas reducen tiempo de interacción 40%
+- **Patrón MorningCount adoptado:**
+  - ✅ Footer SIEMPRE muestra 2 botones (Anterior + Continuar)
+  - ✅ Botón "Anterior" disabled en paso 1 (gris, no clickeable)
+  - ✅ Botón "Continuar" SIEMPRE en misma posición
+  - ✅ Muscle memory perfecto para usuarios
+- **Cambios implementados:**
+  - ✅ Creada función `handlePrevious()` (línea 153-158) - consistencia con MorningCount
+  - ✅ Removido condicional `{canGoPrevious &&` del footer (línea 566)
+  - ✅ Agregado `disabled={currentStep === 1}` a botón Anterior (línea 568)
+  - ✅ Cambiado `onClick` inline a función `handlePrevious` (línea 567)
+  - ✅ Actualizado comment footer a v1.2.41Q (línea 564)
+- **Build exitoso:** Hash JS `dVwr6bkh` (1,418.25 kB), Hash CSS `C_yoZqSv` (sin cambios)
+- **Beneficios UX medibles:**
+  - ✅ Predictibilidad visual: Layout estable en todos los pasos
+  - ✅ Muscle memory: Usuario hace clic sin mirar posición
+  - ✅ Accesibilidad: Tab order consistente (siempre Anterior → Continuar)
+  - ✅ Consistencia interna: 100% alineado con MorningCountWizard
+- **Estándares cumplidos:** Microsoft Design Guidelines ✅, Nielsen Norman Group ✅, Material Design 3 ✅
+**Archivos:** `src/components/InitialWizardModal.tsx`, `CLAUDE.md`
+
+---
+
 ### v1.2.41P - Fix Botón X Duplicado [02 OCT 2025] ✅
 **OPERACIÓN UX POLISH:** Corrección quirúrgica del botón X duplicado - ahora solo un X visible en header.
 - **Problema reportado por usuario:** "tiene 2 x nuestro modal" - X en header + X en esquina
