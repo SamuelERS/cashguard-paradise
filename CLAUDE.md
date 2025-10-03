@@ -105,6 +105,43 @@ Progreso: 48/100 tests (~48%) | Prioridad: useTimingConfig (cierra Bug #6)
 
 ## 📝 Recent Updates
 
+### v1.2.41P - Fix Botón X Duplicado [02 OCT 2025] ✅
+**OPERACIÓN UX POLISH:** Corrección quirúrgica del botón X duplicado - ahora solo un X visible en header.
+- **Problema reportado por usuario:** "tiene 2 x nuestro modal" - X en header + X en esquina
+- **Root cause:** Radix UI DialogContent renderiza botón X por defecto que no estaba oculto
+- **Análisis comparativo:** MorningCountWizard usa clase `[&>button]:hidden` para ocultar X default de Radix
+- **Solución aplicada:**
+  - ✅ Agregada clase `[&>button]:hidden` a DialogContent (línea 503)
+  - ✅ X default de Radix UI ahora oculto
+  - ✅ Solo X custom del header visible (agregado en v1.2.41N)
+  - ✅ Funcionalidad de cierre preservada vía X del header
+- **Build exitoso:** Hash JS `C0u55U0h` (1,418.24 kB), Hash CSS `C_yoZqSv` (249.07 kB) - sin cambios CSS
+- **Resultado UX:** Modal profesional con un solo botón X visible en posición consistente con MorningCount
+**Archivos:** `src/components/InitialWizardModal.tsx`, `CLAUDE.md`
+
+---
+
+### v1.2.41O - Eliminación Botón Cancelar Redundante [02 OCT 2025] ✅
+**OPERACIÓN UX CLEANUP:** Eliminación quirúrgica del botón "Cancelar" del footer del InitialWizardModal - mejora de usabilidad y consistencia con MorningCount pattern.
+- **Problema identificado:** Modal tenía 2 botones de cierre: X button en header + "Cancelar" en footer
+- **Análisis comparativo:** MorningCountWizard solo usa X button, no tiene "Cancelar" en footer
+- **Justificación UX:**
+  - Elimina redundancia y confusión para usuarios
+  - Sigue estándar moderno de modales (X button solo)
+  - Footer más limpio con solo botones de navegación
+  - Consistencia con patrón MorningCount establecido en v1.2.41N
+- **Cambios aplicados:**
+  - ✅ Eliminado import `DestructiveActionButton` (línea 33)
+  - ✅ Removido botón "Cancelar" del footer (líneas 559-563)
+  - ✅ Actualizado comment footer a v1.2.41O
+  - ✅ Footer ahora solo muestra navegación: "Anterior" + "Continuar"
+  - ✅ X button en header continúa manejando cierre del modal
+- **Build exitoso:** Hash JS `CXk3HFYj` (1,418.23 kB), Hash CSS `C_yoZqSv` (249.07 kB)
+- **Impacto:** Mejora UX sin impacto funcional - X button preserva capacidad de cierre
+**Archivos:** `src/components/InitialWizardModal.tsx`, `CLAUDE.md`
+
+---
+
 ### v1.2.37 - Sesión Masiva Testing + CI Optimization [01 OCT 2025] ✅
 **RESUMEN:** Sesión productiva de 5.75 horas agregando 104 tests nuevos, validando 5 bugs críticos, migrando a ESLint v9+, y optimizando CI/CD con 2 hotfixes.
 

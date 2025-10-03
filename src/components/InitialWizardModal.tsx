@@ -1,11 +1,15 @@
 // 🤖 [IA] - InitialWizardModal v1.3.0 - Arquitectura Guiada Basada en Datos + Performance Optimized
+// 🤖 [IA] - v1.2.41N: UX/UI migrado de MorningCount - header con icono + botón X
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Shield, AlertTriangle, CheckCircle,
-  MapPin, Users, DollarSign, ArrowRight
+  MapPin, Users, DollarSign, ArrowRight,
+  Moon,        // 🆕 v1.2.41N: Icono Evening Cut
+  X            // 🆕 v1.2.41N: Botón cerrar
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button"; // 🆕 v1.2.41N: Botón cerrar
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -26,7 +30,7 @@ import { TOAST_DURATIONS, TOAST_MESSAGES } from '@/config/toast'; // 🤖 [IA] -
 import { useTimingConfig } from "@/hooks/useTimingConfig"; // 🤖 [IA] - Hook de timing unificado v1.0.22
 import { useInputValidation } from "@/hooks/useInputValidation"; // 🤖 [IA] - v1.0.45: Hook para validación de decimales
 import { ConfirmationModal } from "@/components/ui/confirmation-modal"; // 🤖 [IA] - v2.0.0: Modal de confirmación abstracto
-import { DestructiveActionButton } from "@/components/shared/DestructiveActionButton"; // 🤖 [IA] - v1.2.26: Botón destructivo estándar
+// 🤖 [IA] - v1.2.41O: DestructiveActionButton removido - X button en header maneja cierre
 import { NeutralActionButton } from "@/components/ui/neutral-action-button"; // 🤖 [IA] - v1.2.27: Botón neutral estándar
 import { ConstructiveActionButton } from "@/components/shared/ConstructiveActionButton"; // 🤖 [IA] - v1.2.29: Botón constructivo estándar
 import { cn } from "@/lib/utils"; // 🤖 [IA] - v1.2.23: Utilidad para manejo seguro de clases
@@ -498,15 +502,44 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
       <DialogContent
         className="glass-morphism-panel wizard-dialog-content max-h-[clamp(85vh,90vh,90vh)] overflow-y-auto overflow-x-hidden p-0 [&>button]:hidden"
       >
+        {/* 🤖 [IA] - v1.2.41N: DialogTitle/Description solo para accesibilidad */}
+        <DialogTitle className="sr-only">
+          Corte Nocturno - Paso {currentStep} de {totalSteps}
+        </DialogTitle>
+        <DialogDescription className="sr-only">
+          Complete los pasos para configurar el corte de caja nocturno. Paso 1: Protocolo de Seguridad, Pasos 2-5: Información del corte.
+        </DialogDescription>
+
         <div className="p-fluid-lg space-y-fluid-lg">
-          <DialogHeader className="text-center space-y-fluid-md">
-            <DialogTitle className="text-primary mb-fluid-md text-[clamp(1.125rem,4.5vw,1.5rem)] text-center">
-              {getStepTitle()}
-            </DialogTitle>
-            <DialogDescription className="sr-only">
-              Complete los pasos para configurar el corte de caja nocturno
-            </DialogDescription>
-          </DialogHeader>
+          {/* 🤖 [IA] - v1.2.41N: Header estilo MorningCount - icono + título + botón X */}
+          <div className="flex items-center justify-between mb-fluid-md">
+            <div className="flex items-center gap-fluid-md">
+              <Moon
+                className="flex-shrink-0 w-[clamp(1.5rem,6vw,2rem)] h-[clamp(1.5rem,6vw,2rem)]"
+                style={{ color: '#5e5ce6' }}
+                aria-label="Icono de corte nocturno"
+              />
+              <h2 className="font-bold text-[clamp(1.25rem,5vw,1.5rem)] text-[#e1e8ed]">
+                Corte Nocturno
+              </h2>
+            </div>
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              onClick={handleCancelRequest}
+              className="rounded-full"
+              aria-label="Cerrar modal"
+            >
+              <X className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)]" />
+            </Button>
+          </div>
+
+          {/* 🤖 [IA] - v1.2.41N: Indicador de paso estilo MorningCount */}
+          <div className="mb-fluid-md">
+            <span className="text-[clamp(0.75rem,3.5vw,0.875rem)] text-[#8899a6]">
+              Paso {currentStep} de {totalSteps}
+            </span>
+          </div>
 
           {/* Step Content */}
           <AnimatePresence mode="wait">
@@ -521,14 +554,8 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
             </motion.div>
           </AnimatePresence>
 
-          {/* 🤖 [IA] - v1.2.22: Footer centrado - botones agrupados centro con espaciado consistente */}
+          {/* 🤖 [IA] - v1.2.41O: Footer centrado con navegación (X button en header elimina necesidad de Cancelar) */}
           <div className="flex items-center justify-center mt-fluid-2xl pt-fluid-xl border-t border-slate-600 gap-fluid-lg wizard-dialog-footer">
-            <DestructiveActionButton
-              onClick={handleCancelRequest}
-            >
-              Cancelar
-            </DestructiveActionButton>
-
             {canGoPrevious && (
               <NeutralActionButton
                 onClick={() => setShowBackConfirmation(true)}

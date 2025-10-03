@@ -1,13 +1,16 @@
 // [IA] - Arquitectura Guiada Basada en Datos v1.0 - InitialWizardFlow Configuration
 // 🤖 [IA] - v1.2.38: Agregados iconos para Morning Count Protocol
+// 🤖 [IA] - v1.2.41L: Coherencia iconográfica - RotateCcw y Users para Evening Cut
 import {
   AlertTriangle,
   Shield,
   CheckCircle,
-  MessageCircle,  // 🆕 WhatsApp Web
-  Coins,          // 🆕 Verificación física
-  Calculator,     // 🆕 No calculadoras
-  BellRing        // 🆕 Reporte anomalías (BellAlert no existe, usando BellRing)
+  MessageCircle,  // 💬 WhatsApp Web (Morning + Evening)
+  Coins,          // 🪙 Verificación física (Morning)
+  Calculator,     // 🧮 No calculadoras (Morning + Evening)
+  BellRing,       // 🔔 Reporte anomalías (Morning)
+  RotateCcw,      // 🔄 Si Fallan Repiten Corte (Evening)
+  Users           // 👥 Cajero y Testigo Presentes (Evening)
 } from 'lucide-react';
 
 export interface ProtocolRule {
@@ -40,24 +43,14 @@ export interface RulesFlowState {
 // Fuente única de verdad para el flujo guiado secuencial
 
 // 🤖 [IA] - EVENING CUT PROTOCOL - Protocolo para corte nocturno (InitialWizardModal)
+// 🤖 [IA] - v1.2.41L: Coherencia iconográfica - iconos alineados con significado de cada regla
+// 🤖 [IA] - v1.2.41M: Textos 2 líneas + reordenamiento lógico (prerequisitos → consecuencias)
 const protocolRules: ProtocolRule[] = [
   {
-    id: 'noDevices',
-    title: 'Si Fallan Repiten Corte',
-    subtitle: '',
-    Icon: AlertTriangle,
-    colors: {
-      text: 'text-red-500',
-      border: 'border-l-red-500',
-      glow: 'shadow-red-500/20'
-    },
-    severity: 'critical'
-  },
-  {
-    id: 'singleCount',
-    title: 'No Pueden Usar Calculadoras',
-    subtitle: '',
-    Icon: Shield,
+    id: 'activeSystem',
+    title: 'Cajero y Testigo Presentes',
+    subtitle: 'Ambas personas deben estar durante todo el proceso',
+    Icon: Users,  // 👥 Prerequisito: Personas requeridas
     colors: {
       text: 'text-red-500',
       border: 'border-l-red-500',
@@ -68,8 +61,8 @@ const protocolRules: ProtocolRule[] = [
   {
     id: 'differentCashier',
     title: 'Abran WhatsApp Web',
-    subtitle: '',
-    Icon: CheckCircle,
+    subtitle: 'Mantener comunicación activa durante el conteo',
+    Icon: MessageCircle,  // 💬 Preparación: Comunicación
     colors: {
       text: 'text-red-500',
       border: 'border-l-red-500',
@@ -78,10 +71,22 @@ const protocolRules: ProtocolRule[] = [
     severity: 'critical'
   },
   {
-    id: 'activeSystem',
-    title: 'Cajero y Testigo Presentes',
-    subtitle: '',
-    Icon: AlertTriangle,
+    id: 'singleCount',
+    title: 'No Usar Calculadoras',
+    subtitle: 'Cálculos únicamente en la aplicación',
+    Icon: Calculator,  // 🧮 Restricción: No herramientas externas
+    colors: {
+      text: 'text-red-500',
+      border: 'border-l-red-500',
+      glow: 'shadow-red-500/20'
+    },
+    severity: 'critical'
+  },
+  {
+    id: 'noDevices',
+    title: 'Si Fallan Repiten Corte',
+    subtitle: 'El proceso debe reiniciarse desde cero',
+    Icon: RotateCcw,  // 🔄 Consecuencia: Qué pasa si fallan
     colors: {
       text: 'text-orange-400',
       border: 'border-l-orange-400',
