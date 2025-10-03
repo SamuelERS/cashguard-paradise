@@ -1,10 +1,11 @@
 // 🤖 [IA] - v1.2.23: Modal con Wizard v3 - Flujo Guiado con Revelación Progresiva
+// 🤖 [IA] - v1.2.41U: Coherencia Visual Total - CheckCircle verde + único botón centrado (patrón Gray-Green)
 import React, { useMemo, useEffect, useCallback, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 import { ConstructiveActionButton } from '@/components/shared/ConstructiveActionButton';
-import { DestructiveActionButton } from '@/components/shared/DestructiveActionButton';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, X, CheckCircle } from 'lucide-react'; // 🤖 [IA] - v1.2.41U: CheckCircle verde (removido DestructiveActionButton + ShieldOff)
 import * as Icons from 'lucide-react';
 import { InstructionRule } from '@/components/wizards/InstructionRule';
 import { useInstructionFlow } from '@/hooks/instructions/useInstructionFlow';
@@ -122,15 +123,37 @@ export function GuidedInstructionsModal({
       <DialogContent
         className="glass-morphism-panel wizard-dialog-content max-h-[clamp(85vh,90vh,90vh)] overflow-y-auto overflow-x-hidden p-0 [&>button]:hidden"
       >
+        {/* 🤖 [IA] - v1.2.42: DialogTitle/Description solo para accesibilidad */}
+        <DialogTitle className="sr-only">
+          Instrucciones del Corte de Caja
+        </DialogTitle>
+        <DialogDescription className="sr-only">
+          Complete las instrucciones para el corte de caja
+        </DialogDescription>
+
         <div className="p-fluid-lg space-y-fluid-lg">
-          <DialogHeader className="text-center space-y-fluid-md">
-            <DialogTitle className="text-primary mb-fluid-xl text-[clamp(1.125rem,4.5vw,1.5rem)] text-center">
-              Instrucciones del Corte de Caja
-            </DialogTitle>
-            <DialogDescription className="sr-only">
-              Complete las instrucciones para el corte de caja
-            </DialogDescription>
-          </DialogHeader>
+          {/* 🤖 [IA] - v1.2.41U: Header estilo MorningCount/InitialWizard - CheckCircle verde + título + botón X */}
+          <div className="flex items-center justify-between mb-fluid-md">
+            <div className="flex items-center gap-fluid-md">
+              <CheckCircle
+                className="flex-shrink-0 w-[clamp(1.5rem,6vw,2rem)] h-[clamp(1.5rem,6vw,2rem)]"
+                style={{ color: '#10b981' }}
+                aria-label="Icono de instrucciones de conteo"
+              />
+              <h2 className="font-bold text-[clamp(1.25rem,5vw,1.5rem)] text-[#e1e8ed]">
+                Instrucciones del Corte de Caja
+              </h2>
+            </div>
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              onClick={handleCancelRequest}
+              className="rounded-full"
+              aria-label="Cerrar modal"
+            >
+              <X className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)]" />
+            </Button>
+          </div>
 
 
           {/* Step Content */}
@@ -169,13 +192,8 @@ export function GuidedInstructionsModal({
             </div>
           </div>
 
-          {/* 🤖 [IA] - Footer estándar unificado con InitialWizardModal */}
-          <div className="flex items-center justify-center mt-fluid-2xl pt-fluid-xl border-t border-slate-600 gap-fluid-lg">
-            <DestructiveActionButton
-              onClick={handleCancelRequest}
-            >
-              Cancelar
-            </DestructiveActionButton>
+          {/* 🤖 [IA] - v1.2.41U: Footer con único botón centrado "Comenzar Conteo" verde (X button maneja cierre) */}
+          <div className="flex items-center justify-center mt-fluid-2xl pt-fluid-xl border-t border-slate-600">
             <ConstructiveActionButton
               onClick={handleConfirm}
               disabled={!state.isFlowComplete}

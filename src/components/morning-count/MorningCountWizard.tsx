@@ -5,6 +5,7 @@
 // 🤖 [IA] - v1.2.41g - Migración a Doctrina Glass Morphism v1.1 (glass-morphism-panel)
 // 🤖 [IA] - v1.2.41h - Glass Morphism Enhanced: 72% móvil/62% desktop + blur responsivo
 // 🤖 [IA] - v1.2.41i - Fix móvil definitivo: !important + bg-background removido
+// 🤖 [IA] - v1.2.41T: Removido override amarillo-ámbar - usa verde default ConstructiveActionButton
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, MapPin, Users, CheckCircle, Sunrise, ArrowLeft, ArrowRight } from 'lucide-react';
@@ -467,7 +468,6 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
               <ConstructiveActionButton
                 onClick={handleNext}
                 disabled={!canGoNext()}
-                className="!bg-amber-600 !border-amber-500 hover:!bg-amber-500 !text-amber-50"
               >
                 Continuar
                 <ArrowRight className="h-4 w-4 ml-2" />
@@ -476,7 +476,6 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
               <ConstructiveActionButton
                 onClick={handleComplete}
                 disabled={!canGoNext()}
-                className="!bg-amber-600 !border-amber-500 hover:!bg-amber-500 !text-amber-50"
               >
                 Completar
               </ConstructiveActionButton>
