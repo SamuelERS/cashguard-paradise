@@ -1,7 +1,7 @@
 # 📚 CLAUDE.md - HISTORIAL DE DESARROLLO CASHGUARD PARADISE
-**Última actualización:** 02 Oct 2025 ~22:15 PM
-**Sesión completada:** Coherencia iconográfica completa ProtocolRule
-**Estado:** 100% semántica visual (MessageSquare + RefreshCw) + UX profesional
+**Última actualización:** 02 Oct 2025 ~22:45 PM
+**Sesión completada:** Coherencia total InstructionRule (Subtítulos + Iconos semánticos)
+**Estado:** 100% coherencia visual (2 líneas + iconos Receipt/Camera/ArrowDownUp)
 
 ## 📊 MÉTRICAS ACTUALES DEL PROYECTO
 
@@ -104,6 +104,63 @@ Progreso: 48/100 tests (~48%) | Prioridad: useTimingConfig (cierra Bug #6)
 ---
 
 ## 📝 Recent Updates
+
+### v1.2.41X - Coherencia Total InstructionRule (Subtítulos + Iconos Semánticos) [02 OCT 2025] ✅
+**OPERACIÓN COMPLETENESS FIX:** Agregados subtítulos (2da línea) + mejora de coherencia semántica en iconos de InstructionRule (GuidedInstructionsModal) - fix crítico description undefined.
+- **Contexto:** Usuario solicitó reglas de 2 líneas + iconos coherentes (como ProtocolRule en InitialWizardModal)
+- **❌ Problema crítico identificado:**
+  - Interface `Instruction` requiere campo `description: string;` (línea 10 useInstructionFlow.ts)
+  - Archivo `cashCountingInstructions.ts` **NO TENÍA** campo description
+  - **Resultado:** Subtítulos mostraban `undefined` en runtime
+- **Análisis iconos actuales vs sugeridos:**
+  - ❌ **Regla 1 "Saca Los Cierres De Los POS":** `ShieldCheck` 🛡️ → `Receipt` 🧾 (cierres = recibos/documentos)
+  - ❌ **Regla 2 "No Tapes La Cámara":** `Calculator` 🧮 → `Camera` 📷 (visibilidad cámara)
+  - ⚠️ **Regla 3 "Ordena Por Depósito":** `Box` 📦 → `ArrowDownUp` ↕️ (ordenamiento/clasificación)
+  - ✅ **Regla 4 "Monedas En Paquetes de 10":** `PackagePlus` 📦➕ - **Perfecto** (empaquetado)
+- **Subtítulos propuestos (2da línea):**
+  - Regla 1: "Obtener recibos de transacciones del día"
+  - Regla 2: "Mantener visibilidad completa durante el conteo"
+  - Regla 3: "Clasificar billetes y monedas por denominación"
+  - Regla 4: "Agrupar monedas en paquetes de 10 unidades"
+- **Cambios quirúrgicos implementados:**
+  - ✅ **Version comment (línea 1):**
+    - "v3.1.2" → "v1.2.41X: Subtítulos 2da línea + iconos semánticos coherentes"
+  - ✅ **Regla 1 (líneas 7-9):**
+    - Icono: `ShieldCheck` → `Receipt` 🧾
+    - Agregado: `description: 'Obtener recibos de transacciones del día'`
+  - ✅ **Regla 2 (líneas 14-16):**
+    - Icono: `Calculator` → `Camera` 📷
+    - Agregado: `description: 'Mantener visibilidad completa durante el conteo'`
+  - ✅ **Regla 3 (líneas 21-23):**
+    - Icono: `Box` → `ArrowDownUp` ↕️
+    - Agregado: `description: 'Clasificar billetes y monedas por denominación'`
+  - ✅ **Regla 4 (líneas 28-30):**
+    - Icono: `PackagePlus` (mantener - correcto)
+    - Agregado: `description: 'Agrupar monedas en paquetes de 10 unidades'`
+- **Build exitoso:** Hash JS `BNvbhqzQ` (1,418.62 kB), Hash CSS `C4W5hViH` (sin cambios)
+- **Coherencia 100% lograda - 2 líneas por regla:**
+  - ✅ **Mismo patrón que ProtocolRule:** title + subtitle (description)
+  - ✅ **Fix crítico:** description undefined → textos reales descriptivos
+  - ✅ **Iconos semánticos coherentes:**
+    - Receipt 🧾 = Cierres/Recibos POS
+    - Camera 📷 = Visibilidad cámara
+    - ArrowDownUp ↕️ = Ordenamiento/clasificación
+    - PackagePlus 📦➕ = Empaquetado monedas
+- **Validación orden lógico cronológico:**
+  - ✅ **Paso 1:** Saca Los Cierres (Obtener documentos prerequisito)
+  - ✅ **Paso 2:** No Tapes La Cámara (Restricción durante proceso)
+  - ✅ **Paso 3:** Ordena Por Depósito (Clasificación previa)
+  - ✅ **Paso 4:** Monedas En Paquetes (Empaquetado final)
+  - **Conclusión:** Orden cronológico perfecto ✅ (no requiere cambios)
+- **Beneficios UX profesionales:**
+  - ✅ **2 líneas coherentes:** Mismo formato que InitialWizardModal ProtocolRule
+  - ✅ **Semántica visual clara:** Iconos representan exactamente la acción
+  - ✅ **Fix crítico runtime:** Eliminado undefined en subtítulos
+  - ✅ **Orden lógico:** Flujo cronológico validado (prerequisitos → proceso → resultado)
+- **Estándares cumplidos:** Nielsen Norman Group ✅, Material Design 3 ✅, Lucide React Best Practices ✅
+**Archivos:** `src/data/instructions/cashCountingInstructions.ts` (líneas 1, 7-9, 14-16, 21-23, 28-30), `CLAUDE.md`
+
+---
 
 ### v1.2.41W - Coherencia Iconográfica ProtocolRule [02 OCT 2025] ✅
 **OPERACIÓN SEMANTIC ICONS:** Mejora de coherencia semántica en iconos de ProtocolRule (InitialWizardModal + MorningCountWizard) - MessageSquare + RefreshCw para semántica visual profesional.
