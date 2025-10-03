@@ -1,7 +1,8 @@
 // 🤖 [IA] - v1.1.14 - Simplificación de tabs y eliminación de redundancias en Fase 2
+// 🤖 [IA] - v1.2.41Z: Migración header modal a patrón canónico (icono + subtítulo + botón X)
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Package, ScrollText, Grid3x3, AlertCircle, DollarSign } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Package, ScrollText, Grid3x3, AlertCircle, DollarSign, X } from 'lucide-react';
 import { InstructionRule, type RuleState } from '@/components/wizards/InstructionRule';
 import { WizardGlassCard } from '@/components/wizards/WizardGlassCard';
 // 🤖 [IA] - v1.2.10: Agregado modal controlado para confirmación de salida
@@ -269,15 +270,43 @@ export function Phase2Manager({
         }}
       >
       <DialogContent className="wizard-dialog-shell wizard-dialog-content max-h-[clamp(85vh,90vh,90vh)] overflow-y-auto overflow-x-hidden p-0 [&>button]:hidden">
+        {/* 🤖 [IA] - v1.2.41Z: DialogTitle/Description solo para accesibilidad */}
+        <DialogTitle className="sr-only">
+          Preparar Dinero a Entregar
+        </DialogTitle>
+        <DialogDescription className="sr-only">
+          Complete el proceso de preparación de dinero para entregar
+        </DialogDescription>
+
         <div className="p-fluid-lg space-y-fluid-lg">
-          <DialogHeader className="text-center space-y-fluid-md">
-            <DialogTitle className="text-primary mb-fluid-md tracking-tight text-[clamp(1.125rem,4.5vw,1.5rem)] text-center">
-              Preparar Dinero a Entregar
-            </DialogTitle>
-            <DialogDescription className="sr-only">
-              Complete el proceso de preparación de dinero para entregar
-            </DialogDescription>
-          </DialogHeader>
+          {/* 🤖 [IA] - v1.2.41Z: Header migrado a patrón canónico - icono Package + título + subtítulo + botón X */}
+          <div className="flex items-center justify-between mb-fluid-md">
+            <div className="flex items-center gap-fluid-md">
+              <Package
+                className="flex-shrink-0 w-[clamp(1.5rem,6vw,2rem)] h-[clamp(1.5rem,6vw,2rem)]"
+                style={{ color: '#0a84ff' }}
+                aria-label="Icono de preparación de entrega"
+              />
+              <div className="flex flex-col">
+                <h2 className="font-bold text-[clamp(1.25rem,5vw,1.5rem)] text-[#e1e8ed] leading-tight">
+                  Preparar Dinero a Entregar
+                </h2>
+                <p className="text-[clamp(0.625rem,2.5vw,0.75rem)] text-[#8899a6] mt-[clamp(0.125rem,0.5vw,0.25rem)]">
+                  Preparación de entrega de efectivo
+                </p>
+              </div>
+            </div>
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              onClick={handleInstructionsCancelRequest}
+              className="rounded-full"
+              aria-label="Cerrar modal"
+            >
+              <X className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)]" />
+            </Button>
+          </div>
+
           {/* Contenido principal envuelto en card compartida */}
           <WizardGlassCard className="space-y-fluid-lg">
             {/* Checklist de preparación */}

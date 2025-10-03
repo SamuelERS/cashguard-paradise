@@ -1,4 +1,5 @@
 // 🤖 [IA] - v1.1.13 - Mejora visual del detalle de denominaciones con tabla estructurada
+// 🤖 [IA] - v1.2.43 - Fix scroll congelado: Clase .morning-verification-container agregada
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Sunrise, CheckCircle, AlertTriangle, Download, Share, ArrowLeft, Copy, FileText } from 'lucide-react';
@@ -231,7 +232,7 @@ Sistema CashGuard Paradise v1.1.13
   }
 
   return (
-    <div className="min-h-screen relative overflow-y-auto" data-scrollable="true">
+    <div className="morning-verification-container min-h-screen relative overflow-y-auto" data-scrollable="true">
       
       {/* 🤖 [IA] - v1.1.12: Eliminado gradient gris, coherente con CashCalculation */}
       <div className="relative z-10 container mx-auto px-4 py-8 lg:max-w-4xl">
