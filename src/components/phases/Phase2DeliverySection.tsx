@@ -1,3 +1,4 @@
+// 🤖 [IA] - v1.2.48: Fix timeout doble - eliminado delay innecesario para transición inmediata
 // 🤖 [IA] - v1.2.24: ARMONIZACIÓN COMPLETA - Migración a DeliveryFieldView para consistency con Phase 1
 // Reemplaza implementación text-only por componente visual rico con imágenes
 // 🤖 [IA] - v1.2.44: Mensaje transición automática mejorado para claridad UX
@@ -12,7 +13,6 @@ import { GuidedProgressIndicator } from '@/components/ui/GuidedProgressIndicator
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { DeliveryCalculation } from '@/types/phases';
 import { formatCurrency } from '@/utils/calculations';
-import { useTimingConfig } from '@/hooks/useTimingConfig'; // 🤖 [IA] - Hook de timing unificado v1.0.22
 
 interface Phase2DeliverySectionProps {
   deliveryCalculation: DeliveryCalculation;
@@ -40,7 +40,6 @@ export function Phase2DeliverySection({
   const [showBackConfirmation, setShowBackConfirmation] = useState(false);
   const [stepValues, setStepValues] = useState<Record<string, number>>({}); // 🤖 [IA] - v1.2.24: Track valores ingresados
 
-  const { createTimeoutWithCleanup } = useTimingConfig(); // 🤖 [IA] - Usar timing unificado v1.0.22
   const { deliverySteps, amountToDeliver } = deliveryCalculation;
   const currentStep = deliverySteps[currentStepIndex];
   const allStepsCompleted = deliverySteps.every(step => completedSteps[step.key]);
@@ -88,15 +87,14 @@ export function Phase2DeliverySection({
   }, [completedSteps, deliverySteps, currentStepIndex]);
 
   // Complete section when all steps are done
+  // 🤖 [IA] - v1.2.48: Timeout eliminado - llamada inmediata para evitar doble delay (2s → 1s)
+  // Razón: Phase2Manager ya tiene timeout de 1000ms para transición visual suave
+  // Esperar 1000ms aquí + 1000ms allá = 2s total (antipatrón UX)
   useEffect(() => {
     if (allStepsCompleted && deliverySteps.length > 0) {
-      // 🤖 [IA] - Migrado a timing unificado para evitar race conditions v1.0.22
-      const cleanup = createTimeoutWithCleanup(() => {
-        onSectionComplete();
-      }, 'transition', 'delivery_section_complete');
-      return cleanup;
+      onSectionComplete(); // ← Inmediato, sin timeout innecesario
     }
-  }, [allStepsCompleted, deliverySteps.length, onSectionComplete, createTimeoutWithCleanup]);
+  }, [allStepsCompleted, deliverySteps.length, onSectionComplete]);
 
   const handleFieldConfirm = (value: string) => {
     if (!currentStep) return;

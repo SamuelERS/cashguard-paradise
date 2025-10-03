@@ -1,7 +1,9 @@
+// 🤖 [IA] - v1.2.50: Fix definitivo setTimeout nativo - eliminado createTimeoutWithCleanup de dependencies
+// 🤖 [IA] - v1.2.49: Fix crítico referencia inestable - memoización handleDeliverySectionComplete
 // 🤖 [IA] - v1.1.14 - Simplificación de tabs y eliminación de redundancias en Fase 2
 // 🤖 [IA] - v1.2.41Z: Migración header modal a patrón canónico (icono + subtítulo + botón X)
 // 🤖 [IA] - v1.2.41AA: Footer único botón + subtítulos 2 líneas + iconos semánticos
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Package, ScrollText, Grid3x3, AlertCircle, DollarSign, X, Pencil, Banknote, CheckCircle2 } from 'lucide-react';
 import { InstructionRule, type RuleState } from '@/components/wizards/InstructionRule';
@@ -83,26 +85,39 @@ export function Phase2Manager({
   }, [showInstructionsModal, initializeChecklist]);
 
   // Auto-advance to verification when delivery is complete
+  // 🤖 [IA] - v1.2.50: Reemplazado createTimeoutWithCleanup con setTimeout nativo
+  // RAZÓN CRÍTICA: createTimeoutWithCleanup en dependencies causaba re-disparos infinitos
+  // porque la función puede cambiar de referencia (depende de getDelay, cancelTimeout)
+  // setTimeout nativo con delay fijo (1000ms) garantiza estabilidad total
   useEffect(() => {
+    console.log('[Phase2Manager] 🔄 Transition useEffect:', {
+      deliveryCompleted,
+      currentSection,
+      willTransition: deliveryCompleted && currentSection === 'delivery'
+    });
+
     if (deliveryCompleted && currentSection === 'delivery') {
-      // 🤖 [IA] - Migrado a timing unificado para evitar race conditions v1.0.22
-      const cleanup = createTimeoutWithCleanup(() => {
+      console.log('[Phase2Manager] ✅ Triggering transition to verification in 1000ms');
+
+      const timeoutId = setTimeout(() => {
+        console.log('[Phase2Manager] 🚀 EXECUTING transition: delivery → verification');
         setCurrentSection('verification');
-      }, 'transition', 'phase2_to_verification');
-      return cleanup;
+      }, 1000); // ← setTimeout nativo, delay fijo garantizado
+
+      return () => clearTimeout(timeoutId);
     }
-  }, [deliveryCompleted, currentSection, createTimeoutWithCleanup]);
+  }, [deliveryCompleted, currentSection]); // ← SIN createTimeoutWithCleanup - solo deps reales
 
   // Complete phase 2 when verification is done
+  // 🤖 [IA] - v1.2.50: Reemplazado createTimeoutWithCleanup con setTimeout nativo (mismo fix)
   useEffect(() => {
     if (verificationCompleted) {
-      // 🤖 [IA] - Migrado a timing unificado para evitar race conditions v1.0.22
-      const cleanup = createTimeoutWithCleanup(() => {
+      const timeoutId = setTimeout(() => {
         onPhase2Complete();
-      }, 'transition', 'phase2_complete');
-      return cleanup;
+      }, 1000);
+      return () => clearTimeout(timeoutId);
     }
-  }, [verificationCompleted, onPhase2Complete, createTimeoutWithCleanup]);
+  }, [verificationCompleted, onPhase2Complete]); // ← SIN createTimeoutWithCleanup
 
   const handleDeliveryStepComplete = (stepKey: string) => {
     setDeliveryProgress(prev => ({
@@ -128,10 +143,15 @@ export function Phase2Manager({
     }));
   };
 
-  // 🤖 [IA] - v1.2.46: handleDeliverySectionComplete ELIMINADO
-  // RAZÓN: Redundante con handleDeliveryStepComplete (líneas 114-120)
-  // Causaba race condition: deliveryCompleted marcado dos veces → useEffect no se disparaba
-  // Sistema de steps individuales maneja completitud automáticamente
+  // 🤖 [IA] - v1.2.49: handleDeliverySectionComplete memoizado con useCallback
+  // RAZÓN CRÍTICA: Sin useCallback, función se recrea en cada render
+  // Esto causa que useEffect en Phase2DeliverySection (línea 97) se dispare infinitamente
+  // porque onSectionComplete cambia de referencia constantemente
+  // useCallback con [] garantiza referencia estable - useEffect se dispara solo cuando allStepsCompleted cambia
+  const handleDeliverySectionComplete = useCallback(() => {
+    console.log('[Phase2Manager] 📦 onSectionComplete called - marking deliveryCompleted = true');
+    setDeliveryCompleted(true);
+  }, []); // ← Dependencias vacías: función NUNCA cambia referencia
 
   const handleVerificationStepComplete = (stepKey: string) => {
     setVerificationProgress(prev => ({
@@ -199,7 +219,7 @@ export function Phase2Manager({
                   deliveryCalculation={deliveryCalculation}
                   onStepComplete={handleDeliveryStepComplete}
                   onStepUncomplete={handleDeliveryStepUncomplete}
-                  onSectionComplete={() => {}} // 🤖 [IA] - v1.2.46: NOOP - handleDeliveryStepComplete maneja completitud
+                  onSectionComplete={handleDeliverySectionComplete} // 🤖 [IA] - v1.2.47: RESTAURADO - crítico para transición
                   completedSteps={deliveryProgress}
                   onCancel={() => setShowExitConfirmation(true)}
                   onPrevious={() => {}}
