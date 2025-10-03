@@ -1,11 +1,14 @@
 /**
  * 🤖 [IA] - Hook para flujo de checklist progresivo - v1.2.45
+ * 🎯 [COMPLIANCE] - v1.2.41AD: Actualizado para soportar configuración dinámica desde datos externos
  * 🔧 [FIX] - Refactorizado con flat timeout pattern para prevenir race conditions
  *
  * @description
  * Hook especializado para Phase2Manager que implementa un checklist con revelación
  * progresiva. Los items se revelan secuencialmente a medida que se marcan los anteriores.
  * Incluye animaciones de activación y control de completitud.
+ *
+ * Compatible con phase2PreparationInstructions.ts (Doctrina D.5 Compliance)
  *
  * ⚠️ CAMBIO CRÍTICO v1.2.45:
  * - Eliminados nested timeouts (causaban freeze en mobile)

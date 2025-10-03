@@ -1,3 +1,4 @@
+// 🤖 [IA] - v1.2.41AD: Doctrina D.5 Compliance - Migración a arquitectura basada en datos separada
 // 🤖 [IA] - v1.2.50: Fix definitivo setTimeout nativo - eliminado createTimeoutWithCleanup de dependencies
 // 🤖 [IA] - v1.2.49: Fix crítico referencia inestable - memoización handleDeliverySectionComplete
 // 🤖 [IA] - v1.1.14 - Simplificación de tabs y eliminación de redundancias en Fase 2
@@ -6,7 +7,9 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Package, ScrollText, Grid3x3, AlertCircle, DollarSign, X, Pencil, Banknote, CheckCircle2 } from 'lucide-react';
+import * as Icons from 'lucide-react'; // 🤖 [IA] - v1.2.41AD: Dynamic icon loading para Doctrina D.5
 import { InstructionRule, type RuleState } from '@/components/wizards/InstructionRule';
+import { phase2PreparationInstructions } from '@/data/instructions/phase2PreparationInstructions'; // 🤖 [IA] - v1.2.41AD: Configuración de datos separada
 import { WizardGlassCard } from '@/components/wizards/WizardGlassCard';
 // 🤖 [IA] - v1.2.10: Agregado modal controlado para confirmación de salida
 import {
@@ -321,95 +324,34 @@ export function Phase2Manager({
           <WizardGlassCard className="space-y-fluid-lg">
             {/* Checklist de preparación */}
             <div className="flex flex-col gap-fluid-lg">
-            {/* 🤖 [IA] - v1.2.31: Progressive Revelation con InstructionRule canónico */}
+            {/* 🤖 [IA] - v1.2.41AD: DOCTRINA D.5 COMPLIANCE - Mapeo dinámico desde phase2PreparationInstructions.ts */}
             <div className="flex flex-col gap-[clamp(0.75rem,3vw,1rem)]">
-              {/* Item 1: Bolsa - 🤖 [IA] v1.2.41AA: Subtítulo estático informativo */}
-              <InstructionRule
-                rule={{
-                  id: 'bolsa',
-                  title: 'Bolsa Lista Para Entrega',
-                  subtitle: 'Preparar bolsa plástica o de tela',
-                  Icon: Package,
-                  colors: {
-                    border: checkedItems.bolsa ? 'border-green-400' : 'border-blue-400',
-                    text: checkedItems.bolsa ? 'text-green-400' : 'text-blue-400'
-                  }
-                }}
-                state={{
-                  isChecked: checkedItems.bolsa,
-                  isBeingReviewed: false,
-                  isEnabled: enabledItems.bolsa,
-                  isHidden: !enabledItems.bolsa
-                }}
-                isCurrent={enabledItems.bolsa && !checkedItems.bolsa}
-                onAcknowledge={() => handleCheckChange('bolsa')}
-              />
-
-              {/* Item 2: Tirro - 🤖 [IA] v1.2.41AA: Subtítulo + icono Pencil semántico */}
-              <InstructionRule
-                rule={{
-                  id: 'tirro',
-                  title: 'Cinta y Rotulador Listo',
-                  subtitle: 'Tener cinta adhesiva y marcador',
-                  Icon: Pencil,
-                  colors: {
-                    border: checkedItems.tirro ? 'border-green-400' : 'border-blue-400',
-                    text: checkedItems.tirro ? 'text-green-400' : 'text-blue-400'
-                  }
-                }}
-                state={{
-                  isChecked: checkedItems.tirro,
-                  isBeingReviewed: false,
-                  isEnabled: enabledItems.tirro,
-                  isHidden: !checkedItems.bolsa
-                }}
-                isCurrent={enabledItems.tirro && !checkedItems.tirro}
-                onAcknowledge={() => handleCheckChange('tirro')}
-              />
-
-              {/* Item 3: Espacio - 🤖 [IA] v1.2.41AA: Subtítulo + icono Banknote semántico */}
-              <InstructionRule
-                rule={{
-                  id: 'espacio',
-                  title: 'Tomar Cantidad Para Bolsa',
-                  subtitle: 'Contar y separar dinero calculado',
-                  Icon: Banknote,
-                  colors: {
-                    border: checkedItems.espacio ? 'border-green-400' : 'border-blue-400',
-                    text: checkedItems.espacio ? 'text-green-400' : 'text-blue-400'
-                  }
-                }}
-                state={{
-                  isChecked: checkedItems.espacio,
-                  isBeingReviewed: false,
-                  isEnabled: enabledItems.espacio,
-                  isHidden: !checkedItems.tirro
-                }}
-                isCurrent={enabledItems.espacio && !checkedItems.espacio}
-                onAcknowledge={() => handleCheckChange('espacio')}
-              />
-
-              {/* Item 4: Entendido - 🤖 [IA] v1.2.41AA: Subtítulo + icono CheckCircle2 semántico */}
-              <InstructionRule
-                rule={{
-                  id: 'entendido',
-                  title: 'Estamos listos para continuar',
-                  subtitle: 'Verificar que todo esté preparado',
-                  Icon: CheckCircle2,
-                  colors: {
-                    border: checkedItems.entendido ? 'border-green-400' : 'border-blue-400',
-                    text: checkedItems.entendido ? 'text-green-400' : 'text-blue-400'
-                  }
-                }}
-                state={{
-                  isChecked: checkedItems.entendido,
-                  isBeingReviewed: false,
-                  isEnabled: enabledItems.entendido,
-                  isHidden: !checkedItems.espacio
-                }}
-                isCurrent={enabledItems.entendido && !checkedItems.entendido}
-                onAcknowledge={() => handleCheckChange('entendido')}
-              />
+              {phase2PreparationInstructions.map((instruction) => {
+                const itemKey = instruction.id as keyof typeof checkedItems;
+                return (
+                  <InstructionRule
+                    key={instruction.id}
+                    rule={{
+                      id: instruction.id,
+                      title: instruction.title,
+                      subtitle: instruction.description,
+                      Icon: Icons[instruction.icon as keyof typeof Icons] as React.ComponentType<React.SVGProps<SVGSVGElement>>,
+                      colors: {
+                        border: checkedItems[itemKey] ? 'border-green-400' : 'border-blue-400',
+                        text: checkedItems[itemKey] ? 'text-green-400' : 'text-blue-400'
+                      }
+                    }}
+                    state={{
+                      isChecked: checkedItems[itemKey],
+                      isBeingReviewed: false,
+                      isEnabled: enabledItems[itemKey],
+                      isHidden: !enabledItems[itemKey]
+                    }}
+                    isCurrent={enabledItems[itemKey] && !checkedItems[itemKey]}
+                    onAcknowledge={() => handleCheckChange(itemKey)}
+                  />
+                );
+              })}
             </div>
             </div>
           </WizardGlassCard>

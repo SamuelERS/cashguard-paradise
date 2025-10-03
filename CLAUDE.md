@@ -1,7 +1,7 @@
 # 📚 CLAUDE.md - HISTORIAL DE DESARROLLO CASHGUARD PARADISE
-**Última actualización:** 03 Oct 2025 ~01:45 AM
-**Sesión completada:** Fix definitivo setTimeout nativo - transición Phase 2 garantizada
-**Estado:** Flujo Phase 2 100% funcional - dependencies estables (setTimeout nativo)
+**Última actualización:** 03 Oct 2025 ~02:15 AM
+**Sesión completada:** Migración Doctrina D.5 Phase2Manager Modal - 100% Compliant
+**Estado:** Todos los modales wizard ahora cumplen 100% Doctrina D.5
 
 ## 📊 MÉTRICAS ACTUALES DEL PROYECTO
 
@@ -63,6 +63,50 @@ Total Coverage:   229 tests validando lógica crítica
 ---
 
 ## 📝 Recent Updates
+
+### v1.2.41AD - Phase2Manager Modal → Doctrina D.5 Compliance [MISIÓN CUMPLIDA] 🎯
+**OPERACIÓN ARQUITECTÓNICA EXITOSA:** Migración quirúrgica de Phase2Manager modal para cumplir 100% Doctrina D.5 (Arquitectura Wizard V3) - separación completa UI/Lógica/Datos.
+- **Objetivo:** Eliminar datos hardcodeados en JSX y migrar a archivo de configuración separado
+- **Problema identificado:** Modal Phase2Manager tenía 4 items de checklist con title/subtitle/Icon hardcoded en JSX (líneas 327-412)
+- **Diagnóstico arquitectónico:**
+  - ❌ **ANTES:** Items hardcodeados directamente en componente (70 líneas JSX repetitivo)
+  - ✅ **Hook de lógica:** useChecklistFlow.ts (cerebro) - ✅ OK
+  - ✅ **Componente UI:** InstructionRule.tsx (presentación) - ✅ OK
+- **Solución implementada:**
+  1. **Archivo nuevo creado:** `src/data/instructions/phase2PreparationInstructions.ts`
+     - Interface `Instruction` reutilizada (consistencia con otros modales)
+     - 4 items: bolsa, tirro, espacio, entendido
+     - Iconos semánticos preservados: Package, Pencil, Banknote, CheckCircle2
+     - `minReviewTimeMs: 0` (checklist instantáneo sin timing anti-fraude)
+  2. **Phase2Manager.tsx refactorizado:**
+     - Agregado import `* as Icons from 'lucide-react'` (dynamic icon loading)
+     - Agregado import `phase2PreparationInstructions`
+     - Reemplazadas 70 líneas hardcoded con 20 líneas mapeo dinámico `.map()`
+     - Colors/state logic preservado (azul → verde al completar)
+  3. **useChecklistFlow.ts documentado:**
+     - Agregado comentario compliance Doctrina D.5
+     - "Compatible con phase2PreparationInstructions.ts"
+- **Impacto código:**
+  - ✅ **Eliminadas:** ~70 líneas JSX repetitivo (4 bloques InstructionRule)
+  - ✅ **Agregadas:** ~30 líneas config + ~20 líneas mapeo = -20 líneas netas
+  - ✅ **Beneficio:** 100% Doctrina D.5 + mantenibilidad superior
+- **Funcionalidad preservada:**
+  - ✅ Cero cambios lógica (useChecklistFlow sin modificar)
+  - ✅ Cero cambios visuales (mismos iconos, colores, textos)
+  - ✅ Cero cambios timing (revelación progresiva 600ms + 2000ms idéntica)
+  - ✅ Cero cambios UX (comportamiento usuario sin cambio)
+- **Resultado final - Cumplimiento 100% en todos los modales:**
+  ```
+  ✅ InitialWizardModal: 100% Compliant (initialWizardFlow.ts)
+  ✅ GuidedInstructionsModal: 100% Compliant (cashCountingInstructions.ts)
+  ✅ Phase2Manager: 100% Compliant (phase2PreparationInstructions.ts) ← OBJETIVO LOGRADO
+  ```
+- **Consistencia arquitectónica:**
+  - Todos los modales wizard ahora siguen mismo patrón canónico
+  - Datos separados en `/data/instructions/`
+  - Hooks especializados en `/hooks/`
+  - Componentes UI reutilizables en `/components/wizards/`
+**Archivos:** `phase2PreparationInstructions.ts` (NUEVO), `Phase2Manager.tsx`, `useChecklistFlow.ts`, `CLAUDE.md`
 
 ### v1.2.50 - Fix Definitivo setTimeout Nativo [MISIÓN CUMPLIDA] ✅
 **OPERACIÓN SIMPLIFICACIÓN CRÍTICA:** Eliminación completa de `createTimeoutWithCleanup` de dependencies array - setTimeout nativo garantiza estabilidad total.
