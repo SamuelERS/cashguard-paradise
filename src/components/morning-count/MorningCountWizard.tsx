@@ -413,12 +413,18 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
         
         <div style={{ padding: `clamp(16px, ${24 * viewportScale}px, 24px)` }}>
           {/* Header del modal simplificado - 🤖 [IA] - v1.2.13 */}
+          {/* 🤖 [IA] - v1.2.41Y: Subtítulo agregado para elegancia profesional */}
           <div className="flex items-center justify-between" style={{ marginBottom: `clamp(16px, ${20 * viewportScale}px, 20px)` }}>
             <div className="flex items-center wizard-inline-gap">
               <Sunrise className="wizard-step-icon" style={{ color: '#f4a52a' }} />
-              <h2 className="font-bold text-[clamp(1.25rem,5vw,1.5rem)] text-[#e1e8ed]">
-                Conteo de Caja
-              </h2>
+              <div className="flex flex-col">
+                <h2 className="font-bold text-[clamp(1.25rem,5vw,1.5rem)] text-[#e1e8ed] leading-tight">
+                  Conteo de Caja
+                </h2>
+                <p className="text-[clamp(0.625rem,2.5vw,0.75rem)] text-[#8899a6] mt-[clamp(0.125rem,0.5vw,0.25rem)]">
+                  Verificación de fondo inicial
+                </p>
+              </div>
             </div>
             <Button
               variant="ghost"

@@ -1,7 +1,7 @@
 # 📚 CLAUDE.md - HISTORIAL DE DESARROLLO CASHGUARD PARADISE
-**Última actualización:** 02 Oct 2025 ~22:45 PM
-**Sesión completada:** Coherencia total InstructionRule (Subtítulos + Iconos semánticos)
-**Estado:** 100% coherencia visual (2 líneas + iconos Receipt/Camera/ArrowDownUp)
+**Última actualización:** 02 Oct 2025 ~23:00 PM
+**Sesión completada:** Subtítulo elegante InitialWizardModal
+**Estado:** 100% coherencia visual + subtítulos profesionales en todos los modales
 
 ## 📊 MÉTRICAS ACTUALES DEL PROYECTO
 
@@ -65,6 +65,23 @@ Total Coverage:   229 tests validando lógica crítica
 ## 📝 Recent Updates
 
 *Para historial completo v1.0.80 - v1.1.20, ver [CHANGELOG-DETALLADO.md](/Documentos%20MarkDown/CHANGELOG-DETALLADO.md)*
+
+### v1.2.41Y - Subtítulos Elegantes Modales Wizard [MISIÓN CUMPLIDA] ✅
+**OPERACIÓN SUBTITLE ENHANCEMENT:** Agregados subtítulos profesionales a modales Corte Nocturno y Conteo de Caja para mayor elegancia y claridad contextual.
+- **Problema identificado:** Modales solo tenían títulos, sin contexto adicional del propósito
+- **Solución implementada:**
+  - **InitialWizardModal (Evening Cut):** "Control de cierre diario" (24 caracteres)
+  - **MorningCountWizard:** "Verificación de fondo inicial" (29 caracteres)
+  - Estructura `flex-col` para título + subtítulo vertical en ambos
+  - Tipografía: `text-[#8899a6]` (color subtext estándar) + responsive clamp
+  - Espaciado: `mt-[clamp(0.125rem,0.5vw,0.25rem)]` para separación sutil
+- **Arquitectura visual consistente:**
+  - InitialWizardModal: Icono Moon (púrpura) + título + subtítulo + botón X
+  - MorningCountWizard: Icono Sunrise (naranja) + título + subtítulo + botón X
+  - Responsive: `clamp(0.625rem,2.5vw,0.75rem)` para subtítulos adaptativos
+  - Coherente con patrón GuidedInstructionsModal (título + descripción)
+- **Resultado:** Modales más elegantes, contexto claro del propósito específico de cada operación
+**Archivos:** `src/components/InitialWizardModal.tsx`, `src/components/morning-count/MorningCountWizard.tsx`, `CLAUDE.md`
 
 ## 🎯 SESIÓN ACTUAL: 01 OCT 2025 (5.75 HORAS)
 

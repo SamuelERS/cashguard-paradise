@@ -520,6 +520,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
 
         <div className="p-fluid-lg space-y-fluid-lg">
           {/* 🤖 [IA] - v1.2.41N: Header estilo MorningCount - icono + título + botón X */}
+          {/* 🤖 [IA] - v1.2.41Y: Subtítulo agregado para elegancia profesional */}
           <div className="flex items-center justify-between mb-fluid-md">
             <div className="flex items-center gap-fluid-md">
               <Moon
@@ -527,9 +528,14 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                 style={{ color: '#5e5ce6' }}
                 aria-label="Icono de corte nocturno"
               />
-              <h2 className="font-bold text-[clamp(1.25rem,5vw,1.5rem)] text-[#e1e8ed]">
-                Corte Nocturno
-              </h2>
+              <div className="flex flex-col">
+                <h2 className="font-bold text-[clamp(1.25rem,5vw,1.5rem)] text-[#e1e8ed] leading-tight">
+                  Corte Nocturno
+                </h2>
+                <p className="text-[clamp(0.625rem,2.5vw,0.75rem)] text-[#8899a6] mt-[clamp(0.125rem,0.5vw,0.25rem)]">
+                  Control de cierre diario
+                </p>
+              </div>
             </div>
             <Button
               variant="ghost"
