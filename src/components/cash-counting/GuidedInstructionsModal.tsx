@@ -1,5 +1,5 @@
 // 🤖 [IA] - v1.2.23: Modal con Wizard v3 - Flujo Guiado con Revelación Progresiva
-// 🤖 [IA] - v1.2.41U: Coherencia Visual Total - CheckCircle verde + único botón centrado (patrón Gray-Green)
+// 🤖 [IA] - v1.2.41V: Colores Azul Unificado + Título Responsive (coherencia total con ProtocolRule)
 import React, { useMemo, useEffect, useCallback, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -59,20 +59,10 @@ export function GuidedInstructionsModal({
     return Math.round((completedCount / state.instructions.length) * 100);
   }, [state.instructionStates, state.instructions.length]);
 
-  // 🤖 [IA] - v1.2.26: FASE 2 - Sistema de colores dinámicos por tipo de instrucción
+  // 🤖 [IA] - v1.2.41V: Azul unificado para coherencia total con ProtocolRule (InitialWizardModal)
   const getInstructionColor = useCallback((instruction: { id: string }) => {
-    switch(instruction.id) {
-      case 'confirmation':
-        return { border: 'red', text: 'text-red-500' };
-      case 'counting':
-        return { border: 'blue', text: 'text-blue-400' };
-      case 'ordering':
-        return { border: 'green', text: 'text-green-400' };
-      case 'packaging':
-        return { border: 'orange', text: 'text-orange-400' };
-      default:
-        return { border: 'blue', text: 'text-blue-400' };
-    }
+    // Sistema de colores unificado: Azul (enabled) → Naranja (reviewing) → Verde (checked)
+    return { border: 'blue', text: 'text-blue-400' };
   }, []);
 
   // 🤖 [CTO] v3.1.2 - Iniciar el flujo cuando el componente se monta
@@ -123,12 +113,12 @@ export function GuidedInstructionsModal({
       <DialogContent
         className="glass-morphism-panel wizard-dialog-content max-h-[clamp(85vh,90vh,90vh)] overflow-y-auto overflow-x-hidden p-0 [&>button]:hidden"
       >
-        {/* 🤖 [IA] - v1.2.42: DialogTitle/Description solo para accesibilidad */}
+        {/* 🤖 [IA] - v1.2.41V: DialogTitle/Description solo para accesibilidad */}
         <DialogTitle className="sr-only">
-          Instrucciones del Corte de Caja
+          Instrucciones de Conteo
         </DialogTitle>
         <DialogDescription className="sr-only">
-          Complete las instrucciones para el corte de caja
+          Complete las instrucciones antes de iniciar el conteo de caja
         </DialogDescription>
 
         <div className="p-fluid-lg space-y-fluid-lg">
@@ -141,7 +131,7 @@ export function GuidedInstructionsModal({
                 aria-label="Icono de instrucciones de conteo"
               />
               <h2 className="font-bold text-[clamp(1.25rem,5vw,1.5rem)] text-[#e1e8ed]">
-                Instrucciones del Corte de Caja
+                Instrucciones de Conteo
               </h2>
             </div>
             <Button

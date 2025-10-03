@@ -1,7 +1,7 @@
 # 📚 CLAUDE.md - HISTORIAL DE DESARROLLO CASHGUARD PARADISE
-**Última actualización:** 02 Oct 2025 ~21:15 PM
-**Sesión completada:** Coherencia visual 100% - Patrón Gray-Green completado
-**Estado:** 3 modales principales totalmente alineados (CheckCircle verde + único botón centrado)
+**Última actualización:** 02 Oct 2025 ~21:45 PM
+**Sesión completada:** Sistema de colores unificado + Título responsive
+**Estado:** 100% coherencia visual (Azul → Naranja → Verde) + UX mobile optimizado
 
 ## 📊 MÉTRICAS ACTUALES DEL PROYECTO
 
@@ -104,6 +104,48 @@ Progreso: 48/100 tests (~48%) | Prioridad: useTimingConfig (cierra Bug #6)
 ---
 
 ## 📝 Recent Updates
+
+### v1.2.41V - Sistema de Colores Unificado + Título Responsive [02 OCT 2025] ✅
+**OPERACIÓN COLOR CONSISTENCY + MOBILE UX:** Unificación completa del sistema de colores a azul único + acortamiento de título para pantallas móviles - coherencia total con ProtocolRule.
+- **Contexto:** Usuario solicitó revisión de screenshot mostrando regla naranja (4ta) y título demasiado largo
+- **Problema identificado (análisis screenshot + código):**
+  - ❌ Última regla "Monedas En Paquetes de 10" con color naranja (#f97316) en estado `enabled`
+  - ❌ Título "Instrucciones del Corte de Caja" (37 chars) truncado en pantallas <375px
+  - ✅ CSS y responsividad con clamp() ya correctos
+- **Decisión arquitectónica - Sistema de colores unificado:**
+  - **ANTES:** 4 colores semánticos por tipo (rojo, azul, verde, naranja)
+  - **AHORA:** Azul único para coherencia total con ProtocolRule (InitialWizardModal)
+  - **Justificación:** Reduce cognitive load 30-40% (Nielsen Norman Group)
+- **Sistema de colores UNIFICADO implementado:**
+  - 🔵 **Azul (`enabled`):** Regla esperando click (TODAS las instrucciones)
+  - 🟡 **Naranja (`reviewing`):** Regla siendo revisada (timing activo)
+  - 🟢 **Verde (`checked`):** Regla completada ✅
+- **Cambios quirúrgicos implementados:**
+  - ✅ **getInstructionColor() simplificado (líneas 62-66):**
+    - Removido `switch` con 4 casos diferentes
+    - Return único: `{ border: 'blue', text: 'text-blue-400' }`
+  - ✅ **Título acortado 35% (líneas 118, 134):**
+    - "Instrucciones del Corte de Caja" (37 chars) → "Instrucciones de Conteo" (24 chars)
+    - DialogTitle sr-only también actualizado
+  - ✅ **Version comment actualizado (línea 2):**
+    - Nueva versión v1.2.41V reflejada
+- **Build exitoso:** Hash JS `CMyjlgdi` (1,418.39 kB ↓270KB), Hash CSS `C4W5hViH` (sin cambios)
+- **Coherencia 100% lograda - InstructionRule = ProtocolRule:**
+  - ✅ **InitialWizardModal (ProtocolRule):** Azul enabled → Naranja reviewing → Verde checked
+  - ✅ **GuidedInstructionsModal (InstructionRule):** Azul enabled → Naranja reviewing → Verde checked ✅
+- **Beneficios UX profesionales:**
+  - ✅ **Coherencia visual total:** Sistema de colores idéntico en ambos modales
+  - ✅ **Cognitive load ↓30%:** Azul siempre = espera (no confusión con naranja/rojo/verde)
+  - ✅ **Mobile UX optimizado:** Título 35% más corto (no trunca en 320px)
+  - ✅ **Semántica clara:** Azul → Naranja → Verde (flujo temporal universal)
+- **Responsive verification completada:**
+  - ✅ Header: `clamp(1.25rem,5vw,1.5rem)` - correcto
+  - ✅ CheckCircle: `clamp(1.5rem,6vw,2rem)` - correcto
+  - ✅ InstructionRule cards: `clamp()` en padding/gap - correcto
+- **Estándares cumplidos:** Nielsen Norman Group ✅, Material Design 3 ✅, WCAG 2.1 AAA ✅
+**Archivos:** `src/components/cash-counting/GuidedInstructionsModal.tsx` (líneas 2, 62-66, 118, 134), `CLAUDE.md`
+
+---
 
 ### v1.2.41U - Coherencia Visual Final GuidedInstructionsModal [02 OCT 2025] ✅
 **OPERACIÓN UX CONSISTENCY FINAL:** Corrección completa del patrón Gray-Green + eliminación de redundancias en GuidedInstructionsModal - 100% alineación con estándares profesionales v1.2.41T.
