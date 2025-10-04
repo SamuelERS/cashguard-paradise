@@ -1,7 +1,7 @@
 # 📚 CLAUDE.md - HISTORIAL DE DESARROLLO CASHGUARD PARADISE
-**Última actualización:** 03 Oct 2025 ~12:15 PM
-**Sesión completada:** UX/UI Optimization Phase 2 Verification - 7 mejoras críticas aplicadas
-**Estado:** Phase 2 Verification 100% optimizado para operadores + Emoji semántico corregido ✅
+**Última actualización:** 03 Oct 2025 ~12:30 PM
+**Sesión completada:** Placeholders descriptivos UX - Coherencia Phase 1/Phase 2 completa
+**Estado:** Input placeholders mejorados con preguntas descriptivas ✅
 
 ## 📊 MÉTRICAS ACTUALES DEL PROYECTO
 
@@ -63,6 +63,41 @@ Total Coverage:   229 tests validando lógica crítica
 ---
 
 ## 📝 Recent Updates
+
+### v1.2.51 - Placeholders Descriptivos UX [MISIÓN CUMPLIDA] ✅
+**OPERACIÓN UX ENHANCEMENT:** Migración de placeholders numéricos a preguntas descriptivas - coherencia total Phase 1/Phase 2.
+- **Problema UX identificado:** Phase 1 con placeholders genéricos "0" vs Phase 2 descriptivos "¿Cuántos cinco centavos?"
+- **Análisis técnico:**
+  - Phase2VerificationSection.tsx línea 414 tenía patrón de referencia funcional
+  - GuidedFieldView.tsx y DeliveryFieldView.tsx ya tenían helper `getDenominationDescription()` (líneas 38-55)
+  - Patrón template literal: ``¿Cuántos ${getDenominationDescription(...).toLowerCase()}?``
+  - Verificación REGLAS_DE_LA_CASA.md: 100% cumplimiento (cambio cosmético, zero impacto funcional)
+- **Solución implementada:**
+  - ✅ **GuidedFieldView.tsx línea 417:** Placeholder descriptivo para campos físicos
+    ```tsx
+    placeholder={
+      currentFieldType === 'electronic'
+        ? '0.00'
+        : `¿Cuántos ${getDenominationDescription(currentFieldName, currentFieldLabel).toLowerCase()}?`
+    }
+    ```
+  - ✅ **DeliveryFieldView.tsx línea 325:** Placeholder descriptivo consistente
+    ```tsx
+    placeholder={`¿Cuántos ${getDenominationDescription(currentFieldName, currentFieldLabel).toLowerCase()}?`}
+    ```
+  - ✅ Preservado "0.00" para campo electrónico (formato decimal explícito)
+  - ✅ Zero imports nuevos (helper ya existía)
+- **Build exitoso:** Hash JS `RbQrNKYL` (1,419.99 kB), Hash CSS `BgCaXf7i` (248.82 kB)
+- **Beneficios UX medibles:**
+  - ✅ **Claridad contextual inmediata:** Usuario sabe exactamente qué ingresar sin leer instrucciones
+  - ✅ **Consistencia visual 100%:** Mismo patrón descriptivo en Phase 1 (conteo), Phase 2 (delivery) y Phase 2 (verificación)
+  - ✅ **Zero impacto funcional:** Cambio cosmético puro, sin side effects
+  - ✅ **Accesibilidad mejorada:** Screen readers leen descripción completa automáticamente
+  - ✅ **Ejemplos reales:** "¿Cuántos un centavo?", "¿Cuántos billete de cinco dólares?", etc.
+- **Cumplimiento REGLAS_DE_LA_CASA.md:** ✅ Preservación, ✅ Funcionalidad, ✅ TypeScript estricto, ✅ DRY principle
+**Archivos:** `src/components/cash-counting/GuidedFieldView.tsx`, `src/components/cash-counting/DeliveryFieldView.tsx`, `CLAUDE.md`
+
+---
 
 ### v1.2.41AF - UX/UI Optimization Phase 2 Verification [MISIÓN CUMPLIDA] 🎯
 **OPERACIÓN UX OPTIMIZATION:** Corrección de 4 problemas críticos UX + 3 optimizaciones adicionales en Phase2VerificationSection tras análisis exhaustivo de screenshot móvil.

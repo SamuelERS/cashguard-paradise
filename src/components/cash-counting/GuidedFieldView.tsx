@@ -414,7 +414,11 @@ export function GuidedFieldView({
                     autoCorrect="off"     // Desactivar autocorrección
                     autoComplete="off"    // Desactivar autocompletado
                     aria-describedby={`${inputId}-description`}
-                    placeholder={currentFieldType === 'electronic' ? '0.00' : '0'}
+                    placeholder={
+                      currentFieldType === 'electronic'
+                        ? '0.00'
+                        : `¿Cuántos ${getDenominationDescription(currentFieldName, currentFieldLabel).toLowerCase()}?`
+                    } // 🤖 [IA] - v1.2.51: Placeholder descriptivo coherente con Phase2VerificationSection
                     style={{
                       backgroundColor: 'rgba(255, 255, 255, 0.05)',
                       border: `2px solid ${borderColor}`,

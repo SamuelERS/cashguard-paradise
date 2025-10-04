@@ -322,7 +322,7 @@ export function DeliveryFieldView({
                     autoCapitalize="off"
                     autoCorrect="off"
                     autoComplete="off"
-                    placeholder="0"
+                    placeholder={`¿Cuántos ${getDenominationDescription(currentFieldName, currentFieldLabel).toLowerCase()}?`}  // 🤖 [IA] - v1.2.51: Placeholder descriptivo coherente con Phase2VerificationSection
                     style={{
                       borderColor: showError ? 'var(--danger)' : 'var(--accent-primary)',
                       fontSize: 'clamp(18px, 4vw, 24px)',
