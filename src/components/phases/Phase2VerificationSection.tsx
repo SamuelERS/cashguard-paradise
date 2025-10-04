@@ -8,6 +8,7 @@ import { ConstructiveActionButton } from '@/components/shared/ConstructiveAction
 import { DestructiveActionButton } from '@/components/shared/DestructiveActionButton';
 import { NeutralActionButton } from '@/components/ui/neutral-action-button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';  // 🤖 [IA] - v1.2.52: WCAG 2.1 SC 3.3.2 compliance
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 // 🤖 [IA] - FAE-02: PURGA QUIRÚRGICA COMPLETADA - CSS imports eliminados
 // Los 1 archivos CSS están ahora importados globalmente vía index.css:
@@ -397,7 +398,16 @@ export function Phase2VerificationSection({
               <div>
               <div className="flex items-center" style={{ gap: 'clamp(8px, 2vw, 16px)' }}>
                 <div className="flex-1 relative">
+                  {/* 🤖 [IA] - v1.2.52: Accessible label for screen readers (WCAG 2.1 SC 3.3.2) */}
+                  <Label
+                    htmlFor={`verification-input-${currentStep.key}`}
+                    className="sr-only"
+                  >
+                    {getDenominationDescription(currentStep.key, currentStep.label)}
+                  </Label>
+
                   <Input
+                    id={`verification-input-${currentStep.key}`}
                     ref={inputRef}
                     type="text"  // 🤖 [IA] - v3.1.0: Unificado a "text" para teclado decimal consistente
                     inputMode="decimal"  // 🤖 [IA] - v3.1.0: Forzar teclado decimal en todos los casos

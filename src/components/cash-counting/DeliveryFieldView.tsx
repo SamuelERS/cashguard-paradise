@@ -8,6 +8,7 @@ import { ConstructiveActionButton } from '@/components/shared/ConstructiveAction
 import { DestructiveActionButton } from '@/components/shared/DestructiveActionButton';
 import { NeutralActionButton } from '@/components/ui/neutral-action-button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';  // 🤖 [IA] - v1.2.52: WCAG 2.1 SC 3.3.2 compliance
 import { DENOMINATIONS } from '@/types/cash';
 import { formatCurrency } from '@/utils/calculations';
 import { useInputValidation } from '@/hooks/useInputValidation';
@@ -311,7 +312,16 @@ export function DeliveryFieldView({
             <div>
               <div className="flex items-center" style={{ gap: 'clamp(8px, 2vw, 16px)' }}>
                 <div className="flex-1 relative">
+                  {/* 🤖 [IA] - v1.2.52: Accessible label for screen readers (WCAG 2.1 SC 3.3.2) */}
+                  <Label
+                    htmlFor={`delivery-input-${currentFieldName}`}
+                    className="sr-only"
+                  >
+                    {getDenominationDescription(currentFieldName, currentFieldLabel)}
+                  </Label>
+
                   <Input
+                    id={`delivery-input-${currentFieldName}`}
                     ref={inputRef}
                     type="text"  // 🤖 [IA] - v3.1.0: Unificado a "text" para teclado decimal consistente
                     inputMode="decimal"  // 🤖 [IA] - v3.1.0: Forzar teclado decimal en todos los casos
