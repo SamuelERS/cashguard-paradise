@@ -229,8 +229,9 @@ export function Phase2VerificationSection({
               </p>
             </div>
           </div>
-          <div className="text-center sm:text-right">
-            <span className="glass-target-badge inline-block px-[clamp(0.5rem,2vw,0.75rem)] py-[clamp(0.25rem,1vw,0.375rem)] rounded-[clamp(0.5rem,2vw,0.75rem)] text-[clamp(0.75rem,3vw,0.875rem)] font-bold">
+          {/* 🤖 [IA] - v1.2.41AF: Badge objetivo responsive - visible en móviles */}
+          <div className="text-center sm:text-right w-full sm:w-auto mt-2 sm:mt-0">
+            <span className="glass-target-badge inline-block px-[clamp(0.5rem,2vw,0.75rem)] py-[clamp(0.25rem,1vw,0.375rem)] rounded-[clamp(0.5rem,2vw,0.75rem)] text-[clamp(0.625rem,2.5vw,0.875rem)] font-bold whitespace-nowrap">
               🎯 Objetivo: Cambio completo
             </span>
           </div>
@@ -255,8 +256,12 @@ export function Phase2VerificationSection({
               </span>
             </div>
             {/* Contador de unidades */}
+            {/* 🤖 [IA] - v1.2.41AF: Etiqueta visible en móvil para contexto ("Progreso:" en lugar de "Verificado:") */}
             <div className="flex items-center gap-[clamp(0.375rem,1.5vw,0.5rem)]">
-              <span className="text-[clamp(0.75rem,3vw,0.875rem)] hidden sm:inline" style={{ color: 'var(--muted-paradise)' }}>Verificado:</span>
+              <span className="text-[clamp(0.75rem,3vw,0.875rem)]" style={{ color: 'var(--muted-paradise)' }}>
+                <span className="hidden sm:inline">Verificado:</span>
+                <span className="inline sm:hidden">Progreso:</span>
+              </span>
               <span className="text-[clamp(0.875rem,3.5vw,1rem)] font-bold" style={{ color: '#ffffff' }}>
                 ✅ {Object.keys(completedSteps).filter(key => completedSteps[key]).length}/{verificationSteps.length}
               </span>
@@ -341,6 +346,18 @@ export function Phase2VerificationSection({
             transition={{ type: "spring", stiffness: 260, damping: 20 }}
             className="glass-morphism-panel p-0 relative border-2 border-primary/30"
           >
+            {/* 🤖 [IA] - v1.2.41AF: Badge ACTIVO floating para feedback visual consistente con Phase 1 */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="absolute top-4 right-4 z-10 bg-primary/90 text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-lg backdrop-blur-sm border border-primary/50"
+              style={{
+                background: 'linear-gradient(135deg, rgba(10, 132, 255, 0.9) 0%, rgba(94, 92, 230, 0.9) 100%)'
+              }}
+            >
+              ACTIVO ▶
+            </motion.div>
+
             {/* Content Section */}
             <div className="p-[clamp(12px,3vw,20px)] pb-32">
               {/* Header con imagen de denominación como DeliveryFieldView */}
@@ -359,16 +376,18 @@ export function Phase2VerificationSection({
                 </div>
 
                 {/* Badge ENTREGAR para Phase 2 */}
+                {/* 🤖 [IA] - v1.2.41AF: Fix emoji semántico 📤 → 💼 (maletín representa "lo que permanece en caja") */}
                 <div className="glass-status-error inline-block px-4 py-2 rounded-lg mt-4">
                   <p className="text-sm font-semibold" style={{ color: '#22c55e' }}>
-                    {'📤\u00A0\u00A0QUEDA EN CAJA '}
+                    {'💼\u00A0\u00A0QUEDA EN CAJA '}
                     <span style={{ color: 'white', fontWeight: 'bold', fontSize: '1.4em' }}>{currentStep.quantity}</span>
                   </p>
                 </div>
 
                 {/* Etiqueta de denominación descriptiva */}
+                {/* 🤖 [IA] - v1.2.41AF: Aumentado contraste (70% → 90%) + tamaño (xs → sm móvil) para legibilidad */}
                 <div className="mt-2">
-                  <span className="text-xs text-white/70 font-medium">
+                  <span className="text-[clamp(0.75rem,3vw,0.875rem)] text-white/90 font-medium">
                     {getDenominationDescription(currentStep.key, currentStep.label)}
                   </span>
                 </div>
@@ -392,7 +411,7 @@ export function Phase2VerificationSection({
                     autoCapitalize="off"
                     autoCorrect="off"
                     autoComplete="off"
-                    placeholder="0"
+                    placeholder={`¿Cuántos ${getDenominationDescription(currentStep.key, currentStep.label).toLowerCase()}?`}
                     style={{
                       borderColor: parseInt(inputValue) !== currentStep.quantity && inputValue ? 'var(--danger)' : 'var(--accent-primary)',
                       fontSize: 'clamp(18px, 4vw, 24px)',
@@ -409,7 +428,7 @@ export function Phase2VerificationSection({
                   {parseInt(inputValue) !== currentStep.quantity && inputValue && (
                     <div className="absolute -bottom-6 left-0 right-0 text-center">
                       <span className="text-xs text-destructive">
-                        Debe confirmar exactamente {currentStep.quantity}
+                        Ingresa exactamente {currentStep.quantity} {getDenominationDescription(currentStep.key, currentStep.label).toLowerCase()}
                       </span>
                     </div>
                   )}
