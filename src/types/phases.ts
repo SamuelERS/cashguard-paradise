@@ -1,4 +1,6 @@
 import { CashCount } from './cash';
+// 🤖 [IA] - v1.3.0: MÓDULO 1 - Import tipos verificación ciega
+import type { VerificationBehavior } from './verification';
 
 export interface PhaseState {
   currentPhase: 1 | 2 | 3;
@@ -36,4 +38,6 @@ export interface DeliveryCalculation {
     label: string;
     value: number;
   }>;
+  // 🤖 [IA] - v1.3.0: MÓDULO 1 - Campo para tracking blind verification (triple intento)
+  verificationBehavior?: VerificationBehavior;
 }

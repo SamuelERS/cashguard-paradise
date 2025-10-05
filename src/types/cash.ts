@@ -1,3 +1,6 @@
+// 🤖 [IA] - v1.3.0: MÓDULO 1 - Import tipos verificación ciega
+import type { VerificationAttempt, VerificationBehavior } from './verification';
+
 export interface Store {
   id: string;
   name: string;
@@ -66,10 +69,52 @@ export interface CashReport {
   // Signatures
   cashierSignature: string;
   witnessSignature: string;
+
+  // 🤖 [IA] - v1.3.0: MÓDULO 1 - Verificación Blind Count con Triple Intento (NUEVO)
+  /**
+   * Comportamiento de verificación consolidado
+   *
+   * @remarks
+   * Incluye métricas agregadas + historial completo de intentos.
+   * Generado por useBlindVerification hook en Phase 2 Verification.
+   */
+  verificationBehavior?: {
+    totalAttempts: number;
+    firstAttemptSuccessRate: number;        // Porcentaje (ej: 87.5)
+    secondAttemptRecoveries: number;
+    forcedOverrides: string[];              // ["nickel", "dime"]
+    criticalInconsistencies: string[];      // ["quarter"]
+    severeInconsistencies: string[];        // ["penny"]
+    attemptsLog: VerificationAttempt[];     // Historial completo
+  };
+
+  /**
+   * Flags de alerta para renderizado condicional en UI
+   */
+  hasVerificationWarnings: boolean;         // true si secondAttemptRecoveries > 0
+  hasVerificationCritical: boolean;         // true si criticalInconsistencies > 0
+  hasVerificationSevere: boolean;           // true si severeInconsistencies > 0
+
+  /**
+   * Política ZERO TOLERANCIA: Cualquier discrepancia se reporta ($0.01+)
+   */
+  hasAnyDiscrepancy: boolean;               // true si difference !== 0
+  discrepancyAmount: number;                // Monto exacto (puede ser $0.01)
 }
 
 export interface AlertThresholds {
-  significantShortage: number; // Default: 3.00
+  // 🤖 [IA] - v1.3.0: MÓDULO 1 - Política ZERO TOLERANCIA (MODIFICADO de 3.00 → 0.01)
+  /**
+   * Umbral para faltante significativo
+   *
+   * @remarks
+   * Cambiado de estándar industria ($3-5) a política ZERO TOLERANCIA.
+   * Cualquier discrepancia ($0.01 a $10,000) se documenta y reporta.
+   *
+   * @see Plan_Vuelto_Ciego.md - Sección "Variance Tolerance Industry Standards"
+   * @default 0.01 (UN CENTAVO)
+   */
+  significantShortage: number;
   patternDetection: number;    // Default: 3 consecutive shortages
 }
 
