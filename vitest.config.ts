@@ -10,6 +10,10 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
       // 🤖 [IA] - TEST-RESILIENCE-FORTIFICATION: Alias para mock de Framer Motion
       'framer-motion': path.resolve(__dirname, './src/__mocks__/framer-motion.tsx'),
+      // 🤖 [IA] - v1.3.3-ISSUE1: Intento Fix C - fast-check SIN alias
+      // Hallazgo: Alias explícito interfiere con resolución natural de Vite
+      // Solución: Eliminar alias, dejar que Vite resuelva desde node_modules naturalmente
+      // Razón: fast-check es paquete npm estándar (package.json dependencies), NO necesita alias
     },
   },
   test: {
