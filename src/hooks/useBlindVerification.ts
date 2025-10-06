@@ -101,8 +101,16 @@ export function analyzeThirdAttempt(attempts: [number, number, number]): ThirdAt
   const [attempt1, attempt2, attempt3] = attempts;
 
   // 🤖 [IA] - v1.3.0: Pattern matching - 2 de 3 intentos coinciden
-  if (attempt1 === attempt3 && attempt1 !== attempt2) {
-    // Pattern [A, A, B] o [A, B, A]
+  if (attempt1 === attempt2 && attempt1 !== attempt3) {
+    // Pattern [A, A, B] - Intentos 1 y 2 coinciden
+    return {
+      acceptedValue: attempt1,
+      severity: 'critical_inconsistent',
+      reason: `Intentos 1 y 2 coinciden (${attempt1}). Intento 3 fue erróneo (${attempt3}).`,
+      attempts: [attempt1, attempt2, attempt3]
+    };
+  } else if (attempt1 === attempt3 && attempt1 !== attempt2) {
+    // Pattern [A, B, A] - Intentos 1 y 3 coinciden
     return {
       acceptedValue: attempt1,
       severity: 'critical_inconsistent',
@@ -110,7 +118,7 @@ export function analyzeThirdAttempt(attempts: [number, number, number]): ThirdAt
       attempts: [attempt1, attempt2, attempt3]
     };
   } else if (attempt2 === attempt3 && attempt2 !== attempt1) {
-    // Pattern [A, B, B]
+    // Pattern [A, B, B] - Intentos 2 y 3 coinciden
     return {
       acceptedValue: attempt2,
       severity: 'critical_inconsistent',
@@ -118,12 +126,12 @@ export function analyzeThirdAttempt(attempts: [number, number, number]): ThirdAt
       attempts: [attempt1, attempt2, attempt3]
     };
   } else {
-    // 🤖 [IA] - v1.3.0: Pattern [A, B, C] - 3 intentos totalmente diferentes (MUY GRAVE)
+    // 🤖 [IA] - v1.3.0: Pattern [A, B, C] - 3 intentos totalmente inconsistentes (MUY GRAVE)
     // Acepta último intento por defecto, pero severidad CRÍTICA SEVERE
     return {
       acceptedValue: attempt3,
       severity: 'critical_severe',
-      reason: `3 intentos totalmente diferentes (${attempt1}, ${attempt2}, ${attempt3}). Reporte crítico a gerencia obligatorio.`,
+      reason: `3 intentos totalmente inconsistentes (${attempt1}, ${attempt2}, ${attempt3}). Reporte crítico a gerencia obligatorio.`,
       attempts: [attempt1, attempt2, attempt3]
     };
   }

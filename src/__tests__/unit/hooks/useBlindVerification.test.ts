@@ -328,7 +328,7 @@ describe('useBlindVerification - ESCENARIO 3: Triple Intento + Análisis', () =>
 
     expect(result.acceptedValue).toBe(15); // Acepta último intento por defecto
     expect(result.severity).toBe('critical_severe');
-    expect(result.reason).toContain('3 intentos totalmente diferentes');
+    expect(result.reason).toContain('3 intentos totalmente inconsistentes');
     expect(result.reason).toContain('Reporte crítico');
     expect(result.attempts).toEqual([8, 12, 15]);
   });

@@ -17,6 +17,10 @@ import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { DeliveryCalculation } from '@/types/phases';
 import { formatCurrency, calculateCashTotal } from '@/utils/calculations';
 import { useTimingConfig } from '@/hooks/useTimingConfig'; // 🤖 [IA] - Hook de timing unificado v1.0.22
+// 🤖 [IA] - v1.3.0: MÓDULO 4 - Integración blind verification system
+import { useBlindVerification } from '@/hooks/useBlindVerification';
+import { BlindVerificationModal } from '@/components/verification/BlindVerificationModal';
+import type { VerificationAttempt, ThirdAttemptResult } from '@/types/verification';
 
 interface Phase2VerificationSectionProps {
   deliveryCalculation: DeliveryCalculation;
@@ -63,13 +67,62 @@ export function Phase2VerificationSection({
   const [inputValue, setInputValue] = useState('');
   const [showBackConfirmation, setShowBackConfirmation] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  
+
+  // 🤖 [IA] - v1.3.0: MÓDULO 4 - Estados para blind verification
+  const [modalState, setModalState] = useState<{
+    isOpen: boolean;
+    type: 'incorrect' | 'force-same' | 'require-third' | 'third-result';
+    stepLabel: string;
+    thirdAttemptAnalysis?: ThirdAttemptResult;
+  }>({
+    isOpen: false,
+    type: 'incorrect',
+    stepLabel: '',
+    thirdAttemptAnalysis: undefined
+  });
+  const [attemptHistory, setAttemptHistory] = useState<Map<string, VerificationAttempt[]>>(new Map());
+
   const { createTimeoutWithCleanup } = useTimingConfig(); // 🤖 [IA] - Usar timing unificado v1.0.22
   const { verificationSteps, denominationsToKeep } = deliveryCalculation;
+
+  // 🤖 [IA] - v1.3.0: MÓDULO 4 - Hook de blind verification
+  const { validateAttempt, handleVerificationFlow } = useBlindVerification(denominationsToKeep);
   const currentStep = verificationSteps[currentStepIndex];
   const isLastStep = currentStepIndex === verificationSteps.length - 1;
   const allStepsCompleted = verificationSteps.every(step => completedSteps[step.key]);
   const expectedTotal = calculateCashTotal(denominationsToKeep);
+
+  // 🤖 [IA] - v1.3.0: MÓDULO 4 - Helper functions para attemptHistory
+  const getAttemptCount = (stepKey: string): number => {
+    return attemptHistory.get(stepKey)?.length || 0;
+  };
+
+  const recordAttempt = (stepKey: string, inputValue: number, expectedValue: number) => {
+    const attemptCount = getAttemptCount(stepKey);
+    const attempt = validateAttempt(
+      stepKey as keyof typeof denominationsToKeep,
+      attemptCount + 1,
+      inputValue,
+      expectedValue
+    );
+
+    setAttemptHistory(prev => {
+      const newHistory = new Map(prev);
+      const existing = newHistory.get(stepKey) || [];
+      newHistory.set(stepKey, [...existing, attempt]);
+      return newHistory;
+    });
+
+    return attempt;
+  };
+
+  const clearAttemptHistory = (stepKey: string) => {
+    setAttemptHistory(prev => {
+      const newHistory = new Map(prev);
+      newHistory.delete(stepKey);
+      return newHistory;
+    });
+  };
 
   // Auto-advance to next incomplete step
   useEffect(() => {
@@ -96,35 +149,136 @@ export function Phase2VerificationSection({
     }
   }, [allStepsCompleted, verificationSteps.length, onSectionComplete, createTimeoutWithCleanup]);
 
+  // 🤖 [IA] - v1.3.0: MÓDULO 4 - handleConfirmStep con lógica triple intento
   const handleConfirmStep = () => {
     if (!currentStep) return;
 
     const inputNum = parseInt(inputValue) || 0;
+    const stepLabel = getDenominationDescription(currentStep.key, currentStep.label);
+    const attemptCount = getAttemptCount(currentStep.key);
+
+    // ✅ CASO 1: Valor correcto
     if (inputNum === currentStep.quantity) {
-      onStepComplete(currentStep.key);
-      // 🤖 [IA] - v1.2.24: No limpiar input inmediatamente para evitar re-render
-      // El siguiente campo limpiará su propio valor
+      if (attemptCount === 0) {
+        // Primer intento correcto - ZERO fricción (flujo original)
+        clearAttemptHistory(currentStep.key);
+        onStepComplete(currentStep.key);
 
-      // 🤖 [IA] - v1.2.11: Vibración haptica si está disponible
-      if ('vibrate' in navigator) {
-        navigator.vibrate(50);
+        // Vibración haptica si está disponible
+        if ('vibrate' in navigator) {
+          navigator.vibrate(50);
+        }
+
+        // Move to next step
+        if (!isLastStep) {
+          const nextIndex = currentStepIndex + 1;
+          setCurrentStepIndex(nextIndex);
+        }
+
+        // Mantener focus inmediatamente
+        if (inputRef.current) {
+          inputRef.current.focus();
+        }
+
+        // Limpiar input
+        requestAnimationFrame(() => {
+          setInputValue('');
+        });
+      } else if (attemptCount >= 1) {
+        // Segundo+ intento correcto - Mostrar modal success + delay
+        recordAttempt(currentStep.key, inputNum, currentStep.quantity); // Registrar correcto
+
+        setModalState({
+          isOpen: true,
+          type: 'incorrect', // Reutilizamos tipo 'incorrect' con mensaje custom
+          stepLabel,
+          thirdAttemptAnalysis: undefined
+        });
+
+        // Auto-cerrar después de 2 segundos y avanzar
+        const cleanup = createTimeoutWithCleanup(() => {
+          setModalState(prev => ({ ...prev, isOpen: false }));
+          clearAttemptHistory(currentStep.key);
+          onStepComplete(currentStep.key);
+
+          if ('vibrate' in navigator) {
+            navigator.vibrate(50);
+          }
+
+          if (!isLastStep) {
+            const nextIndex = currentStepIndex + 1;
+            setCurrentStepIndex(nextIndex);
+          }
+
+          if (inputRef.current) {
+            inputRef.current.focus();
+          }
+
+          requestAnimationFrame(() => {
+            setInputValue('');
+          });
+        }, 'transition', 'second_attempt_success', 2000);
+
+        return cleanup;
       }
+      return;
+    }
 
-      // Move to next step
-      if (!isLastStep) {
-        const nextIndex = currentStepIndex + 1;
-        setCurrentStepIndex(nextIndex);
-      }
+    // ❌ CASO 2: Valor incorrecto - REGISTRAR intento
+    const newAttempt = recordAttempt(currentStep.key, inputNum, currentStep.quantity);
 
-      // 🤖 [IA] - v1.2.24: Mantener focus inmediatamente como en GuidedFieldView
-      if (inputRef.current) {
-        inputRef.current.focus();
-      }
-
-      // 🚨 FIX v1.3.1: requestAnimationFrame es más adecuado que setTimeout para UI
-      requestAnimationFrame(() => {
-        setInputValue('');
+    if (attemptCount === 0) {
+      // Primer intento incorrecto
+      setModalState({
+        isOpen: true,
+        type: 'incorrect',
+        stepLabel,
+        thirdAttemptAnalysis: undefined
       });
+    } else if (attemptCount === 1) {
+      // Segundo intento incorrecto
+      const attempts = attemptHistory.get(currentStep.key) || [];
+      const firstAttemptValue = attempts[0]?.inputValue;
+
+      if (inputNum === firstAttemptValue) {
+        // ESCENARIO 2a: Dos intentos iguales incorrectos → force override
+        setModalState({
+          isOpen: true,
+          type: 'force-same',
+          stepLabel,
+          thirdAttemptAnalysis: undefined
+        });
+      } else {
+        // ESCENARIO 2b: Dos intentos diferentes → require third
+        setModalState({
+          isOpen: true,
+          type: 'require-third',
+          stepLabel,
+          thirdAttemptAnalysis: undefined
+        });
+      }
+    } else if (attemptCount >= 2) {
+      // ESCENARIO 3: Tercer intento → analyze pattern
+      // 🤖 [IA] - v1.3.0: MÓDULO 4 - FIX: Construir array con intentos previos + nuevo intento
+      const previousAttempts = attemptHistory.get(currentStep.key) || [];
+      const allAttempts = [...previousAttempts, newAttempt];
+
+      // Solo procesar si tenemos exactamente 3 intentos
+      if (allAttempts.length === 3) {
+        const flowResult = handleVerificationFlow(
+          currentStep.key as keyof typeof denominationsToKeep,
+          allAttempts
+        );
+
+        if (flowResult.thirdAttemptResult) {
+          setModalState({
+            isOpen: true,
+            type: 'third-result',
+            stepLabel,
+            thirdAttemptAnalysis: flowResult.thirdAttemptResult
+          });
+        }
+      }
     }
   };
 
@@ -136,6 +290,84 @@ export function Phase2VerificationSection({
         handleConfirmStep();
       }
     }
+  };
+
+  // 🤖 [IA] - v1.3.0: MÓDULO 4 - Callbacks para BlindVerificationModal
+  const handleRetry = () => {
+    // Cerrar modal y limpiar input para reintentar
+    setModalState(prev => ({ ...prev, isOpen: false }));
+    setInputValue('');
+
+    // Mantener focus en input para próximo intento
+    const cleanup = createTimeoutWithCleanup(() => {
+      inputRef.current?.focus();
+    }, 'focus', 'retry_focus', 100);
+
+    return cleanup;
+  };
+
+  const handleForce = () => {
+    if (!currentStep) return;
+
+    // Cerrar modal
+    setModalState(prev => ({ ...prev, isOpen: false }));
+
+    // Limpiar historial (valor forzado aceptado)
+    clearAttemptHistory(currentStep.key);
+
+    // Marcar paso completado con valor forzado
+    onStepComplete(currentStep.key);
+
+    // Vibración haptic
+    if ('vibrate' in navigator) {
+      navigator.vibrate([50, 100, 50]); // Pattern diferente para indicar override
+    }
+
+    // Avanzar a siguiente step
+    if (!isLastStep) {
+      const nextIndex = currentStepIndex + 1;
+      setCurrentStepIndex(nextIndex);
+    }
+
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+
+    requestAnimationFrame(() => {
+      setInputValue('');
+    });
+  };
+
+  const handleAcceptThird = () => {
+    if (!currentStep) return;
+
+    // Cerrar modal
+    setModalState(prev => ({ ...prev, isOpen: false }));
+
+    // Limpiar historial (tercer intento aceptado)
+    clearAttemptHistory(currentStep.key);
+
+    // Marcar paso completado con valor del tercer intento analizado
+    onStepComplete(currentStep.key);
+
+    // Vibración haptic pattern crítico
+    if ('vibrate' in navigator) {
+      navigator.vibrate([100, 50, 100, 50, 100]); // Pattern severo para alerta crítica
+    }
+
+    // Avanzar a siguiente step
+    if (!isLastStep) {
+      const nextIndex = currentStepIndex + 1;
+      setCurrentStepIndex(nextIndex);
+    }
+
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+
+    requestAnimationFrame(() => {
+      setInputValue('');
+    });
   };
 
   // 🤖 [IA] - v1.2.24: Función para mostrar modal de confirmación al retroceder
@@ -445,7 +677,7 @@ export function Phase2VerificationSection({
                 </div>
                 <ConstructiveActionButton
                   onClick={handleConfirmStep}
-                  disabled={parseInt(inputValue) !== currentStep.quantity}
+                  disabled={!inputValue}  // 🤖 [IA] - v1.3.0: MÓDULO 4 - Permitir valores incorrectos para blind verification
                   onTouchStart={(e) => e.preventDefault()}
                   aria-label="Confirmar cantidad"
                   className="btn-guided-confirm"
@@ -535,6 +767,17 @@ export function Phase2VerificationSection({
         cancelText="Continuar aquí"
         onConfirm={handleConfirmedPrevious}
         onCancel={() => setShowBackConfirmation(false)}
+      />
+
+      {/* 🤖 [IA] - v1.3.0: MÓDULO 4 - BlindVerificationModal para triple intento */}
+      <BlindVerificationModal
+        isOpen={modalState.isOpen}
+        type={modalState.type}
+        stepLabel={modalState.stepLabel}
+        onRetry={handleRetry}
+        onForce={handleForce}
+        onAcceptThird={handleAcceptThird}
+        thirdAttemptAnalysis={modalState.thirdAttemptAnalysis}
       />
     </motion.div>
   );
