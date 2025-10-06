@@ -159,68 +159,39 @@ export function Phase2VerificationSection({
 
     // ✅ CASO 1: Valor correcto
     if (inputNum === currentStep.quantity) {
-      if (attemptCount === 0) {
-        // Primer intento correcto - ZERO fricción (flujo original)
-        clearAttemptHistory(currentStep.key);
-        onStepComplete(currentStep.key);
+      // 🤖 [IA] - v1.3.5c: UNIFICADO primer y segundo intento correcto
+      // Justificación: ZERO fricción para intentos correctos (Plan_Vuelto_Ciego.md línea 159)
+      // Comportamiento: Avance inmediato sin modal, igual que primer intento
 
-        // Vibración haptica si está disponible
-        if ('vibrate' in navigator) {
-          navigator.vibrate(50);
-        }
-
-        // Move to next step
-        if (!isLastStep) {
-          const nextIndex = currentStepIndex + 1;
-          setCurrentStepIndex(nextIndex);
-        }
-
-        // Mantener focus inmediatamente
-        if (inputRef.current) {
-          inputRef.current.focus();
-        }
-
-        // Limpiar input
-        requestAnimationFrame(() => {
-          setInputValue('');
-        });
-      } else if (attemptCount >= 1) {
-        // Segundo+ intento correcto - Mostrar modal success + delay
-        recordAttempt(currentStep.key, inputNum, currentStep.quantity); // Registrar correcto
-
-        setModalState({
-          isOpen: true,
-          type: 'incorrect', // Reutilizamos tipo 'incorrect' con mensaje custom
-          stepLabel,
-          thirdAttemptAnalysis: undefined
-        });
-
-        // Auto-cerrar después de 2 segundos y avanzar
-        const cleanup = createTimeoutWithCleanup(() => {
-          setModalState(prev => ({ ...prev, isOpen: false }));
-          clearAttemptHistory(currentStep.key);
-          onStepComplete(currentStep.key);
-
-          if ('vibrate' in navigator) {
-            navigator.vibrate(50);
-          }
-
-          if (!isLastStep) {
-            const nextIndex = currentStepIndex + 1;
-            setCurrentStepIndex(nextIndex);
-          }
-
-          if (inputRef.current) {
-            inputRef.current.focus();
-          }
-
-          requestAnimationFrame(() => {
-            setInputValue('');
-          });
-        }, 'transition', 'second_attempt_success', 2000);
-
-        return cleanup;
+      // Registrar intento correcto si es segundo+ intento (para reporte)
+      if (attemptCount >= 1) {
+        recordAttempt(currentStep.key, inputNum, currentStep.quantity);
       }
+
+      clearAttemptHistory(currentStep.key);
+      onStepComplete(currentStep.key);
+
+      // Vibración haptica si está disponible
+      if ('vibrate' in navigator) {
+        navigator.vibrate(50);
+      }
+
+      // Avanzar a siguiente denominación
+      if (!isLastStep) {
+        const nextIndex = currentStepIndex + 1;
+        setCurrentStepIndex(nextIndex);
+      }
+
+      // Mantener focus inmediatamente
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+
+      // Limpiar input
+      requestAnimationFrame(() => {
+        setInputValue('');
+      });
+
       return;
     }
 

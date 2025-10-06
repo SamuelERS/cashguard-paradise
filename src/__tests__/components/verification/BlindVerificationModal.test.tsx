@@ -58,9 +58,9 @@ describe('🔷 BlindVerificationModal - Grupo 1: Rendering Básico', () => {
       />
     );
 
-    expect(screen.getByText(/Cantidad Incorrecta/i)).toBeInTheDocument();
-    expect(screen.getByText(/no coincide con lo contado/i)).toBeInTheDocument();
-    expect(screen.getByText(/Monedas de 25¢/i)).toBeInTheDocument();
+    // v1.3.5b: Texto final usuario sin emojis
+    expect(screen.getByText(/Verificación necesaria/i)).toBeInTheDocument();
+    expect(screen.getByText(/Repite el conteo para confirmar la cantidad/i)).toBeInTheDocument();
   });
 
   it('1.2 - Renderiza modal con type="force-same"', () => {
@@ -140,7 +140,7 @@ describe('🔷 BlindVerificationModal - Grupo 1: Rendering Básico', () => {
 });
 
 describe('🔷 BlindVerificationModal - Grupo 2: Interacción Botones', () => {
-  it('2.1 - Botón "Reintentar" llama onRetry (type=incorrect)', async () => {
+  it('2.1 - Botón "Volver a contar" llama onRetry (type=incorrect) [v1.3.5]', async () => {
     const user = userEvent.setup();
     render(
       <BlindVerificationModal
@@ -151,7 +151,7 @@ describe('🔷 BlindVerificationModal - Grupo 2: Interacción Botones', () => {
       />
     );
 
-    const retryButton = screen.getByRole('button', { name: /Reintentar/i });
+    const retryButton = screen.getByRole('button', { name: /Volver a contar/i });
     await user.click(retryButton);
 
     // ConfirmationModal llama onRetry desde handleConfirm + desde onCancel al cerrar
@@ -231,8 +231,8 @@ describe('🔷 BlindVerificationModal - Grupo 2: Interacción Botones', () => {
     // Verificamos que botón Cancel NO existe cuando showCancel=false
     expect(screen.queryByRole('button', { name: /Cancelar/i })).not.toBeInTheDocument();
 
-    // Botón principal "Reintentar" debe estar visible
-    expect(screen.getByRole('button', { name: /Reintentar/i })).toBeInTheDocument();
+    // v1.3.5: Botón principal "Volver a contar" debe estar visible
+    expect(screen.getByRole('button', { name: /Volver a contar/i })).toBeInTheDocument();
 
     // Re-render con type="force-same"
     rerender(
@@ -287,19 +287,7 @@ describe('🔷 BlindVerificationModal - Grupo 2: Interacción Botones', () => {
 });
 
 describe('🔷 BlindVerificationModal - Grupo 3: Props Condicionales', () => {
-  it('3.1 - stepLabel se muestra en description (type=incorrect)', () => {
-    const testLabel = 'Monedas de 25¢ Quarter';
-    render(
-      <BlindVerificationModal
-        type="incorrect"
-        isOpen={true}
-        stepLabel={testLabel}
-        onRetry={mockOnRetry}
-      />
-    );
-
-    expect(screen.getByText(new RegExp(testLabel, 'i'))).toBeInTheDocument();
-  });
+  // v1.3.5b: Test 3.1 removido - nueva description NO incluye stepLabel (mensaje genérico)
 
   it('3.2 - warningText se muestra (type=force-same)', () => {
     render(
@@ -381,8 +369,8 @@ describe('🔷 BlindVerificationModal - Grupo 4: Accesibilidad WCAG 2.1', () => 
       />
     );
 
-    // Verificar título para type="incorrect"
-    expect(screen.getByText(/Cantidad Incorrecta/i)).toBeInTheDocument();
+    // v1.3.5: Verificar título para type="incorrect"
+    expect(screen.getByText(/Verificación necesaria/i)).toBeInTheDocument();
 
     // Re-render con type="require-third"
     rerender(
@@ -408,8 +396,8 @@ describe('🔷 BlindVerificationModal - Grupo 4: Accesibilidad WCAG 2.1', () => 
       />
     );
 
-    // 🤖 [IA] - v1.3.3: Botón principal "Reintentar" para type="incorrect"
-    expect(screen.getByRole('button', { name: /Reintentar/i })).toBeInTheDocument();
+    // 🤖 [IA] - v1.3.5: Botón principal "Volver a contar" para type="incorrect"
+    expect(screen.getByRole('button', { name: /Volver a contar/i })).toBeInTheDocument();
 
     // 🤖 [IA] - v1.3.3: Botón Cancel NO debe existir con showCancel=false
     expect(screen.queryByRole('button', { name: /Cancelar/i })).not.toBeInTheDocument();

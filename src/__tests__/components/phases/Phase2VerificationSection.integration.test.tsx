@@ -149,7 +149,7 @@ describe('Phase2VerificationSection - Blind Verification Integration', () => {
       );
 
       // No debe haber modal visible inicialmente
-      expect(screen.queryByText(/Cantidad Incorrecta/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/Verificación necesaria/i)).not.toBeInTheDocument();
       expect(screen.queryByText(/Segundo Intento Idéntico/i)).not.toBeInTheDocument();
     });
   });
@@ -188,7 +188,7 @@ describe('Phase2VerificationSection - Blind Verification Integration', () => {
       expect(mockOnStepComplete).toHaveBeenCalledWith('quarter');
 
       // No debe mostrar modal
-      expect(screen.queryByText(/Cantidad Incorrecta/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/Verificación necesaria/i)).not.toBeInTheDocument();
 
       // Debe haber llamado vibrate
       expect(navigator.vibrate).toHaveBeenCalledWith(50);
@@ -256,9 +256,9 @@ describe('Phase2VerificationSection - Blind Verification Integration', () => {
       const confirmButton = screen.getByRole('button', { name: /Confirmar cantidad/i });
       await user.click(confirmButton);
 
-      // Debe mostrar modal "Cantidad Incorrecta"
+      // Debe mostrar modal "Verificación necesaria"
       await waitFor(() => {
-        expect(screen.getByText(/Cantidad Incorrecta/i)).toBeInTheDocument();
+        expect(screen.getByText(/Verificación necesaria/i)).toBeInTheDocument();
       });
 
       // NO debe marcar step completado
@@ -289,16 +289,16 @@ describe('Phase2VerificationSection - Blind Verification Integration', () => {
       await user.click(confirmButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/Cantidad Incorrecta/i)).toBeInTheDocument();
+        expect(screen.getByText(/Verificación necesaria/i)).toBeInTheDocument();
       });
 
-      // Click "Reintentar"
-      const retryButton = screen.getByRole('button', { name: /Reintentar/i });
+      // Click "Volver a contar"
+      const retryButton = screen.getByRole('button', { name: /Volver a contar/i });
       await user.click(retryButton);
 
       // Modal debe cerrarse
       await waitFor(() => {
-        expect(screen.queryByText(/Cantidad Incorrecta/i)).not.toBeInTheDocument();
+        expect(screen.queryByText(/Verificación necesaria/i)).not.toBeInTheDocument();
       });
 
       // Input debe limpiarse
@@ -331,10 +331,10 @@ describe('Phase2VerificationSection - Blind Verification Integration', () => {
       await user.click(confirmButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/Cantidad Incorrecta/i)).toBeInTheDocument();
+        expect(screen.getByText(/Verificación necesaria/i)).toBeInTheDocument();
       });
 
-      const retryButton = screen.getByRole('button', { name: /Reintentar/i });
+      const retryButton = screen.getByRole('button', { name: /Volver a contar/i });
       await user.click(retryButton);
 
       await waitFor(() => {
@@ -382,10 +382,10 @@ describe('Phase2VerificationSection - Blind Verification Integration', () => {
       await user.click(confirmButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/Cantidad Incorrecta/i)).toBeInTheDocument();
+        expect(screen.getByText(/Verificación necesaria/i)).toBeInTheDocument();
       });
 
-      const retryButton = screen.getByRole('button', { name: /Reintentar/i });
+      const retryButton = screen.getByRole('button', { name: /Volver a contar/i });
       await user.click(retryButton);
 
       await waitFor(() => {
@@ -427,10 +427,10 @@ describe('Phase2VerificationSection - Blind Verification Integration', () => {
       await user.click(confirmButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/Cantidad Incorrecta/i)).toBeInTheDocument();
+        expect(screen.getByText(/Verificación necesaria/i)).toBeInTheDocument();
       });
 
-      const retryButton = screen.getByRole('button', { name: /Reintentar/i });
+      const retryButton = screen.getByRole('button', { name: /Volver a contar/i });
       await user.click(retryButton);
 
       await waitFor(() => {
@@ -485,10 +485,10 @@ describe('Phase2VerificationSection - Blind Verification Integration', () => {
       await user.click(confirmButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/Cantidad Incorrecta/i)).toBeInTheDocument();
+        expect(screen.getByText(/Verificación necesaria/i)).toBeInTheDocument();
       });
 
-      const retryButton = screen.getByRole('button', { name: /Reintentar/i });
+      const retryButton = screen.getByRole('button', { name: /Volver a contar/i });
       await user.click(retryButton);
 
       await waitFor(() => {
@@ -547,10 +547,10 @@ describe('Phase2VerificationSection - Blind Verification Integration', () => {
       await user.click(confirmButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/Cantidad Incorrecta/i)).toBeInTheDocument();
+        expect(screen.getByText(/Verificación necesaria/i)).toBeInTheDocument();
       });
 
-      const retryButton = screen.getByRole('button', { name: /Reintentar/i });
+      const retryButton = screen.getByRole('button', { name: /Volver a contar/i });
       await user.click(retryButton);
 
       await waitFor(() => {
@@ -593,10 +593,10 @@ describe('Phase2VerificationSection - Blind Verification Integration', () => {
       await user.click(confirmButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/Cantidad Incorrecta/i)).toBeInTheDocument();
+        expect(screen.getByText(/Verificación necesaria/i)).toBeInTheDocument();
       });
 
-      const retryButton = screen.getByRole('button', { name: /Reintentar/i });
+      const retryButton = screen.getByRole('button', { name: /Volver a contar/i });
       await user.click(retryButton);
 
       await waitFor(() => {
@@ -642,10 +642,10 @@ describe('Phase2VerificationSection - Blind Verification Integration', () => {
       await user.click(confirmButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/Cantidad Incorrecta/i)).toBeInTheDocument();
+        expect(screen.getByText(/Verificación necesaria/i)).toBeInTheDocument();
       });
 
-      const retryButton = screen.getByRole('button', { name: /Reintentar/i });
+      const retryButton = screen.getByRole('button', { name: /Volver a contar/i });
       await user.click(retryButton);
 
       await waitFor(() => {
@@ -713,10 +713,10 @@ describe('Phase2VerificationSection - Blind Verification Integration', () => {
       await user.click(confirmButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/Cantidad Incorrecta/i)).toBeInTheDocument();
+        expect(screen.getByText(/Verificación necesaria/i)).toBeInTheDocument();
       });
 
-      const retryButton = screen.getByRole('button', { name: /Reintentar/i });
+      const retryButton = screen.getByRole('button', { name: /Volver a contar/i });
       await user.click(retryButton);
 
       await waitFor(() => {
@@ -776,10 +776,10 @@ describe('Phase2VerificationSection - Blind Verification Integration', () => {
       await user.click(confirmButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/Cantidad Incorrecta/i)).toBeInTheDocument();
+        expect(screen.getByText(/Verificación necesaria/i)).toBeInTheDocument();
       });
 
-      const retryButton = screen.getByRole('button', { name: /Reintentar/i });
+      const retryButton = screen.getByRole('button', { name: /Volver a contar/i });
       await user.click(retryButton);
 
       await waitFor(() => {
@@ -837,10 +837,10 @@ describe('Phase2VerificationSection - Blind Verification Integration', () => {
       await user.click(confirmButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/Cantidad Incorrecta/i)).toBeInTheDocument();
+        expect(screen.getByText(/Verificación necesaria/i)).toBeInTheDocument();
       });
 
-      const retryButton = screen.getByRole('button', { name: /Reintentar/i });
+      const retryButton = screen.getByRole('button', { name: /Volver a contar/i });
       await user.click(retryButton);
 
       await waitFor(() => {
@@ -898,10 +898,10 @@ describe('Phase2VerificationSection - Blind Verification Integration', () => {
       await user.click(confirmButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/Cantidad Incorrecta/i)).toBeInTheDocument();
+        expect(screen.getByText(/Verificación necesaria/i)).toBeInTheDocument();
       });
 
-      const retryButton = screen.getByRole('button', { name: /Reintentar/i });
+      const retryButton = screen.getByRole('button', { name: /Volver a contar/i });
       await user.click(retryButton);
 
       await waitFor(() => {
@@ -945,7 +945,7 @@ describe('Phase2VerificationSection - Blind Verification Integration', () => {
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   describe('Grupo 7: UX Simplificada v1.3.2', () => {
-    it('7.1 - Modal "incorrect" solo muestra botón "Reintentar" (sin Cancelar)', async () => {
+    it('7.1 - Modal "incorrect" solo muestra botón "Volver a contar" (sin Cancelar)', async () => {
       const user = userEvent.setup();
 
       render(
@@ -969,14 +969,14 @@ describe('Phase2VerificationSection - Blind Verification Integration', () => {
       const confirmButton = screen.getByRole('button', { name: /Confirmar cantidad/i });
       await user.click(confirmButton);
 
-      // Esperar modal "Cantidad Incorrecta"
+      // Esperar modal "Verificación necesaria"
       await waitFor(() => {
-        expect(screen.getByText(/Cantidad Incorrecta/i)).toBeInTheDocument();
+        expect(screen.getByText(/Verificación necesaria/i)).toBeInTheDocument();
       });
 
-      // 🤖 [IA] - v1.3.3: UX Simplificada - Modal solo debe tener botón "Reintentar"
+      // 🤖 [IA] - v1.3.3: UX Simplificada - Modal solo debe tener botón "Volver a contar"
       // Justificación: Sistema ya registró error, usuario DEBE recontar (no cancelar)
-      const retryButton = screen.getByRole('button', { name: /Reintentar/i });
+      const retryButton = screen.getByRole('button', { name: /Volver a contar/i });
       expect(retryButton).toBeInTheDocument();
 
       // 🤖 [IA] - v1.3.3: Botón Cancel NO debe existir con showCancel=false (FIX DEFINITIVO)
@@ -1008,10 +1008,10 @@ describe('Phase2VerificationSection - Blind Verification Integration', () => {
       await user.click(confirmButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/Cantidad Incorrecta/i)).toBeInTheDocument();
+        expect(screen.getByText(/Verificación necesaria/i)).toBeInTheDocument();
       });
 
-      const retryButton = screen.getByRole('button', { name: /Reintentar/i });
+      const retryButton = screen.getByRole('button', { name: /Volver a contar/i });
       await user.click(retryButton);
 
       await waitFor(() => {

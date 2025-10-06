@@ -78,14 +78,14 @@ function getModalContent(
 ): ModalContent {
   switch (type) {
     case 'incorrect':
-      // 🤖 [IA] - v1.3.2: Escenario 1 - Primer intento incorrecto (UX simplificada - solo "Reintentar")
-      // Justificación: Sistema ya registró error, usuario DEBE recontar (no cancelar)
+      // 🤖 [IA] - v1.3.5b: Textos finales usuario - sin emojis botón
+      // Justificación: Empleado debe entender perfectamente sin excusas "no entendí"
       return {
-        title: 'Cantidad Incorrecta',
-        description: `La cantidad ingresada para ${stepLabel} no coincide con lo contado. Por favor, vuelva a contar con mayor cuidado.`,
-        confirmText: 'Reintentar',
+        title: 'Verificación necesaria',
+        description: `Repite el conteo para confirmar la cantidad, cuenta despacio y con calma.`,
+        confirmText: 'Volver a contar',
         cancelText: '',           // Sin botón cancelar - flujo lineal claro
-        showCancel: false         // Modal con único botón "Reintentar"
+        showCancel: false         // Modal con único botón "Volver a contar"
       };
 
     case 'force-same':
