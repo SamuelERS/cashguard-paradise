@@ -20,13 +20,16 @@ import { useTimingConfig } from '@/hooks/useTimingConfig'; // 🤖 [IA] - Hook d
 // 🤖 [IA] - v1.3.0: MÓDULO 4 - Integración blind verification system
 import { useBlindVerification } from '@/hooks/useBlindVerification';
 import { BlindVerificationModal } from '@/components/verification/BlindVerificationModal';
-import type { VerificationAttempt, ThirdAttemptResult } from '@/types/verification';
+import type { VerificationAttempt, ThirdAttemptResult, VerificationBehavior, VerificationSeverity } from '@/types/verification';
+import type { CashCount } from '@/types/cash'; // 🤖 [IA] - v1.3.6: MÓDULO 1 - Para tipado buildVerificationBehavior
 
 interface Phase2VerificationSectionProps {
   deliveryCalculation: DeliveryCalculation;
   onStepComplete: (stepKey: string) => void;
   onStepUncomplete?: (stepKey: string) => void; // 🤖 [IA] - v1.2.24: Para deshacer pasos al retroceder
   onSectionComplete: () => void;
+  // 🤖 [IA] - v1.3.6: MÓDULO 1 - Callback para recolectar VerificationBehavior completo
+  onVerificationBehaviorCollected?: (behavior: VerificationBehavior) => void;
   completedSteps: Record<string, boolean>;
   // 🤖 [IA] - v1.2.24: Navigation props to match Phase 1 pattern
   onCancel: () => void;
@@ -58,6 +61,7 @@ export function Phase2VerificationSection({
   onStepComplete,
   onStepUncomplete,
   onSectionComplete,
+  onVerificationBehaviorCollected, // 🤖 [IA] - v1.3.6: MÓDULO 1 - Nueva prop callback
   completedSteps,
   onCancel,
   onPrevious,
@@ -124,6 +128,87 @@ export function Phase2VerificationSection({
     });
   };
 
+  // 🤖 [IA] - v1.3.6: MÓDULO 1 - Construir objeto VerificationBehavior desde attemptHistory
+  const buildVerificationBehavior = (): VerificationBehavior => {
+    const allAttempts: VerificationAttempt[] = [];
+    let firstAttemptSuccesses = 0;
+    let secondAttemptSuccesses = 0;
+    let thirdAttemptRequired = 0;
+    let forcedOverrides = 0;
+    let criticalInconsistencies = 0;
+    let severeInconsistencies = 0;
+    const severityFlags: VerificationSeverity[] = [];
+    const forcedOverridesDenoms: Array<keyof CashCount> = [];
+    const criticalInconsistenciesDenoms: Array<keyof CashCount> = [];
+    const severeInconsistenciesDenoms: Array<keyof CashCount> = [];
+
+    // Iterar sobre attemptHistory Map
+    attemptHistory.forEach((attempts, stepKey) => {
+      allAttempts.push(...attempts);
+
+      // Analizar patrón de intentos por denominación
+      if (attempts.length === 1) {
+        if (attempts[0].isCorrect) {
+          firstAttemptSuccesses++;
+        }
+      } else if (attempts.length === 2) {
+        // Verificar si segundo intento fue correcto
+        if (attempts[1].isCorrect) {
+          secondAttemptSuccesses++;
+          severityFlags.push('warning_retry');
+        } else {
+          // Dos intentos incorrectos
+          if (attempts[0].inputValue === attempts[1].inputValue) {
+            // Force override (dos intentos iguales incorrectos)
+            forcedOverrides++;
+            forcedOverridesDenoms.push(stepKey as keyof CashCount);
+            severityFlags.push('warning_override');
+          } else {
+            // Requerirá tercer intento
+            thirdAttemptRequired++;
+            severityFlags.push('critical_inconsistent');
+          }
+        }
+      } else if (attempts.length >= 3) {
+        // Tercer intento ejecutado
+        thirdAttemptRequired++;
+
+        // Analizar severidad del pattern
+        const [attempt1, attempt2, attempt3] = attempts;
+
+        if (
+          (attempt1.inputValue === attempt3.inputValue && attempt1.inputValue !== attempt2.inputValue) ||
+          (attempt2.inputValue === attempt3.inputValue && attempt2.inputValue !== attempt1.inputValue)
+        ) {
+          // Pattern [A,B,A] o [A,B,B] - inconsistencia crítica
+          criticalInconsistencies++;
+          criticalInconsistenciesDenoms.push(stepKey as keyof CashCount);
+          severityFlags.push('critical_inconsistent');
+        } else {
+          // Pattern [A,B,C] - severamente inconsistente
+          severeInconsistencies++;
+          severeInconsistenciesDenoms.push(stepKey as keyof CashCount);
+          severityFlags.push('critical_severe');
+        }
+      }
+    });
+
+    return {
+      totalAttempts: allAttempts.length,
+      firstAttemptSuccesses,
+      secondAttemptSuccesses,
+      thirdAttemptRequired,
+      forcedOverrides,
+      criticalInconsistencies,
+      severeInconsistencies,
+      attempts: allAttempts.sort((a, b) => a.timestamp.localeCompare(b.timestamp)), // Ordenar por timestamp
+      severityFlags,
+      forcedOverridesDenoms,
+      criticalInconsistenciesDenoms,
+      severeInconsistenciesDenoms
+    };
+  };
+
   // Auto-advance to next incomplete step
   useEffect(() => {
     const nextIncompleteIndex = verificationSteps.findIndex(step => !completedSteps[step.key]);
@@ -141,13 +226,20 @@ export function Phase2VerificationSection({
   // Complete section when all steps are done
   useEffect(() => {
     if (allStepsCompleted && verificationSteps.length > 0) {
+      // 🤖 [IA] - v1.3.6: MÓDULO 1 - Recolectar VerificationBehavior ANTES de completar
+      if (onVerificationBehaviorCollected) {
+        const behavior = buildVerificationBehavior();
+        console.log('[Phase2VerificationSection] 📊 VerificationBehavior construido:', behavior);
+        onVerificationBehaviorCollected(behavior);
+      }
+
       // 🤖 [IA] - Migrado a timing unificado para evitar race conditions v1.0.22
       const cleanup = createTimeoutWithCleanup(() => {
         onSectionComplete();
       }, 'transition', 'verification_section_complete');
       return cleanup;
     }
-  }, [allStepsCompleted, verificationSteps.length, onSectionComplete, createTimeoutWithCleanup]);
+  }, [allStepsCompleted, verificationSteps.length, onSectionComplete, onVerificationBehaviorCollected, buildVerificationBehavior, createTimeoutWithCleanup]);
 
   // 🤖 [IA] - v1.3.0: MÓDULO 4 - handleConfirmStep con lógica triple intento
   const handleConfirmStep = () => {

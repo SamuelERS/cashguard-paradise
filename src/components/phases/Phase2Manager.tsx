@@ -38,6 +38,8 @@ import { DeliveryCalculation } from '@/types/phases';
 import { formatCurrency } from '@/utils/calculations';
 import { useTimingConfig } from '@/hooks/useTimingConfig'; // 🤖 [IA] - Hook de timing unificado v1.0.22
 import { useChecklistFlow } from '@/hooks/useChecklistFlow'; // 🤖 [IA] - v1.2.26: Hook especializado para checklist
+// 🤖 [IA] - v1.3.6: MÓDULO 2 - Import VerificationBehavior type para state
+import type { VerificationBehavior } from '@/types/verification';
 
 interface Phase2ManagerProps {
   deliveryCalculation: DeliveryCalculation;
@@ -55,6 +57,8 @@ export function Phase2Manager({
   const [verificationCompleted, setVerificationCompleted] = useState(false);
   const [deliveryProgress, setDeliveryProgress] = useState<Record<string, boolean>>({});
   const [verificationProgress, setVerificationProgress] = useState<Record<string, boolean>>({});
+  // 🤖 [IA] - v1.3.6: MÓDULO 2 - State para almacenar VerificationBehavior completo
+  const [verificationBehavior, setVerificationBehavior] = useState<VerificationBehavior | undefined>(undefined);
   const [showExitConfirmation, setShowExitConfirmation] = useState(false); // 🤖 [IA] - v1.2.10: Estado para modal de confirmación
   const [showInstructionsModal, setShowInstructionsModal] = useState(true); // 🤖 [IA] - v1.2.10: Modal de instrucciones
   const [showInstructionsCancelConfirmation, setShowInstructionsCancelConfirmation] = useState(false); // 🤖 [IA] - Estado para confirmar cancelación del modal de instrucciones
@@ -113,14 +117,20 @@ export function Phase2Manager({
 
   // Complete phase 2 when verification is done
   // 🤖 [IA] - v1.2.50: Reemplazado createTimeoutWithCleanup con setTimeout nativo (mismo fix)
+  // 🤖 [IA] - v1.3.6: MÓDULO 2 - Enriquecer deliveryCalculation con verificationBehavior antes de completar
   useEffect(() => {
     if (verificationCompleted) {
       const timeoutId = setTimeout(() => {
+        // 🤖 [IA] - v1.3.6: MÓDULO 2 - Agregar verificationBehavior a deliveryCalculation ANTES de completar
+        if (verificationBehavior) {
+          deliveryCalculation.verificationBehavior = verificationBehavior;
+          console.log('[Phase2Manager] ✅ Completando Phase2 con VerificationBehavior:', deliveryCalculation.verificationBehavior);
+        }
         onPhase2Complete();
       }, 1000);
       return () => clearTimeout(timeoutId);
     }
-  }, [verificationCompleted, onPhase2Complete]); // ← SIN createTimeoutWithCleanup
+  }, [verificationCompleted, onPhase2Complete, verificationBehavior, deliveryCalculation]); // ← Agregado verificationBehavior + deliveryCalculation deps
 
   const handleDeliveryStepComplete = (stepKey: string) => {
     setDeliveryProgress(prev => ({
@@ -145,6 +155,12 @@ export function Phase2Manager({
       [stepKey]: false
     }));
   };
+
+  // 🤖 [IA] - v1.3.6: MÓDULO 2 - Handler para recolectar VerificationBehavior completo
+  const handleVerificationBehaviorCollected = useCallback((behavior: VerificationBehavior) => {
+    console.log('[Phase2Manager] 📊 VerificationBehavior recolectado:', behavior);
+    setVerificationBehavior(behavior);
+  }, []);
 
   // 🤖 [IA] - v1.2.49: handleDeliverySectionComplete memoizado con useCallback
   // RAZÓN CRÍTICA: Sin useCallback, función se recrea en cada render
@@ -243,6 +259,8 @@ export function Phase2Manager({
                   onStepComplete={handleVerificationStepComplete}
                   onStepUncomplete={handleVerificationStepUncomplete}
                   onSectionComplete={handleVerificationSectionComplete}
+                  // 🤖 [IA] - v1.3.6: MÓDULO 2 - Pasar callback para recolectar VerificationBehavior
+                  onVerificationBehaviorCollected={handleVerificationBehaviorCollected}
                   completedSteps={verificationProgress}
                   onCancel={() => setShowExitConfirmation(true)}
                   onPrevious={() => {}}

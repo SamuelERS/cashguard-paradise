@@ -18,6 +18,8 @@ import { copyToClipboard } from "@/utils/clipboard"; // 🤖 [IA] - v1.1.09
 import { toast } from "sonner"; // 🤖 [IA] - v1.1.15 - Migrated to Sonner for consistency
 import { CashCount, ElectronicPayments } from "@/types/cash";
 import { PhaseState, DeliveryCalculation } from "@/types/phases";
+// 🤖 [IA] - v1.3.6: MÓDULO 3 - Import tipos para sección anomalías
+import type { VerificationBehavior, VerificationAttempt } from "@/types/verification";
 import { getStoreById, getEmployeeById } from "@/data/paradise";
 import { DenominationsList } from "@/components/cash-calculation/DenominationsList"; // 🤖 [IA] - v1.0.0: Componente extraído
 
@@ -254,6 +256,64 @@ const CashCalculation = ({
     return details.join('\n');
   };
 
+  // 🤖 [IA] - v1.3.6: MÓDULO 3 - Helper para nombres de denominaciones en español
+  const getDenominationName = (key: keyof CashCount): string => {
+    const names: Record<keyof CashCount, string> = {
+      penny: 'Un centavo (1¢)',
+      nickel: 'Cinco centavos (5¢)',
+      dime: 'Diez centavos (10¢)',
+      quarter: 'Veinticinco centavos (25¢)',
+      dollarCoin: 'Moneda de un dólar ($1)',
+      bill1: 'Billete de un dólar ($1)',
+      bill5: 'Billete de cinco dólares ($5)',
+      bill10: 'Billete de diez dólares ($10)',
+      bill20: 'Billete de veinte dólares ($20)',
+      bill50: 'Billete de cincuenta dólares ($50)',
+      bill100: 'Billete de cien dólares ($100)'
+    };
+    return names[key] || key;
+  };
+
+  // 🤖 [IA] - v1.3.6: MÓDULO 3 - Helper para formatear timestamp ISO 8601 a HH:MM:SS
+  const formatTimestamp = (isoString: string): string => {
+    try {
+      const date = new Date(isoString);
+      return date.toLocaleTimeString('es-SV', {
+        timeZone: 'America/El_Salvador',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      });
+    } catch (error) {
+      return isoString; // Fallback si timestamp es inválido
+    }
+  };
+
+  // 🤖 [IA] - v1.3.6: MÓDULO 3 - Generar detalle de anomalías para reporte
+  const generateAnomalyDetails = (behavior: VerificationBehavior): string => {
+    // Filtrar solo intentos problemáticos:
+    // - Todos los intentos incorrectos (isCorrect: false)
+    // - Intentos correctos en 2do o 3er intento (attemptNumber > 1 y isCorrect: true)
+    const problematicAttempts = behavior.attempts.filter(
+      a => !a.isCorrect || a.attemptNumber > 1
+    );
+
+    if (problematicAttempts.length === 0) {
+      return 'Sin anomalías detectadas - Todos los intentos correctos en primer intento ✅';
+    }
+
+    return problematicAttempts.map(attempt => {
+      const denom = getDenominationName(attempt.stepKey);
+      const time = formatTimestamp(attempt.timestamp);
+      const status = attempt.isCorrect ? '✅ CORRECTO' : '❌ INCORRECTO';
+
+      return `${status} | ${denom}
+   Intento #${attempt.attemptNumber} | Hora: ${time}
+   Ingresado: ${attempt.inputValue} unidades | Esperado: ${attempt.expectedValue} unidades`;
+    }).join('\n\n');
+  };
+
   const generateCompleteReport = () => {
     validatePhaseCompletion();
 
@@ -289,13 +349,45 @@ Todo permanece en caja` :
 Entregado a Gerencia: ${formatCurrency(deliveryCalculation?.amountToDeliver || 0)}
 Dejado en Caja: $50.00
 
-${deliveryCalculation?.deliverySteps ? 
+${deliveryCalculation?.deliverySteps ?
 `DETALLE ENTREGADO:
-${deliveryCalculation.deliverySteps.map((step: DeliveryStep) => // 🤖 [IA] - v1.2.22: Fixed any type 
+${deliveryCalculation.deliverySteps.map((step: DeliveryStep) => // 🤖 [IA] - v1.2.22: Fixed any type
   `${step.label} × ${step.quantity} = ${formatCurrency(step.value * step.quantity)}`
 ).join('\n')}` : ''}
 
-VERIFICACIÓN: ✓ EXITOSA`}
+VERIFICACIÓN: ✓ EXITOSA
+
+${deliveryCalculation?.verificationBehavior ?
+`
+ANOMALÍAS DE VERIFICACIÓN
+-----------------------
+📊 Total Intentos: ${deliveryCalculation.verificationBehavior.totalAttempts}
+✅ Éxitos Primer Intento: ${deliveryCalculation.verificationBehavior.firstAttemptSuccesses}
+⚠️ Éxitos Segundo Intento: ${deliveryCalculation.verificationBehavior.secondAttemptSuccesses}
+🔴 Tercer Intento Requerido: ${deliveryCalculation.verificationBehavior.thirdAttemptRequired}
+🚨 Valores Forzados (Override): ${deliveryCalculation.verificationBehavior.forcedOverrides}
+❌ Inconsistencias Críticas: ${deliveryCalculation.verificationBehavior.criticalInconsistencies}
+⚠️ Inconsistencias Severas: ${deliveryCalculation.verificationBehavior.severeInconsistencies}
+
+${deliveryCalculation.verificationBehavior.forcedOverrides > 0 ?
+`🚨 Denominaciones con Valores Forzados:
+${deliveryCalculation.verificationBehavior.forcedOverridesDenoms.map(getDenominationName).join(', ')}
+` : ''}
+
+${deliveryCalculation.verificationBehavior.criticalInconsistencies > 0 ?
+`❌ Denominaciones con Inconsistencias Críticas:
+${deliveryCalculation.verificationBehavior.criticalInconsistenciesDenoms.map(getDenominationName).join(', ')}
+` : ''}
+
+${deliveryCalculation.verificationBehavior.severeInconsistencies > 0 ?
+`⚠️ Denominaciones con Inconsistencias Severas:
+${deliveryCalculation.verificationBehavior.severeInconsistenciesDenoms.map(getDenominationName).join(', ')}
+` : ''}
+
+DETALLE CRONOLÓGICO DE INTENTOS:
+${generateAnomalyDetails(deliveryCalculation.verificationBehavior)}
+` : ''}
+`}
 
 FASE 3 - RESULTADOS FINALES
 -----------------------
