@@ -284,9 +284,10 @@ export function Phase2VerificationSection({
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
-      // 🤖 [IA] - v1.2.24: Validar antes de confirmar
-      const inputNum = parseInt(inputValue) || 0;
-      if (inputNum === currentStep?.quantity) {
+      // 🤖 [IA] - v1.3.1: FIX CRÍTICO - Permitir Enter con valores incorrectos para blind verification
+      // La validación correcta/incorrecta la maneja handleConfirmStep internamente (líneas 153-283)
+      // Enter debe comportarse igual que botón "Confirmar" (línea 679) - sin pre-validación
+      if (inputValue.trim() !== '') {  // Solo verificar que no esté vacío
         handleConfirmStep();
       }
     }
