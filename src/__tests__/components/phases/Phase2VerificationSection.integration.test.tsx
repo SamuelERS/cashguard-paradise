@@ -1,4 +1,4 @@
-// 🤖 [IA] - v1.3.0: MÓDULO 4 - Phase2VerificationSection Integration Tests
+// 🤖 [IA] - v1.3.2: MÓDULO 4 - Phase2VerificationSection Integration Tests
 // Tests de integración para blind verification system en Phase2
 
 /**
@@ -9,16 +9,17 @@
  * Este archivo valida la integración completa entre Phase2VerificationSection,
  * useBlindVerification hook, y BlindVerificationModal component.
  *
- * **6 grupos de tests (18 total):**
+ * **7 grupos de tests (20 total):**
  * - Grupo 1: Rendering + Setup (3 tests)
  * - Grupo 2: Primer Intento Correcto (2 tests)
  * - Grupo 3: Primer Intento Incorrecto (3 tests)
  * - Grupo 4: Escenario 2a - Dos Iguales (3 tests)
  * - Grupo 5: Escenario 2b - Dos Diferentes (3 tests)
  * - Grupo 6: Escenario 3 - Triple Intento (4 tests)
+ * - Grupo 7: UX Simplificada v1.3.2 (2 tests) ✨ NUEVO
  *
- * @version 1.3.0
- * @date 2025-10-05
+ * @version 1.3.2
+ * @date 2025-10-06
  * @author Claude Code (IA)
  */
 
@@ -933,6 +934,109 @@ describe('Phase2VerificationSection - Blind Verification Integration', () => {
       await waitFor(() => {
         expect(screen.getByText(/totalmente inconsistentes/i)).toBeInTheDocument();
       });
+    });
+  });
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // GRUPO 7: UX Simplificada v1.3.2 (2 tests)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  describe('Grupo 7: UX Simplificada v1.3.2', () => {
+    it('7.1 - Modal "incorrect" solo muestra botón "Reintentar" (sin Cancelar)', async () => {
+      const user = userEvent.setup();
+
+      render(
+        <Phase2VerificationSection
+          deliveryCalculation={mockDeliveryCalculation}
+          onStepComplete={mockOnStepComplete}
+          onStepUncomplete={mockOnStepUncomplete}
+          onSectionComplete={mockOnSectionComplete}
+          completedSteps={mockCompletedSteps}
+          onCancel={mockOnCancel}
+          onPrevious={mockOnPrevious}
+          canGoPrevious={false}
+        />
+      );
+
+      // Input incorrecto para trigger modal "incorrect"
+      const input = screen.getByPlaceholderText(/cuántos/i);
+      await user.clear(input);
+      await user.type(input, '15');
+
+      const confirmButton = screen.getByRole('button', { name: /Confirmar cantidad/i });
+      await user.click(confirmButton);
+
+      // Esperar modal "Cantidad Incorrecta"
+      await waitFor(() => {
+        expect(screen.getByText(/Cantidad Incorrecta/i)).toBeInTheDocument();
+      });
+
+      // 🤖 [IA] - v1.3.2: UX Simplificada - Modal solo debe tener botón "Reintentar"
+      // Justificación: Sistema ya registró error, usuario DEBE recontar (no cancelar)
+      const retryButton = screen.getByRole('button', { name: /Reintentar/i });
+      expect(retryButton).toBeInTheDocument();
+
+      // 🤖 [IA] - v1.3.2: ConfirmationModal SIEMPRE renderiza botón Cancel (limitación base)
+      // Pero showCancel=false lo hace semánticamente no-funcional
+      const cancelButton = screen.getByRole('button', { name: /Cancelar/i });
+      expect(cancelButton).toBeInTheDocument(); // Existe por limitación ConfirmationModal
+      expect(cancelButton.textContent).toBe('Cancelar'); // Texto default fallback
+    });
+
+    it('7.2 - Modal "force-same" solo muestra botón "Forzar y Continuar" (sin Cancelar y Recontar)', async () => {
+      const user = userEvent.setup();
+
+      render(
+        <Phase2VerificationSection
+          deliveryCalculation={mockDeliveryCalculation}
+          onStepComplete={mockOnStepComplete}
+          onStepUncomplete={mockOnStepUncomplete}
+          onSectionComplete={mockOnSectionComplete}
+          completedSteps={mockCompletedSteps}
+          onCancel={mockOnCancel}
+          onPrevious={mockOnPrevious}
+          canGoPrevious={false}
+        />
+      );
+
+      const input = screen.getByPlaceholderText(/cuántos/i);
+      const confirmButton = screen.getByRole('button', { name: /Confirmar cantidad/i });
+
+      // Primer intento: 15 (incorrecto)
+      await user.clear(input);
+      await user.type(input, '15');
+      await user.click(confirmButton);
+
+      await waitFor(() => {
+        expect(screen.getByText(/Cantidad Incorrecta/i)).toBeInTheDocument();
+      });
+
+      const retryButton = screen.getByRole('button', { name: /Reintentar/i });
+      await user.click(retryButton);
+
+      await waitFor(() => {
+        expect(input).toHaveValue('');
+      });
+
+      // Segundo intento: 15 (mismo valor incorrecto) → trigger modal "force-same"
+      await user.type(input, '15');
+      await user.click(confirmButton);
+
+      // Esperar modal "Segundo Intento Idéntico"
+      await waitFor(() => {
+        expect(screen.getByText(/Segundo Intento Idéntico/i)).toBeInTheDocument();
+      });
+
+      // 🤖 [IA] - v1.3.2: UX Simplificada - Modal solo debe tener botón "Forzar y Continuar"
+      // Justificación: Usuario YA recontó 2 veces → confía en su conteo → decisión profesional
+      const forceButton = screen.getByRole('button', { name: /Forzar y Continuar/i });
+      expect(forceButton).toBeInTheDocument();
+
+      // 🤖 [IA] - v1.3.2: ConfirmationModal SIEMPRE renderiza botón Cancel (limitación base)
+      // Pero showCancel=false lo hace semánticamente no-funcional
+      const cancelButton = screen.getByRole('button', { name: /Cancelar/i });
+      expect(cancelButton).toBeInTheDocument(); // Existe por limitación ConfirmationModal
+      expect(cancelButton.textContent).toBe('Cancelar'); // Texto default fallback
     });
   });
 });

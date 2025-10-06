@@ -78,24 +78,26 @@ function getModalContent(
 ): ModalContent {
   switch (type) {
     case 'incorrect':
-      // 🤖 [IA] - v1.3.0: Escenario 1 - Primer intento incorrecto
+      // 🤖 [IA] - v1.3.2: Escenario 1 - Primer intento incorrecto (UX simplificada - solo "Reintentar")
+      // Justificación: Sistema ya registró error, usuario DEBE recontar (no cancelar)
       return {
         title: 'Cantidad Incorrecta',
         description: `La cantidad ingresada para ${stepLabel} no coincide con lo contado. Por favor, vuelva a contar con mayor cuidado.`,
         confirmText: 'Reintentar',
-        cancelText: 'Cancelar',
-        showCancel: true
+        cancelText: '',           // Sin botón cancelar - flujo lineal claro
+        showCancel: false         // Modal con único botón "Reintentar"
       };
 
     case 'force-same':
-      // 🤖 [IA] - v1.3.0: Escenario 2a - Dos intentos iguales incorrectos (override silencioso)
+      // 🤖 [IA] - v1.3.2: Escenario 2a - Dos intentos iguales incorrectos (UX simplificada - solo "Forzar")
+      // Justificación: Usuario YA recontó 2 veces → confía en su conteo → decisión profesional
       return {
         title: 'Segundo Intento Idéntico',
-        description: `Has ingresado la misma cantidad para ${stepLabel} dos veces. El sistema aceptará este valor y continuará.`,
+        description: `Has ingresado la misma cantidad para ${stepLabel} dos veces. Confías en tu conteo. El sistema aceptará este valor y continuará.`,
         warningText: '⚠️ Esta acción quedará registrada en el reporte',
         confirmText: 'Forzar y Continuar',
-        cancelText: 'Cancelar y Recontar',
-        showCancel: true
+        cancelText: '',           // Sin botón cancelar - respeto al trabajo del empleado
+        showCancel: false         // Modal con único botón "Forzar y Continuar"
       };
 
     case 'require-third':
