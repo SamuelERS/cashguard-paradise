@@ -35,11 +35,14 @@ interface ConfirmationModalProps {
   // Button labels
   confirmText: string;
   cancelText: string;
-  
+
   // Action handlers
   onConfirm: () => void;
   onCancel: () => void;
-  
+
+  // 🤖 [IA] - v1.3.3: Opcional mostrar botón Cancel (default: true para backward compatibility)
+  showCancel?: boolean;
+
   // Optional class names for styling variations
   className?: string;
 }
@@ -71,6 +74,7 @@ export function ConfirmationModal({
   cancelText,
   onConfirm,
   onCancel,
+  showCancel,
   className,
 }: ConfirmationModalProps) {
   // Manejo de apertura/cierre del modal
@@ -87,6 +91,13 @@ export function ConfirmationModal({
       {trigger && <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>}
       
       <AlertDialogContent
+        onEscapeKeyDown={(e) => {
+          // 🤖 [IA] - v1.3.4: Bloquear ESC key cuando showCancel: false (anti-fraude)
+          // Modales críticos de verificación ciega no deben permitir escape con ESC
+          if (showCancel === false) {
+            e.preventDefault();
+          }
+        }}
         style={{
           maxWidth: "min(calc(100vw - 2rem), 32rem)" // Responsive constraint only
         }}
@@ -121,7 +132,7 @@ export function ConfirmationModal({
           )}
         </AlertDialogHeader>
         
-        <AlertDialogFooter 
+        <AlertDialogFooter
           className="flex flex-col gap-[clamp(0.75rem,3vw,1rem)] mt-[clamp(0.5rem,2vw,0.75rem)] pb-[clamp(1rem,4vw,1.5rem)] sm:justify-center"
         >
           <AlertDialogAction asChild>
@@ -131,15 +142,18 @@ export function ConfirmationModal({
               {confirmText}
             </DestructiveActionButton>
           </AlertDialogAction>
-          
-          <AlertDialogCancel asChild>
-            <ConstructiveActionButton
-              onClick={onCancel}
-              className="h-[clamp(2.5rem,10vw,3rem)] px-[clamp(1rem,4vw,1.5rem)] mb-[clamp(0.5rem,2vw,0.75rem)]"
-            >
-              {cancelText}
-            </ConstructiveActionButton>
-          </AlertDialogCancel>
+
+          {/* 🤖 [IA] - v1.3.3: Renderizado condicional botón Cancel (solo si showCancel !== false) */}
+          {showCancel !== false && (
+            <AlertDialogCancel asChild>
+              <ConstructiveActionButton
+                onClick={onCancel}
+                className="h-[clamp(2.5rem,10vw,3rem)] px-[clamp(1rem,4vw,1.5rem)] mb-[clamp(0.5rem,2vw,0.75rem)]"
+              >
+                {cancelText}
+              </ConstructiveActionButton>
+            </AlertDialogCancel>
+          )}
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

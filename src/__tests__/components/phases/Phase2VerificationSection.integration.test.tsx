@@ -610,13 +610,11 @@ describe('Phase2VerificationSection - Blind Verification Integration', () => {
         expect(screen.getAllByText(/Tercer Intento Obligatorio/i)[0]).toBeInTheDocument();
       });
 
-      // Debe haber botón "Hacer Tercer Intento" pero NO "Cancelar"
+      // 🤖 [IA] - v1.3.3: Modal "require-third" solo debe tener botón "Hacer Tercer Intento"
       expect(screen.getByRole('button', { name: /Hacer Tercer Intento/i })).toBeInTheDocument();
 
-      // ConfirmationModal siempre renderiza botón Cancel, pero debe estar presente
-      // (showCancel=false es semántico, no elimina el botón físicamente)
-      const cancelButtons = screen.getAllByRole('button', { name: /Cancelar/i });
-      expect(cancelButtons.length).toBeGreaterThan(0);
+      // 🤖 [IA] - v1.3.3: Botón Cancel NO debe existir con showCancel=false (FIX DEFINITIVO)
+      expect(screen.queryByRole('button', { name: /Cancelar/i })).not.toBeInTheDocument();
     });
 
     it('5.3 - Tercer intento es obligatorio y se registra correctamente', async () => {
@@ -685,7 +683,12 @@ describe('Phase2VerificationSection - Blind Verification Integration', () => {
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   describe('Grupo 6: Escenario 3 - Triple Intento (Análisis Pattern)', () => {
-    it('6.1 - Pattern [A,A,B] acepta A (intentos 1 y 2 coinciden)', async () => {
+    // 🤖 [IA] - v1.3.3: Test 6.1 OBSOLETO con UX Simplificada v1.3.3
+    // Pattern [A,A,B] YA NO ES POSIBLE: Modal 'force-same' no tiene botón Cancel
+    // Si usuario ingresa misma cantidad 2 veces, DEBE aceptar override forzado
+    // No puede cancelar y hacer tercer intento diferente
+    // Decisión UX: Respetar juicio profesional del empleado (si recontó 2x = confía en ese valor)
+    it.skip('6.1 - [OBSOLETO v1.3.3] Pattern [A,A,B] acepta A (intentos 1 y 2 coinciden)', async () => {
       const user = userEvent.setup();
 
       render(
@@ -728,9 +731,9 @@ describe('Phase2VerificationSection - Blind Verification Integration', () => {
         expect(screen.getByText(/Segundo Intento Idéntico/i)).toBeInTheDocument();
       });
 
-      // Cancelar para forzar tercer intento (no aceptar override)
-      const cancelButton = screen.getAllByRole('button', { name: /Cancelar/i })[0];
-      await user.click(cancelButton);
+      // 🤖 [IA] - v1.3.3: LÍNEA OBSOLETA - Modal 'force-same' no tiene botón Cancel
+      // const cancelButton = screen.getAllByRole('button', { name: /Cancelar/i })[0];
+      // await user.click(cancelButton);
 
       await waitFor(() => {
         expect(screen.queryByText(/Segundo Intento Idéntico/i)).not.toBeInTheDocument();
@@ -971,16 +974,13 @@ describe('Phase2VerificationSection - Blind Verification Integration', () => {
         expect(screen.getByText(/Cantidad Incorrecta/i)).toBeInTheDocument();
       });
 
-      // 🤖 [IA] - v1.3.2: UX Simplificada - Modal solo debe tener botón "Reintentar"
+      // 🤖 [IA] - v1.3.3: UX Simplificada - Modal solo debe tener botón "Reintentar"
       // Justificación: Sistema ya registró error, usuario DEBE recontar (no cancelar)
       const retryButton = screen.getByRole('button', { name: /Reintentar/i });
       expect(retryButton).toBeInTheDocument();
 
-      // 🤖 [IA] - v1.3.2: ConfirmationModal SIEMPRE renderiza botón Cancel (limitación base)
-      // Pero showCancel=false lo hace semánticamente no-funcional
-      const cancelButton = screen.getByRole('button', { name: /Cancelar/i });
-      expect(cancelButton).toBeInTheDocument(); // Existe por limitación ConfirmationModal
-      expect(cancelButton.textContent).toBe('Cancelar'); // Texto default fallback
+      // 🤖 [IA] - v1.3.3: Botón Cancel NO debe existir con showCancel=false (FIX DEFINITIVO)
+      expect(screen.queryByRole('button', { name: /Cancelar/i })).not.toBeInTheDocument();
     });
 
     it('7.2 - Modal "force-same" solo muestra botón "Forzar y Continuar" (sin Cancelar y Recontar)', async () => {
@@ -1027,16 +1027,14 @@ describe('Phase2VerificationSection - Blind Verification Integration', () => {
         expect(screen.getByText(/Segundo Intento Idéntico/i)).toBeInTheDocument();
       });
 
-      // 🤖 [IA] - v1.3.2: UX Simplificada - Modal solo debe tener botón "Forzar y Continuar"
+      // 🤖 [IA] - v1.3.3: UX Simplificada - Modal solo debe tener botón "Forzar y Continuar"
       // Justificación: Usuario YA recontó 2 veces → confía en su conteo → decisión profesional
       const forceButton = screen.getByRole('button', { name: /Forzar y Continuar/i });
       expect(forceButton).toBeInTheDocument();
 
-      // 🤖 [IA] - v1.3.2: ConfirmationModal SIEMPRE renderiza botón Cancel (limitación base)
-      // Pero showCancel=false lo hace semánticamente no-funcional
-      const cancelButton = screen.getByRole('button', { name: /Cancelar/i });
-      expect(cancelButton).toBeInTheDocument(); // Existe por limitación ConfirmationModal
-      expect(cancelButton.textContent).toBe('Cancelar'); // Texto default fallback
+      // 🤖 [IA] - v1.3.3: Botón Cancel NO debe existir con showCancel=false (FIX DEFINITIVO)
+      // ConfirmationModal ahora soporta prop showCancel correctamente
+      expect(screen.queryByRole('button', { name: /Cancelar/i })).not.toBeInTheDocument();
     });
   });
 });

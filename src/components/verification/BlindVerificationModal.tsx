@@ -231,7 +231,7 @@ export function BlindVerificationModal({
     }
   };
 
-  // 🤖 [IA] - v1.3.0: Render con adaptación a ConfirmationModal API real
+  // 🤖 [IA] - v1.3.3: Render con adaptación a ConfirmationModal API real + showCancel prop
   // NOTA: ConfirmationModal llama onCancel() automáticamente en handleOpenChange
   // cuando modal se cierra, por lo que NO duplicamos llamadas aquí
   return (
@@ -242,7 +242,8 @@ export function BlindVerificationModal({
       description={content.description}
       warningText={content.warningText}
       confirmText={content.confirmText}
-      cancelText={content.cancelText || 'Cancelar'}
+      cancelText={content.cancelText}  // 🤖 [IA] - v1.3.3: Eliminado fallback 'Cancelar'
+      showCancel={content.showCancel}  // 🤖 [IA] - v1.3.3: CRÍTICO - Pasar prop para ocultar botón
       onConfirm={handleConfirm}
       onCancel={onRetry}  // ← Llamado automáticamente por ConfirmationModal.handleOpenChange
     />

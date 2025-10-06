@@ -217,7 +217,7 @@ describe('🔷 BlindVerificationModal - Grupo 2: Interacción Botones', () => {
     expect(mockOnAcceptThird).toHaveBeenCalledTimes(1);
   });
 
-  it('2.5 - showCancel=false en incorrect y force-same (UX simplificada v1.3.2)', () => {
+  it('2.5 - showCancel=false en incorrect y force-same (UX simplificada v1.3.3 - FIX DEFINITIVO)', () => {
     const { rerender } = render(
       <BlindVerificationModal
         type="incorrect"
@@ -227,11 +227,9 @@ describe('🔷 BlindVerificationModal - Grupo 2: Interacción Botones', () => {
       />
     );
 
-    // 🤖 [IA] - v1.3.2: ConfirmationModal SIEMPRE renderiza botón Cancel (limitación componente base)
-    // Verificamos que cancelText está vacío (modal NO cancelable semánticamente con showCancel=false)
-    const cancelButton = screen.getByRole('button', { name: /Cancelar/i });
-    expect(cancelButton).toBeInTheDocument();
-    expect(cancelButton.textContent).toBe('Cancelar'); // Fallback default
+    // 🤖 [IA] - v1.3.3: ConfirmationModal ahora soporta showCancel prop - botón Cancel NO renderizado
+    // Verificamos que botón Cancel NO existe cuando showCancel=false
+    expect(screen.queryByRole('button', { name: /Cancelar/i })).not.toBeInTheDocument();
 
     // Botón principal "Reintentar" debe estar visible
     expect(screen.getByRole('button', { name: /Reintentar/i })).toBeInTheDocument();
@@ -247,16 +245,14 @@ describe('🔷 BlindVerificationModal - Grupo 2: Interacción Botones', () => {
       />
     );
 
-    // 🤖 [IA] - v1.3.2: Mismo comportamiento para force-same (showCancel=false)
-    const cancelButton2 = screen.getByRole('button', { name: /Cancelar/i });
-    expect(cancelButton2).toBeInTheDocument();
-    expect(cancelButton2.textContent).toBe('Cancelar'); // Fallback default
+    // 🤖 [IA] - v1.3.3: Mismo comportamiento para force-same (showCancel=false)
+    expect(screen.queryByRole('button', { name: /Cancelar/i })).not.toBeInTheDocument();
 
     // Botón principal "Forzar y Continuar" debe estar visible
     expect(screen.getByRole('button', { name: /Forzar y Continuar/i })).toBeInTheDocument();
   });
 
-  it('2.6 - showCancel=false en require-third y third-result (botón vacío)', () => {
+  it('2.6 - showCancel=false en require-third y third-result (UX simplificada v1.3.3 - FIX DEFINITIVO)', () => {
     const { rerender } = render(
       <BlindVerificationModal
         type="require-third"
@@ -266,11 +262,10 @@ describe('🔷 BlindVerificationModal - Grupo 2: Interacción Botones', () => {
       />
     );
 
-    // ConfirmationModal SIEMPRE renderiza botón Cancel (limitación componente base)
-    // Verificamos que cancelText está vacío (modal NO cancelable semánticamente)
-    const cancelButton = screen.getByRole('button', { name: /Cancelar/i });
-    expect(cancelButton).toBeInTheDocument();
-    expect(cancelButton.textContent).toBe('Cancelar'); // Fallback default
+    // 🤖 [IA] - v1.3.3: ConfirmationModal ahora soporta showCancel prop - botón Cancel NO renderizado
+    // Modales NO cancelables: require-third y third-result solo muestran botón acción primaria
+    expect(screen.queryByRole('button', { name: /Cancelar/i })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Hacer Tercer Intento/i })).toBeInTheDocument();
 
     // Re-render con type="third-result"
     const analysis = createThirdAttemptResult();
@@ -285,10 +280,9 @@ describe('🔷 BlindVerificationModal - Grupo 2: Interacción Botones', () => {
       />
     );
 
-    // Mismo comportamiento para third-result
-    const cancelButton2 = screen.getByRole('button', { name: /Cancelar/i });
-    expect(cancelButton2).toBeInTheDocument();
-    expect(cancelButton2.textContent).toBe('Cancelar'); // Fallback default
+    // 🤖 [IA] - v1.3.3: Mismo comportamiento para third-result - botón Cancel NO renderizado
+    expect(screen.queryByRole('button', { name: /Cancelar/i })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Aceptar y Continuar/i })).toBeInTheDocument();
   });
 });
 
@@ -404,7 +398,7 @@ describe('🔷 BlindVerificationModal - Grupo 4: Accesibilidad WCAG 2.1', () => 
     expect(screen.getByText(/ALERTA CRÍTICA/i)).toBeInTheDocument();
   });
 
-  it('4.3 - Botones tienen labels claros y descriptivos (UX simplificada v1.3.2)', () => {
+  it('4.3 - Botones tienen labels claros y descriptivos (UX simplificada v1.3.3 - FIX DEFINITIVO)', () => {
     const { rerender } = render(
       <BlindVerificationModal
         type="incorrect"
@@ -414,11 +408,11 @@ describe('🔷 BlindVerificationModal - Grupo 4: Accesibilidad WCAG 2.1', () => 
       />
     );
 
-    // 🤖 [IA] - v1.3.2: Botón principal "Reintentar" para type="incorrect"
+    // 🤖 [IA] - v1.3.3: Botón principal "Reintentar" para type="incorrect"
     expect(screen.getByRole('button', { name: /Reintentar/i })).toBeInTheDocument();
 
-    // ConfirmationModal SIEMPRE renderiza botón Cancel (limitación componente base)
-    expect(screen.getByRole('button', { name: /Cancelar/i })).toBeInTheDocument();
+    // 🤖 [IA] - v1.3.3: Botón Cancel NO debe existir con showCancel=false
+    expect(screen.queryByRole('button', { name: /Cancelar/i })).not.toBeInTheDocument();
 
     // Re-render con type="force-same"
     rerender(
@@ -431,11 +425,11 @@ describe('🔷 BlindVerificationModal - Grupo 4: Accesibilidad WCAG 2.1', () => 
       />
     );
 
-    // 🤖 [IA] - v1.3.2: Botón principal "Forzar y Continuar" para type="force-same"
+    // 🤖 [IA] - v1.3.3: Botón principal "Forzar y Continuar" para type="force-same"
     expect(screen.getByRole('button', { name: /Forzar y Continuar/i })).toBeInTheDocument();
 
-    // ConfirmationModal SIEMPRE renderiza botón Cancel (limitación componente base)
-    expect(screen.getByRole('button', { name: /Cancelar/i })).toBeInTheDocument();
+    // 🤖 [IA] - v1.3.3: Botón Cancel NO debe existir con showCancel=false
+    expect(screen.queryByRole('button', { name: /Cancelar/i })).not.toBeInTheDocument();
   });
 });
 
