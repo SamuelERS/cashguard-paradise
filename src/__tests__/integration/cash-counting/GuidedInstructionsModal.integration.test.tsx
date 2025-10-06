@@ -44,9 +44,9 @@ describe('📋 GuidedInstructionsModal - Integration Tests', () => {
     
     it('Test 1.1: debe renderizar modal cuando isOpen es true', () => {
       render(<GuidedInstructionsModal {...defaultProps} />);
-      
+
       expect(screen.getByRole('dialog')).toBeInTheDocument();
-      expect(screen.getByText('Instrucciones del Corte de Caja')).toBeInTheDocument();
+      expect(screen.getAllByText('Instrucciones de Conteo')[0]).toBeInTheDocument();
     });
 
     it('Test 1.2: NO debe renderizar modal cuando isOpen es false', () => {
@@ -67,15 +67,15 @@ describe('📋 GuidedInstructionsModal - Integration Tests', () => {
 
     it('Test 1.4: debe renderizar heading correcto', () => {
       render(<GuidedInstructionsModal {...defaultProps} />);
-      
-      const heading = screen.getByRole('heading', { name: /instrucciones del corte de caja/i });
-      expect(heading).toBeInTheDocument();
+
+      const headings = screen.getAllByRole('heading', { name: /instrucciones de conteo/i });
+      expect(headings[0]).toBeInTheDocument();
     });
 
     it('Test 1.5: debe renderizar botones de navegación', () => {
       render(<GuidedInstructionsModal {...defaultProps} />);
-      
-      expect(screen.getByRole('button', { name: /cancelar/i })).toBeInTheDocument();
+
+      expect(screen.getByRole('button', { name: /cerrar modal/i })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: /comenzar conteo/i })).toBeInTheDocument();
     });
   });
@@ -254,23 +254,22 @@ describe('📋 GuidedInstructionsModal - Integration Tests', () => {
       expect(mockConfirm).not.toHaveBeenCalled();
     });
 
-    it('Test 3.4: botón Cancelar siempre habilitado', () => {
+    it('Test 3.4: botón X siempre habilitado', () => {
       render(<GuidedInstructionsModal {...defaultProps} />);
-      
-      const cancelButton = screen.getByRole('button', { name: /cancelar/i });
-      expect(cancelButton).not.toBeDisabled();
+
+      const xButton = screen.getByRole('button', { name: /cerrar modal/i });
+      expect(xButton).not.toBeDisabled();
     });
 
-    it('Test 3.5: click en Cancelar abre modal de confirmación', async () => {
+    it('Test 3.5: click en botón X abre modal de confirmación', async () => {
       const user = userEvent.setup();
       render(<GuidedInstructionsModal {...defaultProps} />);
-      
-      // Buscar el botón Cancelar específicamente (no el del modal de confirmación)
-      const cancelButtons = screen.getAllByRole('button', { name: /cancelar/i });
-      const mainCancelButton = cancelButtons[0]; // Primer botón Cancelar
-      
-      await user.click(mainCancelButton);
-      
+
+      // Buscar el botón X con aria-label específico
+      const xButton = screen.getByRole('button', { name: /cerrar modal/i });
+
+      await user.click(xButton);
+
       // Verificar modal de confirmación con el texto exacto del componente
       await waitFor(() => {
         expect(screen.getByText(/cancelar instrucciones/i)).toBeInTheDocument();
