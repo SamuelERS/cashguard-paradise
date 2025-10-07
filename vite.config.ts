@@ -18,9 +18,14 @@ export default defineConfig(({ mode }) => ({
       // 🤖 [IA] - v1.3.6c: Habilitar manifest en dev mode para evitar error "Syntax error at line 1, column 1"
       // Razón: VitePWA genera manifest.webmanifest solo en build por defecto
       // Solución: devOptions.enabled = true → manifest disponible en dev server
+      // 🤖 [IA] - v1.3.6d: Reducir verbose logging Workbox (183 mensajes "No route found")
+      // navigateFallback: Maneja SPA routing correctamente en dev mode
+      // suppressWarnings: Silencia logs informativos Workbox (mejora UX development)
       devOptions: {
         enabled: true,
-        type: 'module'
+        type: 'module',
+        navigateFallback: '/',
+        suppressWarnings: true
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg}'],

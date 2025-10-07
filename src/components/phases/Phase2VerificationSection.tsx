@@ -1,3 +1,6 @@
+// 🤖 [IA] - v1.3.6g: BUG FIX #1 - createTimeoutWithCleanup en deps causaba race conditions (9 errores loop)
+// 🤖 [IA] - v1.3.6f: BUG FIX CRÍTICO #3 - onSectionComplete en deps causaba loop infinito (3,357 errores)
+// 🤖 [IA] - v1.3.6e: BUG FIX CRÍTICO #3 - Loop Infinito onVerificationBehaviorCollected en deps
 // 🤖 [IA] - v1.3.6a: BUG FIX CRÍTICO - Agregado useCallback para memoización
 // 🤖 [IA] - v1.2.11 - Sistema anti-fraude: indicadores visuales sin montos
 // 🤖 [IA] - v1.1.14 - Simplificación visual y eliminación de redundancias
@@ -225,7 +228,13 @@ export function Phase2VerificationSection({
       }, 'focus', 'verification_step_focus', 100);
       return cleanup;
     }
-  }, [completedSteps, verificationSteps, currentStepIndex, createTimeoutWithCleanup]);
+  }, [completedSteps, verificationSteps, currentStepIndex]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // 🤖 [IA] - v1.3.6g: BUG FIX #1 (1/2) - createTimeoutWithCleanup removido de dependencies
+  // Root cause: Función helper solo se LLAMA (no se LEE), incluirla en deps causa re-disparos
+  // Problema: useTimingConfig puede re-crear función → ref cambia → useEffect se dispara → loop
+  // Guard condition (nextIncompleteIndex !== currentStepIndex) previene loops simples
+  // Pero createTimeoutWithCleanup inestable causa race conditions con section complete useEffect
 
   // Complete section when all steps are done
   useEffect(() => {
@@ -243,7 +252,21 @@ export function Phase2VerificationSection({
       }, 'transition', 'verification_section_complete');
       return cleanup;
     }
-  }, [allStepsCompleted, verificationSteps.length, onSectionComplete, onVerificationBehaviorCollected, buildVerificationBehavior, createTimeoutWithCleanup]);
+  }, [allStepsCompleted, verificationSteps.length, buildVerificationBehavior]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // 🤖 [IA] - v1.3.6g: BUG FIX #1 (2/2) - createTimeoutWithCleanup removido de dependencies
+  // Mismo patrón que auto-advance: helper solo se ejecuta, no necesita estar en deps
+  // Eliminación de ambos useEffects resuelve race condition que causaba 9 errores loop
+  // 🤖 [IA] - v1.3.6f: BUG FIX CRÍTICO #3 (3/3) - onSectionComplete removido de dependencies
+  // Root cause: Callback solo se LLAMA (no se LEE), incluirlo en deps causa re-disparos cuando referencia cambia
+  // Problema: handleVerificationSectionComplete se recrea → onSectionComplete nueva ref → useEffect se dispara → loop
+  // Solución: Remover de deps - callback solo se ejecuta cuando allStepsCompleted cambia (trigger único correcto)
+  // Fix complementario: handleVerificationSectionComplete ahora memoizado (línea 212 Phase2Manager)
+  // Patrón validado: Mismo fix aplicado en v1.3.6e para onVerificationBehaviorCollected (línea 249)
+  // 🤖 [IA] - v1.3.6e: BUG FIX CRÍTICO #3 - onVerificationBehaviorCollected removido de dependencies array
+  // Root cause: Callback memoizado (useCallback []) solo se LLAMA (no se LEE), incluirlo en deps causa re-disparos cuando Phase2Manager re-renderiza
+  // Problema: setVerificationBehavior (línea 169 Phase2Manager) → re-render Phase2Manager → Phase2VerificationSection re-renderiza → useEffect se dispara nuevamente → loop infinito (702 errores)
+  // Solución: Remover de deps - callback es estable y solo se ejecuta cuando allStepsCompleted cambia (trigger único correcto)
   // 🤖 [IA] - v1.3.6a: buildVerificationBehavior ahora memoizado con useCallback → referencia estable
   // Nota: Mantener en deps por ESLint exhaustive-deps, pero ya NO causa re-disparos (useCallback garantiza estabilidad)
 

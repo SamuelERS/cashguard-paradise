@@ -1,3 +1,4 @@
+// 🤖 [IA] - v1.3.6f: BUG FIX CRÍTICO #3 - handleVerificationSectionComplete sin useCallback + verificationBehavior en deps
 // 🤖 [IA] - v1.2.41AD: Doctrina D.5 Compliance - Migración a arquitectura basada en datos separada
 // 🤖 [IA] - v1.2.50: Fix definitivo setTimeout nativo - eliminado createTimeoutWithCleanup de dependencies
 // 🤖 [IA] - v1.2.49: Fix crítico referencia inestable - memoización handleDeliverySectionComplete
@@ -132,12 +133,17 @@ export function Phase2Manager({
       }, 1000);
       return () => clearTimeout(timeoutId);
     }
-  }, [verificationCompleted, onPhase2Complete, verificationBehavior]);
+  }, [verificationCompleted, onPhase2Complete]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // 🤖 [IA] - v1.3.6f: BUG FIX CRÍTICO #3 (2/3) - verificationBehavior removido de dependencies
+  // Root cause: verificationBehavior solo se LEE dentro del setTimeout callback (línea 127-128), NO se modifica
+  // Problema: Incluirlo en deps causa re-disparos cuando setVerificationBehavior ejecuta → overhead innecesario
+  // Justificación: Valor se captura en closure del setTimeout, NO necesita ser dependencia explícita
+  // Comportamiento: useEffect solo se dispara cuando verificationCompleted cambia (trigger único correcto)
   // 🤖 [IA] - v1.3.6b: BUG FIX CRÍTICO #2 - deliveryCalculation removido de dependencies array
   // Root cause: deliveryCalculation solo se MUTA (línea 126), NO se LEE en useEffect
   // Problema: Mutación cambia referencia → useEffect se re-dispara infinitamente → loop #2
   // Solución: Remover de deps - mutación es side effect válido para enriquecer objeto
-  // eslint-disable-next-line react-hooks/exhaustive-deps
 
   const handleDeliveryStepComplete = (stepKey: string) => {
     setDeliveryProgress(prev => ({
@@ -203,9 +209,14 @@ export function Phase2Manager({
     }));
   };
 
-  const handleVerificationSectionComplete = () => {
+  // 🤖 [IA] - v1.3.6f: BUG FIX CRÍTICO #3 (1/3) - Memoización handleVerificationSectionComplete
+  // Root cause: Función sin useCallback se recrea cada render → prop onSectionComplete cambia referencia
+  // Problema: Phase2VerificationSection re-renderiza → useEffect línea 232 se re-dispara (onSectionComplete en deps)
+  // → onVerificationBehaviorCollected ejecuta → setVerificationBehavior → Phase2Manager re-renderiza → LOOP (3,357 errores)
+  // Patrón idéntico: handleDeliverySectionComplete línea 177 usa useCallback por misma razón
+  const handleVerificationSectionComplete = useCallback(() => {
     setVerificationCompleted(true);
-  };
+  }, []); // ← Dependencias vacías: referencia NUNCA cambia
 
   // Skip phase 2 entirely if no amount to deliver
   useEffect(() => {
