@@ -1,3 +1,4 @@
+// 🤖 [IA] - v1.3.6M: FIX CRÍTICO - clearAttemptHistory() borraba intentos antes de buildVerificationBehavior (reporte sin datos)
 // 🤖 [IA] - v1.3.6h: BUG FIX CRÍTICO - Enter key leak modal verificación (triple defensa anti-fraude)
 // 🤖 [IA] - v1.3.6g: BUG FIX #1 - createTimeoutWithCleanup en deps causaba race conditions (9 errores loop)
 // 🤖 [IA] - v1.3.6f: BUG FIX CRÍTICO #3 - onSectionComplete en deps causaba loop infinito (3,357 errores)
@@ -439,7 +440,8 @@ export function Phase2VerificationSection({
     // Cerrar modal
     setModalState(prev => ({ ...prev, isOpen: false }));
 
-    // Limpiar historial (valor forzado aceptado)
+    // 🤖 [IA] - v1.3.6M: Limpiar historial SOLO en force override (usuario forzó mismo valor 2 veces)
+    // Justificación: Permite re-intentar si usuario se arrepiente del override antes de completar
     clearAttemptHistory(currentStep.key);
 
     // Marcar paso completado con valor forzado
@@ -471,8 +473,9 @@ export function Phase2VerificationSection({
     // Cerrar modal
     setModalState(prev => ({ ...prev, isOpen: false }));
 
-    // Limpiar historial (tercer intento aceptado)
-    clearAttemptHistory(currentStep.key);
+    // 🤖 [IA] - v1.3.6M: FIX CRÍTICO - clearAttemptHistory() removido
+    // Root cause: Borraba intentos ANTES de buildVerificationBehavior() → reporte sin datos errores
+    // Solución: Preservar attemptHistory para que reporte incluya detalles cronológicos completos ✅
 
     // Marcar paso completado con valor del tercer intento analizado
     onStepComplete(currentStep.key);

@@ -138,12 +138,22 @@ export function usePhaseManager(operationMode?: OperationMode) { // 🤖 [IA] - 
       ...prev,
       verificationCompleted: true
     }));
-    
+
     setPhaseState(prev => ({
       ...prev,
       phase2Completed: true,
       currentPhase: 3
     }));
+  }, []);
+
+  // 🤖 [IA] - v1.3.6N: Función para actualizar deliveryCalculation con verificationBehavior
+  // Root cause v1.3.6M: Mutación directa (deliveryCalculation.verificationBehavior = X) NO actualiza state
+  // Solución: Función que actualiza state correctamente → re-render con objeto nuevo → CashCalculation recibe prop actualizado
+  const updateDeliveryCalculation = useCallback((updates: Partial<DeliveryCalculation>) => {
+    setDeliveryCalculation(prev => {
+      if (!prev) return null;
+      return { ...prev, ...updates };
+    });
   }, []);
 
   const resetAllPhases = useCallback(() => {
@@ -188,6 +198,7 @@ export function usePhaseManager(operationMode?: OperationMode) { // 🤖 [IA] - 
     advancePhase2Section,
     completePhase2Delivery,
     completePhase2Verification,
+    updateDeliveryCalculation, // 🤖 [IA] - v1.3.6N: Nueva función para actualizar deliveryCalculation con verificationBehavior
     resetAllPhases,
     updateDeliveryProgress,
     updateVerificationProgress,

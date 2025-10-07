@@ -1,3 +1,4 @@
+// 🤖 [IA] - v1.3.6N: FIX DEFINITIVO STATE MUTATION - Callback actualiza usePhaseManager state correctamente
 // 🤖 [IA] - v1.3.6f: BUG FIX CRÍTICO #3 - handleVerificationSectionComplete sin useCallback + verificationBehavior en deps
 // 🤖 [IA] - v1.2.41AD: Doctrina D.5 Compliance - Migración a arquitectura basada en datos separada
 // 🤖 [IA] - v1.2.50: Fix definitivo setTimeout nativo - eliminado createTimeoutWithCleanup de dependencies
@@ -46,12 +47,14 @@ interface Phase2ManagerProps {
   deliveryCalculation: DeliveryCalculation;
   onPhase2Complete: () => void;
   onBack: () => void;
+  onDeliveryCalculationUpdate?: (updates: Partial<DeliveryCalculation>) => void; // 🤖 [IA] - v1.3.6N: Callback para actualizar deliveryCalculation.verificationBehavior en usePhaseManager
 }
 
 export function Phase2Manager({
   deliveryCalculation,
   onPhase2Complete,
-  onBack
+  onBack,
+  onDeliveryCalculationUpdate // 🤖 [IA] - v1.3.6N: Callback para actualizar state en usePhaseManager
 }: Phase2ManagerProps) {
   const [currentSection, setCurrentSection] = useState<'delivery' | 'verification'>('delivery');
   const [deliveryCompleted, setDeliveryCompleted] = useState(false);
@@ -117,20 +120,23 @@ export function Phase2Manager({
   }, [deliveryCompleted, currentSection]); // ← SIN createTimeoutWithCleanup - solo deps reales
 
   // Complete phase 2 when verification is done
-  // 🤖 [IA] - v1.3.6k: FIX CRÍTICO TIMING ISSUE - verificationBehavior en dependencies + defensive logging
-  // 🤖 [IA] - v1.2.50: Reemplazado createTimeoutWithCleanup con setTimeout nativo (mismo fix)
-  // 🤖 [IA] - v1.3.6: MÓDULO 2 - Enriquecer deliveryCalculation con verificationBehavior antes de completar
+  // 🤖 [IA] - v1.3.6N: FIX CRÍTICO STATE MUTATION - Reemplazar mutación con state update
+  // Root cause v1.3.6M: deliveryCalculation.verificationBehavior = X (mutación) NO actualiza state en usePhaseManager
+  // Problema: CashCalculation recibe prop stale (sin verificationBehavior) → reporte sin detalles errores
+  // Solución: onDeliveryCalculationUpdate({ verificationBehavior }) actualiza state correctamente
+  // 🤖 [IA] - v1.2.50: Reemplazado createTimeoutWithCleanup con setTimeout nativo
   useEffect(() => {
     if (verificationCompleted) {
       const timeoutId = setTimeout(() => {
-        // 🤖 [IA] - v1.3.6b: BUG FIX CRÍTICO #2 - Mutación deliberada (NO inmutabilidad)
-        // Justificación: Evitar cambiar signature onPhase2Complete() en múltiples archivos
-        // 🤖 [IA] - v1.3.6k: FIX CRÍTICO - Defensive logging + verificationBehavior en dependencies
-        // Root cause: verificationBehavior podía llegar tarde (timing issue) → useEffect no re-ejecutaba
-        // Solución: Agregar verificationBehavior a deps → re-ejecuta si llega después de verificationCompleted
+        // 🤖 [IA] - v1.3.6N: STATE UPDATE (NO mutation) - Actualizar usePhaseManager state via callback
         if (verificationBehavior) {
-          deliveryCalculation.verificationBehavior = verificationBehavior;
-          console.log('[Phase2Manager] ✅ Completando Phase2 con VerificationBehavior:', deliveryCalculation.verificationBehavior);
+          if (onDeliveryCalculationUpdate) {
+            onDeliveryCalculationUpdate({ verificationBehavior }); // ✅ State update correcto
+            console.log('[Phase2Manager] ✅ Actualizando deliveryCalculation.verificationBehavior:', verificationBehavior);
+          } else {
+            console.warn('[Phase2Manager] ⚠️ onDeliveryCalculationUpdate no disponible - usando fallback mutation');
+            deliveryCalculation.verificationBehavior = verificationBehavior; // Fallback (legacy)
+          }
         } else {
           console.warn('[Phase2Manager] ⚠️ verificationBehavior undefined - timing issue detectado. Reporte NO incluirá detalles verificación ciega.');
         }
@@ -138,7 +144,7 @@ export function Phase2Manager({
       }, 1000);
       return () => clearTimeout(timeoutId);
     }
-  }, [verificationCompleted, verificationBehavior, onPhase2Complete]);
+  }, [verificationCompleted, verificationBehavior, onPhase2Complete, onDeliveryCalculationUpdate]);
   // 🤖 [IA] - v1.3.6k: REVERTIDO comentario v1.3.6f - verificationBehavior DEBE estar en deps
   // Justificación: Si behavior llega tarde (async state update), useEffect debe re-ejecutar para agregarlo
   // Justificación: Valor se captura en closure del setTimeout, NO necesita ser dependencia explícita

@@ -118,6 +118,7 @@ const CashCounter = ({
     startPhase1,
     completePhase1,
     completePhase2Verification,
+    updateDeliveryCalculation, // 🤖 [IA] - v1.3.6N: Nueva función para actualizar deliveryCalculation con verificationBehavior
     resetAllPhases
   } = usePhaseManager(operationMode); // 🤖 [IA] - v1.0.82: Pass operation mode
   
@@ -673,6 +674,7 @@ const CashCounter = ({
         deliveryCalculation={deliveryCalculation}
         onPhase2Complete={handlePhase2Complete}
         onBack={handleBackToStart}
+        onDeliveryCalculationUpdate={updateDeliveryCalculation} // 🤖 [IA] - v1.3.6N: Pasar función para actualizar deliveryCalculation
       />
     );
   };
