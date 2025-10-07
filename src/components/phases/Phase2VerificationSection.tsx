@@ -1,3 +1,4 @@
+// 🤖 [IA] - v1.3.6h: BUG FIX CRÍTICO - Enter key leak modal verificación (triple defensa anti-fraude)
 // 🤖 [IA] - v1.3.6g: BUG FIX #1 - createTimeoutWithCleanup en deps causaba race conditions (9 errores loop)
 // 🤖 [IA] - v1.3.6f: BUG FIX CRÍTICO #3 - onSectionComplete en deps causaba loop infinito (3,357 errores)
 // 🤖 [IA] - v1.3.6e: BUG FIX CRÍTICO #3 - Loop Infinito onVerificationBehaviorCollected en deps
@@ -327,6 +328,12 @@ export function Phase2VerificationSection({
         stepLabel,
         thirdAttemptAnalysis: undefined
       });
+      // 🤖 [IA] - v1.3.6h: DEFENSA NIVEL 1 - Blur input para prevenir Enter leak
+      // Quitar focus del input cuando modal se abre → input NO recibe eventos teclado
+      // Previene que usuario presione Enter por error y registre mismo valor sin recontar
+      if (inputRef.current) {
+        inputRef.current.blur();
+      }
     } else if (attemptCount === 1) {
       // Segundo intento incorrecto
       const attempts = attemptHistory.get(currentStep.key) || [];
@@ -340,6 +347,10 @@ export function Phase2VerificationSection({
           stepLabel,
           thirdAttemptAnalysis: undefined
         });
+        // 🤖 [IA] - v1.3.6h: DEFENSA NIVEL 1 - Blur input para prevenir Enter leak
+        if (inputRef.current) {
+          inputRef.current.blur();
+        }
       } else {
         // ESCENARIO 2b: Dos intentos diferentes → require third
         setModalState({
@@ -348,6 +359,10 @@ export function Phase2VerificationSection({
           stepLabel,
           thirdAttemptAnalysis: undefined
         });
+        // 🤖 [IA] - v1.3.6h: DEFENSA NIVEL 1 - Blur input para prevenir Enter leak
+        if (inputRef.current) {
+          inputRef.current.blur();
+        }
       }
     } else if (attemptCount >= 2) {
       // ESCENARIO 3: Tercer intento → analyze pattern
@@ -369,12 +384,26 @@ export function Phase2VerificationSection({
             stepLabel,
             thirdAttemptAnalysis: flowResult.thirdAttemptResult
           });
+          // 🤖 [IA] - v1.3.6h: DEFENSA NIVEL 1 - Blur input para prevenir Enter leak
+          if (inputRef.current) {
+            inputRef.current.blur();
+          }
         }
       }
     }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
+    // 🤖 [IA] - v1.3.6h: DEFENSA NIVEL 2 - Guard condition anti-enter leak
+    // Previene que Enter ejecute handleConfirmStep cuando modal está abierto
+    // Escenario: Usuario presiona Enter por error mientras modal está visible
+    // Sin este guard: input ejecutaría handleConfirmStep → registraría mismo valor sin recontar
+    if (modalState.isOpen) {
+      e.preventDefault();
+      e.stopPropagation();
+      return; // ← Salir sin ejecutar handleConfirmStep
+    }
+
     if (e.key === 'Enter') {
       // 🤖 [IA] - v1.3.1: FIX CRÍTICO - Permitir Enter con valores incorrectos para blind verification
       // La validación correcta/incorrecta la maneja handleConfirmStep internamente (líneas 153-283)
