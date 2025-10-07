@@ -465,11 +465,15 @@ Firma Digital: ${dataHash}`;
       }
 
       const report = generateCompleteReport();
-      // 🤖 [IA] - v1.3.6k: FIX CRÍTICO - Preservar emojis en URL WhatsApp
-      // Problema: encodeURIComponent() convertía emojis UTF-8 a percent-encoded → renderizaba como �
-      // Solución: Solo encodear texto normal, emojis pasan directamente sin encoding
+      // 🤖 [IA] - v1.3.6L: FIX DEFINITIVO - Formato + Emojis WhatsApp
+      // Root cause v1.3.6j: Endpoint wa.me corrompe emojis encodados durante redirect → renderizaba como �
+      // Root cause v1.3.6k: Sin encoding → saltos de línea perdidos (\n no se convierte a %0A) → texto colapsado
+      // Solución definitiva: api.whatsapp.com/send + encodeURIComponent()
+      //   - Endpoint correcto: NO redirect → emojis encodados funcionan ✅
+      //   - Encoding completo: \n → %0A → saltos de línea preservados ✅
       const reportWithEmoji = `🏪 ${report}`;
-      window.open(`https://wa.me/?text=${reportWithEmoji}`, '_blank');
+      const encodedReport = encodeURIComponent(reportWithEmoji);
+      window.open(`https://api.whatsapp.com/send?text=${encodedReport}`, '_blank');
       
       toast.success("✅ Reporte generado exitosamente", {
         description: "WhatsApp se abrirá con el reporte completo"
