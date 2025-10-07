@@ -117,6 +117,7 @@ export function Phase2Manager({
   }, [deliveryCompleted, currentSection]); // ← SIN createTimeoutWithCleanup - solo deps reales
 
   // Complete phase 2 when verification is done
+  // 🤖 [IA] - v1.3.6k: FIX CRÍTICO TIMING ISSUE - verificationBehavior en dependencies + defensive logging
   // 🤖 [IA] - v1.2.50: Reemplazado createTimeoutWithCleanup con setTimeout nativo (mismo fix)
   // 🤖 [IA] - v1.3.6: MÓDULO 2 - Enriquecer deliveryCalculation con verificationBehavior antes de completar
   useEffect(() => {
@@ -124,20 +125,22 @@ export function Phase2Manager({
       const timeoutId = setTimeout(() => {
         // 🤖 [IA] - v1.3.6b: BUG FIX CRÍTICO #2 - Mutación deliberada (NO inmutabilidad)
         // Justificación: Evitar cambiar signature onPhase2Complete() en múltiples archivos
-        // 🤖 [IA] - v1.3.6: MÓDULO 2 - Agregar verificationBehavior a deliveryCalculation ANTES de completar
+        // 🤖 [IA] - v1.3.6k: FIX CRÍTICO - Defensive logging + verificationBehavior en dependencies
+        // Root cause: verificationBehavior podía llegar tarde (timing issue) → useEffect no re-ejecutaba
+        // Solución: Agregar verificationBehavior a deps → re-ejecuta si llega después de verificationCompleted
         if (verificationBehavior) {
           deliveryCalculation.verificationBehavior = verificationBehavior;
           console.log('[Phase2Manager] ✅ Completando Phase2 con VerificationBehavior:', deliveryCalculation.verificationBehavior);
+        } else {
+          console.warn('[Phase2Manager] ⚠️ verificationBehavior undefined - timing issue detectado. Reporte NO incluirá detalles verificación ciega.');
         }
         onPhase2Complete();
       }, 1000);
       return () => clearTimeout(timeoutId);
     }
-  }, [verificationCompleted, onPhase2Complete]);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  // 🤖 [IA] - v1.3.6f: BUG FIX CRÍTICO #3 (2/3) - verificationBehavior removido de dependencies
-  // Root cause: verificationBehavior solo se LEE dentro del setTimeout callback (línea 127-128), NO se modifica
-  // Problema: Incluirlo en deps causa re-disparos cuando setVerificationBehavior ejecuta → overhead innecesario
+  }, [verificationCompleted, verificationBehavior, onPhase2Complete]);
+  // 🤖 [IA] - v1.3.6k: REVERTIDO comentario v1.3.6f - verificationBehavior DEBE estar en deps
+  // Justificación: Si behavior llega tarde (async state update), useEffect debe re-ejecutar para agregarlo
   // Justificación: Valor se captura en closure del setTimeout, NO necesita ser dependencia explícita
   // Comportamiento: useEffect solo se dispara cuando verificationCompleted cambia (trigger único correcto)
   // 🤖 [IA] - v1.3.6b: BUG FIX CRÍTICO #2 - deliveryCalculation removido de dependencies array

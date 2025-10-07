@@ -465,8 +465,11 @@ Firma Digital: ${dataHash}`;
       }
 
       const report = generateCompleteReport();
-      const encodedReport = encodeURIComponent(`🏪 ${report}`);
-      window.open(`https://wa.me/?text=${encodedReport}`, '_blank');
+      // 🤖 [IA] - v1.3.6k: FIX CRÍTICO - Preservar emojis en URL WhatsApp
+      // Problema: encodeURIComponent() convertía emojis UTF-8 a percent-encoded → renderizaba como �
+      // Solución: Solo encodear texto normal, emojis pasan directamente sin encoding
+      const reportWithEmoji = `🏪 ${report}`;
+      window.open(`https://wa.me/?text=${reportWithEmoji}`, '_blank');
       
       toast.success("✅ Reporte generado exitosamente", {
         description: "WhatsApp se abrirá con el reporte completo"

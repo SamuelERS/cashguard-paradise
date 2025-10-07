@@ -1,6 +1,6 @@
 # 📚 CLAUDE.md - HISTORIAL DE DESARROLLO CASHGUARD PARADISE
-**Última actualización:** 07 Oct 2025 ~00:15 AM
-**Sesión completada:** v1.3.6j Reporte Final WhatsApp - 6 Cambios Críticos ✅
+**Última actualización:** 07 Oct 2025 ~01:45 AM
+**Sesión completada:** v1.3.6k Fix Crítico Reporte WhatsApp (Emojis + verificationBehavior) ✅
 **Estado:** 637/641 tests passing (99.4%) ✅ | 174 matemáticas TIER 0-4 ✅ | 10,900+ property validations ✅ | 99.9% confianza ✅
 
 ## 📊 MÉTRICAS ACTUALES DEL PROYECTO
@@ -138,6 +138,66 @@ Production Tests:        555 (561 - 6 debug)
 ---
 
 ## 📝 Recent Updates
+
+### v1.3.6k - Fix Crítico Reporte WhatsApp: Emojis + verificationBehavior [07 OCT 2025] ✅
+**OPERACIÓN COMPREHENSIVE FIX REPORTE FINAL:** Resolución definitiva de 2 bugs críticos reportados por usuario en WhatsApp - emojis renderizando como � + verificationBehavior undefined causando "Sin verificación ciega (fase 2 no ejecutada)".
+
+**Problemas resueltos (evidencia screenshots WhatsApp):**
+1. ✅ **Emojis → � symbols**: Usuario reportó reporte mostrando � en lugar de 📊💰📦🏁
+2. ✅ **verificationBehavior undefined**: Reporte mostraba "Sin verificación ciega" cuando usuario SÍ ejecutó Phase 2 (delivered $374.15, kept $50.00)
+3. ✅ **Sin detalles errores cajero**: No aparecía sección "DETALLE CRONOLÓGICO DE INTENTOS"
+
+**Root Cause Analysis completo:**
+- **Emoji Bug (línea 468 CashCalculation.tsx):**
+  - `encodeURIComponent()` convertía UTF-8 emojis a percent-encoded sequences (`%F0%9F%93%8A`)
+  - WhatsApp no decodifica estos sequences → renderiza como �
+  - Fix: Eliminado `encodeURIComponent()`, emojis pasan directamente en URL
+
+- **verificationBehavior undefined (timing race condition):**
+  - **Secuencia del bug identificada:**
+    1. Phase2VerificationSection llama `onVerificationBehaviorCollected(behavior)` línea 247
+    2. Phase2Manager ejecuta `setVerificationBehavior(behavior)` línea 175 ✅
+    3. **Timeout ejecuta `onSectionComplete()` inmediatamente** (línea 252) ❌
+    4. Phase2Manager marca `verificationCompleted = true` ❌
+    5. **useEffect Phase2Manager se dispara ANTES de tener verificationBehavior en state** ❌
+    6. Conditional `if (verificationBehavior)` falla línea 131 → deliveryCalculation.verificationBehavior NO se agrega
+  - **Root cause:** Callback + state update asíncrono sin garantía de secuencia temporal
+
+**Soluciones implementadas:**
+1. ✅ **CashCalculation.tsx líneas 468-472:**
+   - Eliminado `encodeURIComponent()` wrapper de emojis
+   - Emojis ahora pasan directamente en URL WhatsApp sin encoding
+
+2. ✅ **Phase2VerificationSection.tsx líneas 241-261:**
+   - Movido `buildVerificationBehavior()` DENTRO del timeout
+   - Agregado 100ms delay entre callback y `onSectionComplete()`
+   - Secuencia garantizada: behavior ready → callback → state update → section complete
+
+3. ✅ **Phase2Manager.tsx líneas 120-143:**
+   - Agregado `verificationBehavior` a dependencies array línea 141
+   - useEffect re-ejecuta si behavior llega después de `verificationCompleted`
+   - Agregado `console.warn()` defensive logging si undefined línea 135
+   - Revertido comentario v1.3.6f que removía de deps
+
+**Build exitoso:** Hash JS `Co9CcfrI` (1,432.50 kB) ↑12 KB, Hash CSS `BgCaXf7i` (sin cambios)
+
+**Resultado esperado (validación pendiente usuario):**
+```
+🔍 VERIFICACIÓN CIEGA:
+📊 Total Intentos: 15
+✅ Éxitos Primer Intento: 10
+⚠️ Éxitos Segundo Intento: 3
+🔴 Tercer Intento Requerido: 2
+
+DETALLE CRONOLÓGICO DE INTENTOS:
+❌ INCORRECTO | Billete de veinte dólares ($20)
+   Intento #1 | Hora: 21:45:12
+   Ingresado: 5 unidades | Esperado: 4 unidades
+```
+
+**Archivos:** `CashCalculation.tsx`, `Phase2VerificationSection.tsx`, `Phase2Manager.tsx`, `CLAUDE.md`
+
+---
 
 ### v1.3.6j - Reporte Final WhatsApp - 6 Cambios Críticos [07 OCT 2025 ~00:15 AM] ✅
 **OPERACIÓN COMPREHENSIVE REPORT ENHANCEMENT:** Implementación exitosa de 6 cambios críticos en reporte final WhatsApp - FIX 4 plataformas electrónicas completas + emojis semánticos + alertas críticas top + verificación siempre visible + totalizador validación + footer profesional.

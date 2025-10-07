@@ -240,16 +240,21 @@ export function Phase2VerificationSection({
   // Complete section when all steps are done
   useEffect(() => {
     if (allStepsCompleted && verificationSteps.length > 0) {
-      // 🤖 [IA] - v1.3.6: MÓDULO 1 - Recolectar VerificationBehavior ANTES de completar
-      if (onVerificationBehaviorCollected) {
-        const behavior = buildVerificationBehavior();
-        console.log('[Phase2VerificationSection] 📊 VerificationBehavior construido:', behavior);
-        onVerificationBehaviorCollected(behavior);
-      }
-
-      // 🤖 [IA] - Migrado a timing unificado para evitar race conditions v1.0.22
+      // 🤖 [IA] - v1.3.6k: FIX CRÍTICO TIMING - Construir behavior DENTRO del timeout
+      // Root cause: Callback ejecutaba inmediatamente → state update async → useEffect Phase2Manager ejecutaba ANTES de tener behavior
+      // Solución: Construir behavior dentro timeout → garantizar secuencia: behavior ready → callback → small delay → section complete
       const cleanup = createTimeoutWithCleanup(() => {
-        onSectionComplete();
+        const behavior = buildVerificationBehavior();
+
+        if (onVerificationBehaviorCollected) {
+          console.log('[Phase2VerificationSection] 📊 VerificationBehavior construido:', behavior);
+          onVerificationBehaviorCollected(behavior);
+        }
+
+        // ⏱️ Small delay para garantizar state update en Phase2Manager antes de section complete
+        setTimeout(() => {
+          onSectionComplete();
+        }, 100);
       }, 'transition', 'verification_section_complete');
       return cleanup;
     }
