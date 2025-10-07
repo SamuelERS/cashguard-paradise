@@ -323,12 +323,16 @@ describe('useBlindVerification - ESCENARIO 3: Triple Intento + Análisis', () =>
     expect(result.attempts).toEqual([5, 12, 12]);
   });
 
-  test('3.8 - analyzeThirdAttempt Pattern [A, B, C] → acceptedValue = C, severity: critical_severe (MUY GRAVE)', () => {
+  test('3.8 - analyzeThirdAttempt Pattern [A, B, C] → acceptedValue = PROMEDIO, severity: critical_severe (MUY GRAVE)', () => {
+    // 🤖 [IA] - v1.3.6i: Actualizado para lógica promedio matemático anti-manipulación
+    // ANTES v1.3.0: acceptedValue = attempt3 (último) → [8, 12, 15] esperaba 15
+    // AHORA v1.3.6i: acceptedValue = Math.round((8 + 12 + 15) / 3) = 12 (promedio redondeado)
     const result = analyzeThirdAttempt([8, 12, 15]);
 
-    expect(result.acceptedValue).toBe(15); // Acepta último intento por defecto
+    expect(result.acceptedValue).toBe(12); // Promedio: (8 + 12 + 15) / 3 = 11.67 → 12 redondeado
     expect(result.severity).toBe('critical_severe');
     expect(result.reason).toContain('3 intentos totalmente inconsistentes');
+    expect(result.reason).toContain('promedio matemático'); // Nuevo mensaje
     expect(result.reason).toContain('Reporte crítico');
     expect(result.attempts).toEqual([8, 12, 15]);
   });

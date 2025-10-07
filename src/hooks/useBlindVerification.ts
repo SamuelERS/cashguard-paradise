@@ -126,12 +126,16 @@ export function analyzeThirdAttempt(attempts: [number, number, number]): ThirdAt
       attempts: [attempt1, attempt2, attempt3]
     };
   } else {
-    // 🤖 [IA] - v1.3.0: Pattern [A, B, C] - 3 intentos totalmente inconsistentes (MUY GRAVE)
-    // Acepta último intento por defecto, pero severidad CRÍTICA SEVERE
+    // 🤖 [IA] - v1.3.6i: Pattern [A, B, C] - Acepta PROMEDIO MATEMÁTICO (anti-manipulación)
+    // ANTES v1.3.0: Aceptaba attempt3 (último) → vulnerable a fraude por orden temporal
+    // AHORA v1.3.6i: Promedio redondeado → estadísticamente justo + anti-manipulación
+    // Beneficios: Estándar industria auditorías + minimiza error + empleado NO puede forzar resultado
+    const averageValue = Math.round((attempt1 + attempt2 + attempt3) / 3);
+
     return {
-      acceptedValue: attempt3,
+      acceptedValue: averageValue,
       severity: 'critical_severe',
-      reason: `3 intentos totalmente inconsistentes (${attempt1}, ${attempt2}, ${attempt3}). Reporte crítico a gerencia obligatorio.`,
+      reason: `3 intentos totalmente inconsistentes (${attempt1}, ${attempt2}, ${attempt3}). Valor aceptado: promedio matemático (${averageValue}). Reporte crítico a gerencia obligatorio.`,
       attempts: [attempt1, attempt2, attempt3]
     };
   }
