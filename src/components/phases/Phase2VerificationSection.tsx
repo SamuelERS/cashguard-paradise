@@ -1,6 +1,7 @@
+// 🤖 [IA] - v1.3.6a: BUG FIX CRÍTICO - Agregado useCallback para memoización
 // 🤖 [IA] - v1.2.11 - Sistema anti-fraude: indicadores visuales sin montos
 // 🤖 [IA] - v1.1.14 - Simplificación visual y eliminación de redundancias
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Building, ChevronRight, Check, Banknote, Target, CheckCircle, Coins, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -128,8 +129,11 @@ export function Phase2VerificationSection({
     });
   };
 
+  // 🤖 [IA] - v1.3.6a: BUG FIX CRÍTICO - Memoizado con useCallback para evitar loop infinito useEffect
+  // Root cause: Función en dependencies array sin useCallback causaba re-disparos infinitos
+  // Solución: useCallback con única dependencia attemptHistory (referencia estable)
   // 🤖 [IA] - v1.3.6: MÓDULO 1 - Construir objeto VerificationBehavior desde attemptHistory
-  const buildVerificationBehavior = (): VerificationBehavior => {
+  const buildVerificationBehavior = useCallback((): VerificationBehavior => {
     const allAttempts: VerificationAttempt[] = [];
     let firstAttemptSuccesses = 0;
     let secondAttemptSuccesses = 0;
@@ -207,7 +211,7 @@ export function Phase2VerificationSection({
       criticalInconsistenciesDenoms,
       severeInconsistenciesDenoms
     };
-  };
+  }, [attemptHistory]); // ← v1.3.6a: Única dependencia, referencia estable
 
   // Auto-advance to next incomplete step
   useEffect(() => {
@@ -240,6 +244,8 @@ export function Phase2VerificationSection({
       return cleanup;
     }
   }, [allStepsCompleted, verificationSteps.length, onSectionComplete, onVerificationBehaviorCollected, buildVerificationBehavior, createTimeoutWithCleanup]);
+  // 🤖 [IA] - v1.3.6a: buildVerificationBehavior ahora memoizado con useCallback → referencia estable
+  // Nota: Mantener en deps por ESLint exhaustive-deps, pero ya NO causa re-disparos (useCallback garantiza estabilidad)
 
   // 🤖 [IA] - v1.3.0: MÓDULO 4 - handleConfirmStep con lógica triple intento
   const handleConfirmStep = () => {

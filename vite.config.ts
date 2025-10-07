@@ -15,6 +15,13 @@ export default defineConfig(({ mode }) => ({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      // 🤖 [IA] - v1.3.6c: Habilitar manifest en dev mode para evitar error "Syntax error at line 1, column 1"
+      // Razón: VitePWA genera manifest.webmanifest solo en build por defecto
+      // Solución: devOptions.enabled = true → manifest disponible en dev server
+      devOptions: {
+        enabled: true,
+        type: 'module'
+      },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
         maximumFileSizeToCacheInBytes: 5000000,
