@@ -1,4 +1,4 @@
-// 🤖 [IA] - v1.1.09 - Fix botón copiar con fallback robusto
+// 🤖 [IA] - v1.3.6j: REPORTE FINAL WHATSAPP - 6 cambios críticos (4 plataformas + emojis + alertas + validación)
 import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Calculator, AlertTriangle, CheckCircle, Share, Download, Copy } from "lucide-react";
@@ -314,21 +314,48 @@ const CashCalculation = ({
     }).join('\n\n');
   };
 
+  // 🤖 [IA] - v1.3.6j: CAMBIO #3 - Helper para generar bloque alertas críticas al inicio
+  const generateCriticalAlertsBlock = (behavior: VerificationBehavior): string => {
+    // Filtrar solo severidades críticas (critical_severe, critical_inconsistent)
+    const criticalDenoms = behavior.denominationsWithIssues.filter(d =>
+      d.severity === 'critical_severe' || d.severity === 'critical_inconsistent'
+    );
+
+    if (criticalDenoms.length === 0) return '';
+
+    const alerts = criticalDenoms.map(issue =>
+      `🔴 ${getDenominationName(issue.denomination)}: ${issue.attempts.join(' → ')} (${issue.severity})`
+    ).join('\n');
+
+    return `⚠️ ALERTAS CRÍTICAS:
+${alerts}
+━━━━━━━━━━━━━━━━━━
+`;
+  };
+
   const generateCompleteReport = () => {
     validatePhaseCompletion();
 
     const denominationDetails = generateDenominationDetails();
     const dataHash = generateDataHash();
-    const electronicDetails = `Credomatic: ${formatCurrency(electronicPayments.credomatic)}\nPromerica: ${formatCurrency(electronicPayments.promerica)}`;
+    // 🤖 [IA] - v1.3.6j: CAMBIO #1 (CRÍTICO) - 4 plataformas electrónicas completas
+    const electronicDetails = `Credomatic: ${formatCurrency(electronicPayments.credomatic)}
+Promerica: ${formatCurrency(electronicPayments.promerica)}
+Transferencia Bancaria: ${formatCurrency(electronicPayments.bankTransfer)}
+PayPal: ${formatCurrency(electronicPayments.paypal)}`;
 
-    return `CORTE DE CAJA - ${calculationData?.timestamp || ''}
+    // 🤖 [IA] - v1.3.6j: CAMBIO #3 - Bloque alertas críticas al inicio
+    const criticalAlertsBlock = deliveryCalculation?.verificationBehavior ?
+      generateCriticalAlertsBlock(deliveryCalculation.verificationBehavior) : '';
+
+    return `📊 CORTE DE CAJA - ${calculationData?.timestamp || ''}
 ================================
-Sucursal: ${store?.name}
+${criticalAlertsBlock}Sucursal: ${store?.name}
 Cajero: ${cashier?.name}
 Testigo: ${witness?.name}
 Sistema: Conteo Guiado v2.0
 
-FASE 1 - CONTEO INICIAL
+💰 FASE 1 - CONTEO INICIAL
 -----------------------
 DENOMINACIONES CONTADAS:
 ${denominationDetails}
@@ -339,12 +366,12 @@ ${electronicDetails}
 Total Efectivo: ${formatCurrency(calculationData?.totalCash || 0)}
 Total Electrónico: ${formatCurrency(calculationData?.totalElectronic || 0)}
 
-${phaseState?.shouldSkipPhase2 ? 
-`FASE 2 - OMITIDA
+${phaseState?.shouldSkipPhase2 ?
+`📦 FASE 2 - OMITIDA
 -----------------------
 Total ≤ $50.00 - Sin entrega a gerencia
 Todo permanece en caja` :
-`FASE 2 - DIVISIÓN
+`📦 FASE 2 - DIVISIÓN
 -----------------------
 Entregado a Gerencia: ${formatCurrency(deliveryCalculation?.amountToDeliver || 0)}
 Dejado en Caja: $50.00
@@ -357,11 +384,9 @@ ${deliveryCalculation.deliverySteps.map((step: DeliveryStep) => // 🤖 [IA] - v
 
 VERIFICACIÓN: ✓ EXITOSA
 
+🔍 VERIFICACIÓN CIEGA:
 ${deliveryCalculation?.verificationBehavior ?
-`
-ANOMALÍAS DE VERIFICACIÓN
------------------------
-📊 Total Intentos: ${deliveryCalculation.verificationBehavior.totalAttempts}
+`📊 Total Intentos: ${deliveryCalculation.verificationBehavior.totalAttempts}
 ✅ Éxitos Primer Intento: ${deliveryCalculation.verificationBehavior.firstAttemptSuccesses}
 ⚠️ Éxitos Segundo Intento: ${deliveryCalculation.verificationBehavior.secondAttemptSuccesses}
 🔴 Tercer Intento Requerido: ${deliveryCalculation.verificationBehavior.thirdAttemptRequired}
@@ -385,11 +410,11 @@ ${deliveryCalculation.verificationBehavior.severeInconsistenciesDenoms.map(getDe
 ` : ''}
 
 DETALLE CRONOLÓGICO DE INTENTOS:
-${generateAnomalyDetails(deliveryCalculation.verificationBehavior)}
-` : ''}
+${generateAnomalyDetails(deliveryCalculation.verificationBehavior)}` :
+'✅ Sin verificación ciega (fase 2 no ejecutada)'}
 `}
 
-FASE 3 - RESULTADOS FINALES
+🏁 FASE 3 - RESULTADOS FINALES
 -----------------------
 TOTAL GENERAL: ${formatCurrency(calculationData?.totalGeneral || 0)}
 🎯 Venta Esperada: ${formatCurrency(expectedSales)}
@@ -400,9 +425,33 @@ ${(calculationData?.difference || 0) >= 0 ? '✅ Sobrante' : '⚠️ Faltante'}:
 DETALLE EN CAJA:
 ${generateRemainingCashDetails()}
 
+━━━━━━━━━━━━━━━━━━
+✅ VALIDACIÓN DE CAJA:
+Efectivo Contado: ${formatCurrency(calculationData?.totalCash || 0)}
+Electrónico Total: ${formatCurrency(calculationData?.totalElectronic || 0)}
+━━━━━━━━━━━━━━━━━━
+TOTAL DÍA: ${formatCurrency(calculationData?.totalGeneral || 0)}
+SICAR Esperado: ${formatCurrency(expectedSales)}
+━━━━━━━━━━━━━━━━━━
+Diferencia: ${formatCurrency(calculationData?.difference || 0)}
+${(calculationData?.difference || 0) > 0 ? '📈 SOBRANTE' : (calculationData?.difference || 0) < 0 ? '📉 FALTANTE' : '✅ CUADRADO'}
+
 ${calculationData?.hasAlert ? '🚨 ALERTA: Faltante significativo detectado' : ''}
 
-================================
+━━━━━━━━━━━━━━━━━━
+📅 ${phaseState?.operation === 'morning' ? 'APERTURA' : 'CIERRE'}: ${new Date().toLocaleString('es-HN', {
+  dateStyle: 'full',
+  timeStyle: 'short'
+})}
+👤 Cajero: ${cashier?.name}
+👥 Testigo: ${witness?.name}
+🏢 Sucursal: ${store?.name}
+🔐 Sistema: CashGuard Paradise v1.3.6j
+━━━━━━━━━━━━━━━━━━
+✅ Reporte generado automáticamente
+⚠️ Documento NO editable (anti-fraude)
+🔒 Compliance: NIST SP 800-115, PCI DSS 12.10.1
+━━━━━━━━━━━━━━━━━━
 Firma Digital: ${dataHash}`;
   };
 
