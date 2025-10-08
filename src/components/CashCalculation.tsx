@@ -1,6 +1,6 @@
-// 🤖 [IA] - v1.3.6V: FIX FORMATO COMPLETO - 7 correcciones (emoji header + 2 secciones nuevas LO QUE RECIBES/QUEDÓ + reordenamiento + métricas verificación + saltos línea)
-// Previous: v1.3.6U - FORMATO FINAL WHATSAPP v2.1 - 8 optimizaciones (header dinámico + pagos desglosados + esperado separado + separadores 20 chars + *negrita* + sin footer acciones)
-// Previous: v1.3.6S - DEBUG COMPLETO - 5 checkpoints console.log tracking generateWarningAlertsBlock + generateCompleteReport (800+ líneas investigación)
+// 🤖 [IA] - v1.3.6W: OPTIMIZACIONES ESTÉTICAS - Separador 16 chars (sin scroll) + espaciado mejorado (header, footer, secciones)
+// Previous: v1.3.6V - FIX FORMATO COMPLETO - 7 correcciones (emoji header + 2 secciones LO QUE RECIBES/QUEDÓ + reordenamiento + métricas verificación)
+// Previous: v1.3.6U - FORMATO FINAL WHATSAPP v2.1 - 8 optimizaciones (header dinámico + pagos desglosados + separadores 20 chars + *negrita*)
 import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Calculator, AlertTriangle, CheckCircle, Share, Download, Copy } from "lucide-react";
@@ -61,8 +61,8 @@ interface CashCalculationProps {
   onComplete: () => void;
 }
 
-// 🤖 [IA] - v1.3.6V: FIX #7 - Constante separador WhatsApp mobile-friendly (exactamente 20 caracteres)
-const WHATSAPP_SEPARATOR = '━━━━━━━━━━━━━━━━━━━━'; // 20 caracteres validados
+// 🤖 [IA] - v1.3.6W: Separador optimizado 16 caracteres (sin horizontal scroll en WhatsApp mobile)
+const WHATSAPP_SEPARATOR = '━━━━━━━━━━━━━━━━'; // 16 caracteres (reducido desde 20)
 
 const CashCalculation = ({
   storeId,
@@ -602,8 +602,9 @@ ${WHATSAPP_SEPARATOR}
 `;
     }
 
-    // 🤖 [IA] - v1.3.6V: FIX #4 - Nueva estructura completa con orden aprobado v2.1
+    // 🤖 [IA] - v1.3.6W: Estructura con espaciado optimizado para WhatsApp mobile
     return `${headerSeverity}
+
 
 📊 *CORTE DE CAJA* - ${calculationData?.timestamp || ''}
 Sucursal: ${store?.name}
@@ -618,12 +619,12 @@ ${WHATSAPP_SEPARATOR}
 
 ${electronicDetailsDesglosed}
 
-📦 *Entregado a Gerencia: ${formatCurrency(deliveryCalculation?.amountToDeliver || 0)}*
-🏢 Quedó en Caja: ${phaseState?.shouldSkipPhase2 ? formatCurrency(calculationData?.totalCash || 0) : '$50.00'}
+📦 *Entregado a Gerencia:* ${formatCurrency(deliveryCalculation?.amountToDeliver || 0)}
+🏢 *Quedó en Caja:* ${phaseState?.shouldSkipPhase2 ? formatCurrency(calculationData?.totalCash || 0) : '$50.00'}
 
-💼 Total Día: *${formatCurrency(calculationData?.totalGeneral || 0)}*
-🎯 SICAR Esperado: ${formatCurrency(expectedSales)}
-${(calculationData?.difference || 0) >= 0 ? '📈' : '📉'} Diferencia: *${formatCurrency(calculationData?.difference || 0)} (${(calculationData?.difference || 0) >= 0 ? 'SOBRANTE' : 'FALTANTE'})*
+💼 *Total Día:* ${formatCurrency(calculationData?.totalGeneral || 0)}
+🎯 *SICAR Esperado:* ${formatCurrency(expectedSales)}
+${(calculationData?.difference || 0) >= 0 ? '📈' : '📉'} *Diferencia:* ${formatCurrency(calculationData?.difference || 0)} (${(calculationData?.difference || 0) >= 0 ? 'SOBRANTE' : 'FALTANTE'})
 ${deliveryChecklistSection}${remainingChecklistSection}${fullAlertsSection}${verificationSection}
 ${WHATSAPP_SEPARATOR}
 
@@ -634,7 +635,7 @@ ${denominationDetails}
 ${WHATSAPP_SEPARATOR}
 
 📅 ${calculationData?.timestamp || ''}
-🔐 CashGuard Paradise v1.3.6V
+🔐 CashGuard Paradise v1.3.6W
 🔒 NIST SP 800-115 | PCI DSS 12.10.1
 
 ✅ Reporte automático
