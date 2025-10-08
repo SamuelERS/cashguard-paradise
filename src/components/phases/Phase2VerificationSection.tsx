@@ -1,4 +1,5 @@
-// 🤖 [IA] - v1.3.6S: DEBUG COMPLETO - 6 checkpoints console.log tracking buildVerificationBehavior → denominationsWithIssues array (800+ líneas investigación)
+// 🤖 [IA] - v1.3.6T: FIX DEFINITIVO WARNINGS - clearAttemptHistory() removido de intentos correctos (patrón v1.3.6M tercer intento)
+// Previous: v1.3.6S - DEBUG COMPLETO - 6 checkpoints console.log tracking buildVerificationBehavior → denominationsWithIssues array (800+ líneas investigación)
 // Previous: v1.3.6Q - FIX ALERTAS COMPLETAS - Sistema reporta 100% errores (1, 2, 3 intentos) | 3 bugs corregidos: #1 else block primer intento, #3 severity dos intentos, #2 sección advertencias
 // 🤖 [IA] - v1.3.6M: FIX CRÍTICO - clearAttemptHistory() borraba intentos antes de buildVerificationBehavior (reporte sin datos)
 // 🤖 [IA] - v1.3.6h: BUG FIX CRÍTICO - Enter key leak modal verificación (triple defensa anti-fraude)
@@ -399,7 +400,11 @@ export function Phase2VerificationSection({
         recordAttempt(currentStep.key, inputNum, currentStep.quantity);
       }
 
-      clearAttemptHistory(currentStep.key);
+      // 🤖 [IA] - v1.3.6T: FIX CRÍTICO - clearAttemptHistory() removido (patrón v1.3.6M)
+      // Root cause: Borraba intentos 1-2 ANTES de buildVerificationBehavior() → warnings NO aparecían en reporte
+      // Solución: Preservar attemptHistory para que reporte incluya warnings completos ✅
+      // Justificación idéntica a v1.3.6M: buildVerificationBehavior() NECESITA datos, Map se limpia al unmount
+
       onStepComplete(currentStep.key);
 
       // Vibración haptica si está disponible
