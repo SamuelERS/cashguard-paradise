@@ -1,6 +1,6 @@
-// 🤖 [IA] - v1.3.6U: FORMATO FINAL WHATSAPP v2.1 - 8 optimizaciones (header dinámico + pagos desglosados + esperado separado + separadores 20 chars + *negrita* + sin footer acciones)
+// 🤖 [IA] - v1.3.6V: FIX FORMATO COMPLETO - 7 correcciones (emoji header + 2 secciones nuevas LO QUE RECIBES/QUEDÓ + reordenamiento + métricas verificación + saltos línea)
+// Previous: v1.3.6U - FORMATO FINAL WHATSAPP v2.1 - 8 optimizaciones (header dinámico + pagos desglosados + esperado separado + separadores 20 chars + *negrita* + sin footer acciones)
 // Previous: v1.3.6S - DEBUG COMPLETO - 5 checkpoints console.log tracking generateWarningAlertsBlock + generateCompleteReport (800+ líneas investigación)
-// Previous: v1.3.6j - REPORTE FINAL WHATSAPP - 6 cambios críticos (4 plataformas + emojis + alertas + validación)
 import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Calculator, AlertTriangle, CheckCircle, Share, Download, Copy } from "lucide-react";
@@ -61,8 +61,8 @@ interface CashCalculationProps {
   onComplete: () => void;
 }
 
-// 🤖 [IA] - v1.3.6U: Constante separador WhatsApp mobile-friendly (20 caracteres)
-const WHATSAPP_SEPARATOR = '━━━━━━━━━━━━━━━━━━━━━━'; // 20 caracteres
+// 🤖 [IA] - v1.3.6V: FIX #7 - Constante separador WhatsApp mobile-friendly (exactamente 20 caracteres)
+const WHATSAPP_SEPARATOR = '━━━━━━━━━━━━━━━━━━━━'; // 20 caracteres validados
 
 const CashCalculation = ({
   storeId,
@@ -362,6 +362,134 @@ ${description}`;
 ${alerts}`;
   };
 
+  // 🤖 [IA] - v1.3.6V: FIX #2 - Generar sección "LO QUE RECIBES" con checkboxes para validación física
+  const generateDeliveryChecklistSection = (): string => {
+    // Si Phase 2 no se ejecutó (≤$50), no hay entrega
+    if (phaseState?.shouldSkipPhase2) {
+      return '';
+    }
+
+    if (!deliveryCalculation?.deliverySteps || deliveryCalculation.deliverySteps.length === 0) {
+      return '';
+    }
+
+    const amountToDeliver = deliveryCalculation.amountToDeliver || 0;
+
+    // Separar billetes y monedas de deliverySteps
+    const billKeys = ['bill100', 'bill50', 'bill20', 'bill10', 'bill5', 'bill1'];
+    const coinKeys = ['dollarCoin', 'quarter', 'dime', 'nickel', 'penny'];
+
+    const bills = deliveryCalculation.deliverySteps
+      .filter((step: DeliveryStep) => billKeys.includes(step.key))
+      .map((step: DeliveryStep) => `☐ ${step.label} × ${step.quantity} = ${formatCurrency(step.value * step.quantity)}`);
+
+    const coins = deliveryCalculation.deliverySteps
+      .filter((step: DeliveryStep) => coinKeys.includes(step.key))
+      .map((step: DeliveryStep) => `☐ ${step.label} × ${step.quantity} = ${formatCurrency(step.value * step.quantity)}`);
+
+    let checklistContent = '';
+
+    if (bills.length > 0) {
+      checklistContent += `Billetes:\n${bills.join('\n')}`;
+    }
+
+    if (coins.length > 0) {
+      if (bills.length > 0) checklistContent += '\n\n';
+      checklistContent += `Monedas:\n${coins.join('\n')}`;
+    }
+
+    return `${WHATSAPP_SEPARATOR}
+
+📦 *LO QUE RECIBES (${formatCurrency(amountToDeliver)})*
+
+${checklistContent}
+
+✅ Recibido: $________
+Hora: __:__  Firma: ________
+
+`;
+  };
+
+  // 🤖 [IA] - v1.3.6V: FIX #3 - Generar sección "LO QUE QUEDÓ EN CAJA" con checkboxes
+  const generateRemainingChecklistSection = (): string => {
+    let remainingCash: CashCount;
+    let remainingAmount = 50; // Default
+
+    // Determinar qué denominaciones quedaron en caja
+    if (!phaseState?.shouldSkipPhase2 && deliveryCalculation?.denominationsToKeep) {
+      // Phase 2 ejecutado: usar denominationsToKeep
+      remainingCash = deliveryCalculation.denominationsToKeep;
+      remainingAmount = 50;
+    } else if (phaseState?.shouldSkipPhase2) {
+      // Phase 2 omitido (≤$50): todo el efectivo queda en caja
+      remainingCash = cashCount;
+      remainingAmount = calculationData?.totalCash || 0;
+    } else {
+      // Fallback: calcular $50
+      const changeResult = calculateChange50(cashCount);
+      if (!changeResult.possible || !changeResult.change) {
+        return ''; // No se puede mostrar si no hay cambio
+      }
+      remainingCash = changeResult.change as CashCount;
+      remainingAmount = 50;
+    }
+
+    // Agrupar billetes y monedas (mayor a menor)
+    const denominations = [
+      { key: 'bill100', label: '$100', value: 100.00 },
+      { key: 'bill50', label: '$50', value: 50.00 },
+      { key: 'bill20', label: '$20', value: 20.00 },
+      { key: 'bill10', label: '$10', value: 10.00 },
+      { key: 'bill5', label: '$5', value: 5.00 },
+      { key: 'bill1', label: '$1', value: 1.00 },
+      { key: 'dollarCoin', label: '$1 moneda', value: 1.00 },
+      { key: 'quarter', label: '25¢', value: 0.25 },
+      { key: 'dime', label: '10¢', value: 0.10 },
+      { key: 'nickel', label: '5¢', value: 0.05 },
+      { key: 'penny', label: '1¢', value: 0.01 }
+    ];
+
+    const billKeys = ['bill100', 'bill50', 'bill20', 'bill10', 'bill5', 'bill1'];
+    const coinKeys = ['dollarCoin', 'quarter', 'dime', 'nickel', 'penny'];
+
+    const bills = denominations
+      .filter(d => billKeys.includes(d.key) && remainingCash[d.key as keyof CashCount] > 0)
+      .map(d => {
+        const quantity = remainingCash[d.key as keyof CashCount];
+        return `☐ ${d.label} × ${quantity} = ${formatCurrency(quantity * d.value)}`;
+      });
+
+    const coins = denominations
+      .filter(d => coinKeys.includes(d.key) && remainingCash[d.key as keyof CashCount] > 0)
+      .map(d => {
+        const quantity = remainingCash[d.key as keyof CashCount];
+        return `☐ ${d.label} × ${quantity} = ${formatCurrency(quantity * d.value)}`;
+      });
+
+    let checklistContent = '';
+
+    if (bills.length > 0) {
+      checklistContent += `${bills.join('\n')}`;
+    }
+
+    if (coins.length > 0) {
+      if (bills.length > 0) checklistContent += '\n';
+      checklistContent += `${coins.join('\n')}`;
+    }
+
+    if (!checklistContent) {
+      return ''; // No hay denominaciones
+    }
+
+    return `${WHATSAPP_SEPARATOR}
+
+🏢 *LO QUE QUEDÓ EN CAJA (${formatCurrency(remainingAmount)})*
+
+${checklistContent}
+
+`;
+  };
+
   // 🤖 [IA] - v1.3.6U: CAMBIO #4 - Bloque advertencias con MISMO formato que críticas (timestamps + esperado)
   const generateWarningAlertsBlock = (behavior: VerificationBehavior): string => {
     // Filtrar solo severidades de advertencia (warning_retry, warning_override)
@@ -406,7 +534,7 @@ ${alerts}`;
     const denominationDetails = generateDenominationDetails();
     const dataHash = generateDataHash();
 
-    // 🤖 [IA] - v1.3.6U: CAMBIO #2 - Pagos electrónicos desglosados para validación por plataforma
+    // 🤖 [IA] - v1.3.6V: Pagos electrónicos desglosados
     const totalElectronic = calculationData?.totalElectronic || 0;
     const electronicDetailsDesglosed = `💳 Pagos Electrónicos: *${formatCurrency(totalElectronic)}*
    ☐ Credomatic: ${formatCurrency(electronicPayments.credomatic)}
@@ -414,31 +542,67 @@ ${alerts}`;
    ☐ Transferencia: ${formatCurrency(electronicPayments.bankTransfer)}
    ☐ PayPal: ${formatCurrency(electronicPayments.paypal)}`;
 
-    // 🤖 [IA] - v1.3.6U: CAMBIO #3 y #4 - Bloques alertas con formato optimizado
+    // 🤖 [IA] - v1.3.6V: Bloques de alertas
     const criticalAlertsBlock = deliveryCalculation?.verificationBehavior ?
       generateCriticalAlertsBlock(deliveryCalculation.verificationBehavior) : '';
     const warningAlertsBlock = deliveryCalculation?.verificationBehavior ?
       generateWarningAlertsBlock(deliveryCalculation.verificationBehavior) : '';
 
-    // 🤖 [IA] - v1.3.6U: CAMBIO #1 - Header dinámico según severidad (CRÍTICO/ADVERTENCIAS/NORMAL)
-    const criticalCount = deliveryCalculation?.verificationBehavior?.criticalInconsistencies || 0;
-    const warningCount = deliveryCalculation?.verificationBehavior?.secondAttemptSuccesses || 0;
+    // 🤖 [IA] - v1.3.6V: Header dinámico según severidad
+    const criticalCount = deliveryCalculation?.verificationBehavior?.denominationsWithIssues.filter(d =>
+      d.severity === 'critical_severe' || d.severity === 'critical_inconsistent'
+    ).length || 0;
+    const warningCount = deliveryCalculation?.verificationBehavior?.denominationsWithIssues.filter(d =>
+      d.severity === 'warning_retry' || d.severity === 'warning_override'
+    ).length || 0;
     const headerSeverity = criticalCount > 0 ?
       "🚨 *REPORTE CRÍTICO - ACCIÓN INMEDIATA*" :
       warningCount > 0 ?
       "⚠️ *REPORTE ADVERTENCIAS*" :
       "✅ *REPORTE NORMAL*";
 
-    // 🤖 [IA] - v1.3.6U: Sección completa de alertas (críticas + advertencias) con separador único
+    // 🤖 [IA] - v1.3.6V: FIX #4 - Sección de alertas con salto de línea correcto (FIX #5)
     const fullAlertsSection = (criticalAlertsBlock || warningAlertsBlock) ?
-      `${WHATSAPP_SEPARATOR}
+      `
+${WHATSAPP_SEPARATOR}
 
 ⚠️ *ALERTAS DETECTADAS*
 
 ${criticalAlertsBlock}${criticalAlertsBlock && warningAlertsBlock ? '\n\n' : ''}${warningAlertsBlock}
-
 ` : '';
 
+    // 🤖 [IA] - v1.3.6V: FIX #2 y #3 - Secciones de checklists
+    const deliveryChecklistSection = generateDeliveryChecklistSection();
+    const remainingChecklistSection = generateRemainingChecklistSection();
+
+    // 🤖 [IA] - v1.3.6V: FIX #6 - Métricas Verificación Ciega corregidas
+    let verificationSection = '';
+    if (deliveryCalculation?.verificationBehavior) {
+      const behavior = deliveryCalculation.verificationBehavior;
+      const totalDenoms = behavior.totalAttempts;
+      const firstAttemptSuccesses = behavior.firstAttemptSuccesses;
+
+      // Contar warnings y críticas desde denominationsWithIssues (más preciso)
+      const warningCountActual = behavior.denominationsWithIssues.filter(d =>
+        d.severity === 'warning_retry' || d.severity === 'warning_override'
+      ).length;
+
+      const criticalCountActual = behavior.denominationsWithIssues.filter(d =>
+        d.severity === 'critical_severe' || d.severity === 'critical_inconsistent'
+      ).length;
+
+      verificationSection = `
+${WHATSAPP_SEPARATOR}
+
+🔍 *VERIFICACIÓN CIEGA*
+
+✅ Perfectas: ${firstAttemptSuccesses}/${totalDenoms} (${Math.round((firstAttemptSuccesses / totalDenoms) * 100)}%)
+⚠️ Corregidas: ${warningCountActual}/${totalDenoms} (${Math.round((warningCountActual / totalDenoms) * 100)}%)
+🔴 Críticas: ${criticalCountActual}/${totalDenoms} (${Math.round((criticalCountActual / totalDenoms) * 100)}%)
+`;
+    }
+
+    // 🤖 [IA] - v1.3.6V: FIX #4 - Nueva estructura completa con orden aprobado v2.1
     return `${headerSeverity}
 
 📊 *CORTE DE CAJA* - ${calculationData?.timestamp || ''}
@@ -459,28 +623,18 @@ ${electronicDetailsDesglosed}
 
 💼 Total Día: *${formatCurrency(calculationData?.totalGeneral || 0)}*
 🎯 SICAR Esperado: ${formatCurrency(expectedSales)}
-${(calculationData?.difference || 0) >= 0 ? '📈' : '📉'} Diferencia: *${formatCurrency(calculationData?.difference || 0)} (${(calculationData?.difference || 0) >= 0 ? 'SOBRANTE' : 'FALTANTE'})*${fullAlertsSection}
+${(calculationData?.difference || 0) >= 0 ? '📈' : '📉'} Diferencia: *${formatCurrency(calculationData?.difference || 0)} (${(calculationData?.difference || 0) >= 0 ? 'SOBRANTE' : 'FALTANTE'})*
+${deliveryChecklistSection}${remainingChecklistSection}${fullAlertsSection}${verificationSection}
 ${WHATSAPP_SEPARATOR}
 
 💰 *CONTEO COMPLETO (${formatCurrency(calculationData?.totalCash || 0)})*
 
 ${denominationDetails}
 
-${deliveryCalculation?.verificationBehavior ?
-`
-${WHATSAPP_SEPARATOR}
-
-🔍 *VERIFICACIÓN CIEGA*
-
-✅ Perfectas: ${deliveryCalculation.verificationBehavior.firstAttemptSuccesses}/${deliveryCalculation.verificationBehavior.totalAttempts} (${Math.round((deliveryCalculation.verificationBehavior.firstAttemptSuccesses / deliveryCalculation.verificationBehavior.totalAttempts) * 100)}%)
-⚠️ Corregidas: ${deliveryCalculation.verificationBehavior.secondAttemptSuccesses}/${deliveryCalculation.verificationBehavior.totalAttempts} (${Math.round((deliveryCalculation.verificationBehavior.secondAttemptSuccesses / deliveryCalculation.verificationBehavior.totalAttempts) * 100)}%)
-🔴 Críticas: ${deliveryCalculation.verificationBehavior.criticalInconsistencies}/${deliveryCalculation.verificationBehavior.totalAttempts} (${Math.round((deliveryCalculation.verificationBehavior.criticalInconsistencies / deliveryCalculation.verificationBehavior.totalAttempts) * 100)}%)
-` : ''}
-
 ${WHATSAPP_SEPARATOR}
 
 📅 ${calculationData?.timestamp || ''}
-🔐 CashGuard Paradise v1.3.6U
+🔐 CashGuard Paradise v1.3.6V
 🔒 NIST SP 800-115 | PCI DSS 12.10.1
 
 ✅ Reporte automático
@@ -499,14 +653,10 @@ Firma Digital: ${dataHash}`;
       }
 
       const report = generateCompleteReport();
-      // 🤖 [IA] - v1.3.6L: FIX DEFINITIVO - Formato + Emojis WhatsApp
-      // Root cause v1.3.6j: Endpoint wa.me corrompe emojis encodados durante redirect → renderizaba como �
-      // Root cause v1.3.6k: Sin encoding → saltos de línea perdidos (\n no se convierte a %0A) → texto colapsado
-      // Solución definitiva: api.whatsapp.com/send + encodeURIComponent()
-      //   - Endpoint correcto: NO redirect → emojis encodados funcionan ✅
-      //   - Encoding completo: \n → %0A → saltos de línea preservados ✅
-      const reportWithEmoji = `🏪 ${report}`;
-      const encodedReport = encodeURIComponent(reportWithEmoji);
+      // 🤖 [IA] - v1.3.6V: FIX #1 - Removido emoji 🏪 extra (ya está en headerSeverity)
+      // Root cause v1.3.6U: Prefijo 🏪 causaba doble emoji en WhatsApp
+      // Solución: Reporte ya incluye header dinámico con emoji correcto según severidad
+      const encodedReport = encodeURIComponent(report);
       window.open(`https://api.whatsapp.com/send?text=${encodedReport}`, '_blank');
       
       toast.success("✅ Reporte generado exitosamente", {
