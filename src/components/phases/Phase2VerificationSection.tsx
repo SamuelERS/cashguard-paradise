@@ -1,6 +1,6 @@
-// 🤖 [IA] - v1.3.6T: FIX DEFINITIVO WARNINGS - clearAttemptHistory() removido de intentos correctos (patrón v1.3.6M tercer intento)
-// Previous: v1.3.6S - DEBUG COMPLETO - 6 checkpoints console.log tracking buildVerificationBehavior → denominationsWithIssues array (800+ líneas investigación)
-// Previous: v1.3.6Q - FIX ALERTAS COMPLETAS - Sistema reporta 100% errores (1, 2, 3 intentos) | 3 bugs corregidos: #1 else block primer intento, #3 severity dos intentos, #2 sección advertencias
+// 🤖 [IA] - v1.3.6Y: FIX CÁLCULO PERFECTAS - firstAttemptSuccesses calculado por diferencia (Total - Errores) en lugar de contar en forEach
+// Previous: v1.3.6T - FIX DEFINITIVO WARNINGS - clearAttemptHistory() removido de intentos correctos (patrón v1.3.6M tercer intento)
+// Previous: v1.3.6S - DEBUG COMPLETO - 6 checkpoints console.log tracking buildVerificationBehavior → denominationsWithIssues array
 // 🤖 [IA] - v1.3.6M: FIX CRÍTICO - clearAttemptHistory() borraba intentos antes de buildVerificationBehavior (reporte sin datos)
 // 🤖 [IA] - v1.3.6h: BUG FIX CRÍTICO - Enter key leak modal verificación (triple defensa anti-fraude)
 // 🤖 [IA] - v1.3.6g: BUG FIX #1 - createTimeoutWithCleanup en deps causaba race conditions (9 errores loop)
@@ -162,7 +162,7 @@ export function Phase2VerificationSection({
     ));
 
     const allAttempts: VerificationAttempt[] = [];
-    let firstAttemptSuccesses = 0;
+    // 🤖 [IA] - v1.3.6Y: firstAttemptSuccesses se calculará por diferencia después del forEach
     let secondAttemptSuccesses = 0;
     let thirdAttemptRequired = 0;
     let forcedOverrides = 0;
@@ -199,7 +199,7 @@ export function Phase2VerificationSection({
       // Analizar patrón de intentos por denominación
       if (attempts.length === 1) {
         if (attempts[0].isCorrect) {
-          firstAttemptSuccesses++;
+          // 🤖 [IA] - v1.3.6Y: firstAttemptSuccesses++ removido (se calcula por diferencia después)
           currentSeverity = 'success'; // ← v1.3.6P: Explícito
         } else {
           // 🤖 [IA] - v1.3.6Q: FIX BUG #1 - Primer intento incorrecto
@@ -280,13 +280,20 @@ export function Phase2VerificationSection({
       }
     });
 
+    // 🤖 [IA] - v1.3.6Y: FIX CÁLCULO PERFECTAS - Calcular por diferencia (Total - Errores)
+    // Root cause: attemptHistory solo contiene denominaciones con intentos (errores)
+    // Solución: Total denominaciones - denominaciones con issues = denominaciones perfectas
+    const totalDenominations = verificationSteps.length;
+    const firstAttemptSuccesses = totalDenominations - denominationsWithIssues.length;
+
     // 🤖 [IA] - v1.3.6S: DEBUG CHECKPOINT #5 - Estado final antes de return
     console.log('[DEBUG v1.3.6S] ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     console.log('[DEBUG v1.3.6S] 📊 buildVerificationBehavior() PRE-RETURN');
     console.log('[DEBUG v1.3.6S] 📊 Total attempts procesados:', allAttempts.length);
     console.log('[DEBUG v1.3.6S] 📊 denominationsWithIssues length:', denominationsWithIssues.length);
     console.log('[DEBUG v1.3.6S] 📊 denominationsWithIssues array completo:', JSON.stringify(denominationsWithIssues, null, 2));
-    console.log('[DEBUG v1.3.6S] 📊 firstAttemptSuccesses:', firstAttemptSuccesses);
+    console.log('[DEBUG v1.3.6Y] 📊 totalDenominations:', totalDenominations);
+    console.log('[DEBUG v1.3.6Y] 📊 firstAttemptSuccesses (calculado):', firstAttemptSuccesses, '=', totalDenominations, '-', denominationsWithIssues.length);
     console.log('[DEBUG v1.3.6S] 📊 secondAttemptSuccesses:', secondAttemptSuccesses);
     console.log('[DEBUG v1.3.6S] 📊 forcedOverrides:', forcedOverrides);
     console.log('[DEBUG v1.3.6S] 📊 criticalInconsistencies:', criticalInconsistencies);

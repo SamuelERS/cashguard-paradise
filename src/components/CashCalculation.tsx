@@ -1,6 +1,6 @@
-// 🤖 [IA] - v1.3.6X: MÉTRICAS LIMPIAS - Removidos porcentajes de Verificación Ciega (solo contadores X/8 más claros)
-// Previous: v1.3.6W - OPTIMIZACIONES ESTÉTICAS - Separador 16 chars (sin scroll) + espaciado mejorado (header, footer, secciones)
-// Previous: v1.3.6V - FIX FORMATO COMPLETO - 7 correcciones (emoji header + 2 secciones LO QUE RECIBES/QUEDÓ + reordenamiento)
+// 🤖 [IA] - v1.3.6Y: Versión sincronizada con Phase2VerificationSection fix cálculo perfectas
+// Previous: v1.3.6X - MÉTRICAS LIMPIAS - Removidos porcentajes de Verificación Ciega (solo contadores X/8)
+// Previous: v1.3.6W - OPTIMIZACIONES ESTÉTICAS - Separador 16 chars (sin scroll) + espaciado mejorado
 import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Calculator, AlertTriangle, CheckCircle, Share, Download, Copy } from "lucide-react";
@@ -635,7 +635,7 @@ ${denominationDetails}
 ${WHATSAPP_SEPARATOR}
 
 📅 ${calculationData?.timestamp || ''}
-🔐 CashGuard Paradise v1.3.6X
+🔐 CashGuard Paradise v1.3.6Y
 🔒 NIST SP 800-115 | PCI DSS 12.10.1
 
 ✅ Reporte automático
