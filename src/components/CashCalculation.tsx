@@ -385,7 +385,20 @@ ${deliveryCalculation.deliverySteps.map((step: DeliveryStep) => // 🤖 [IA] - v
 VERIFICACIÓN: ✓ EXITOSA
 
 🔍 VERIFICACIÓN CIEGA:
-${deliveryCalculation?.verificationBehavior ?
+${(() => {
+  console.log('[CashCalculation] 🔍 Evaluando deliveryCalculation.verificationBehavior');
+  console.log('[CashCalculation] 📊 deliveryCalculation completo:', deliveryCalculation);
+  console.log('[CashCalculation] 🎯 verificationBehavior:', deliveryCalculation?.verificationBehavior);
+
+  if (deliveryCalculation?.verificationBehavior) {
+    console.log('[CashCalculation] ✅ verificationBehavior EXISTE - incluyendo detalles en reporte');
+    console.log('[CashCalculation] 📊 Total attempts:', deliveryCalculation.verificationBehavior.totalAttempts);
+  } else {
+    console.warn('[CashCalculation] ⚠️ verificationBehavior es UNDEFINED - reporte mostrará mensaje fallback');
+  }
+
+  return '';
+})()}${deliveryCalculation?.verificationBehavior ?
 `📊 Total Intentos: ${deliveryCalculation.verificationBehavior.totalAttempts}
 ✅ Éxitos Primer Intento: ${deliveryCalculation.verificationBehavior.firstAttemptSuccesses}
 ⚠️ Éxitos Segundo Intento: ${deliveryCalculation.verificationBehavior.secondAttemptSuccesses}

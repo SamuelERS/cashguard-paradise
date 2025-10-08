@@ -150,10 +150,25 @@ export function usePhaseManager(operationMode?: OperationMode) { // 🤖 [IA] - 
   // Root cause v1.3.6M: Mutación directa (deliveryCalculation.verificationBehavior = X) NO actualiza state
   // Solución: Función que actualiza state correctamente → re-render con objeto nuevo → CashCalculation recibe prop actualizado
   const updateDeliveryCalculation = useCallback((updates: Partial<DeliveryCalculation>) => {
+    console.log('[usePhaseManager] 🎯 updateDeliveryCalculation LLAMADO con updates:', updates);
+    console.log('[usePhaseManager] 🔍 verificationBehavior en updates:', updates.verificationBehavior);
+
     setDeliveryCalculation(prev => {
-      if (!prev) return null;
-      return { ...prev, ...updates };
+      console.log('[usePhaseManager] 📊 deliveryCalculation ANTES de update:', prev);
+
+      if (!prev) {
+        console.warn('[usePhaseManager] ⚠️ deliveryCalculation previo es NULL - retornando null');
+        return null;
+      }
+
+      const updated = { ...prev, ...updates };
+      console.log('[usePhaseManager] ✅ deliveryCalculation DESPUÉS de update:', updated);
+      console.log('[usePhaseManager] 🎯 verificationBehavior en objeto actualizado:', updated.verificationBehavior);
+
+      return updated;
     });
+
+    console.log('[usePhaseManager] ✅ setDeliveryCalculation ejecutado - state debería actualizarse');
   }, []);
 
   const resetAllPhases = useCallback(() => {

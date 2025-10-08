@@ -126,19 +126,30 @@ export function Phase2Manager({
   // Solución: onDeliveryCalculationUpdate({ verificationBehavior }) actualiza state correctamente
   // 🤖 [IA] - v1.2.50: Reemplazado createTimeoutWithCleanup con setTimeout nativo
   useEffect(() => {
-    if (verificationCompleted) {
+    // 🤖 [IA] - v1.3.6O: FIX DEFINITIVO TIMING ISSUE - Chequear AMBAS condiciones
+    // Root cause: useEffect ejecutaba con verificationCompleted=true PERO verificationBehavior=undefined
+    // Problema: State update de setVerificationBehavior es asíncrono, timeout ejecutaba antes de tener dato
+    // Solución: Esperar AMBAS condiciones (verificationCompleted Y verificationBehavior) antes de setTimeout
+    if (verificationCompleted && verificationBehavior) {
+      console.log('[Phase2Manager] 🔄 useEffect disparado - verificationCompleted:', verificationCompleted);
+      console.log('[Phase2Manager] 🔍 verificationBehavior en useEffect:', verificationBehavior);
+
       const timeoutId = setTimeout(() => {
         // 🤖 [IA] - v1.3.6N: STATE UPDATE (NO mutation) - Actualizar usePhaseManager state via callback
         if (verificationBehavior) {
+          console.log('[Phase2Manager] 🎯 verificationBehavior EXISTE - procediendo a actualizar deliveryCalculation');
+          console.log('[Phase2Manager] 📊 Objeto completo a pasar:', JSON.stringify(verificationBehavior, null, 2));
+
           if (onDeliveryCalculationUpdate) {
             onDeliveryCalculationUpdate({ verificationBehavior }); // ✅ State update correcto
-            console.log('[Phase2Manager] ✅ Actualizando deliveryCalculation.verificationBehavior:', verificationBehavior);
+            console.log('[Phase2Manager] ✅ onDeliveryCalculationUpdate EJECUTADO - callback llamado con verificationBehavior');
           } else {
             console.warn('[Phase2Manager] ⚠️ onDeliveryCalculationUpdate no disponible - usando fallback mutation');
             deliveryCalculation.verificationBehavior = verificationBehavior; // Fallback (legacy)
           }
         } else {
-          console.warn('[Phase2Manager] ⚠️ verificationBehavior undefined - timing issue detectado. Reporte NO incluirá detalles verificación ciega.');
+          console.error('[Phase2Manager] 🔴 PROBLEMA CRÍTICO: verificationBehavior es undefined - timing issue detectado');
+          console.error('[Phase2Manager] 🔴 Reporte NO incluirá detalles verificación ciega.');
         }
         onPhase2Complete();
       }, 1000);
@@ -181,7 +192,11 @@ export function Phase2Manager({
   // 🤖 [IA] - v1.3.6: MÓDULO 2 - Handler para recolectar VerificationBehavior completo
   const handleVerificationBehaviorCollected = useCallback((behavior: VerificationBehavior) => {
     console.log('[Phase2Manager] 📊 VerificationBehavior recolectado:', behavior);
+    console.log('[Phase2Manager] 🔍 Total attempts recibidos:', behavior.totalAttempts);
+    console.log('[Phase2Manager] 🔍 Inconsistencias críticas:', behavior.criticalInconsistencies);
+    console.log('[Phase2Manager] 🔍 Inconsistencias severas:', behavior.severeInconsistencies);
     setVerificationBehavior(behavior);
+    console.log('[Phase2Manager] ✅ setVerificationBehavior ejecutado - state local actualizado');
   }, []);
 
   // 🤖 [IA] - v1.2.49: handleDeliverySectionComplete memoizado con useCallback

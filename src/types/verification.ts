@@ -183,4 +183,16 @@ export interface VerificationBehavior {
   forcedOverridesDenoms: Array<keyof CashCount>;      // ["nickel", "dime"]
   criticalInconsistenciesDenoms: Array<keyof CashCount>; // ["quarter"]
   severeInconsistenciesDenoms: Array<keyof CashCount>;   // ["penny"]
+
+  /** 🤖 [IA] - v1.3.6P: Array consolidado de denominaciones con issues (para reporte WhatsApp)
+   * Estructura completa para cada denominación problemática:
+   * - denomination: clave de la denominación (ej: 'quarter', 'bill20')
+   * - severity: nivel de severidad del issue
+   * - attempts: valores ingresados por el empleado [intento1, intento2, ...]
+   */
+  denominationsWithIssues: Array<{
+    denomination: keyof CashCount;
+    severity: VerificationSeverity;
+    attempts: number[];  // Valores ingresados (ej: [66, 64, 68])
+  }>;
 }

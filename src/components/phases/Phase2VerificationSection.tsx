@@ -150,20 +150,31 @@ export function Phase2VerificationSection({
     const forcedOverridesDenoms: Array<keyof CashCount> = [];
     const criticalInconsistenciesDenoms: Array<keyof CashCount> = [];
     const severeInconsistenciesDenoms: Array<keyof CashCount> = [];
+    // 🤖 [IA] - v1.3.6P: Array consolidado de denominaciones con issues (para reporte WhatsApp)
+    const denominationsWithIssues: Array<{
+      denomination: keyof CashCount;
+      severity: VerificationSeverity;
+      attempts: number[];
+    }> = [];
 
     // Iterar sobre attemptHistory Map
     attemptHistory.forEach((attempts, stepKey) => {
       allAttempts.push(...attempts);
 
+      // 🤖 [IA] - v1.3.6P: Determinar severity para esta denominación
+      let currentSeverity: VerificationSeverity = 'success';
+
       // Analizar patrón de intentos por denominación
       if (attempts.length === 1) {
         if (attempts[0].isCorrect) {
           firstAttemptSuccesses++;
+          currentSeverity = 'success'; // ← v1.3.6P: Explícito
         }
       } else if (attempts.length === 2) {
         // Verificar si segundo intento fue correcto
         if (attempts[1].isCorrect) {
           secondAttemptSuccesses++;
+          currentSeverity = 'warning_retry'; // ← v1.3.6P: Capturar severity
           severityFlags.push('warning_retry');
         } else {
           // Dos intentos incorrectos
@@ -171,10 +182,12 @@ export function Phase2VerificationSection({
             // Force override (dos intentos iguales incorrectos)
             forcedOverrides++;
             forcedOverridesDenoms.push(stepKey as keyof CashCount);
+            currentSeverity = 'warning_override'; // ← v1.3.6P: Capturar severity
             severityFlags.push('warning_override');
           } else {
             // Requerirá tercer intento
             thirdAttemptRequired++;
+            currentSeverity = 'critical_inconsistent'; // ← v1.3.6P: Capturar severity
             severityFlags.push('critical_inconsistent');
           }
         }
@@ -192,13 +205,24 @@ export function Phase2VerificationSection({
           // Pattern [A,B,A] o [A,B,B] - inconsistencia crítica
           criticalInconsistencies++;
           criticalInconsistenciesDenoms.push(stepKey as keyof CashCount);
+          currentSeverity = 'critical_inconsistent'; // ← v1.3.6P: Capturar severity
           severityFlags.push('critical_inconsistent');
         } else {
           // Pattern [A,B,C] - severamente inconsistente
           severeInconsistencies++;
           severeInconsistenciesDenoms.push(stepKey as keyof CashCount);
+          currentSeverity = 'critical_severe'; // ← v1.3.6P: Capturar severity
           severityFlags.push('critical_severe');
         }
+      }
+
+      // 🤖 [IA] - v1.3.6P: Agregar a denominationsWithIssues si NO es success
+      if (currentSeverity !== 'success') {
+        denominationsWithIssues.push({
+          denomination: stepKey as keyof CashCount,
+          severity: currentSeverity,
+          attempts: attempts.map(a => a.inputValue) // Array de valores ingresados
+        });
       }
     });
 
@@ -214,7 +238,8 @@ export function Phase2VerificationSection({
       severityFlags,
       forcedOverridesDenoms,
       criticalInconsistenciesDenoms,
-      severeInconsistenciesDenoms
+      severeInconsistenciesDenoms,
+      denominationsWithIssues // 🤖 [IA] - v1.3.6P: Array consolidado para reporte WhatsApp
     };
   }, [attemptHistory]); // ← v1.3.6a: Única dependencia, referencia estable
 
@@ -249,7 +274,12 @@ export function Phase2VerificationSection({
 
         if (onVerificationBehaviorCollected) {
           console.log('[Phase2VerificationSection] 📊 VerificationBehavior construido:', behavior);
+          console.log('[Phase2VerificationSection] 🔍 Total de attempts en behavior:', behavior.totalAttempts);
+          console.log('[Phase2VerificationSection] 🔍 Intentos inconsistentes:', behavior.criticalInconsistencies + behavior.severeInconsistencies);
           onVerificationBehaviorCollected(behavior);
+          console.log('[Phase2VerificationSection] ✅ Callback onVerificationBehaviorCollected ejecutado exitosamente');
+        } else {
+          console.warn('[Phase2VerificationSection] ⚠️ onVerificationBehaviorCollected es undefined - behavior NO se recolectará');
         }
 
         // ⏱️ Small delay para garantizar state update en Phase2Manager antes de section complete
