@@ -1,3 +1,5 @@
+// 🤖 [IA] - v1.3.6S: DEBUG COMPLETO - 6 checkpoints console.log tracking buildVerificationBehavior → denominationsWithIssues array (800+ líneas investigación)
+// Previous: v1.3.6Q - FIX ALERTAS COMPLETAS - Sistema reporta 100% errores (1, 2, 3 intentos) | 3 bugs corregidos: #1 else block primer intento, #3 severity dos intentos, #2 sección advertencias
 // 🤖 [IA] - v1.3.6M: FIX CRÍTICO - clearAttemptHistory() borraba intentos antes de buildVerificationBehavior (reporte sin datos)
 // 🤖 [IA] - v1.3.6h: BUG FIX CRÍTICO - Enter key leak modal verificación (triple defensa anti-fraude)
 // 🤖 [IA] - v1.3.6g: BUG FIX #1 - createTimeoutWithCleanup en deps causaba race conditions (9 errores loop)
@@ -139,6 +141,25 @@ export function Phase2VerificationSection({
   // Solución: useCallback con única dependencia attemptHistory (referencia estable)
   // 🤖 [IA] - v1.3.6: MÓDULO 1 - Construir objeto VerificationBehavior desde attemptHistory
   const buildVerificationBehavior = useCallback((): VerificationBehavior => {
+    // 🤖 [IA] - v1.3.6S: DEBUG CHECKPOINT #1 - Estado inicial attemptHistory Map
+    console.log('[DEBUG v1.3.6S] ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('[DEBUG v1.3.6S] 📊 buildVerificationBehavior() INICIO');
+    console.log('[DEBUG v1.3.6S] 🗺️ attemptHistory Map size:', attemptHistory.size);
+    console.log('[DEBUG v1.3.6S] 🗺️ attemptHistory Map keys:', Array.from(attemptHistory.keys()));
+    console.log('[DEBUG v1.3.6S] 🗺️ attemptHistory Map completo:', JSON.stringify(
+      Array.from(attemptHistory.entries()).map(([key, attempts]) => ({
+        denomination: key,
+        attempts: attempts.map(a => ({
+          attemptNumber: a.attemptNumber,
+          inputValue: a.inputValue,
+          expectedValue: a.expectedValue,
+          isCorrect: a.isCorrect
+        }))
+      })),
+      null,
+      2
+    ));
+
     const allAttempts: VerificationAttempt[] = [];
     let firstAttemptSuccesses = 0;
     let secondAttemptSuccesses = 0;
@@ -159,6 +180,16 @@ export function Phase2VerificationSection({
 
     // Iterar sobre attemptHistory Map
     attemptHistory.forEach((attempts, stepKey) => {
+      // 🤖 [IA] - v1.3.6S: DEBUG CHECKPOINT #2 - Análisis de cada denominación
+      console.log('[DEBUG v1.3.6S] ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      console.log('[DEBUG v1.3.6S] 🔍 Analizando denominación:', stepKey);
+      console.log('[DEBUG v1.3.6S] 🔍 Número de intentos:', attempts.length);
+      console.log('[DEBUG v1.3.6S] 🔍 Intentos detallados:', attempts.map(a => ({
+        attemptNumber: a.attemptNumber,
+        inputValue: a.inputValue,
+        expectedValue: a.expectedValue,
+        isCorrect: a.isCorrect
+      })));
       allAttempts.push(...attempts);
 
       // 🤖 [IA] - v1.3.6P: Determinar severity para esta denominación
@@ -169,6 +200,12 @@ export function Phase2VerificationSection({
         if (attempts[0].isCorrect) {
           firstAttemptSuccesses++;
           currentSeverity = 'success'; // ← v1.3.6P: Explícito
+        } else {
+          // 🤖 [IA] - v1.3.6Q: FIX BUG #1 - Primer intento incorrecto
+          // Root cause: Sin else block, severity quedaba como 'success' (default línea 165)
+          // Solución: Setear 'warning_retry' para que aparezca en reporte advertencias
+          currentSeverity = 'warning_retry';
+          severityFlags.push('warning_retry');
         }
       } else if (attempts.length === 2) {
         // Verificar si segundo intento fue correcto
@@ -185,10 +222,12 @@ export function Phase2VerificationSection({
             currentSeverity = 'warning_override'; // ← v1.3.6P: Capturar severity
             severityFlags.push('warning_override');
           } else {
-            // Requerirá tercer intento
-            thirdAttemptRequired++;
-            currentSeverity = 'critical_inconsistent'; // ← v1.3.6P: Capturar severity
-            severityFlags.push('critical_inconsistent');
+            // 🤖 [IA] - v1.3.6Q: FIX BUG #3 - Dos intentos diferentes (patrón [A, B])
+            // Root cause: Marcaba como 'critical_inconsistent' pero tercer intento NO garantizado
+            // Solución: Marcar como 'warning_retry' (advertencia), solo crítico si hay 3 intentos
+            currentSeverity = 'warning_retry';
+            severityFlags.push('warning_retry');
+            thirdAttemptRequired++; // Mantener contador para tracking métrico
           }
         }
       } else if (attempts.length >= 3) {
@@ -216,17 +255,43 @@ export function Phase2VerificationSection({
         }
       }
 
+      // 🤖 [IA] - v1.3.6S: DEBUG CHECKPOINT #3 - Determinación severity
+      console.log('[DEBUG v1.3.6S] ⚖️ Severity determinada para', stepKey, ':', currentSeverity);
+      console.log('[DEBUG v1.3.6S] ⚖️ ¿Es success? (NO debería agregarse):', currentSeverity === 'success');
+
       // 🤖 [IA] - v1.3.6P: Agregar a denominationsWithIssues si NO es success
       if (currentSeverity !== 'success') {
+        // 🤖 [IA] - v1.3.6S: DEBUG CHECKPOINT #4 - Agregando a denominationsWithIssues
+        console.log('[DEBUG v1.3.6S] ➕ AGREGANDO a denominationsWithIssues:', {
+          denomination: stepKey,
+          severity: currentSeverity,
+          attempts: attempts.map(a => a.inputValue)
+        });
+
         denominationsWithIssues.push({
           denomination: stepKey as keyof CashCount,
           severity: currentSeverity,
           attempts: attempts.map(a => a.inputValue) // Array de valores ingresados
         });
+      } else {
+        // 🤖 [IA] - v1.3.6S: DEBUG CHECKPOINT #4b - NO agregando (success)
+        console.log('[DEBUG v1.3.6S] ⏭️ OMITIENDO', stepKey, '- severity es success, NO se agrega a denominationsWithIssues');
       }
     });
 
-    return {
+    // 🤖 [IA] - v1.3.6S: DEBUG CHECKPOINT #5 - Estado final antes de return
+    console.log('[DEBUG v1.3.6S] ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('[DEBUG v1.3.6S] 📊 buildVerificationBehavior() PRE-RETURN');
+    console.log('[DEBUG v1.3.6S] 📊 Total attempts procesados:', allAttempts.length);
+    console.log('[DEBUG v1.3.6S] 📊 denominationsWithIssues length:', denominationsWithIssues.length);
+    console.log('[DEBUG v1.3.6S] 📊 denominationsWithIssues array completo:', JSON.stringify(denominationsWithIssues, null, 2));
+    console.log('[DEBUG v1.3.6S] 📊 firstAttemptSuccesses:', firstAttemptSuccesses);
+    console.log('[DEBUG v1.3.6S] 📊 secondAttemptSuccesses:', secondAttemptSuccesses);
+    console.log('[DEBUG v1.3.6S] 📊 forcedOverrides:', forcedOverrides);
+    console.log('[DEBUG v1.3.6S] 📊 criticalInconsistencies:', criticalInconsistencies);
+    console.log('[DEBUG v1.3.6S] 📊 severeInconsistencies:', severeInconsistencies);
+
+    const finalBehavior = {
       totalAttempts: allAttempts.length,
       firstAttemptSuccesses,
       secondAttemptSuccesses,
@@ -241,6 +306,14 @@ export function Phase2VerificationSection({
       severeInconsistenciesDenoms,
       denominationsWithIssues // 🤖 [IA] - v1.3.6P: Array consolidado para reporte WhatsApp
     };
+
+    // 🤖 [IA] - v1.3.6S: DEBUG CHECKPOINT #6 - Objeto final VerificationBehavior
+    console.log('[DEBUG v1.3.6S] ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('[DEBUG v1.3.6S] 🎯 OBJETO FINAL VerificationBehavior:');
+    console.log('[DEBUG v1.3.6S] 🎯 VerificationBehavior completo:', JSON.stringify(finalBehavior, null, 2));
+    console.log('[DEBUG v1.3.6S] ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+
+    return finalBehavior;
   }, [attemptHistory]); // ← v1.3.6a: Única dependencia, referencia estable
 
   // Auto-advance to next incomplete step

@@ -1,4 +1,5 @@
-// 🤖 [IA] - v1.3.6j: REPORTE FINAL WHATSAPP - 6 cambios críticos (4 plataformas + emojis + alertas + validación)
+// 🤖 [IA] - v1.3.6S: DEBUG COMPLETO - 5 checkpoints console.log tracking generateWarningAlertsBlock + generateCompleteReport (800+ líneas investigación)
+// Previous: v1.3.6j - REPORTE FINAL WHATSAPP - 6 cambios críticos (4 plataformas + emojis + alertas + validación)
 import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Calculator, AlertTriangle, CheckCircle, Share, Download, Copy } from "lucide-react";
@@ -333,6 +334,53 @@ ${alerts}
 `;
   };
 
+  // 🤖 [IA] - v1.3.6Q: NUEVA FUNCIÓN - Generar bloque advertencias (warnings)
+  // Root cause BUG #2: generateCriticalAlertsBlock() solo filtraba critical severities
+  // Solución: Nueva función para mostrar warning_retry + warning_override separadamente
+  // 🤖 [IA] - v1.3.6R: FIX CRÍTICO - Removido newline inicial que causaba invisibilidad
+  const generateWarningAlertsBlock = (behavior: VerificationBehavior): string => {
+    // 🤖 [IA] - v1.3.6S: DEBUG CHECKPOINT #7 - Input function generateWarningAlertsBlock
+    console.log('[DEBUG v1.3.6S] ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('[DEBUG v1.3.6S] 📝 generateWarningAlertsBlock() INICIO');
+    console.log('[DEBUG v1.3.6S] 📝 behavior recibido:', JSON.stringify(behavior, null, 2));
+    console.log('[DEBUG v1.3.6S] 📝 behavior.denominationsWithIssues length:', behavior.denominationsWithIssues.length);
+    console.log('[DEBUG v1.3.6S] 📝 behavior.denominationsWithIssues array:', JSON.stringify(behavior.denominationsWithIssues, null, 2));
+
+    // Filtrar solo severidades de advertencia (warning_retry, warning_override)
+    const warningDenoms = behavior.denominationsWithIssues.filter(d =>
+      d.severity === 'warning_retry' || d.severity === 'warning_override'
+    );
+
+    // 🤖 [IA] - v1.3.6S: DEBUG CHECKPOINT #8 - Resultado filtro warnings
+    console.log('[DEBUG v1.3.6S] 🔍 Filtro warning_retry + warning_override aplicado');
+    console.log('[DEBUG v1.3.6S] 🔍 warningDenoms length (después de filtro):', warningDenoms.length);
+    console.log('[DEBUG v1.3.6S] 🔍 warningDenoms array filtrado:', JSON.stringify(warningDenoms, null, 2));
+
+    if (warningDenoms.length === 0) {
+      console.log('[DEBUG v1.3.6S] ⚠️ warningDenoms.length === 0 → retornando string vacío');
+      return '';
+    }
+
+    const alerts = warningDenoms.map(issue => {
+      const emoji = issue.severity === 'warning_retry' ? '⚠️' : '🚨';
+      return `${emoji} ${getDenominationName(issue.denomination)}: ${issue.attempts.join(' → ')}`;
+    }).join('\n');
+
+    const finalBlock = `⚠️ ADVERTENCIAS:
+${alerts}
+━━━━━━━━━━━━━━━━━━
+`;
+
+    // 🤖 [IA] - v1.3.6S: DEBUG CHECKPOINT #9 - Output final block
+    console.log('[DEBUG v1.3.6S] ✅ Bloque ADVERTENCIAS generado:');
+    console.log('[DEBUG v1.3.6S] ✅ Length del string generado:', finalBlock.length);
+    console.log('[DEBUG v1.3.6S] ✅ Contenido exacto del bloque:');
+    console.log(finalBlock);
+    console.log('[DEBUG v1.3.6S] ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+
+    return finalBlock;
+  };
+
   const generateCompleteReport = () => {
     validatePhaseCompletion();
 
@@ -344,13 +392,36 @@ Promerica: ${formatCurrency(electronicPayments.promerica)}
 Transferencia Bancaria: ${formatCurrency(electronicPayments.bankTransfer)}
 PayPal: ${formatCurrency(electronicPayments.paypal)}`;
 
+    // 🤖 [IA] - v1.3.6S: DEBUG CHECKPOINT #10 - Entrada generateCompleteReport
+    console.log('[DEBUG v1.3.6S] ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('[DEBUG v1.3.6S] 📄 generateCompleteReport() INICIO');
+    console.log('[DEBUG v1.3.6S] 📄 deliveryCalculation existe?', !!deliveryCalculation);
+    console.log('[DEBUG v1.3.6S] 📄 deliveryCalculation?.verificationBehavior existe?', !!deliveryCalculation?.verificationBehavior);
+    console.log('[DEBUG v1.3.6S] 📄 deliveryCalculation?.verificationBehavior completo:',
+      deliveryCalculation?.verificationBehavior ?
+      JSON.stringify(deliveryCalculation.verificationBehavior, null, 2) :
+      'UNDEFINED'
+    );
+
     // 🤖 [IA] - v1.3.6j: CAMBIO #3 - Bloque alertas críticas al inicio
     const criticalAlertsBlock = deliveryCalculation?.verificationBehavior ?
       generateCriticalAlertsBlock(deliveryCalculation.verificationBehavior) : '';
 
+    // 🤖 [IA] - v1.3.6Q: INTEGRACIÓN - Bloque advertencias (warnings) separado
+    const warningAlertsBlock = deliveryCalculation?.verificationBehavior ?
+      generateWarningAlertsBlock(deliveryCalculation.verificationBehavior) : '';
+
+    // 🤖 [IA] - v1.3.6S: DEBUG CHECKPOINT #11 - Bloques generados
+    console.log('[DEBUG v1.3.6S] 📋 Bloques de alertas generados:');
+    console.log('[DEBUG v1.3.6S] 📋 criticalAlertsBlock length:', criticalAlertsBlock.length);
+    console.log('[DEBUG v1.3.6S] 📋 criticalAlertsBlock contenido:', criticalAlertsBlock);
+    console.log('[DEBUG v1.3.6S] 📋 warningAlertsBlock length:', warningAlertsBlock.length);
+    console.log('[DEBUG v1.3.6S] 📋 warningAlertsBlock contenido:', warningAlertsBlock);
+    console.log('[DEBUG v1.3.6S] ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+
     return `📊 CORTE DE CAJA - ${calculationData?.timestamp || ''}
 ================================
-${criticalAlertsBlock}Sucursal: ${store?.name}
+${criticalAlertsBlock}${warningAlertsBlock}Sucursal: ${store?.name}
 Cajero: ${cashier?.name}
 Testigo: ${witness?.name}
 Sistema: Conteo Guiado v2.0
@@ -400,8 +471,8 @@ ${(() => {
   return '';
 })()}${deliveryCalculation?.verificationBehavior ?
 `📊 Total Intentos: ${deliveryCalculation.verificationBehavior.totalAttempts}
-✅ Éxitos Primer Intento: ${deliveryCalculation.verificationBehavior.firstAttemptSuccesses}
-⚠️ Éxitos Segundo Intento: ${deliveryCalculation.verificationBehavior.secondAttemptSuccesses}
+✅ Correcto en Primer Intento: ${deliveryCalculation.verificationBehavior.firstAttemptSuccesses}
+⚠️ Correcto en Segundo Intento: ${deliveryCalculation.verificationBehavior.secondAttemptSuccesses}
 🔴 Tercer Intento Requerido: ${deliveryCalculation.verificationBehavior.thirdAttemptRequired}
 🚨 Valores Forzados (Override): ${deliveryCalculation.verificationBehavior.forcedOverrides}
 ❌ Inconsistencias Críticas: ${deliveryCalculation.verificationBehavior.criticalInconsistencies}
