@@ -1,5 +1,5 @@
 # Plan de Testing Manual v1.3.6k
-**Fecha:** 07 Oct 2025 ~01:50 AM
+**Fecha:** 07 de Octubre de 2025 ~01:50 AM
 **Versión:** v1.3.6k - Fix Crítico Reporte WhatsApp
 **Servidor:** http://localhost:5174/
 **Duración estimada:** 8-10 minutos
@@ -328,4 +328,4 @@ Si alguno de los siguientes ocurre:
 
 **Preparado por:** CODE Agent
 **Versión Plan:** v1.3.6k Testing Protocol
-**Última revisión:** 07 Oct 2025 ~01:50 AM
+**Última revisión:** 07 de Octubre de 2025 ~01:50 AM

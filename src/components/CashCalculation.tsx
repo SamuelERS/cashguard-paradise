@@ -1,4 +1,5 @@
-// 🤖 [IA] - v1.3.6S: DEBUG COMPLETO - 5 checkpoints console.log tracking generateWarningAlertsBlock + generateCompleteReport (800+ líneas investigación)
+// 🤖 [IA] - v1.3.6U: FORMATO FINAL WHATSAPP v2.1 - 8 optimizaciones (header dinámico + pagos desglosados + esperado separado + separadores 20 chars + *negrita* + sin footer acciones)
+// Previous: v1.3.6S - DEBUG COMPLETO - 5 checkpoints console.log tracking generateWarningAlertsBlock + generateCompleteReport (800+ líneas investigación)
 // Previous: v1.3.6j - REPORTE FINAL WHATSAPP - 6 cambios críticos (4 plataformas + emojis + alertas + validación)
 import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
@@ -59,6 +60,9 @@ interface CashCalculationProps {
   onBack: () => void;
   onComplete: () => void;
 }
+
+// 🤖 [IA] - v1.3.6U: Constante separador WhatsApp mobile-friendly (20 caracteres)
+const WHATSAPP_SEPARATOR = '━━━━━━━━━━━━━━━━━━━━━━'; // 20 caracteres
 
 const CashCalculation = ({
   storeId,
@@ -315,7 +319,7 @@ const CashCalculation = ({
     }).join('\n\n');
   };
 
-  // 🤖 [IA] - v1.3.6j: CAMBIO #3 - Helper para generar bloque alertas críticas al inicio
+  // 🤖 [IA] - v1.3.6U: CAMBIO #3 - Bloque alertas críticas con "Esperado:" en línea separada + timestamps video
   const generateCriticalAlertsBlock = (behavior: VerificationBehavior): string => {
     // Filtrar solo severidades críticas (critical_severe, critical_inconsistent)
     const criticalDenoms = behavior.denominationsWithIssues.filter(d =>
@@ -324,61 +328,76 @@ const CashCalculation = ({
 
     if (criticalDenoms.length === 0) return '';
 
-    const alerts = criticalDenoms.map(issue =>
-      `🔴 ${getDenominationName(issue.denomination)}: ${issue.attempts.join(' → ')} (${issue.severity})`
-    ).join('\n');
+    const alerts = criticalDenoms.map(issue => {
+      const denomName = getDenominationName(issue.denomination);
+      const attemptsStr = issue.attempts.join(' → ');
 
-    return `⚠️ ALERTAS CRÍTICAS:
-${alerts}
-━━━━━━━━━━━━━━━━━━
-`;
+      // Buscar timestamps del primer y último intento para esta denominación
+      const attemptsForDenom = behavior.attempts.filter(a => a.stepKey === issue.denomination);
+      let videoTimestamp = '';
+      if (attemptsForDenom.length > 0) {
+        const firstTime = formatTimestamp(attemptsForDenom[0].timestamp);
+        const lastTime = formatTimestamp(attemptsForDenom[attemptsForDenom.length - 1].timestamp);
+        videoTimestamp = `   📹 Video: ${firstTime} - ${lastTime}`;
+      }
+
+      // Descripción según severity
+      const description = issue.severity === 'critical_severe' ?
+        '   ⚠️ Patrón errático' :
+        '   ⚠️ Inconsistencia severa';
+
+      // Valor esperado (primer valor de attempts es el correcto)
+      const expectedValue = attemptsForDenom.length > 0 ? attemptsForDenom[0].expectedValue : '?';
+      const expectedUnit = expectedValue === 1 ? 'unidad' : 'unidades';
+
+      return `• ${denomName}
+   Esperado: ${expectedValue} ${expectedUnit}
+   Intentos: ${attemptsStr}
+${videoTimestamp}
+${description}`;
+    }).join('\n\n');
+
+    return `🔴 *CRÍTICAS (${criticalDenoms.length})*
+
+${alerts}`;
   };
 
-  // 🤖 [IA] - v1.3.6Q: NUEVA FUNCIÓN - Generar bloque advertencias (warnings)
-  // Root cause BUG #2: generateCriticalAlertsBlock() solo filtraba critical severities
-  // Solución: Nueva función para mostrar warning_retry + warning_override separadamente
-  // 🤖 [IA] - v1.3.6R: FIX CRÍTICO - Removido newline inicial que causaba invisibilidad
+  // 🤖 [IA] - v1.3.6U: CAMBIO #4 - Bloque advertencias con MISMO formato que críticas (timestamps + esperado)
   const generateWarningAlertsBlock = (behavior: VerificationBehavior): string => {
-    // 🤖 [IA] - v1.3.6S: DEBUG CHECKPOINT #7 - Input function generateWarningAlertsBlock
-    console.log('[DEBUG v1.3.6S] ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.log('[DEBUG v1.3.6S] 📝 generateWarningAlertsBlock() INICIO');
-    console.log('[DEBUG v1.3.6S] 📝 behavior recibido:', JSON.stringify(behavior, null, 2));
-    console.log('[DEBUG v1.3.6S] 📝 behavior.denominationsWithIssues length:', behavior.denominationsWithIssues.length);
-    console.log('[DEBUG v1.3.6S] 📝 behavior.denominationsWithIssues array:', JSON.stringify(behavior.denominationsWithIssues, null, 2));
-
     // Filtrar solo severidades de advertencia (warning_retry, warning_override)
     const warningDenoms = behavior.denominationsWithIssues.filter(d =>
       d.severity === 'warning_retry' || d.severity === 'warning_override'
     );
 
-    // 🤖 [IA] - v1.3.6S: DEBUG CHECKPOINT #8 - Resultado filtro warnings
-    console.log('[DEBUG v1.3.6S] 🔍 Filtro warning_retry + warning_override aplicado');
-    console.log('[DEBUG v1.3.6S] 🔍 warningDenoms length (después de filtro):', warningDenoms.length);
-    console.log('[DEBUG v1.3.6S] 🔍 warningDenoms array filtrado:', JSON.stringify(warningDenoms, null, 2));
-
-    if (warningDenoms.length === 0) {
-      console.log('[DEBUG v1.3.6S] ⚠️ warningDenoms.length === 0 → retornando string vacío');
-      return '';
-    }
+    if (warningDenoms.length === 0) return '';
 
     const alerts = warningDenoms.map(issue => {
-      const emoji = issue.severity === 'warning_retry' ? '⚠️' : '🚨';
-      return `${emoji} ${getDenominationName(issue.denomination)}: ${issue.attempts.join(' → ')}`;
-    }).join('\n');
+      const denomName = getDenominationName(issue.denomination);
+      const attemptsStr = issue.attempts.join(' → ');
 
-    const finalBlock = `⚠️ ADVERTENCIAS:
-${alerts}
-━━━━━━━━━━━━━━━━━━
-`;
+      // Buscar timestamps del primer y último intento para esta denominación
+      const attemptsForDenom = behavior.attempts.filter(a => a.stepKey === issue.denomination);
+      let videoTimestamp = '';
+      if (attemptsForDenom.length > 0) {
+        const firstTime = formatTimestamp(attemptsForDenom[0].timestamp);
+        const lastTime = formatTimestamp(attemptsForDenom[attemptsForDenom.length - 1].timestamp);
+        videoTimestamp = `   📹 Video: ${firstTime} - ${lastTime}`;
+      }
 
-    // 🤖 [IA] - v1.3.6S: DEBUG CHECKPOINT #9 - Output final block
-    console.log('[DEBUG v1.3.6S] ✅ Bloque ADVERTENCIAS generado:');
-    console.log('[DEBUG v1.3.6S] ✅ Length del string generado:', finalBlock.length);
-    console.log('[DEBUG v1.3.6S] ✅ Contenido exacto del bloque:');
-    console.log(finalBlock);
-    console.log('[DEBUG v1.3.6S] ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      // Valor esperado (primer valor de attempts es el correcto)
+      const expectedValue = attemptsForDenom.length > 0 ? attemptsForDenom[0].expectedValue : '?';
+      const expectedUnit = expectedValue === 1 ? 'unidad' : 'unidades';
 
-    return finalBlock;
+      return `• ${denomName}
+   Esperado: ${expectedValue} ${expectedUnit}
+   Intentos: ${attemptsStr}
+${videoTimestamp}
+   ℹ️ Corregido en ${attemptsForDenom.length}° intento`;
+    }).join('\n\n');
+
+    return `⚠️ *ADVERTENCIAS (${warningDenoms.length})*
+
+${alerts}`;
   };
 
   const generateCompleteReport = () => {
@@ -386,156 +405,87 @@ ${alerts}
 
     const denominationDetails = generateDenominationDetails();
     const dataHash = generateDataHash();
-    // 🤖 [IA] - v1.3.6j: CAMBIO #1 (CRÍTICO) - 4 plataformas electrónicas completas
-    const electronicDetails = `Credomatic: ${formatCurrency(electronicPayments.credomatic)}
-Promerica: ${formatCurrency(electronicPayments.promerica)}
-Transferencia Bancaria: ${formatCurrency(electronicPayments.bankTransfer)}
-PayPal: ${formatCurrency(electronicPayments.paypal)}`;
 
-    // 🤖 [IA] - v1.3.6S: DEBUG CHECKPOINT #10 - Entrada generateCompleteReport
-    console.log('[DEBUG v1.3.6S] ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.log('[DEBUG v1.3.6S] 📄 generateCompleteReport() INICIO');
-    console.log('[DEBUG v1.3.6S] 📄 deliveryCalculation existe?', !!deliveryCalculation);
-    console.log('[DEBUG v1.3.6S] 📄 deliveryCalculation?.verificationBehavior existe?', !!deliveryCalculation?.verificationBehavior);
-    console.log('[DEBUG v1.3.6S] 📄 deliveryCalculation?.verificationBehavior completo:',
-      deliveryCalculation?.verificationBehavior ?
-      JSON.stringify(deliveryCalculation.verificationBehavior, null, 2) :
-      'UNDEFINED'
-    );
+    // 🤖 [IA] - v1.3.6U: CAMBIO #2 - Pagos electrónicos desglosados para validación por plataforma
+    const totalElectronic = calculationData?.totalElectronic || 0;
+    const electronicDetailsDesglosed = `💳 Pagos Electrónicos: *${formatCurrency(totalElectronic)}*
+   ☐ Credomatic: ${formatCurrency(electronicPayments.credomatic)}
+   ☐ Promerica: ${formatCurrency(electronicPayments.promerica)}
+   ☐ Transferencia: ${formatCurrency(electronicPayments.bankTransfer)}
+   ☐ PayPal: ${formatCurrency(electronicPayments.paypal)}`;
 
-    // 🤖 [IA] - v1.3.6j: CAMBIO #3 - Bloque alertas críticas al inicio
+    // 🤖 [IA] - v1.3.6U: CAMBIO #3 y #4 - Bloques alertas con formato optimizado
     const criticalAlertsBlock = deliveryCalculation?.verificationBehavior ?
       generateCriticalAlertsBlock(deliveryCalculation.verificationBehavior) : '';
-
-    // 🤖 [IA] - v1.3.6Q: INTEGRACIÓN - Bloque advertencias (warnings) separado
     const warningAlertsBlock = deliveryCalculation?.verificationBehavior ?
       generateWarningAlertsBlock(deliveryCalculation.verificationBehavior) : '';
 
-    // 🤖 [IA] - v1.3.6S: DEBUG CHECKPOINT #11 - Bloques generados
-    console.log('[DEBUG v1.3.6S] 📋 Bloques de alertas generados:');
-    console.log('[DEBUG v1.3.6S] 📋 criticalAlertsBlock length:', criticalAlertsBlock.length);
-    console.log('[DEBUG v1.3.6S] 📋 criticalAlertsBlock contenido:', criticalAlertsBlock);
-    console.log('[DEBUG v1.3.6S] 📋 warningAlertsBlock length:', warningAlertsBlock.length);
-    console.log('[DEBUG v1.3.6S] 📋 warningAlertsBlock contenido:', warningAlertsBlock);
-    console.log('[DEBUG v1.3.6S] ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    // 🤖 [IA] - v1.3.6U: CAMBIO #1 - Header dinámico según severidad (CRÍTICO/ADVERTENCIAS/NORMAL)
+    const criticalCount = deliveryCalculation?.verificationBehavior?.criticalInconsistencies || 0;
+    const warningCount = deliveryCalculation?.verificationBehavior?.secondAttemptSuccesses || 0;
+    const headerSeverity = criticalCount > 0 ?
+      "🚨 *REPORTE CRÍTICO - ACCIÓN INMEDIATA*" :
+      warningCount > 0 ?
+      "⚠️ *REPORTE ADVERTENCIAS*" :
+      "✅ *REPORTE NORMAL*";
 
-    return `📊 CORTE DE CAJA - ${calculationData?.timestamp || ''}
-================================
-${criticalAlertsBlock}${warningAlertsBlock}Sucursal: ${store?.name}
+    // 🤖 [IA] - v1.3.6U: Sección completa de alertas (críticas + advertencias) con separador único
+    const fullAlertsSection = (criticalAlertsBlock || warningAlertsBlock) ?
+      `${WHATSAPP_SEPARATOR}
+
+⚠️ *ALERTAS DETECTADAS*
+
+${criticalAlertsBlock}${criticalAlertsBlock && warningAlertsBlock ? '\n\n' : ''}${warningAlertsBlock}
+
+` : '';
+
+    return `${headerSeverity}
+
+📊 *CORTE DE CAJA* - ${calculationData?.timestamp || ''}
+Sucursal: ${store?.name}
 Cajero: ${cashier?.name}
 Testigo: ${witness?.name}
-Sistema: Conteo Guiado v2.0
 
-💰 FASE 1 - CONTEO INICIAL
------------------------
-DENOMINACIONES CONTADAS:
+${WHATSAPP_SEPARATOR}
+
+📊 *RESUMEN EJECUTIVO*
+
+💰 Efectivo Contado: *${formatCurrency(calculationData?.totalCash || 0)}*
+
+${electronicDetailsDesglosed}
+
+📦 *Entregado a Gerencia: ${formatCurrency(deliveryCalculation?.amountToDeliver || 0)}*
+🏢 Quedó en Caja: ${phaseState?.shouldSkipPhase2 ? formatCurrency(calculationData?.totalCash || 0) : '$50.00'}
+
+💼 Total Día: *${formatCurrency(calculationData?.totalGeneral || 0)}*
+🎯 SICAR Esperado: ${formatCurrency(expectedSales)}
+${(calculationData?.difference || 0) >= 0 ? '📈' : '📉'} Diferencia: *${formatCurrency(calculationData?.difference || 0)} (${(calculationData?.difference || 0) >= 0 ? 'SOBRANTE' : 'FALTANTE'})*${fullAlertsSection}
+${WHATSAPP_SEPARATOR}
+
+💰 *CONTEO COMPLETO (${formatCurrency(calculationData?.totalCash || 0)})*
+
 ${denominationDetails}
 
-PAGOS ELECTRÓNICOS:
-${electronicDetails}
+${deliveryCalculation?.verificationBehavior ?
+`
+${WHATSAPP_SEPARATOR}
 
-Total Efectivo: ${formatCurrency(calculationData?.totalCash || 0)}
-Total Electrónico: ${formatCurrency(calculationData?.totalElectronic || 0)}
+🔍 *VERIFICACIÓN CIEGA*
 
-${phaseState?.shouldSkipPhase2 ?
-`📦 FASE 2 - OMITIDA
------------------------
-Total ≤ $50.00 - Sin entrega a gerencia
-Todo permanece en caja` :
-`📦 FASE 2 - DIVISIÓN
------------------------
-Entregado a Gerencia: ${formatCurrency(deliveryCalculation?.amountToDeliver || 0)}
-Dejado en Caja: $50.00
-
-${deliveryCalculation?.deliverySteps ?
-`DETALLE ENTREGADO:
-${deliveryCalculation.deliverySteps.map((step: DeliveryStep) => // 🤖 [IA] - v1.2.22: Fixed any type
-  `${step.label} × ${step.quantity} = ${formatCurrency(step.value * step.quantity)}`
-).join('\n')}` : ''}
-
-VERIFICACIÓN: ✓ EXITOSA
-
-🔍 VERIFICACIÓN CIEGA:
-${(() => {
-  console.log('[CashCalculation] 🔍 Evaluando deliveryCalculation.verificationBehavior');
-  console.log('[CashCalculation] 📊 deliveryCalculation completo:', deliveryCalculation);
-  console.log('[CashCalculation] 🎯 verificationBehavior:', deliveryCalculation?.verificationBehavior);
-
-  if (deliveryCalculation?.verificationBehavior) {
-    console.log('[CashCalculation] ✅ verificationBehavior EXISTE - incluyendo detalles en reporte');
-    console.log('[CashCalculation] 📊 Total attempts:', deliveryCalculation.verificationBehavior.totalAttempts);
-  } else {
-    console.warn('[CashCalculation] ⚠️ verificationBehavior es UNDEFINED - reporte mostrará mensaje fallback');
-  }
-
-  return '';
-})()}${deliveryCalculation?.verificationBehavior ?
-`📊 Total Intentos: ${deliveryCalculation.verificationBehavior.totalAttempts}
-✅ Correcto en Primer Intento: ${deliveryCalculation.verificationBehavior.firstAttemptSuccesses}
-⚠️ Correcto en Segundo Intento: ${deliveryCalculation.verificationBehavior.secondAttemptSuccesses}
-🔴 Tercer Intento Requerido: ${deliveryCalculation.verificationBehavior.thirdAttemptRequired}
-🚨 Valores Forzados (Override): ${deliveryCalculation.verificationBehavior.forcedOverrides}
-❌ Inconsistencias Críticas: ${deliveryCalculation.verificationBehavior.criticalInconsistencies}
-⚠️ Inconsistencias Severas: ${deliveryCalculation.verificationBehavior.severeInconsistencies}
-
-${deliveryCalculation.verificationBehavior.forcedOverrides > 0 ?
-`🚨 Denominaciones con Valores Forzados:
-${deliveryCalculation.verificationBehavior.forcedOverridesDenoms.map(getDenominationName).join(', ')}
+✅ Perfectas: ${deliveryCalculation.verificationBehavior.firstAttemptSuccesses}/${deliveryCalculation.verificationBehavior.totalAttempts} (${Math.round((deliveryCalculation.verificationBehavior.firstAttemptSuccesses / deliveryCalculation.verificationBehavior.totalAttempts) * 100)}%)
+⚠️ Corregidas: ${deliveryCalculation.verificationBehavior.secondAttemptSuccesses}/${deliveryCalculation.verificationBehavior.totalAttempts} (${Math.round((deliveryCalculation.verificationBehavior.secondAttemptSuccesses / deliveryCalculation.verificationBehavior.totalAttempts) * 100)}%)
+🔴 Críticas: ${deliveryCalculation.verificationBehavior.criticalInconsistencies}/${deliveryCalculation.verificationBehavior.totalAttempts} (${Math.round((deliveryCalculation.verificationBehavior.criticalInconsistencies / deliveryCalculation.verificationBehavior.totalAttempts) * 100)}%)
 ` : ''}
 
-${deliveryCalculation.verificationBehavior.criticalInconsistencies > 0 ?
-`❌ Denominaciones con Inconsistencias Críticas:
-${deliveryCalculation.verificationBehavior.criticalInconsistenciesDenoms.map(getDenominationName).join(', ')}
-` : ''}
+${WHATSAPP_SEPARATOR}
 
-${deliveryCalculation.verificationBehavior.severeInconsistencies > 0 ?
-`⚠️ Denominaciones con Inconsistencias Severas:
-${deliveryCalculation.verificationBehavior.severeInconsistenciesDenoms.map(getDenominationName).join(', ')}
-` : ''}
+📅 ${calculationData?.timestamp || ''}
+🔐 CashGuard Paradise v1.3.6U
+🔒 NIST SP 800-115 | PCI DSS 12.10.1
 
-DETALLE CRONOLÓGICO DE INTENTOS:
-${generateAnomalyDetails(deliveryCalculation.verificationBehavior)}` :
-'✅ Sin verificación ciega (fase 2 no ejecutada)'}
-`}
+✅ Reporte automático
+⚠️ Documento NO editable
 
-🏁 FASE 3 - RESULTADOS FINALES
------------------------
-TOTAL GENERAL: ${formatCurrency(calculationData?.totalGeneral || 0)}
-🎯 Venta Esperada: ${formatCurrency(expectedSales)}
-${(calculationData?.difference || 0) >= 0 ? '✅ Sobrante' : '⚠️ Faltante'}: ${formatCurrency(Math.abs(calculationData?.difference || 0))}
-
-💼 Cambio para mañana: ${formatCurrency(calculationData?.changeResult?.total || 0)}
-
-DETALLE EN CAJA:
-${generateRemainingCashDetails()}
-
-━━━━━━━━━━━━━━━━━━
-✅ VALIDACIÓN DE CAJA:
-Efectivo Contado: ${formatCurrency(calculationData?.totalCash || 0)}
-Electrónico Total: ${formatCurrency(calculationData?.totalElectronic || 0)}
-━━━━━━━━━━━━━━━━━━
-TOTAL DÍA: ${formatCurrency(calculationData?.totalGeneral || 0)}
-SICAR Esperado: ${formatCurrency(expectedSales)}
-━━━━━━━━━━━━━━━━━━
-Diferencia: ${formatCurrency(calculationData?.difference || 0)}
-${(calculationData?.difference || 0) > 0 ? '📈 SOBRANTE' : (calculationData?.difference || 0) < 0 ? '📉 FALTANTE' : '✅ CUADRADO'}
-
-${calculationData?.hasAlert ? '🚨 ALERTA: Faltante significativo detectado' : ''}
-
-━━━━━━━━━━━━━━━━━━
-📅 ${phaseState?.operation === 'morning' ? 'APERTURA' : 'CIERRE'}: ${new Date().toLocaleString('es-HN', {
-  dateStyle: 'full',
-  timeStyle: 'short'
-})}
-👤 Cajero: ${cashier?.name}
-👥 Testigo: ${witness?.name}
-🏢 Sucursal: ${store?.name}
-🔐 Sistema: CashGuard Paradise v1.3.6j
-━━━━━━━━━━━━━━━━━━
-✅ Reporte generado automáticamente
-⚠️ Documento NO editable (anti-fraude)
-🔒 Compliance: NIST SP 800-115, PCI DSS 12.10.1
-━━━━━━━━━━━━━━━━━━
 Firma Digital: ${dataHash}`;
   };
 

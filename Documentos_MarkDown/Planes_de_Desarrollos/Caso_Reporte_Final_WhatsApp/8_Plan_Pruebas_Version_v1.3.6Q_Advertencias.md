@@ -187,5 +187,5 @@ Una vez completados los 6 casos, confirmar:
 **🙏 Que Dios bendiga este testing y confirme la corrección exitosa.**
 
 **Versión:** v1.3.6Q
-**Fecha:** 08 Oct 2025
+**Fecha:** 08 de Octubre de 2025
 **Archivo:** `Guia_Testing_v1.3.6Q.md`

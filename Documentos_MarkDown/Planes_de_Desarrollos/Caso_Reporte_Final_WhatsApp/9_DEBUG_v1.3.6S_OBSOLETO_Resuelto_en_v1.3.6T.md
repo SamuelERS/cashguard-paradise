@@ -1,10 +1,25 @@
-# 🔍 INVESTIGACIÓN FORENSE PROFUNDA v1.3.6S
+# ⚠️ DOCUMENTO OBSOLETO - RESUELTO EN v1.3.6T
+
+**Estado:** ❌ OBSOLETO (08 de Octubre de 2025)
+**Razón:** v1.3.6T resolvió el problema SIN necesidad de analizar estos logs
+**Solución aplicada:** Removido `clearAttemptHistory()` de línea 402 en Phase2VerificationSection.tsx
+**Ver:** CLAUDE.md entrada v1.3.6T para solución definitiva
+
+**Root Cause Identificado:**
+`clearAttemptHistory()` borraba datos de attemptHistory Map ANTES de que `buildVerificationBehavior()` pudiera leer los intentos, causando que el array `denominationsWithIssues` quedara vacío.
+
+**Fix Aplicado en v1.3.6T:**
+Removido `clearAttemptHistory(currentStep.key)` de handleConfirmStep (CASO 1 - valor correcto), siguiendo el mismo patrón que v1.3.6M aplicó para errores críticos (3er intento).
+
+---
+
+# 🔍 INVESTIGACIÓN FORENSE PROFUNDA v1.3.6S (ARCHIVO HISTÓRICO)
 ## Sistema de Debugging Console.log Estratégico
 
-**Fecha:** 08 Octubre 2025
+**Fecha:** 08 de Octubre de 2025
 **Versión:** v1.3.6S
 **Objetivo:** Identificar por qué las ADVERTENCIAS (1-2 intentos) NO aparecen en reporte WhatsApp
-**Status:** DEBUG COMPLETO IMPLEMENTADO - 11 checkpoints console.log activos
+**Status:** ⏸️ SUPERADO - Los checkpoints NO fueron necesarios (problema resuelto en v1.3.6T)
 
 ---
 
