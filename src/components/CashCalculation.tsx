@@ -1,6 +1,6 @@
-// 🤖 [IA] - v1.3.6AB: FIX ROOT CAUSE REAL - Clase .cash-calculation-container agregada (patrón v1.2.41A9)
+// 🤖 [IA] - v1.3.6AD: FIX MÉTRICA CRÍTICA - totalDenoms usa verificationSteps.length (denominaciones verificadas) en lugar de totalAttempts (intentos totales)
+// Previous: v1.3.6AB - FIX ROOT CAUSE REAL - Clase .cash-calculation-container agregada (patrón v1.2.41A9)
 // Previous: v1.3.6AA - FloatingOrbs condicional iOS (diagnóstico incorrecto) ⚠️
-// Previous: v1.3.6Z - Framer Motion removido CashCalculation (diagnóstico incorrecto) ⚠️
 import { useState, useEffect, useCallback } from "react";
 // 🤖 [IA] - v1.3.6Z: Framer Motion removido (GPU compositing bug iOS Safari causa pantalla congelada Phase 3)
 import { Calculator, AlertTriangle, CheckCircle, Share, Download, Copy } from "lucide-react";
@@ -587,7 +587,10 @@ ${criticalAlertsBlock}${criticalAlertsBlock && warningAlertsBlock ? '\n\n' : ''}
     let verificationSection = '';
     if (deliveryCalculation?.verificationBehavior) {
       const behavior = deliveryCalculation.verificationBehavior;
-      const totalDenoms = behavior.totalAttempts;
+      // 🤖 [IA] - v1.3.6AD: FIX CRÍTICO - totalDenoms debe ser DENOMINACIONES, NO intentos
+      // Root cause: behavior.totalAttempts = total de INTENTOS (15, 20, 30... con múltiples errores)
+      // Solución: verificationSteps.length = total de DENOMINACIONES verificadas (las que quedaron en $50)
+      const totalDenoms = deliveryCalculation.verificationSteps.length; // ← CORRECTO
       const firstAttemptSuccesses = behavior.firstAttemptSuccesses;
 
       // Contar warnings y críticas desde denominationsWithIssues (más preciso)

@@ -1,7 +1,7 @@
 # 📚 CLAUDE.md - HISTORIAL DE DESARROLLO CASHGUARD PARADISE
-**Última actualización:** 09 Oct 2025 ~16:00 PM
-**Sesión actual:** v1.3.6AC FIX S0-003 ✅ (Excepción Phase 3 PWA mode - scroll natural en reportes largos | Bug documentado hace semanas FINALMENTE resuelto)
-**Estado:** 641/641 tests passing (100%) ✅ | 174 matemáticas TIER 0-4 ✅ | Build exitoso ✅ | Bundle: 1,438.07 kB ✅
+**Última actualización:** 09 Oct 2025 ~17:00 PM
+**Sesión actual:** v1.3.6AD FIX MÉTRICA CRÍTICA ✅ (totalDenoms corregido: verificationSteps.length en lugar de totalAttempts | Denominador ahora muestra total denominaciones, NO intentos)
+**Estado:** 641/641 tests passing (100%) ✅ | 174 matemáticas TIER 0-4 ✅ | Build exitoso ✅ | Bundle: 1,438.08 kB ✅
 
 ## 📊 MÉTRICAS ACTUALES DEL PROYECTO
 
@@ -138,6 +138,81 @@ Production Tests:        555 (561 - 6 debug)
 ---
 
 ## 📝 Recent Updates
+
+### v1.3.6AD - Fix Métrica Crítica: Total Denominaciones en Verificación Ciega [09 OCT 2025 ~17:00 PM] ✅
+**OPERACIÓN FIX MÉTRICA CRÍTICA:** Corrección del bug de denominador incorrecto en sección "VERIFICACIÓN CIEGA" del reporte WhatsApp - `totalDenoms` ahora usa `verificationSteps.length` (total de denominaciones verificadas) en lugar de `totalAttempts` (total de intentos).
+
+**Problema reportado (usuario con screenshot):**
+- ❌ **Métricas confusas:** Mostraban "Perfectas: 3/10, Corregidas: 2/10, Críticas: 2/10"
+- ❌ **Matemática inconsistente:** 3 + 2 + 2 = 7, pero denominador era /10
+- ❌ **Root cause:** `totalDenoms = behavior.totalAttempts` (total de INTENTOS, puede ser 15, 20, 30...)
+- ❌ **Resultado:** Usuario veía "3/15, 2/15, 2/15" cuando debería ver "3/10, 2/10, 2/10"
+
+**Análisis forense:**
+```typescript
+// ANTES v1.3.6W (INCORRECTO):
+const totalDenoms = behavior.totalAttempts; // ← Total de INTENTOS
+
+// Ejemplo bug:
+// - 10 denominaciones verificadas (penny → bill100)
+// - 15 intentos totales (algunos con múltiples errores)
+// Resultado: Perfectas: 3/15 ← FALSO (debería ser 3/10)
+
+// DESPUÉS v1.3.6AD (CORRECTO):
+const totalDenoms = deliveryCalculation.verificationSteps.length; // ← Total de DENOMINACIONES
+
+// Ejemplo correcto:
+// - 10 denominaciones verificadas
+// - 15 intentos totales (irrelevante para denominador)
+// Resultado: Perfectas: 3/10 ✅
+```
+
+**Justificación técnica:**
+- `verificationSteps.length` = total de denominaciones que quedaron en caja ($50) y se verificaron
+- `behavior.totalAttempts` = suma de TODOS los intentos (puede ser 15, 20, 30... si hubo múltiples errores)
+- Denominador debe ser **cuántas denominaciones se verificaron**, NO cuántos intentos hubo
+
+**Validación matemática:**
+| Escenario | Total Denoms | Perfectas | Corregidas | Críticas | Suma | Validación |
+|-----------|--------------|-----------|------------|----------|------|------------|
+| Screenshot usuario | 10 | 3 | 2 | 2 | 7 | ✅ 7 ≤ 10 |
+| Sin errores | 10 | 10 | 0 | 0 | 10 | ✅ 10 = 10 |
+| Todos críticos | 10 | 0 | 0 | 10 | 10 | ✅ 10 = 10 |
+| Mix | 7 | 4 | 2 | 1 | 7 | ✅ 7 = 7 |
+
+**Regla invariante:**
+```
+firstAttemptSuccesses + warningCountActual + criticalCountActual ≤ totalDenoms
+```
+
+**Build exitoso:**
+- ✅ TypeScript: `npx tsc --noEmit` → 0 errors
+- ✅ Build: `npm run build` → SUCCESS en 1.98s
+- ✅ Output: dist/assets/index-BGu2GbC8.js (1,438.08 kB | gzip: 335.10 kB)
+- ✅ Incremento: +0.01 kB (solo 1 línea modificada)
+
+**Resultado esperado - Reporte WhatsApp:**
+```
+// ANTES v1.3.6W (INCORRECTO):
+🔍 *VERIFICACIÓN CIEGA*
+
+✅ Perfectas: 3/15  ← INCORRECTO (15 intentos, no denominaciones)
+⚠️ Corregidas: 2/15
+🔴 Críticas: 2/15
+
+// DESPUÉS v1.3.6AD (CORRECTO):
+🔍 *VERIFICACIÓN CIEGA*
+
+✅ Perfectas: 3/10  ← CORRECTO (10 denominaciones)
+⚠️ Corregidas: 2/10
+🔴 Críticas: 2/10
+```
+
+**Validación usuario confirmada:** ✅ "todo funciona perfectamente"
+
+**Archivos:** `CashCalculation.tsx` (líneas 1-3, 590-593), `CLAUDE.md`
+
+---
 
 ### v1.3.6AC - FIX S0-003: Excepción Phase 3 en PWA Mode (Scroll Natural Reportes) [09 OCT 2025 ~16:00 PM] ✅
 **OPERACIÓN FIX CRÍTICO S0 - BUG DOCUMENTADO FINALMENTE RESUELTO:** Implementación de solución documentada en `4_BUG_CRITICO_3_Pantalla_Bloqueada_en_PWA.md` desde hace semanas. Root cause: `position: fixed` aplicado en TODAS las fases (incluyendo Phase 3) bloqueaba scroll completamente → Usuario ATRAPADO sin poder ver reporte completo ni botón "Completar".
