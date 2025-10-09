@@ -1,8 +1,8 @@
-// 🤖 [IA] - v1.3.6Y: Versión sincronizada con Phase2VerificationSection fix cálculo perfectas
-// Previous: v1.3.6X - MÉTRICAS LIMPIAS - Removidos porcentajes de Verificación Ciega (solo contadores X/8)
-// Previous: v1.3.6W - OPTIMIZACIONES ESTÉTICAS - Separador 16 chars (sin scroll) + espaciado mejorado
+// 🤖 [IA] - v1.3.6Z: FIX CRÍTICO iOS Safari - Triple defensa pantalla congelada Phase 3
+// Previous: v1.3.6Y - Fix cálculo perfectas (Total - Errores en lugar de forEach)
+// Previous: v1.3.6X - MÉTRICAS LIMPIAS - Removidos porcentajes Verificación Ciega
 import { useState, useEffect, useCallback } from "react";
-import { motion } from "framer-motion";
+// 🤖 [IA] - v1.3.6Z: Framer Motion removido (GPU compositing bug iOS Safari causa pantalla congelada Phase 3)
 import { Calculator, AlertTriangle, CheckCircle, Share, Download, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 // 🤖 [IA] - v1.1.08: Removidos Card components para coherencia con glass morphism
@@ -79,6 +79,14 @@ const CashCalculation = ({
   const [isCalculated, setIsCalculated] = useState(false);
   const [calculationData, setCalculationData] = useState<CalculationData | null>(null); // 🤖 [IA] - v1.2.22: Fixed any type violation
   const [showFinishConfirmation, setShowFinishConfirmation] = useState(false); // 🤖 [IA] - v1.2.24: Estado para modal de confirmación
+
+  // 🤖 [IA] - v1.3.6Z: FIX iOS Safari - Cleanup defensivo de modal state
+  // Garantiza que modal state se resetea al desmontar, previene race conditions en lifecycle iOS
+  useEffect(() => {
+    return () => {
+      setShowFinishConfirmation(false);
+    };
+  }, []);
 
   const store = getStoreById(storeId);
   const cashier = getEmployeeById(cashierId);
@@ -763,10 +771,12 @@ Firma Digital: ${dataHash}`;
     <div className="min-h-screen relative overflow-y-auto" data-scrollable="true">
       
       <div className="relative z-10 container mx-auto px-[clamp(1rem,4vw,1.5rem)] py-[clamp(1.5rem,6vw,2rem)] max-w-4xl">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+        {/* 🤖 [IA] - v1.3.6Z: FIX iOS Safari - motion.div → div estático */}
+        {/* Root cause: GPU compositing freeze con transform+opacity en iOS Safari */}
+        {/* Trade-off: Sin fade-in (0.3s) para garantizar funcionalidad 100% */}
+        <div
           className="space-y-[clamp(1rem,4vw,1.5rem)]"
+          style={{ opacity: 1 }}
         >
           <div className="text-center mb-[clamp(1.5rem,6vw,2rem)]">
             <h2 className="text-[clamp(1.25rem,5vw,1.75rem)] font-bold text-primary mb-2">Cálculo Completado</h2>
@@ -994,7 +1004,7 @@ Firma Digital: ${dataHash}`;
               </div>
             </div>
           </div>
-        </motion.div>
+        </div>
       </div>
 
       {/* 🤖 [IA] - v1.2.24: Modal de confirmación para finalizar el proceso */}

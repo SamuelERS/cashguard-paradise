@@ -1,6 +1,6 @@
-// [IA] - v3.0.0 - Abstract Confirmation Modal Component
-// Componente abstracto para confirmaciones con diseño premium
-// Implementa especificaciones exactas del sistema de diseño v3.0.0 (Paradise UI v3.0)
+// [IA] - v3.0.1 - Abstract Confirmation Modal Component + FIX iOS Safari
+// Previous: v3.0.0 - Componente abstracto para confirmaciones con diseño premium
+// 🤖 [IA] - v1.3.6Z: FIX iOS Safari - touchAction override (permitir clicks en PWA standalone mode)
 // Evolución a Responsividad Fluida: clamp() puro, sin breakpoints discretos
 
 import React, { ReactNode } from "react";
@@ -99,7 +99,10 @@ export function ConfirmationModal({
           }
         }}
         style={{
-          maxWidth: "min(calc(100vw - 2rem), 32rem)" // Responsive constraint only
+          maxWidth: "min(calc(100vw - 2rem), 32rem)", // Responsive constraint only
+          // 🤖 [IA] - v1.3.6Z: FIX iOS Safari - Override body touchAction + forzar interacción
+          pointerEvents: 'auto',  // Forzar eventos pointer (clicks funcionales)
+          touchAction: 'auto'     // Override body pan-y (permitir todos los gestos)
         }}
         className={`glass-morphism-panel w-full ${className || ''}`}
       >
