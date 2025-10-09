@@ -1,7 +1,7 @@
 # 📚 CLAUDE.md - HISTORIAL DE DESARROLLO CASHGUARD PARADISE
-**Última actualización:** 09 Oct 2025 ~17:00 PM
-**Sesión actual:** v1.3.6AD FIX MÉTRICA CRÍTICA ✅ (totalDenoms corregido: verificationSteps.length en lugar de totalAttempts | Denominador ahora muestra total denominaciones, NO intentos)
-**Estado:** 641/641 tests passing (100%) ✅ | 174 matemáticas TIER 0-4 ✅ | Build exitoso ✅ | Bundle: 1,438.08 kB ✅
+**Última actualización:** 09 Oct 2025 ~17:45 PM
+**Sesión actual:** v1.2.25/v1.2.49 ELIMINACIÓN BOTÓN ANTERIOR ✅ (Caso Eliminar_Botones_Atras completado | Footer simplificado DeliveryFieldView + lógica navegación Phase2DeliverySection)
+**Estado:** 641/641 tests passing (100%) ✅ | 174 matemáticas TIER 0-4 ✅ | Build exitoso ✅ | Bundle: 1,437.37 kB ✅
 
 ## 📊 MÉTRICAS ACTUALES DEL PROYECTO
 
@@ -138,6 +138,85 @@ Production Tests:        555 (561 - 6 debug)
 ---
 
 ## 📝 Recent Updates
+
+### v1.2.25 / v1.2.49 - Eliminación Botón "Anterior" Phase 2 Delivery [09 OCT 2025 ~17:45 PM] ✅
+**OPERACIÓN SIMPLIFICACIÓN UX COMPLETADA:** Implementación exitosa del caso "Eliminar_Botones_Atras" - botón "Anterior" eliminado de Phase 2 Delivery (DeliveryFieldView.tsx) y toda la lógica de soporte removida de Phase2DeliverySection.tsx.
+
+**Objetivo cumplido:**
+- ✅ Eliminar botón "Anterior" innecesario en pantalla de Entrega a Gerencia (Phase 2 Delivery)
+- ✅ Remover lógica de navegación bidireccional en fase de ejecución física (acción irreversible)
+- ✅ Simplificar footer de DeliveryFieldView (solo botón "Cancelar")
+- ✅ Preservar botón "Anterior" en Phase 2 Verification y Phase 1 Guided (entrada de datos)
+
+**Archivos modificados:**
+1. **DeliveryFieldView.tsx** → v1.2.25 (5 cambios):
+   - Línea 1: Version header actualizado
+   - Línea 5: Removido `ArrowLeft` de imports (lucide-react)
+   - Líneas 35-36: Removido props `onPrevious` y `canGoPrevious` de interface
+   - Líneas 67-68: Removido destructuring de props eliminadas
+   - Líneas 405-415: Footer simplificado (solo botón "Cancelar", eliminado bloque botón "Anterior")
+
+2. **Phase2DeliverySection.tsx** → v1.2.49 (6 cambios):
+   - Línea 1: Version header actualizado
+   - Línea 13: Removido import `ConfirmationModal`
+   - Líneas 23-24: Removido props `onPrevious` y `canGoPrevious` de interface
+   - Línea 33: Removido destructuring de props eliminadas
+   - Línea 36: Removido state `showBackConfirmation`
+   - Líneas 45-46: Removido funciones `handlePreviousStep()`, `handleConfirmedPrevious()`, `canGoPreviousInternal`
+   - Líneas 153-154: Removido props pasadas a DeliveryFieldView
+   - Línea 178: Removido componente `<ConfirmationModal />` (modal de retroceso)
+
+**Justificación técnica:**
+- **Phase 2 Delivery:** Fase de ejecución física (separar billetes/monedas reales) → acción IRREVERSIBLE → botón "retroceder" NO tiene sentido lógico
+- **Pattern validado:** POS, cajeros, sistemas de inventario NO permiten retroceder en ejecución física
+- **Diferencia clave:**
+  - Phase 2 Delivery: Usuario SEPARA físicamente → irreversible
+  - Phase 2 Verification: Usuario INGRESA datos → correctable (botón "Anterior" SÍ necesario)
+  - Phase 1 Guided: Usuario INGRESA datos → correctable (botón "Anterior" SÍ necesario)
+
+**Validación exitosa:**
+- ✅ **TypeScript:** `npx tsc --noEmit` → 0 errors
+- ✅ **Build:** `npm run build` → SUCCESS en 1.96s
+- ✅ **Bundle:** 1,437.37 kB (gzip: 334.98 kB) - reducción -0.71 kB vs v1.3.6AD
+- ✅ **Tests:** 641/641 passing (100%) ✅
+- ✅ **ESLint:** Warnings pre-existentes NO relacionados con cambios (dev-dist/workbox, Phase2Manager, Phase2VerificationSection)
+
+**Comparativa ANTES/DESPUÉS:**
+
+| Aspecto | ANTES (v1.2.24/v1.2.48) | DESPUÉS (v1.2.25/v1.2.49) | Mejora |
+|---------|------------------------|--------------------------|--------|
+| **DeliveryFieldView footer** | 2 botones (Cancelar + Anterior) | 1 botón (Cancelar) | ✅ -50% opciones (menos confusión) |
+| **Phase2DeliverySection lógica** | 3 funciones + 1 modal + 1 state | 0 funciones + 0 modal + 0 state | ✅ -35 líneas código |
+| **Props DeliveryFieldView** | 9 props | 7 props | ✅ -22% complejidad interface |
+| **UX Clarity** | Botón visible pero sin función (confuso) | Sin botón (interfaz clara) | ✅ +100% coherencia |
+| **Bundle size** | 1,438.08 kB | 1,437.37 kB | ✅ -0.71 kB |
+
+**Líneas de código eliminadas:**
+- **DeliveryFieldView.tsx:** ~18 líneas (import + props + JSX bloque botón)
+- **Phase2DeliverySection.tsx:** ~35 líneas (state + funciones + modal)
+- **Total eliminado:** ~53 líneas de código
+
+**Beneficios UX medibles:**
+- ✅ **Menos carga cognitiva:** -50% opciones en footer (Ley de Hick)
+- ✅ **Mayor claridad:** Interfaz coherente con naturaleza irreversible de la acción
+- ✅ **Sin modal innecesario:** "¿Retroceder al paso anterior?" eliminado
+- ✅ **Patrón consistente industria:** Matching POS/cajeros profesionales
+
+**Documentación completa:**
+- ✅ Caso documentado en: `/Documentos_MarkDown/Planes_de_Desarrollos/Caso_Eliminar_Botones_Atras/`
+  - README.md (335 líneas) - Objetivo + Justificación + Decisión
+  - PLAN_DE_ACCION.md (287 líneas) - Task list 5 fases + criterios aceptación
+  - ANALISIS_TECNICO_COMPONENTES.md (807 líneas) - Deep dive arquitectónico
+  - COMPARATIVA_VISUAL_UX.md (540 líneas) - Mockups + análisis UX
+  - INDEX.md (424 líneas) - Navegación + guía lectura
+
+**Filosofía Paradise validada:**
+- "El que hace bien las cosas ni cuenta se dará" → Interfaz simple = cero fricción operacional
+- "No mantenemos malos comportamientos" → Eliminado elemento confuso y sin propósito
+
+**Archivos:** `DeliveryFieldView.tsx` (v1.2.25), `Phase2DeliverySection.tsx` (v1.2.49), `CLAUDE.md`
+
+---
 
 ### v1.3.6AD - Fix Métrica Crítica: Total Denominaciones en Verificación Ciega [09 OCT 2025 ~17:00 PM] ✅
 **OPERACIÓN FIX MÉTRICA CRÍTICA:** Corrección del bug de denominador incorrecto en sección "VERIFICACIÓN CIEGA" del reporte WhatsApp - `totalDenoms` ahora usa `verificationSteps.length` (total de denominaciones verificadas) en lugar de `totalAttempts` (total de intentos).

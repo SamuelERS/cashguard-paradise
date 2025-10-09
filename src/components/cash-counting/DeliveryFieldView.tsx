@@ -1,8 +1,9 @@
-// 🤖 [IA] - v1.2.24: Componente DeliveryFieldView - Armonización arquitectónica con GuidedFieldView
-// Reutiliza la arquitectura visual canónica de Phase 1 para Phase 2 delivery
+// 🤖 [IA] - v1.2.25: Footer simplificado - Botón Anterior eliminado (innecesario en fase de ejecución física)
+// Previous: v1.2.24 - Armonización arquitectónica con GuidedFieldView
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, Check, X, ArrowLeft } from 'lucide-react';
+// 🤖 [IA] - v1.2.25: Removido ArrowLeft (botón Anterior eliminado)
+import { ChevronRight, Check, X } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { ConstructiveActionButton } from '@/components/shared/ConstructiveActionButton';
 import { DestructiveActionButton } from '@/components/shared/DestructiveActionButton';
@@ -32,8 +33,7 @@ interface DeliveryFieldViewProps {
   isCompleted: boolean;
   onConfirm: (value: string) => void;
   onCancel?: () => void;
-  onPrevious?: () => void;
-  canGoPrevious?: boolean;
+  // onPrevious y canGoPrevious eliminados (v1.2.25)
 }
 
 // Función para convertir labels a texto descriptivo
@@ -64,9 +64,8 @@ export function DeliveryFieldView({
   isActive,
   isCompleted,
   onConfirm,
-  onCancel,
-  onPrevious,
-  canGoPrevious = false
+  onCancel
+  // onPrevious y canGoPrevious eliminados (v1.2.25)
 }: DeliveryFieldViewProps) {
 
   // Phase 2 always uses evening colors (blue gradient)
@@ -403,28 +402,15 @@ export function DeliveryFieldView({
             </div>
           </div>
 
-          {/* Navigation footer - matching Phase 1 */}
-          {(onCancel || onPrevious) && (
-            <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-3 border-t border-white/10 p-4 bg-black/20 backdrop-blur-sm">
-              {onCancel && (
-                <DestructiveActionButton
-                  onClick={onCancel}
-                  aria-label="Cancelar entrega y volver"
-                >
-                  Cancelar
-                </DestructiveActionButton>
-              )}
-
-              {onPrevious && (
-                <NeutralActionButton
-                  onClick={onPrevious}
-                  disabled={!canGoPrevious}
-                  aria-label="Denominación anterior"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                  <span className="ml-2">Anterior</span>
-                </NeutralActionButton>
-              )}
+          {/* 🤖 [IA] - v1.2.25: Footer simplificado - Solo Cancelar (Anterior eliminado por ser innecesario en fase de ejecución física) */}
+          {onCancel && (
+            <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center border-t border-white/10 p-4 bg-black/20 backdrop-blur-sm">
+              <DestructiveActionButton
+                onClick={onCancel}
+                aria-label="Cancelar entrega y volver"
+              >
+                Cancelar
+              </DestructiveActionButton>
             </div>
           )}
         </div>

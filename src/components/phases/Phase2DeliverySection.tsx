@@ -1,6 +1,6 @@
-// 🤖 [IA] - v1.2.48: Fix timeout doble - eliminado delay innecesario para transición inmediata
-// 🤖 [IA] - v1.2.24: ARMONIZACIÓN COMPLETA - Migración a DeliveryFieldView para consistency con Phase 1
-// Reemplaza implementación text-only por componente visual rico con imágenes
+// 🤖 [IA] - v1.2.49: Lógica navegación simplificada - handlePreviousStep/handleConfirmedPrevious/canGoPreviousInternal eliminados (innecesarios en fase de ejecución física)
+// Previous: v1.2.48 - Fix timeout doble - eliminado delay innecesario para transición inmediata
+// Previous: v1.2.24 - ARMONIZACIÓN COMPLETA - Migración a DeliveryFieldView para consistency con Phase 1
 // 🤖 [IA] - v1.2.44: Mensaje transición automática mejorado para claridad UX
 // 🤖 [IA] - v1.2.11 - Sistema anti-fraude: indicadores visuales sin montos
 // 🤖 [IA] - v1.2.5 - Mejoras de visibilidad y espaciado en Android
@@ -10,7 +10,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Check } from 'lucide-react';
 import { DeliveryFieldView } from '@/components/cash-counting/DeliveryFieldView';
 import { GuidedProgressIndicator } from '@/components/ui/GuidedProgressIndicator';
-import { ConfirmationModal } from '@/components/ui/confirmation-modal';
+// 🤖 [IA] - v1.2.49: ConfirmationModal import removido (modal de retroceso eliminado)
 import { DeliveryCalculation } from '@/types/phases';
 import { formatCurrency } from '@/utils/calculations';
 
@@ -20,10 +20,8 @@ interface Phase2DeliverySectionProps {
   onStepUncomplete?: (stepKey: string) => void; // 🤖 [IA] - v1.2.24: Para deshacer pasos al retroceder
   onSectionComplete: () => void;
   completedSteps: Record<string, boolean>;
-  // 🤖 [IA] - v1.2.24: Navigation props to match Phase 1 pattern
+  // 🤖 [IA] - v1.2.49: onPrevious y canGoPrevious eliminados (innecesarios en fase de ejecución física)
   onCancel: () => void;
-  onPrevious: () => void;
-  canGoPrevious: boolean;
 }
 
 export function Phase2DeliverySection({
@@ -32,12 +30,10 @@ export function Phase2DeliverySection({
   onStepUncomplete,
   onSectionComplete,
   completedSteps,
-  onCancel,
-  onPrevious,
-  canGoPrevious
+  onCancel
 }: Phase2DeliverySectionProps) {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
-  const [showBackConfirmation, setShowBackConfirmation] = useState(false);
+  // 🤖 [IA] - v1.2.49: showBackConfirmation state removido (modal de retroceso eliminado)
   const [stepValues, setStepValues] = useState<Record<string, number>>({}); // 🤖 [IA] - v1.2.24: Track valores ingresados
 
   const { deliverySteps, amountToDeliver } = deliveryCalculation;
@@ -46,37 +42,8 @@ export function Phase2DeliverySection({
   const totalSteps = deliverySteps.length;
   const completedCount = Object.keys(completedSteps).length;
 
-  // 🤖 [IA] - v1.2.24: Función para mostrar modal de confirmación al retroceder
-  const handlePreviousStep = () => {
-    if (currentStepIndex > 0) {
-      setShowBackConfirmation(true);
-    }
-  };
-
-  // 🤖 [IA] - v1.2.24: Función para confirmar retroceso
-  const handleConfirmedPrevious = () => {
-    if (currentStepIndex > 0) {
-      // Deshacer el paso actual si está completado
-      const currentStepKey = deliverySteps[currentStepIndex].key;
-      if (completedSteps[currentStepKey] && onStepUncomplete) {
-        onStepUncomplete(currentStepKey);
-      }
-
-      // También deshacer el paso anterior para poder reeditarlo
-      const prevIndex = currentStepIndex - 1;
-      const prevStepKey = deliverySteps[prevIndex].key;
-      if (completedSteps[prevStepKey] && onStepUncomplete) {
-        onStepUncomplete(prevStepKey);
-      }
-
-      // Ahora retroceder al índice anterior
-      setCurrentStepIndex(prevIndex);
-    }
-    setShowBackConfirmation(false);
-  };
-
-  // 🤖 [IA] - v1.2.24: Calcular si se puede ir al paso anterior
-  const canGoPreviousInternal = currentStepIndex > 0;
+  // 🤖 [IA] - v1.2.49: handlePreviousStep, handleConfirmedPrevious y canGoPreviousInternal eliminados
+  // Razón: Botón Anterior innecesario en fase de ejecución física (acción irreversible)
 
   // Auto-advance to next incomplete step
   useEffect(() => {
@@ -184,8 +151,7 @@ export function Phase2DeliverySection({
               isCompleted={false}
               onConfirm={handleFieldConfirm}
               onCancel={onCancel}
-              onPrevious={handlePreviousStep}
-              canGoPrevious={canGoPreviousInternal}
+              // 🤖 [IA] - v1.2.49: onPrevious y canGoPrevious removidos (props eliminadas)
             />
           )}
         </AnimatePresence>
@@ -209,18 +175,7 @@ export function Phase2DeliverySection({
         </div>
       )}
 
-      {/* Modal de confirmación para retroceder */}
-      <ConfirmationModal
-        open={showBackConfirmation}
-        onOpenChange={setShowBackConfirmation}
-        title="¿Retroceder al paso anterior?"
-        description="El progreso del paso actual se perderá."
-        warningText="Retrocede si necesitas corregir la cantidad anterior."
-        confirmText="Sí, retroceder"
-        cancelText="Continuar aquí"
-        onConfirm={handleConfirmedPrevious}
-        onCancel={() => setShowBackConfirmation(false)}
-      />
+      {/* 🤖 [IA] - v1.2.49: ConfirmationModal eliminado (modal de retroceso innecesario en fase de ejecución física) */}
     </motion.div>
   );
 }
