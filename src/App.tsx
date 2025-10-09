@@ -14,7 +14,12 @@ const queryClient = new QueryClient();
 const App = () => {
   // 🤖 [IA] - v1.0.47: Detectar móvil para posición de toasts
   const isMobile = useIsMobile();
-  
+
+  // 🤖 [IA] - v1.3.6AA: FIX CRÍTICO iOS Safari - Deshabilitar FloatingOrbs en iOS
+  // Root cause REAL: FloatingOrbs GPU compositing (3 motion.div animados) bloquea touch events en iOS
+  // Trade-off aceptable: iOS sin orbes decorativos para garantizar funcionalidad 100%
+  const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+
   return (
     <ErrorBoundary
       onError={(error, errorInfo) => {
@@ -31,8 +36,9 @@ const App = () => {
     >
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
-          {/* Global FloatingOrbs - Single instance for entire app */}
-          <FloatingOrbs />
+          {/* 🤖 [IA] - v1.3.6AA: FIX iOS Safari - FloatingOrbs solo en Android/desktop */}
+          {/* Root cause: GPU compositing bug iOS Safari bloquea touch events en Phase 3 */}
+          {!isIOS && <FloatingOrbs />}
           {/* 🤖 [IA] - v1.0.47: Toasts arriba en móvil, abajo en desktop */}
           <Sonner 
             position={isMobile ? "top-center" : "bottom-center"}

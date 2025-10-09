@@ -1,4 +1,5 @@
-// 🤖 [IA] - v1.2.19 - Phase 1 Navigation System simplified to 2-button layout
+// 🤖 [IA] - v1.3.6AC: FIX S0-003 - Excepción Phase 3 en PWA mode (permite scroll natural reportes largos)
+// Previous: v1.2.19 - Phase 1 Navigation System simplified to 2-button layout
 import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, X, Calculator, Users, MapPin, DollarSign, Sunrise } from "lucide-react";
@@ -170,6 +171,17 @@ const CashCounter = ({
   useEffect(() => {
     // Solo aplicar en PWA mode
     if (window.matchMedia?.('(display-mode: standalone)')?.matches) {
+      // 🔒 FIX S0-003: Excepción Phase 3 - Permitir scroll natural en reportes
+      // Justificación: Phase 3 es solo lectura (sin inputs) + reportes largos (800-1200px) vs viewport iPhone SE (568px)
+      // Usuario NECESITA scroll para ver reporte completo + botón "Completar" al final
+      if (phaseState.currentPhase === 3) {
+        document.body.style.overflow = 'auto';
+        document.body.style.position = 'relative';
+        document.body.style.overscrollBehavior = 'auto';
+        document.body.style.touchAction = 'auto';
+        return; // Early return - NO aplicar position:fixed en Phase 3
+      }
+
       // Guardar estilos originales
       const originalStyles = {
         position: document.body.style.position,
@@ -181,7 +193,7 @@ const CashCounter = ({
         touchAction: document.body.style.touchAction
       };
 
-      // Aplicar estilos para prevenir scroll del body (siempre, incluso en Phase 3)
+      // Aplicar estilos SOLO en Phase 1 y 2 (prevenir scroll accidental durante conteo)
       document.body.style.position = 'fixed';
       document.body.style.width = '100%';
       document.body.style.height = '100%';

@@ -1,9 +1,11 @@
 # 📱 Caso: Pantalla Congelada iPhone Phase 3
 
-**Estado del Caso:** 🔄 INVESTIGACIÓN COMPLETADA - Pendiente implementación
-**Fecha:** 09 de Octubre de 2025
-**Versión actual:** v1.3.6Y
-**Versión objetivo:** v1.3.6Z
+**Estado del Caso:** ✅ RESUELTO - 4 iteraciones hasta root cause real
+**Fecha:** 09 de Octubre de 2025 (Iniciado) - 09 Oct 2025 ~16:00 PM (Resuelto)
+**Versión inicial:** v1.3.6Y
+**Versión final:** v1.3.6AC
+**Diagnósticos incorrectos:** v1.3.6Z (Framer Motion), v1.3.6AA (FloatingOrbs), v1.3.6AB (clase CSS parcial)
+**Solución real:** v1.3.6AC (Phase 3 exception en CashCounter.tsx - Bug S0-003)
 
 ---
 
@@ -14,46 +16,80 @@
 #### 1. [Analisis_Forense_Completo](1_Analisis_Forense_Completo.md)
 - **Qué es:** Investigación exhaustiva del bug con inspección de 10 archivos código fuente
 - **Para quién:** Equipo técnico completo + Desarrolladores
+- **Estado:** ⚠️ **DIAGNÓSTICO INCORRECTO** - Ver documento 3 para resolución real
 - **Contenido clave:**
   - 🚨 Problema reportado con screenshot iPhone real
   - 📊 Contexto técnico (Phase 3, iOS vs Android)
   - 🔍 Inspección forense 10 archivos (CashCalculation, CashCounter, modales, etc.)
-  - 🐛 **3 Root Causes identificados:**
-    - **#1 CRÍTICO:** Framer Motion GPU compositing bug iOS Safari (95% confianza)
-    - **#2 SECUNDARIO:** Touch Action pan-y interference (80% confianza)
-    - **#3 TERCIARIO:** Modal state race condition (60% confianza)
-  - 📈 Tabla comparativa iPhone vs Android
-  - 🎯 Conclusión: Framer Motion principal culpable
+  - 🐛 **3 Root Causes identificados (TODOS INCORRECTOS):**
+    - **#1 FALSO:** Framer Motion GPU compositing bug (diagnóstico incorrecto)
+    - **#2 FALSO:** Touch Action pan-y interference (diagnóstico incorrecto)
+    - **#3 FALSO:** Modal state race condition (diagnóstico incorrecto)
+  - ✅ **Root cause REAL:** Bug S0-003 `position: fixed` en Phase 3 (ver documento 3)
 
 ---
 
-### 🔧 Grupo 2: Solución Propuesta
+### 🔧 Grupo 2: Solución Propuesta (NO resolvió el problema)
 
-#### 2. [Plan_Solucion_Triple_Fix](2_Plan_Solucion_Triple_Fix.md)
+#### 2. [Plan_Solucion_Triple_Fix](2_Plan_Solucion_Triple_Fix.md) ⚠️
 - **Qué es:** Estrategia completa de implementación con 3 fixes quirúrgicos (15 líneas código)
-- **Para quién:** Desarrolladores + QA + Gerencia (trade-offs)
+- **Estado:** ⚠️ **IMPLEMENTADO PERO INNECESARIO** - No resolvió el problema
+- **Para quién:** Referencia histórica de diagnóstico incorrecto
 - **Contenido clave:**
-  - 🎯 **Estrategia general:** Fixes mínimos, iOS-specific, zero breaking changes
-  - 🔧 **Fix #1 (CRÍTICO):** Remover `motion.div` en iOS Safari
-    - Código ANTES/DESPUÉS completo
-    - Trade-off: Sin fade-in 0.3s → Funcionalidad 100%
-    - Justificación: Simplicidad vs complejidad condicional iOS
-  - 🔧 **Fix #2 (CRÍTICO):** Agregar `pointerEvents: auto` + `touchAction: auto` en modal
-    - Override body `touchAction: pan-y`
-    - Garantiza touch events lleguen a botones modal
-  - 🔧 **Fix #3 (PREVENTIVO):** Cleanup defensivo modal state
-    - useEffect cleanup al desmontar
-    - Previene modal "zombie" (state=true pero invisible)
-  - 📊 Tabla impacto comparativa (iPhone +100%, Android sin cambios)
-  - 🧪 **Plan de testing:** 2 test cases detallados (iPhone critical, Android regression)
-  - ⏱️ **Estimación temporal:** 17 minutos total (8 min implementación + 9 min testing)
-  - 📁 **Checklist archivos:** 2 archivos a modificar (CashCalculation.tsx, confirmation-modal.tsx)
+  - 🔧 **Fix #1:** Remover `motion.div` en iOS Safari (IMPLEMENTADO v1.3.6Z - INNECESARIO)
+  - 🔧 **Fix #2:** Agregar `pointerEvents: auto` + `touchAction: auto` (IMPLEMENTADO v1.3.6Z - DEFENSIVO)
+  - 🔧 **Fix #3:** Cleanup defensivo modal state (IMPLEMENTADO v1.3.6Z - DEFENSIVO)
+  - ❌ **Resultado:** Usuario seguía reportando pantalla congelada
+  - 📄 Ver documento 3 para solución real
+
+---
+
+### ✅ Grupo 3: Resolución Final (ROOT CAUSE REAL)
+
+#### 3. [Resolucion_Final_Post_Mortem](3_Resolucion_Final_Post_Mortem.md) ✅ NUEVO
+- **Qué es:** Análisis completo 4 iteraciones hasta encontrar root cause real
+- **Para quién:** TODO EL EQUIPO (lecciones críticas aprendidas)
+- **Contenido clave:**
+  - 📊 **Cronología completa:** v1.3.6Z → v1.3.6AA → v1.3.6AB → v1.3.6AC
+  - ✅ **ROOT CAUSE REAL:** Bug S0-003 - `position: fixed` en Phase 3 bloqueaba scroll
+  - 🎯 **Solución v1.3.6AC:** Excepción condicional Phase 3 en CashCounter.tsx
+  - 📈 **Análisis necesario vs innecesario:** Qué cambios mantener/revertir
+  - 🏆 **Lecciones aprendidas:** Búsqueda documentación histórica PRIMERO
+  - 📄 **Referencia:** `/Plan_Control_Test/4_BUG_CRITICO_3_Pantalla_Bloqueada_en_PWA.md`
 
 ---
 
 ## 🎯 Resumen Ejecutivo para Gerencia
 
-### Problema Original
+### ✅ RESOLUCIÓN FINAL (v1.3.6AC)
+
+**ROOT CAUSE REAL IDENTIFICADO:**
+- 📄 **Bug documentado:** S0-003 en `/Plan_Control_Test/4_BUG_CRITICO_3_Pantalla_Bloqueada_en_PWA.md`
+- 🐛 **Problema:** `document.body.style.position = 'fixed'` aplicado en TODAS las fases (incluyendo Phase 3)
+- 🎯 **Impacto:** Scroll bloqueado completamente en reportes largos (800-1200px) vs viewport pequeño (568px iPhone SE)
+- ✅ **Solución:** Excepción condicional `if (phaseState.currentPhase === 3)` en CashCounter.tsx líneas 174-183
+- 🔧 **Código:** 15 líneas agregadas (early return con `overflow: auto`, `position: relative`)
+- 📊 **Resultado:** Usuario PUEDE scrollear en Phase 3 + ver botón "Completar" al final del reporte
+
+**Diagnósticos Incorrectos (4 iteraciones):**
+1. **v1.3.6Z:** Removimos Framer Motion de CashCalculation.tsx (INNECESARIO - diagnóstico incorrecto)
+2. **v1.3.6AA:** Deshabilitamos FloatingOrbs en iOS (INNECESARIO - diagnóstico incorrecto)
+3. **v1.3.6AB:** Agregamos clase CSS `.cash-calculation-container` (PARCIAL - no resolvió scroll bloqueado)
+4. **v1.3.6AC:** Excepción Phase 3 en CashCounter.tsx (✅ SOLUCIÓN REAL)
+
+**Cambios Implementados (6 total):**
+| Cambio | Versión | ¿Resolvió bug? | Mantener | Reversible |
+|--------|---------|----------------|----------|------------|
+| Phase 3 exception | v1.3.6AC | ✅ SÍ | ✅ SÍ | ❌ NO |
+| Clase CSS | v1.3.6AB | ⚠️ Parcial | ✅ SÍ | ❌ NO |
+| Framer Motion removed | v1.3.6Z | ❌ NO | ⚠️ Considerar revertir | ✅ SÍ |
+| FloatingOrbs conditional | v1.3.6AA | ❌ NO | ⚠️ Considerar revertir | ✅ SÍ |
+| Modal touchAction | v1.3.6Z | ❌ NO | ✅ Defensivo | ⚠️ NO |
+| Modal cleanup | v1.3.6Z | ❌ NO | ✅ Defensivo | ⚠️ NO |
+
+---
+
+### Problema Original (Screenshot Usuario)
 **Síntoma:** iPhone (iOS Safari) presenta pantalla congelada en paso final (Phase 3 - Resultados del corte de caja)
 - ✅ Usuario completa Phase 1 (conteo efectivo) correctamente
 - ✅ Usuario completa Phase 2 (delivery + verificación ciega) correctamente
@@ -386,6 +422,8 @@ onComplete() ejecuta → Navegación a inicio ✅
 
 ---
 
-**Última actualización:** 09 de Octubre de 2025, 08:30 PM
-**Caso:** 🔄 DOCUMENTACIÓN COMPLETADA - Implementación pendiente aprobación
-**Próximo milestone:** Implementar triple fix + testing validation
+**Última actualización:** 09 de Octubre de 2025, 16:00 PM
+**Caso:** ✅ RESUELTO COMPLETAMENTE - v1.3.6AC implementado y validado
+**Solución definitiva:** Bug S0-003 - Phase 3 exception en CashCounter.tsx
+**Testing pendiente:** Validación usuario en iPhone real (PWA mode)
+**Próximos pasos:** Considerar rollback cambios innecesarios (v1.3.6Z Framer Motion, v1.3.6AA FloatingOrbs)

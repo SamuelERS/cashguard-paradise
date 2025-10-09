@@ -3,6 +3,7 @@
 **Estado:** ✅ DOCUMENTACIÓN COMPLETA
 **Fechas:** Agosto-Octubre 2025
 **Stack:** React 18 + TypeScript + Docker + Vite
+**Documentos:** 24 archivos técnicos (~230 páginas, 80+ code snippets)
 
 ---
 
@@ -291,6 +292,148 @@
   - **Sprint planning:** Esfuerzo estimado por archivo (2h-8h)
   - **16 hooks sin tests** con prioridad asignada (Alta/Media/Baja)
   - **Métricas por archivo:** Coverage individual detallado
+
+#### 21. [Solucion_Error_Manifest_PWA_Troubleshooting](21_Solucion_Error_Manifest_PWA_Troubleshooting.md)
+- **Qué es:** Guía definitiva de troubleshooting para resolver error crítico PWA manifest
+- **Para quién:** DevOps + Desarrolladores frontend + QA testers
+- **Contenido clave:**
+  - **Error crítico resuelto:** `Manifest: Line: 1, column: 1, Syntax error`
+  - **Root cause identificado:** Service Worker cached corrupted manifest from previous build
+  - **5 soluciones ordenadas:**
+    1. Browser cache clear (Ctrl+Shift+Del, check "Cached images and files")
+    2. Restart dev server (npm run dev)
+    3. Verify manifest validity (JSON validation)
+    4. Incognito mode testing
+    5. Force rebuild (npm run build)
+  - **Debug commands:**
+    ```bash
+    head -5 dist/manifest.webmanifest
+    cat dist/manifest.webmanifest | python3 -m json.tool
+    cat -A dist/manifest.webmanifest | head -5
+    ```
+  - **Manual action crítica:** DevTools → Application → Clear site data + Hard refresh
+  - **Lección aprendida:** Service Worker caching puede corromper manifest durante desarrollo iterativo
+
+#### 22. [Roadmap_PWA_Deployment_SiteGround_Completo](22_Roadmap_PWA_Deployment_SiteGround_Completo.md)
+- **Qué es:** Roadmap completo de implementación PWA en 5 fases desde configuración hasta deployment producción
+- **Para quién:** Tech Lead + DevOps + Product Manager + Desarrolladores
+- **Contenido clave:**
+  - **Fase 1 (✅ COMPLETADO):** Configuration verification
+    - vite-plugin-pwa v1.0.2 instalado
+    - 13 icons verified (48x48 to 512x512)
+    - manifest.webmanifest config completo
+  - **Fase 2 (✅ COMPLETADO):** PWA build generation
+    - Independent auditor verified success (28/09/2025)
+    - Build metrics: 3.0 MB total, 41 files pre-cached
+  - **Fase 3 (✅ COMPLETADO):** Local pre-verification
+    - Service Worker registered correctly
+    - Offline functionality working
+    - Cache strategies validated
+  - **Fase 4 (PENDIENTE):** SiteGround deployment
+    - 3 métodos disponibles: FTP, Git, cPanel File Manager
+  - **Fase 5 (PENDIENTE):** Production verification
+    - Lighthouse audit target >90/100
+    - Multi-platform install testing (desktop, Android, iOS)
+  - **Build timestamp:** 30/09/2025 22:39
+  - **PWA configuration:**
+    ```typescript
+    registerType: 'autoUpdate',
+    manifest: {
+      name: "Paradise Cash Control - Sistema Anti-Fraude",
+      short_name: "Paradise Cash",
+      icons: [/* 13 icons */],
+      shortcuts: [/* Quick access */]
+    }
+    ```
+  - **Pre-cache strategy:** 41 archivos esenciales (HTML, JS, CSS, icons)
+
+#### 23. [Design_System_Action_Buttons_Especificaciones](23_Design_System_Action_Buttons_Especificaciones.md)
+- **Qué es:** Especificaciones canónicas del Design System para Action Buttons (Doctrina D.1)
+- **Para quién:** Desarrolladores frontend + Diseñadores UI + Arquitectos de software
+- **Contenido clave:**
+  - **DestructiveActionButton (red) specs:**
+    ```typescript
+    // Background Colors
+    bg-red-900, hover:bg-red-800
+    text-red-100, border border-red-700
+    focus-visible:ring-red-500
+
+    // Fluid Sizing
+    h-fluid-3xl → clamp(3rem, 12vw, 4.5rem)  // 48px-72px
+    px-fluid-lg → clamp(1rem, 4vw, 1.5rem)   // 16px-24px
+    py-2 → 8px (fixed)
+
+    // Disabled States
+    disabled:bg-slate-800
+    disabled:text-slate-600
+    disabled:border-slate-700
+    ```
+  - **ConstructiveActionButton (green) specs:** Same structure, green color scheme
+  - **Architecture principles:**
+    1. **Single Source of Truth:** Components self-contained, no external style overrides
+    2. **Fluid Responsive System:** clamp() for smooth scaling mobile→desktop
+    3. **DRY Principle:** No class repetition, modular design
+  - **Historial:** v3.2.1 "ARCHITECTURAL-INTEGRITY" operation
+    - Problem: Hardcoded TailwindCSS classes in usage broke component autonomy
+    - Solution: Eliminate all external overrides, enforce component self-sufficiency
+  - **Doctrina D.1:** Action Buttons as canonical, immutable specifications
+
+#### 24. [Instrucciones_Deployment_Produccion_Multi_Plataforma](24_Instrucciones_Deployment_Produccion_Multi_Plataforma.md)
+- **Qué es:** Manual completo de deployment a producción con 4 opciones de plataforma
+- **Para quién:** DevOps + Tech Lead + Desarrolladores + Gerencia de proyectos
+- **Contenido clave:**
+  - **Build status:** 30/09/2025 22:39, READY TO DEPLOY
+  - **Artifacts verificados:**
+    ```
+    ✅ index.html (4.21 KB)
+    ✅ sw.js (3.7 KB)
+    ✅ manifest.webmanifest (1.75 KB)
+    ✅ workbox-5ffe50d4.js (15 KB)
+    ✅ assets/index-DJvQqL9S.css (250 KB)
+    ✅ assets/index-BFvOS14W.js (1.4 MB)
+    ✅ 13 PNG icons + 41 pre-cached files (2.7 MB)
+    ```
+  - **Opción 1 - SiteGround FTP (FileZilla):**
+    - Download FileZilla from https://filezilla-project.org/
+    - Connect: ftp.su-dominio.com, port 21
+    - Upload ALL dist/ contents to /public_html/
+    - Verify file structure on server
+  - **Opción 2 - Docker Production:**
+    ```bash
+    docker-compose --profile prod up -d
+    docker ps
+    # Access: http://localhost:8080
+    ```
+  - **Opción 3 - Netlify:** Git-based auto-deployment
+    - Build command: `npm run build`
+    - Publish directory: `dist`
+  - **Opción 4 - Vercel:** CLI-based deployment
+    - Command: `vercel`
+  - **Post-deployment verification checklists:**
+    1. Basic verification (site loads, no console errors)
+    2. PWA verification (manifest, Service Worker activated)
+    3. Lighthouse audit (target >90/100)
+    4. Installation testing (desktop, Android, iOS)
+    5. Offline functionality testing
+  - **Troubleshooting:**
+    - Service Worker registration check:
+      ```javascript
+      navigator.serviceWorker.getRegistrations().then(registrations => {
+        console.log('Service Workers registrados:', registrations);
+      });
+      ```
+    - SiteGround 404 fix (.htaccess):
+      ```apache
+      <IfModule mod_rewrite.c>
+        RewriteEngine On
+        RewriteBase /
+        RewriteRule ^index\.html$ - [L]
+        RewriteCond %{REQUEST_FILENAME} !-f
+        RewriteCond %{REQUEST_FILENAME} !-d
+        RewriteRule . /index.html [L]
+      </IfModule>
+      ```
+  - **Expected metrics:** Performance 90-100, First load ~1.7 MB, Subsequent <100 KB, Offline 0 KB
 
 ---
 

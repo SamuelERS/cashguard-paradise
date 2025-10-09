@@ -1,6 +1,6 @@
-// 🤖 [IA] - v1.3.6Z: FIX CRÍTICO iOS Safari - Triple defensa pantalla congelada Phase 3
-// Previous: v1.3.6Y - Fix cálculo perfectas (Total - Errores en lugar de forEach)
-// Previous: v1.3.6X - MÉTRICAS LIMPIAS - Removidos porcentajes Verificación Ciega
+// 🤖 [IA] - v1.3.6AB: FIX ROOT CAUSE REAL - Clase .cash-calculation-container agregada (patrón v1.2.41A9)
+// Previous: v1.3.6AA - FloatingOrbs condicional iOS (diagnóstico incorrecto) ⚠️
+// Previous: v1.3.6Z - Framer Motion removido CashCalculation (diagnóstico incorrecto) ⚠️
 import { useState, useEffect, useCallback } from "react";
 // 🤖 [IA] - v1.3.6Z: Framer Motion removido (GPU compositing bug iOS Safari causa pantalla congelada Phase 3)
 import { Calculator, AlertTriangle, CheckCircle, Share, Download, Copy } from "lucide-react";
@@ -768,7 +768,7 @@ Firma Digital: ${dataHash}`;
   }
 
   return (
-    <div className="min-h-screen relative overflow-y-auto" data-scrollable="true">
+    <div className="cash-calculation-container min-h-screen relative overflow-y-auto" data-scrollable="true">
       
       <div className="relative z-10 container mx-auto px-[clamp(1rem,4vw,1.5rem)] py-[clamp(1.5rem,6vw,2rem)] max-w-4xl">
         {/* 🤖 [IA] - v1.3.6Z: FIX iOS Safari - motion.div → div estático */}

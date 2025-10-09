@@ -2,7 +2,7 @@
 
 **Estado:** 📚 DOCUMENTACIÓN TÉCNICA COMPLETA
 **Fechas:** Agosto-Octubre 2025
-**Total archivos:** 20 documentos técnicos
+**Total archivos:** 24 documentos técnicos
 
 ---
 
@@ -71,6 +71,18 @@
 
 18. **[Tracking_Cobertura_Detallado_Roadmap_2025](18_Tracking_Cobertura_Detallado_Roadmap_2025.md)**
     Tracking detallado de cobertura por archivo + roadmap Q1-Q4 2025
+
+21. **[Solucion_Error_Manifest_PWA_Troubleshooting](21_Solucion_Error_Manifest_PWA_Troubleshooting.md)**
+    Solución definitiva error crítico PWA manifest - guía troubleshooting completa
+
+22. **[Roadmap_PWA_Deployment_SiteGround_Completo](22_Roadmap_PWA_Deployment_SiteGround_Completo.md)**
+    Roadmap completo implementación PWA - 5 fases desde config hasta deployment
+
+23. **[Design_System_Action_Buttons_Especificaciones](23_Design_System_Action_Buttons_Especificaciones.md)**
+    Especificaciones canónicas Design System - Action Buttons (Doctrina D.1)
+
+24. **[Instrucciones_Deployment_Produccion_Multi_Plataforma](24_Instrucciones_Deployment_Produccion_Multi_Plataforma.md)**
+    Manual deployment producción - SiteGround, Docker, Netlify, Vercel
 
 ---
 
