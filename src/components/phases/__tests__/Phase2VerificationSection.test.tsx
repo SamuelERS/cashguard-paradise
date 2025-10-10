@@ -79,7 +79,7 @@ const mockDeliveryCalculation: DeliveryCalculation = {
 };
 
 // Helper: Renderizar componente con props mínimas y state management
-const renderPhase2Verification = (overrideProps: any = {}) => {
+const renderPhase2Verification = (overrideProps: Partial<React.ComponentProps<typeof Phase2VerificationSection>> = {}) => {
   // Store callbacks outside wrapper to maintain spy references
   const callbacks = {
     onStepComplete: overrideProps.onStepComplete || vi.fn(),

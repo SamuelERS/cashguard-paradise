@@ -155,15 +155,17 @@ export function Phase2Manager({
       }, 1000);
       return () => clearTimeout(timeoutId);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [verificationCompleted, verificationBehavior, onPhase2Complete, onDeliveryCalculationUpdate]);
   // 🤖 [IA] - v1.3.6k: REVERTIDO comentario v1.3.6f - verificationBehavior DEBE estar en deps
   // Justificación: Si behavior llega tarde (async state update), useEffect debe re-ejecutar para agregarlo
   // Justificación: Valor se captura en closure del setTimeout, NO necesita ser dependencia explícita
   // Comportamiento: useEffect solo se dispara cuando verificationCompleted cambia (trigger único correcto)
   // 🤖 [IA] - v1.3.6b: BUG FIX CRÍTICO #2 - deliveryCalculation removido de dependencies array
-  // Root cause: deliveryCalculation solo se MUTA (línea 126), NO se LEE en useEffect
+  // Root cause: deliveryCalculation solo se MUTA (línea 148), NO se LEE en useEffect
   // Problema: Mutación cambia referencia → useEffect se re-dispara infinitamente → loop #2
   // Solución: Remover de deps - mutación es side effect válido para enriquecer objeto
+  // eslint-disable: deliveryCalculation intencionalmente omitido - solo se muta como fallback, no se lee
 
   const handleDeliveryStepComplete = (stepKey: string) => {
     setDeliveryProgress(prev => ({
@@ -283,8 +285,6 @@ export function Phase2Manager({
                   onSectionComplete={handleDeliverySectionComplete} // 🤖 [IA] - v1.2.47: RESTAURADO - crítico para transición
                   completedSteps={deliveryProgress}
                   onCancel={() => setShowExitConfirmation(true)}
-                  onPrevious={() => {}}
-                  canGoPrevious={false}
                 />
               </motion.div>
             )}
@@ -305,8 +305,6 @@ export function Phase2Manager({
                   onVerificationBehaviorCollected={handleVerificationBehaviorCollected}
                   completedSteps={verificationProgress}
                   onCancel={() => setShowExitConfirmation(true)}
-                  onPrevious={() => {}}
-                  canGoPrevious={false}
                 />
               </motion.div>
             )}

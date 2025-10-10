@@ -62,7 +62,7 @@ const ProtocolRuleComponent = ({ rule, state, isCurrent, onAcknowledge }: Protoc
           icon: 'text-muted-foreground'
         };
     }
-  }, [visualState, colors.border, colors.text]);
+  }, [visualState, colors.text]);
 
   // 🤖 [IA] - Manejar click en la regla (memoizado para performance)
   const handleClick = useCallback(() => {

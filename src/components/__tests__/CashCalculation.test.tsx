@@ -70,8 +70,10 @@ describe('CashCalculation - v1.3.7 WhatsApp Confirmation Flow', () => {
     onComplete: vi.fn()
   };
 
-  // 🤖 [IA] - v1.3.7a: Spies con any para evitar conflictos TypeScript en tests
+  // 🤖 [IA] - v1.3.7a: Spies para tests - Tipos inferidos automáticamente por vitest
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let windowOpenSpy: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let setTimeoutSpy: any;
 
   beforeEach(() => {
@@ -80,6 +82,7 @@ describe('CashCalculation - v1.3.7 WhatsApp Confirmation Flow', () => {
     windowOpenSpy = vi.spyOn(window, 'open').mockReturnValue({
       closed: false,
       close: vi.fn()
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);
     // Mock setTimeout para control manual
     setTimeoutSpy = vi.spyOn(global, 'setTimeout');
@@ -227,6 +230,7 @@ describe('CashCalculation - v1.3.7 WhatsApp Confirmation Flow', () => {
     });
 
     it('3.2 - Si window.open.closed === true, debe detectar bloqueo', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       windowOpenSpy.mockReturnValue({ closed: true, close: vi.fn() } as any);
       const user = userEvent.setup();
       render(<CashCalculation {...defaultProps} />);

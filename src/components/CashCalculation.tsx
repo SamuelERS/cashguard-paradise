@@ -542,7 +542,7 @@ ${videoTimestamp}
 ${alerts}`;
   };
 
-  const generateCompleteReport = () => {
+  const generateCompleteReport = useCallback(() => {
     validatePhaseCompletion();
 
     const denominationDetails = generateDenominationDetails();
@@ -659,7 +659,9 @@ ${WHATSAPP_SEPARATOR}
 ⚠️ Documento NO editable
 
 Firma Digital: ${dataHash}`;
-  };
+  }, [calculationData, electronicPayments, deliveryCalculation, store, cashier, witness, phaseState, expectedSales,
+      validatePhaseCompletion, generateDenominationDetails, generateDataHash, generateCriticalAlertsBlock,
+      generateWarningAlertsBlock, generateDeliveryChecklistSection, generateRemainingChecklistSection]);
 
   // 🤖 [IA] - v1.3.7: Handler con confirmación explícita + detección pop-ups bloqueados
   const handleWhatsAppSend = useCallback(() => {
@@ -707,7 +709,10 @@ Firma Digital: ${dataHash}`;
         description: error instanceof Error ? error.message : "Error desconocido"
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [calculationData, store, cashier, witness, reportSent]);
+  // generateCompleteReport y handleCopyToClipboard son funciones estables definidas en el componente
+  // Incluirlas causaría re-creación innecesaria del callback en cada render
 
   // 🤖 [IA] - v1.3.7: Handler confirmación explícita usuario
   const handleConfirmSent = useCallback(() => {
@@ -772,11 +777,11 @@ Firma Digital: ${dataHash}`;
   };
 
   // 🤖 [IA] - v1.1.09: Función mejorada con fallback robusto
-  const handleCopyToClipboard = async () => {
+  const handleCopyToClipboard = useCallback(async () => {
     try {
       const report = generateCompleteReport();
       const result = await copyToClipboard(report);
-      
+
       if (result.success) {
         toast.success("💾 Copiado al portapapeles", {
           description: "El reporte ha sido copiado exitosamente"
@@ -792,7 +797,7 @@ Firma Digital: ${dataHash}`;
         description: error instanceof Error ? error.message : "Error desconocido"
       });
     }
-  };
+  }, [generateCompleteReport]);
 
   if (!calculationData) {
     return (

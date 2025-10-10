@@ -108,9 +108,8 @@ export function Phase2VerificationSection({
     const attemptCount = getAttemptCount(stepKey);
     const attempt = validateAttempt(
       stepKey as keyof typeof denominationsToKeep,
-      attemptCount + 1,
-      inputValue,
-      expectedValue
+      (attemptCount + 1) as 1 | 2 | 3,
+      inputValue
     );
 
     setAttemptHistory(prev => {
@@ -316,8 +315,10 @@ export function Phase2VerificationSection({
     console.log('[DEBUG v1.3.6S] ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
     return finalBehavior;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [attemptHistory]); // ← v1.3.6a: Única dependencia, referencia estable
   // verificationSteps.length omitido intencionalmente - función solo lee attemptHistory Map
+  // verificationSteps es constante derivada de deliveryCalculation (prop), no cambia durante lifecycle
 
   // Auto-advance to next incomplete step
   useEffect(() => {

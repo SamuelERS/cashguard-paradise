@@ -117,7 +117,7 @@ export function MorningVerification({
     } catch (error) {
       toast.error('Error al generar el reporte');
     }
-  }, [reportSent]);
+  }, [reportSent, generateReport, handleCopyToClipboard]);
 
   // 🤖 [IA] - v1.3.7: Handler confirmación explícita usuario
   const handleConfirmSent = useCallback(() => {
@@ -127,7 +127,7 @@ export function MorningVerification({
   }, []);
 
   // 🤖 [IA] - v1.1.09: Función mejorada con fallback robusto
-  const handleCopyToClipboard = async () => {
+  const handleCopyToClipboard = useCallback(async () => {
     try {
       const report = generateReport();
       const result = await copyToClipboard(report);
@@ -140,7 +140,7 @@ export function MorningVerification({
     } catch (error) {
       toast.error('Error al generar el reporte');
     }
-  };
+  }, [generateReport]);
   
   const handleShare = async () => {
     const report = generateReport();
@@ -174,9 +174,9 @@ export function MorningVerification({
     toast.success('Reporte descargado exitosamente');
   };
 
-  const generateReport = () => {
+  const generateReport = useCallback(() => {
     if (!verificationData) return '';
-    
+
     return `
 🌅 CONTEO DE CAJA MATUTINO
 ============================
@@ -206,7 +206,7 @@ ${verificationData.hasExcess ? '⚠️ SOBRANTE: Verificar origen del exceso' : 
 ============================
 Sistema CashGuard Paradise v1.1.13
     `.trim();
-  };
+  }, [verificationData, store, cashierIn, cashierOut, cashCount]);
 
   // 🤖 [IA] - v1.1.13: Función para generar display visual de denominaciones con identidad naranja
   const generateDenominationDisplay = () => {
