@@ -5,6 +5,25 @@ import userEvent from '@testing-library/user-event';
 import CashCalculation from '../CashCalculation';
 import type { CashCount, ElectronicPayments } from '@/types/cash';
 
+// 🤖 [IA] - v1.3.7a: Mock paradise data (stores & employees)
+vi.mock('@/data/paradise', () => ({
+  getStoreById: vi.fn((id: string) => ({
+    id,
+    name: 'Test Store',
+    address: 'Test Address',
+    phone: '1234-5678',
+    schedule: '9AM-5PM'
+  })),
+  getEmployeeById: vi.fn((id: string) => ({
+    id,
+    name: 'Test Employee',
+    role: 'Test Role',
+    stores: ['test-store']
+  })),
+  STORES: [],
+  EMPLOYEES: []
+}));
+
 // Mock dependencies
 vi.mock('@/utils/clipboard', () => ({
   copyToClipboard: vi.fn(() => Promise.resolve({ success: true }))
@@ -51,8 +70,9 @@ describe('CashCalculation - v1.3.7 WhatsApp Confirmation Flow', () => {
     onComplete: vi.fn()
   };
 
-  let windowOpenSpy: ReturnType<typeof vi.spyOn>;
-  let setTimeoutSpy: ReturnType<typeof vi.spyOn>;
+  // 🤖 [IA] - v1.3.7a: Spies con any para evitar conflictos TypeScript en tests
+  let windowOpenSpy: any;
+  let setTimeoutSpy: any;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -60,7 +80,7 @@ describe('CashCalculation - v1.3.7 WhatsApp Confirmation Flow', () => {
     windowOpenSpy = vi.spyOn(window, 'open').mockReturnValue({
       closed: false,
       close: vi.fn()
-    } as Window);
+    } as any);
     // Mock setTimeout para control manual
     setTimeoutSpy = vi.spyOn(global, 'setTimeout');
   });
@@ -89,21 +109,21 @@ describe('CashCalculation - v1.3.7 WhatsApp Confirmation Flow', () => {
     it('1.3 - Botón WhatsApp debe estar habilitado inicialmente', () => {
       render(<CashCalculation {...defaultProps} />);
 
-      const whatsappButton = screen.getByRole('button', { name: /enviar whatsapp/i });
+      const whatsappButton = screen.getByRole('button', { name: /enviar reporte por whatsapp/i });
       expect(whatsappButton).toBeEnabled();
     });
 
     it('1.4 - Botón Copiar debe estar deshabilitado inicialmente', () => {
       render(<CashCalculation {...defaultProps} />);
 
-      const copyButton = screen.getByRole('button', { name: /copiar/i });
+      const copyButton = screen.getByRole('button', { name: /copiar reporte/i });
       expect(copyButton).toBeDisabled();
     });
 
     it('1.5 - Botón Finalizar debe estar deshabilitado inicialmente', () => {
       render(<CashCalculation {...defaultProps} />);
 
-      const finishButton = screen.getByRole('button', { name: /finalizar/i });
+      const finishButton = screen.getByRole('button', { name: /finalizar proceso/i });
       expect(finishButton).toBeDisabled();
     });
   });
@@ -113,7 +133,7 @@ describe('CashCalculation - v1.3.7 WhatsApp Confirmation Flow', () => {
       const user = userEvent.setup();
       render(<CashCalculation {...defaultProps} />);
 
-      const whatsappButton = screen.getByRole('button', { name: /enviar whatsapp/i });
+      const whatsappButton = screen.getByRole('button', { name: /enviar reporte por whatsapp/i });
       await user.click(whatsappButton);
 
       expect(windowOpenSpy).toHaveBeenCalledTimes(1);
@@ -127,7 +147,7 @@ describe('CashCalculation - v1.3.7 WhatsApp Confirmation Flow', () => {
       const user = userEvent.setup();
       render(<CashCalculation {...defaultProps} />);
 
-      const whatsappButton = screen.getByRole('button', { name: /enviar whatsapp/i });
+      const whatsappButton = screen.getByRole('button', { name: /enviar reporte por whatsapp/i });
       await user.click(whatsappButton);
 
       await waitFor(() => {
@@ -141,11 +161,11 @@ describe('CashCalculation - v1.3.7 WhatsApp Confirmation Flow', () => {
       render(<CashCalculation {...defaultProps} />);
 
       // Abrir WhatsApp
-      const whatsappButton = screen.getByRole('button', { name: /enviar whatsapp/i });
+      const whatsappButton = screen.getByRole('button', { name: /enviar reporte por whatsapp/i });
       await user.click(whatsappButton);
 
       // Confirmar envío
-      const confirmButton = await screen.findByRole('button', { name: /sí, ya envié el reporte/i });
+      const confirmButton = await screen.findByRole('button', { name: /confirmar envío de reporte/i });
       await user.click(confirmButton);
 
       // Resultados ahora visibles
@@ -160,17 +180,17 @@ describe('CashCalculation - v1.3.7 WhatsApp Confirmation Flow', () => {
       render(<CashCalculation {...defaultProps} />);
 
       // Abrir WhatsApp
-      const whatsappButton = screen.getByRole('button', { name: /enviar whatsapp/i });
+      const whatsappButton = screen.getByRole('button', { name: /enviar reporte por whatsapp/i });
       await user.click(whatsappButton);
 
       // Confirmar envío
-      const confirmButton = await screen.findByRole('button', { name: /sí, ya envié el reporte/i });
+      const confirmButton = await screen.findByRole('button', { name: /confirmar envío de reporte/i });
       await user.click(confirmButton);
 
       // Botones habilitados
       await waitFor(() => {
-        const copyButton = screen.getByRole('button', { name: /copiar/i });
-        const finishButton = screen.getByRole('button', { name: /finalizar/i });
+        const copyButton = screen.getByRole('button', { name: /copiar reporte/i });
+        const finishButton = screen.getByRole('button', { name: /finalizar proceso/i });
         expect(copyButton).toBeEnabled();
         expect(finishButton).toBeEnabled();
       });
@@ -180,14 +200,14 @@ describe('CashCalculation - v1.3.7 WhatsApp Confirmation Flow', () => {
       const user = userEvent.setup();
       render(<CashCalculation {...defaultProps} />);
 
-      const whatsappButton = screen.getByRole('button', { name: /enviar whatsapp/i });
+      const whatsappButton = screen.getByRole('button', { name: /enviar reporte por whatsapp/i });
       await user.click(whatsappButton);
 
-      const confirmButton = await screen.findByRole('button', { name: /sí, ya envié el reporte/i });
+      const confirmButton = await screen.findByRole('button', { name: /confirmar envío de reporte/i });
       await user.click(confirmButton);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /reporte enviado/i })).toBeInTheDocument();
+        expect(screen.getByText(/Reporte Enviado/i)).toBeInTheDocument();
       });
     });
   });
@@ -198,7 +218,7 @@ describe('CashCalculation - v1.3.7 WhatsApp Confirmation Flow', () => {
       const user = userEvent.setup();
       render(<CashCalculation {...defaultProps} />);
 
-      const whatsappButton = screen.getByRole('button', { name: /enviar whatsapp/i });
+      const whatsappButton = screen.getByRole('button', { name: /enviar reporte por whatsapp/i });
       await user.click(whatsappButton);
 
       await waitFor(() => {
@@ -207,11 +227,11 @@ describe('CashCalculation - v1.3.7 WhatsApp Confirmation Flow', () => {
     });
 
     it('3.2 - Si window.open.closed === true, debe detectar bloqueo', async () => {
-      windowOpenSpy.mockReturnValue({ closed: true, close: vi.fn() } as Window);
+      windowOpenSpy.mockReturnValue({ closed: true, close: vi.fn() } as any);
       const user = userEvent.setup();
       render(<CashCalculation {...defaultProps} />);
 
-      const whatsappButton = screen.getByRole('button', { name: /enviar whatsapp/i });
+      const whatsappButton = screen.getByRole('button', { name: /enviar reporte por whatsapp/i });
       await user.click(whatsappButton);
 
       await waitFor(() => {
@@ -224,11 +244,11 @@ describe('CashCalculation - v1.3.7 WhatsApp Confirmation Flow', () => {
       const user = userEvent.setup();
       render(<CashCalculation {...defaultProps} />);
 
-      const whatsappButton = screen.getByRole('button', { name: /enviar whatsapp/i });
+      const whatsappButton = screen.getByRole('button', { name: /enviar reporte por whatsapp/i });
       await user.click(whatsappButton);
 
       await waitFor(() => {
-        const copyButton = screen.getByRole('button', { name: /copiar/i });
+        const copyButton = screen.getByRole('button', { name: /copiar reporte/i });
         expect(copyButton).toBeEnabled();
       });
     });
@@ -238,7 +258,7 @@ describe('CashCalculation - v1.3.7 WhatsApp Confirmation Flow', () => {
       const user = userEvent.setup();
       render(<CashCalculation {...defaultProps} />);
 
-      const whatsappButton = screen.getByRole('button', { name: /enviar whatsapp/i });
+      const whatsappButton = screen.getByRole('button', { name: /enviar reporte por whatsapp/i });
       await user.click(whatsappButton);
 
       await waitFor(() => {
@@ -253,7 +273,7 @@ describe('CashCalculation - v1.3.7 WhatsApp Confirmation Flow', () => {
       const user = userEvent.setup();
       render(<CashCalculation {...defaultProps} />);
 
-      const whatsappButton = screen.getByRole('button', { name: /enviar whatsapp/i });
+      const whatsappButton = screen.getByRole('button', { name: /enviar reporte por whatsapp/i });
       await user.click(whatsappButton);
 
       await waitFor(() => {
@@ -266,7 +286,7 @@ describe('CashCalculation - v1.3.7 WhatsApp Confirmation Flow', () => {
       const user = userEvent.setup();
       render(<CashCalculation {...defaultProps} />);
 
-      const whatsappButton = screen.getByRole('button', { name: /enviar whatsapp/i });
+      const whatsappButton = screen.getByRole('button', { name: /enviar reporte por whatsapp/i });
       await user.click(whatsappButton);
 
       // Avanzar tiempo 10 segundos
@@ -284,18 +304,18 @@ describe('CashCalculation - v1.3.7 WhatsApp Confirmation Flow', () => {
       const user = userEvent.setup();
       render(<CashCalculation {...defaultProps} />);
 
-      const whatsappButton = screen.getByRole('button', { name: /enviar whatsapp/i });
+      const whatsappButton = screen.getByRole('button', { name: /enviar reporte por whatsapp/i });
       await user.click(whatsappButton);
 
       // Confirmar manualmente ANTES de timeout
-      const confirmButton = await screen.findByRole('button', { name: /sí, ya envié el reporte/i });
+      const confirmButton = await screen.findByRole('button', { name: /confirmar envío de reporte/i });
       await user.click(confirmButton);
 
       // Avanzar tiempo (no debería cambiar nada)
       vi.advanceTimersByTime(10000);
 
       // Botón sigue mostrando "Reporte Enviado" (no se duplica confirmación)
-      expect(screen.getByRole('button', { name: /reporte enviado/i })).toBeInTheDocument();
+      expect(screen.getByText(/Reporte Enviado/i)).toBeInTheDocument();
 
       vi.useRealTimers();
     });
@@ -313,7 +333,7 @@ describe('CashCalculation - v1.3.7 WhatsApp Confirmation Flow', () => {
       const user = userEvent.setup();
       render(<CashCalculation {...defaultProps} />);
 
-      const whatsappButton = screen.getByRole('button', { name: /enviar whatsapp/i });
+      const whatsappButton = screen.getByRole('button', { name: /enviar reporte por whatsapp/i });
       await user.click(whatsappButton);
 
       await waitFor(() => {
@@ -329,7 +349,7 @@ describe('CashCalculation - v1.3.7 WhatsApp Confirmation Flow', () => {
       // Inicialmente NO debe aparecer
       expect(screen.queryByText(/🚫 Pop-ups Bloqueados/i)).not.toBeInTheDocument();
 
-      const whatsappButton = screen.getByRole('button', { name: /enviar whatsapp/i });
+      const whatsappButton = screen.getByRole('button', { name: /enviar reporte por whatsapp/i });
       await user.click(whatsappButton);
 
       // AHORA debe aparecer

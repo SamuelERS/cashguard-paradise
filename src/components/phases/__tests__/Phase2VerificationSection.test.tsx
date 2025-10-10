@@ -1,5 +1,6 @@
 // 🤖 [IA] - v1.3.7: SUITE COMPLETA 87 TESTS - Phase2VerificationSection (100% coverage)
 // Documentación: /Documentos_MarkDown/Planes_de_Desarrollos/Plan_Control_Test/Caso_Phase2_Verification_100_Coverage/
+import { useState } from 'react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -7,10 +8,19 @@ import { Phase2VerificationSection } from '../Phase2VerificationSection';
 import type { DeliveryCalculation } from '@/types/phases';
 import type { CashCount } from '@/types/cash';
 
-// Mock useTimingConfig hook
+// Mock useTimingConfig hook with proper timing delays
 vi.mock('@/hooks/useTimingConfig', () => ({
   useTimingConfig: () => ({
-    createTimeoutWithCleanup: (callback: () => void, _type: string, _id: string, delay = 0) => {
+    createTimeoutWithCleanup: (callback: () => void, type: string, _id: string, customDelay?: number) => {
+      // Use timing delays that match the real hook
+      const timingMap: Record<string, number> = {
+        focus: 100,
+        navigation: 100,
+        confirmation: 150,
+        transition: 1000,
+        toast: 4000
+      };
+      const delay = customDelay !== undefined ? customDelay : (timingMap[type] || 0);
       const timeout = setTimeout(callback, delay);
       return () => clearTimeout(timeout);
     }
@@ -43,43 +53,73 @@ const mockDenominationsToKeep: CashCount = {
 const mockDeliveryCalculation: DeliveryCalculation = {
   amountToDeliver: 327.20,
   denominationsToKeep: mockDenominationsToKeep,
+  denominationsToDeliver: {
+    penny: 0,
+    nickel: 0,
+    dime: 0,
+    quarter: 0,
+    dollarCoin: 0,
+    bill1: 0,
+    bill5: 0,
+    bill10: 0,
+    bill20: 0,
+    bill50: 0,
+    bill100: 0
+  },
   deliverySteps: [], // No relevante para verificación
   verificationSteps: [
-    { key: 'penny', label: '1¢', quantity: 43 },
-    { key: 'nickel', label: '5¢', quantity: 20 },
-    { key: 'dime', label: '10¢', quantity: 33 },
-    { key: 'quarter', label: '25¢', quantity: 8 },
-    { key: 'dollarCoin', label: '$1 coin', quantity: 1 },
-    { key: 'bill1', label: '$1', quantity: 1 },
-    { key: 'bill5', label: '$5', quantity: 1 }
+    { key: 'penny', label: '1¢', quantity: 43, value: 0.01 },
+    { key: 'nickel', label: '5¢', quantity: 20, value: 0.05 },
+    { key: 'dime', label: '10¢', quantity: 33, value: 0.10 },
+    { key: 'quarter', label: '25¢', quantity: 8, value: 0.25 },
+    { key: 'dollarCoin', label: '$1 coin', quantity: 1, value: 1.00 },
+    { key: 'bill1', label: '$1', quantity: 1, value: 1.00 },
+    { key: 'bill5', label: '$5', quantity: 1, value: 5.00 }
   ]
 };
 
-// Helper: Renderizar componente con props mínimas
-const renderPhase2Verification = (overrideProps = {}) => {
-  const defaultProps = {
-    deliveryCalculation: mockDeliveryCalculation,
-    onStepComplete: vi.fn(),
-    onStepUncomplete: vi.fn(),
-    onSectionComplete: vi.fn(),
-    onVerificationBehaviorCollected: vi.fn(),
-    completedSteps: {},
-    onCancel: vi.fn(),
-    onPrevious: vi.fn(),
-    canGoPrevious: false
+// Helper: Renderizar componente con props mínimas y state management
+const renderPhase2Verification = (overrideProps: any = {}) => {
+  // Store callbacks outside wrapper to maintain spy references
+  const callbacks = {
+    onStepComplete: overrideProps.onStepComplete || vi.fn(),
+    onStepUncomplete: overrideProps.onStepUncomplete || vi.fn(),
+    onSectionComplete: overrideProps.onSectionComplete || vi.fn(),
+    onVerificationBehaviorCollected: overrideProps.onVerificationBehaviorCollected || vi.fn(),
+    onCancel: overrideProps.onCancel || vi.fn()
+  };
+  
+  // Create a wrapper component that manages completedSteps state
+  const TestWrapper = () => {
+    const [completedSteps, setCompletedSteps] = useState<Record<string, boolean>>(overrideProps.completedSteps || {});
+    
+    const handleStepComplete = (stepKey: string) => {
+      setCompletedSteps((prev: Record<string, boolean>) => ({ ...prev, [stepKey]: true }));
+      callbacks.onStepComplete(stepKey);
+    };
+    
+    const props = {
+      deliveryCalculation: overrideProps.deliveryCalculation || mockDeliveryCalculation,
+      onStepComplete: handleStepComplete,
+      onStepUncomplete: callbacks.onStepUncomplete,
+      onSectionComplete: callbacks.onSectionComplete,
+      onVerificationBehaviorCollected: callbacks.onVerificationBehaviorCollected,
+      completedSteps,
+      onCancel: callbacks.onCancel
+    };
+    
+    return <Phase2VerificationSection {...props} />;
   };
 
-  const mergedProps = { ...defaultProps, ...overrideProps };
-
-  return render(<Phase2VerificationSection {...mergedProps} />);
+  return render(<TestWrapper />);
 };
 
 // Helper: Obtener input actual con sufijo dinámico
 const getCurrentInput = () => {
   // Input tiene id dinámico: `verification-input-${currentStep.key}`
-  // Buscar por role spinbutton (type="text" + inputMode="decimal")
-  const inputs = screen.getAllByRole('textbox');
-  return inputs[0]; // Primer input es siempre el activo
+  // Buscar por placeholder pattern que siempre está presente
+  const input = screen.getByPlaceholderText(/¿cuántos/i);
+  return input;
 };
 
 // Helper: Completar un paso con valor correcto
@@ -157,12 +197,11 @@ const completeAllStepsCorrectly = async (
   steps: { label: string }[]
 ) => {
   for (let i = 0; i < quantities.length; i++) {
-    // getCurrentInput() puede fallar si async rendering, usar getAllByRole pattern v1.3.7d
-    const inputs = screen.getAllByRole('textbox');
-    const input = inputs[inputs.length - 1]; // Último input es el activo (patrón v1.3.7b)
+    // Usar getCurrentInput() que busca por placeholder (más robusto)
+    const input = getCurrentInput();
 
     if (!input) {
-      throw new Error(`[completeAllStepsCorrectly] Input textbox not found at step ${i}`);
+      throw new Error(`[completeAllStepsCorrectly] Input not found at step ${i}`);
     }
 
     await user.clear(input);
@@ -387,7 +426,7 @@ describe('Grupo 2: Primer Intento Correcto (success)', () => {
 
     await waitFor(() => {
       expect(onSectionComplete).toHaveBeenCalled();
-    }, { timeout: 2000 });
+    }, { timeout: 3000 });
   });
 
   it('2.9 - Primer intento correcto con Enter key funciona igual que botón Confirmar', async () => {
@@ -1870,7 +1909,7 @@ describe('Grupo 8: Regresión Bugs Históricos', () => {
     // Callback debe llamarse EXACTAMENTE 1 vez (NO loop infinito)
     await waitFor(() => {
       expect(onVerificationBehaviorCollected).toHaveBeenCalledTimes(1);
-    }, { timeout: 2000 });
+    }, { timeout: 3000 });
   });
 
   it('8.3 - v1.3.6Y: firstAttemptSuccesses calculado por diferencia (NO forEach)', async () => {
