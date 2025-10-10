@@ -77,7 +77,7 @@ SMTP localhost:465 (SiteGround)
 
 // Headers CORS (ya configurados en .htaccess pero reforzamos en PHP)
 header('Content-Type: application/json; charset=utf-8');
-header('Access-Control-Allow-Origin: https://cashguard-paradise.netlify.app');
+header('Access-Control-Allow-Origin: ' . ALLOWED_ORIGIN); // 🔧 FIX Issue #1: Variable configurable
 header('Access-Control-Allow-Methods: POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 
@@ -99,7 +99,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 // Cargar configuración
-require_once __DIR__ . '/../config/config.php';
+// 🔧 FIX Issue #2: Path estandarizado (config fuera de public_html)
+require_once __DIR__ . '/../../config/config.php';
 
 // Verificar que PHPMailer esté disponible
 if (!file_exists(__DIR__ . '/../vendor/autoload.php')) {
@@ -429,7 +430,7 @@ if ($sent) {
 
 ## 2. config.php
 
-**Ubicación:** `/home/usuario/public_html/config/config.php`
+**Ubicación:** `/home/usuario/config/config.php` (🔧 FIX Issue #2: FUERA de public_html por seguridad)
 **Permisos:** 600 (rw-------)
 **Descripción:** Archivo de configuración con credenciales SMTP, API Key y destinatarios. **CRÍTICO: Este archivo NO debe ser accesible vía web.**
 
@@ -462,6 +463,16 @@ if ($sent) {
  */
 define('API_KEY', '550e8400-e29b-41d4-a716-446655440000'); // ← CAMBIAR EN PRODUCCIÓN
 
+/**
+ * 🔧 FIX Issue #1: CORS Domain Configurable
+ * Dominio permitido para requests (frontend PWA)
+ *
+ * CAMBIAR EN PRODUCCIÓN:
+ * - Development: http://localhost:5173
+ * - Production: https://cashguard-paradise.netlify.app
+ */
+define('ALLOWED_ORIGIN', 'https://cashguard-paradise.netlify.app'); // ← CAMBIAR SEGÚN ENTORNO
+
 // ============================================================================
 // SMTP CONFIGURATION
 // ============================================================================
@@ -469,12 +480,12 @@ define('API_KEY', '550e8400-e29b-41d4-a716-446655440000'); // ← CAMBIAR EN PRO
 /**
  * Configuración SMTP de SiteGround
  * Host: localhost (SMTP integrado en servidor)
- * Puerto: 465 (SSL/TLS)
+ * Puerto: 465 (SSL) - 🔧 FIX Issue #3: Unificado a SSL
  *
  * Usuario/Contraseña: Configurados en cPanel → Email Accounts
  */
 define('SMTP_HOST', 'localhost');
-define('SMTP_PORT', 465);
+define('SMTP_PORT', 465); // SSL (SMTPS)
 define('SMTP_USER', 'reportes@cashguard-paradise.com'); // ← Email creado en cPanel
 define('SMTP_PASS', 'TU_CONTRASEÑA_AQUÍ'); // ← Contraseña de cPanel Email Account
 
@@ -518,8 +529,8 @@ if (ENVIRONMENT === 'production') {
 ### Instrucciones de Instalación
 
 1. **Crear archivo** en cPanel File Manager:
-   - Ruta: `/home/usuario/public_html/config/config.php`
-   - **MEJOR:** `/home/usuario/config/config.php` (fuera de public_html)
+   - **Ruta recomendada:** `/home/usuario/config/config.php` (🔧 FIX Issue #2: FUERA de public_html)
+   - **Alternativa:** `/home/usuario/public_html/config/config.php` (menos seguro)
    - Copiar código completo
 
 2. **MODIFICAR VALORES**:
@@ -564,6 +575,9 @@ if (ENVIRONMENT === 'production') {
 # Permitir requests solo desde el dominio de producción de Netlify
 
 <IfModule mod_headers.c>
+    # 🔧 FIX Issue #1: CORS configurable vía variable PHP
+    # Nota: Apache .htaccess NO soporta variables PHP directamente
+    # Solución: Hardcoded aquí, configurable en send-email.php línea 80
     Header set Access-Control-Allow-Origin "https://cashguard-paradise.netlify.app"
     Header set Access-Control-Allow-Methods "POST, OPTIONS"
     Header set Access-Control-Allow-Headers "Content-Type"

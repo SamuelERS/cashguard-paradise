@@ -74,6 +74,7 @@ Backend PHP
 import { EmailReportPayload, EmailSendResponse } from '@/types/email';
 import { generateEmailReportContent } from './htmlReportGenerator';
 import type { CalculationData, DeliveryCalculation } from '@/types';
+// 🔧 FIX Issue #8: determineSeverity() implementation agregada (ver líneas 206-228)
 
 // ============================================================================
 // CONFIGURACIÓN
@@ -201,29 +202,58 @@ export async function sendEmailReport(
 // ============================================================================
 
 /**
- * Determina la severidad del reporte basado en anomalías.
+ * 🔧 FIX Issue #8: determineSeverity() - Implementación completa agregada
+ *
+ * Determina la severidad del reporte basado en anomalías de verificación ciega.
+ *
+ * Lógica de clasificación:
+ * 1. CRÍTICO: Si hay ≥1 inconsistencias críticas (3 intentos diferentes)
+ * 2. ADVERTENCIAS: Si hay ≥1 éxitos en segundo intento (patron warning)
+ * 3. NORMAL: Si todas las denominaciones fueron correctas en primer intento
+ *
+ * @param calculationData - Datos del cálculo de caja (Phase 1)
+ * @param deliveryCalculation - Datos de entrega con verificationBehavior (Phase 2)
+ * @returns Severidad: 'CRÍTICO' | 'ADVERTENCIAS' | 'NORMAL'
+ *
+ * @example
+ * // Caso CRÍTICO (3 intentos diferentes)
+ * determineSeverity(calcData, { verificationBehavior: { criticalInconsistencies: 2, ... } })
+ * // → 'CRÍTICO'
+ *
+ * // Caso ADVERTENCIAS (2do intento correcto)
+ * determineSeverity(calcData, { verificationBehavior: { criticalInconsistencies: 0, secondAttemptSuccesses: 1, ... } })
+ * // → 'ADVERTENCIAS'
+ *
+ * // Caso NORMAL (todo correcto primer intento)
+ * determineSeverity(calcData, { verificationBehavior: { criticalInconsistencies: 0, secondAttemptSuccesses: 0, ... } })
+ * // → 'NORMAL'
  */
 function determineSeverity(
   calculationData: CalculationData,
   deliveryCalculation: DeliveryCalculation | null
 ): 'CRÍTICO' | 'ADVERTENCIAS' | 'NORMAL' {
-  // Verificar alertas críticas en verificación ciega
-  const criticalInconsistencies =
-    deliveryCalculation?.verificationBehavior?.criticalInconsistencies || 0;
+  // Si Phase 2 no ejecutado (≤$50), siempre NORMAL
+  if (!deliveryCalculation || !deliveryCalculation.verificationBehavior) {
+    return 'NORMAL';
+  }
+
+  const behavior = deliveryCalculation.verificationBehavior;
+
+  // PRIORIDAD 1: Verificar alertas críticas (3 intentos diferentes)
+  const criticalInconsistencies = behavior.criticalInconsistencies || 0;
 
   if (criticalInconsistencies > 0) {
     return 'CRÍTICO';
   }
 
-  // Verificar alertas de segundo intento
-  const secondAttemptSuccesses =
-    deliveryCalculation?.verificationBehavior?.secondAttemptSuccesses || 0;
+  // PRIORIDAD 2: Verificar alertas de segundo intento (warning patterns)
+  const secondAttemptSuccesses = behavior.secondAttemptSuccesses || 0;
 
   if (secondAttemptSuccesses > 0) {
     return 'ADVERTENCIAS';
   }
 
-  // Sin anomalías
+  // PRIORIDAD 3: Sin anomalías detectadas
   return 'NORMAL';
 }
 
@@ -376,7 +406,7 @@ export async function processOfflineQueue(): Promise<number> {
 
 import type { CalculationData, DeliveryCalculation, CashCount } from '@/types';
 import { EmailReportContent } from '@/types/email';
-import { formatCurrency } from './formatters';
+import { formatCurrency } from './calculations'; // 🔧 FIX Issue #5: Path correcto
 
 // ============================================================================
 // INTERFAZ PRINCIPAL
@@ -890,12 +920,13 @@ export interface QueuedEmailItem {
 
 **NOTA:** Este componente ya existe en el proyecto. Los siguientes cambios deben **agregarse** al código existente, NO reemplazar el archivo completo.
 
-#### Paso 1: Agregar Import
+#### Paso 1: Agregar Imports (2 líneas)
 
-**Ubicación:** Inicio del archivo, después de imports existentes
+**Ubicación:** Inicio del archivo CashCalculation.tsx, después de imports existentes (~línea 20)
 
 ```typescript
 // 🤖 [IA] - v1.0: Email Sender Integration
+import { Mail } from 'lucide-react'; // 🔧 FIX Issue #4: Ícono mail agregado
 import { sendEmailReport, processOfflineQueue } from '@/utils/emailReports';
 import { useToast } from '@/hooks/use-toast';
 ```
@@ -961,15 +992,19 @@ const handleSendEmail = async () => {
 };
 ```
 
-#### Paso 4: Agregar Botón en UI
+#### Paso 4: Agregar Botón en UI (20 líneas)
 
-**Ubicación:** En la sección de botones de acción del reporte final (junto a botones WhatsApp, Copiar, Compartir)
+**Ubicación EXACTA:** 🔧 FIX Issue #4 - Líneas ~1080-1100 de CashCalculation.tsx
+- **DESPUÉS de:** Botones "Compartir en WhatsApp", "Copiar", "Compartir" (sección de acciones reportSent)
+- **ANTES de:** Botón "Finalizar" (PrimaryActionButton)
+- **Contexto:** Dentro del bloque condicional `{reportSent && (...)}` donde resultados están desbloqueados
 
 ```typescript
 {/* 🤖 [IA] - v1.0: Botón Email Sender */}
+{/* 🔧 FIX Issue #4: Integración anti-fraude v1.3.7 - disabled hasta WhatsApp confirmado */}
 <Button
   onClick={handleSendEmail}
-  disabled={isSendingEmail}
+  disabled={isSendingEmail || !reportSent} // ← CRÍTICO: Solo habilitado DESPUÉS de confirmar WhatsApp
   className="gap-2"
   variant="default"
 >
@@ -1001,6 +1036,12 @@ const handleSendEmail = async () => {
   )}
 </Button>
 ```
+
+**⚠️ VALIDACIÓN CRÍTICA:**
+- ✅ Botón DEBE estar dentro del bloque `{reportSent && (...)}`
+- ✅ `disabled={!reportSent}` DEBE estar presente (anti-fraude v1.3.7)
+- ✅ Ícono `<Mail />` debe importarse (ver Paso 1)
+- ❌ NO colocar antes de confirmación WhatsApp (riesgo bypassing anti-fraude)
 
 #### Paso 5: Agregar useEffect para Queue Offline (Opcional)
 

@@ -187,7 +187,7 @@ Documentos_MarkDown/Planes_de_Desarrollos/Caso_Reporte_Enviar_Correo/
 ```
 ✅ Email account created: reports@tudominio.com
 SMTP: localhost
-Port: 587 (TLS)
+Port: 465 (SSL) # 🔧 FIX Issue #3: Unificado a SSL en todos los docs
 ```
 
 #### **Task 1.2: Subir archivos PHP a servidor**
@@ -427,7 +427,7 @@ PWA Frontend (React)
 <?php
 // SMTP Configuration
 define('SMTP_HOST', 'localhost');              // SiteGround SMTP local
-define('SMTP_PORT', 587);                      // TLS port
+define('SMTP_PORT', 465);                      // SSL port (🔧 FIX Issue #3)
 define('SMTP_USERNAME', 'reports@tudominio.com');
 define('SMTP_PASSWORD', 'password-generado-cpanel');
 define('SMTP_FROM_EMAIL', 'reports@tudominio.com');
@@ -444,14 +444,22 @@ define('DEBUG_MODE', false);
 ?>
 ```
 
-#### **Frontend (.env)**
+#### **Frontend (.env)** - 🔧 FIX Issue #6: Documentación agregada
 ```bash
-# API Key (debe coincidir con config.php)
-VITE_EMAIL_API_KEY=550e8400-e29b-41d4-a716-446655440000
+# 🔧 Backend PHP Endpoint
+# Development: http://localhost/api/send-email.php (si tienes XAMPP local)
+# Production: https://tudominio.com/api/send-email.php
+VITE_EMAIL_API_ENDPOINT=https://tudominio.com/api/send-email.php
 
-# URL endpoint (ajustar a tu dominio)
-VITE_EMAIL_API_URL=https://tudominio.com/api/send-email.php
+# 🔧 API Key (DEBE coincidir EXACTAMENTE con config.php backend)
+# Generar nuevo: https://www.uuidgenerator.net/version4
+VITE_EMAIL_API_KEY=550e8400-e29b-41d4-a716-446655440000
 ```
+
+**⚠️ IMPORTANTE:**
+- Ambos valores (`ENDPOINT` y `API_KEY`) deben estar en `.env` del proyecto React
+- Restart dev server después de modificar `.env`: `npm run dev`
+- Variables disponibles en código via `import.meta.env.VITE_*`
 
 ### 🛡️ Seguridad Best Practices
 
