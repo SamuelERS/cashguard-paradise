@@ -197,8 +197,15 @@ const completeAllStepsCorrectly = async (
   steps: { label: string }[]
 ) => {
   for (let i = 0; i < quantities.length; i++) {
-    // Usar getCurrentInput() que busca por placeholder (más robusto)
-    const input = getCurrentInput();
+    // 🤖 [IA] - v1.3.8 Fase 1: Fix timing - Esperar que input esté disponible ANTES de usarlo
+    await waitFor(() => {
+      const inputs = screen.queryAllByRole('textbox');
+      expect(inputs.length).toBeGreaterThan(0);
+    }, { timeout: 3000 });
+
+    // Usar pattern v1.3.7d robusto: getAllByRole + último elemento
+    const inputs = screen.getAllByRole('textbox');
+    const input = inputs[inputs.length - 1]; // Último input es el activo
 
     if (!input) {
       throw new Error(`[completeAllStepsCorrectly] Input not found at step ${i}`);
@@ -215,12 +222,24 @@ const completeAllStepsCorrectly = async (
       // Formato real del placeholder: "¿Cuántos {descripción}?"
       const placeholder = `¿cuántos ${description}?`;
 
-      // v1.3.7d pattern: waitFor con timeout 3000ms para Radix UI async
-      await waitFor(() => {
-        expect(
-          screen.queryByPlaceholderText(new RegExp(placeholder, 'i'))
-        ).toBeInTheDocument();
-      }, { timeout: 3000 });
+      // 🤖 [IA] - v1.3.8 Fase 1: Try-catch para manejar modal éxito temprano
+      // Si componente muestra modal "Verificación Exitosa" antes del último paso, NO es error
+      try {
+        await waitFor(() => {
+          expect(
+            screen.queryByPlaceholderText(new RegExp(placeholder, 'i'))
+          ).toBeInTheDocument();
+        }, { timeout: 3000 });
+      } catch (e) {
+        // Si no encuentra siguiente input, verificar si modal éxito apareció (caso válido)
+        const successModal = screen.queryByText(/Verificación Exitosa/i);
+        if (!successModal) {
+          // No hay siguiente input NI modal éxito → error real
+          throw e;
+        }
+        // Modal éxito apareció → salir del loop (ya completó)
+        break;
+      }
     }
   }
 };

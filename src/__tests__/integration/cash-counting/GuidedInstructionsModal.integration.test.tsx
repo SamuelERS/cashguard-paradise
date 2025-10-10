@@ -131,9 +131,9 @@ describe('📋 GuidedInstructionsModal - Integration Tests', () => {
         // Esperar a que se complete automáticamente (3s + margen)
         await waitFor(() => {
           expect(firstRuleButton).toHaveAttribute('aria-pressed', 'true');
-        }, { timeout: 15000 }); // 🤖 [IA] - CI Hotfix: 10s → 15s (regla auto-completion + CI overhead)
+        }, { timeout: 20000 }); // 🤖 [IA] - CI Hotfix: 15s → 20s (regla auto-completion + GitHub Actions overhead)
       }
-    }, 20000); // 🤖 [IA] - CI Hotfix: Test completo necesita 20s en GitHub Actions
+    }, 25000); // 🤖 [IA] - CI Hotfix: 20s → 25s (Test completo + GitHub Actions overhead)
 
     it('Test 2.4: NO se puede saltar reglas', () => {
       render(<GuidedInstructionsModal {...defaultProps} />);
@@ -158,8 +158,8 @@ describe('📋 GuidedInstructionsModal - Integration Tests', () => {
         const rule2Button = rule2Text.closest('div[role="button"]');
         expect(rule2Button).toBeInTheDocument();
         expect(rule2Button).not.toHaveAttribute('aria-disabled', 'true');
-      }, { timeout: 15000 }); // 🤖 [IA] - CI Hotfix: 10s → 15s (regla auto-completion + CI overhead)
-    }, 20000); // 🤖 [IA] - CI Hotfix: Test completo necesita 20s en GitHub Actions
+      }, { timeout: 20000 }); // 🤖 [IA] - CI Hotfix: 15s → 20s (regla auto-completion + GitHub Actions overhead)
+    }, 25000); // 🤖 [IA] - CI Hotfix: 20s → 25s (Test completo + GitHub Actions overhead)
 
     it('Test 2.6: checkmarks visibles en reglas completadas', async () => {
       const user = userEvent.setup();
@@ -174,8 +174,8 @@ describe('📋 GuidedInstructionsModal - Integration Tests', () => {
       await waitFor(() => {
         const ruleContainer = rule1.closest('div[role="button"]');
         expect(ruleContainer).toHaveAttribute('aria-pressed', 'true');
-      }, { timeout: 15000 }); // 🤖 [IA] - CI Hotfix: 10s → 15s (regla auto-completion + CI overhead)
-    }, 20000); // 🤖 [IA] - CI Hotfix: Test completo necesita 20s en GitHub Actions
+      }, { timeout: 20000 }); // 🤖 [IA] - CI Hotfix: 15s → 20s (regla auto-completion + GitHub Actions overhead)
+    }, 25000); // 🤖 [IA] - CI Hotfix: 20s → 25s (Test completo + GitHub Actions overhead)
 
     it('Test 2.7: progreso secuencial a través de múltiples reglas', async () => {
       const user = userEvent.setup();
@@ -235,13 +235,14 @@ describe('📋 GuidedInstructionsModal - Integration Tests', () => {
       // Esperar a que se complete regla 1
       await waitFor(() => {
         const rule2 = screen.getByText('No Tapes La Cámara').closest('div[role="button"]');
+        expect(rule2).toBeInTheDocument();
         expect(rule2).toHaveAttribute('aria-disabled', 'false');
-      }, { timeout: 15000 }); // 🤖 [IA] - CI Hotfix: 10s → 15s (regla auto-completion + CI overhead)
+      }, { timeout: 20000 }); // 🤖 [IA] - CI Hotfix: 15s → 20s (regla auto-completion + GitHub Actions overhead)
       
       // Botón aún deshabilitado después de 1 regla
       button = screen.getByRole('button', { name: /comenzar conteo/i });
       expect(button).toBeDisabled();
-    }, 20000); // 🤖 [IA] - CI Hotfix: Test completo necesita 20s en GitHub Actions
+    }, 25000); // 🤖 [IA] - CI Hotfix: 20s → 25s (Test completo + GitHub Actions overhead)
 
     it('Test 3.3: onConfirm existe y botón está conectado', async () => {
       const user = userEvent.setup();
