@@ -1,9 +1,10 @@
-// 🤖 [IA] - v1.3.6AD: FIX MÉTRICA CRÍTICA - totalDenoms usa verificationSteps.length (denominaciones verificadas) en lugar de totalAttempts (intentos totales)
+// 🤖 [IA] - v1.3.7: ANTI-FRAUDE - Confirmación explícita envío WhatsApp ANTES de revelar resultados
+// Previous: v1.3.6AD - FIX MÉTRICA CRÍTICA - totalDenoms usa verificationSteps.length (denominaciones verificadas)
 // Previous: v1.3.6AB - FIX ROOT CAUSE REAL - Clase .cash-calculation-container agregada (patrón v1.2.41A9)
-// Previous: v1.3.6AA - FloatingOrbs condicional iOS (diagnóstico incorrecto) ⚠️
 import { useState, useEffect, useCallback } from "react";
 // 🤖 [IA] - v1.3.6Z: Framer Motion removido (GPU compositing bug iOS Safari causa pantalla congelada Phase 3)
-import { Calculator, AlertTriangle, CheckCircle, Share, Download, Copy } from "lucide-react";
+// 🤖 [IA] - v1.3.7: Agregado Lock icon para bloqueo de resultados
+import { Calculator, AlertTriangle, CheckCircle, Share, Download, Copy, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 // 🤖 [IA] - v1.1.08: Removidos Card components para coherencia con glass morphism
 // 🤖 [IA] - v1.1.08: Alert components removidos para coherencia con glass morphism
@@ -79,6 +80,11 @@ const CashCalculation = ({
   const [isCalculated, setIsCalculated] = useState(false);
   const [calculationData, setCalculationData] = useState<CalculationData | null>(null); // 🤖 [IA] - v1.2.22: Fixed any type violation
   const [showFinishConfirmation, setShowFinishConfirmation] = useState(false); // 🤖 [IA] - v1.2.24: Estado para modal de confirmación
+
+  // 🤖 [IA] - v1.3.7: Estados confirmación explícita WhatsApp (Propuesta C Híbrida v2.1)
+  const [reportSent, setReportSent] = useState(false);
+  const [whatsappOpened, setWhatsappOpened] = useState(false);
+  const [popupBlocked, setPopupBlocked] = useState(false);
 
   // 🤖 [IA] - v1.3.6Z: FIX iOS Safari - Cleanup defensivo de modal state
   // Garantiza que modal state se resetea al desmontar, previene race conditions en lifecycle iOS
@@ -655,7 +661,8 @@ ${WHATSAPP_SEPARATOR}
 Firma Digital: ${dataHash}`;
   };
 
-  const generateWhatsAppReport = () => {
+  // 🤖 [IA] - v1.3.7: Handler con confirmación explícita + detección pop-ups bloqueados
+  const handleWhatsAppSend = useCallback(() => {
     try {
       if (!calculationData || !store || !cashier || !witness) {
         toast.error("❌ Error", {
@@ -665,21 +672,49 @@ Firma Digital: ${dataHash}`;
       }
 
       const report = generateCompleteReport();
-      // 🤖 [IA] - v1.3.6V: FIX #1 - Removido emoji 🏪 extra (ya está en headerSeverity)
-      // Root cause v1.3.6U: Prefijo 🏪 causaba doble emoji en WhatsApp
-      // Solución: Reporte ya incluye header dinámico con emoji correcto según severidad
       const encodedReport = encodeURIComponent(report);
-      window.open(`https://api.whatsapp.com/send?text=${encodedReport}`, '_blank');
-      
-      toast.success("✅ Reporte generado exitosamente", {
-        description: "WhatsApp se abrirá con el reporte completo"
-      });
+      const whatsappUrl = `https://api.whatsapp.com/send?text=${encodedReport}`;
+
+      // Intentar abrir WhatsApp
+      const windowRef = window.open(whatsappUrl, '_blank');
+
+      // Detectar bloqueo de pop-ups
+      if (!windowRef || windowRef.closed || typeof windowRef.closed === 'undefined') {
+        setPopupBlocked(true);
+        toast.error('⚠️ Habilite pop-ups para enviar por WhatsApp', {
+          duration: 6000,
+          action: {
+            label: 'Copiar en su lugar',
+            onClick: () => handleCopyToClipboard()
+          }
+        });
+        return;
+      }
+
+      // WhatsApp abierto exitosamente → Esperar confirmación
+      setWhatsappOpened(true);
+      toast.info('📱 Confirme cuando haya enviado el reporte', { duration: 10000 });
+
+      // Auto-confirmar después de 10 segundos (timeout de seguridad)
+      setTimeout(() => {
+        if (!reportSent) {
+          setReportSent(true);
+          toast.success('✅ Reporte marcado como enviado');
+        }
+      }, 10000);
     } catch (error) {
       toast.error("❌ Error al generar reporte", {
         description: error instanceof Error ? error.message : "Error desconocido"
       });
     }
-  };
+  }, [calculationData, store, cashier, witness, reportSent]);
+
+  // 🤖 [IA] - v1.3.7: Handler confirmación explícita usuario
+  const handleConfirmSent = useCallback(() => {
+    setReportSent(true);
+    setWhatsappOpened(false);
+    toast.success('✅ Reporte confirmado como enviado');
+  }, []);
 
   const generatePrintableReport = () => {
     try {
@@ -781,6 +816,7 @@ Firma Digital: ${dataHash}`;
           className="space-y-[clamp(1rem,4vw,1.5rem)]"
           style={{ opacity: 1 }}
         >
+          {/* 🤖 [IA] - v1.3.7: Header siempre visible */}
           <div className="text-center mb-[clamp(1.5rem,6vw,2rem)]">
             <h2 className="text-[clamp(1.25rem,5vw,1.75rem)] font-bold text-primary mb-2">Cálculo Completado</h2>
             <p className="text-muted-foreground text-[clamp(0.875rem,3.5vw,1rem)]">Resultados del corte de caja</p>
@@ -789,6 +825,30 @@ Firma Digital: ${dataHash}`;
             </Badge>
           </div>
 
+          {/* 🤖 [IA] - v1.3.7: RENDERIZADO CONDICIONAL - Resultados bloqueados hasta confirmación */}
+          {!reportSent ? (
+            // BLOQUEADO: Mostrar mensaje de bloqueo
+            <div style={{
+              background: 'rgba(36, 36, 36, 0.4)',
+              backdropFilter: `blur(clamp(12px, 4vw, 20px))`,
+              WebkitBackdropFilter: `blur(clamp(12px, 4vw, 20px))`,
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              borderRadius: `clamp(8px, 3vw, 16px)`,
+              padding: `clamp(3rem, 8vw, 4rem)`,
+              textAlign: 'center'
+            }}>
+              <Lock className="w-[clamp(3rem,12vw,4rem)] h-[clamp(3rem,12vw,4rem)] mx-auto mb-[clamp(1rem,4vw,1.5rem)]" style={{ color: '#ff9f0a' }} />
+              <h3 className="text-[clamp(1rem,4.5vw,1.25rem)] font-bold mb-2" style={{ color: '#e1e8ed' }}>
+                🔒 Resultados Bloqueados
+              </h3>
+              <p className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#8899a6' }}>
+                Los resultados del corte se revelarán después de enviar el reporte por WhatsApp.
+                Esto garantiza la trazabilidad completa de todos los cortes realizados.
+              </p>
+            </div>
+          ) : (
+            // DESBLOQUEADO: Mostrar todos los resultados
+            <>
           {/* Alert for significant shortage - 🤖 [IA] - v1.1.08: Glass morphism */}
           {calculationData?.hasAlert && (
             <div className="p-[clamp(0.75rem,3vw,1rem)] rounded-[clamp(0.5rem,2vw,0.75rem)] flex items-start gap-3" style={{
@@ -957,15 +1017,18 @@ Firma Digital: ${dataHash}`;
               </div>
             </div>
           </div>
+            </>
+          )}
 
-          {/* Success Confirmation - 🤖 [IA] - v1.1.08: Glass morphism */}
+          {/* 🤖 [IA] - v1.3.7: ANTI-FRAUDE - Bloque de acción SIEMPRE visible */}
           <div style={{
             background: 'rgba(36, 36, 36, 0.4)',
             backdropFilter: `blur(clamp(12px, 4vw, 20px))`,
             WebkitBackdropFilter: `blur(clamp(12px, 4vw, 20px))`,
             border: '1px solid rgba(255, 255, 255, 0.15)',
             borderRadius: `clamp(8px, 3vw, 16px)`,
-            padding: `clamp(1.5rem, 6vw, 2rem)`
+            padding: `clamp(1.5rem, 6vw, 2rem)`,
+            marginBottom: `clamp(1rem, 4vw, 1.5rem)`
           }}>
             <div className="text-center">
               <CheckCircle className="w-[clamp(3rem,12vw,4rem)] h-[clamp(3rem,12vw,4rem)] mx-auto mb-[clamp(0.75rem,3vw,1rem)]" style={{ color: '#00ba7c' }} />
@@ -974,30 +1037,32 @@ Firma Digital: ${dataHash}`;
               </h3>
               <p className="mb-[clamp(1rem,4vw,1.5rem)] text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#8899a6' }}>
                 Los datos han sido calculados y están listos para generar el reporte.
-                Los campos están ahora bloqueados según el protocolo anti-fraude.
+                {!reportSent && ' Debe enviar el reporte para continuar.'}
               </p>
-              
-              {/* 🤖 [IA] - v1.1.01: Responsive buttons para desktop */}
-              {/* 🤖 [IA] - v1.2.8: Removido botón Reporte, grid ajustado a 3 columnas */}
+
+              {/* Botones de acción */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[clamp(0.5rem,2vw,0.75rem)] lg:max-w-3xl mx-auto">
                 <ConstructiveActionButton
-                  onClick={generateWhatsAppReport}
-                  aria-label="Compartir por WhatsApp"
+                  onClick={handleWhatsAppSend}
+                  disabled={reportSent || whatsappOpened}
+                  aria-label="Enviar reporte por WhatsApp"
                 >
                   <Share />
-                  WhatsApp
+                  {reportSent ? 'Reporte Enviado' : whatsappOpened ? 'WhatsApp Abierto...' : 'Enviar WhatsApp'}
                 </ConstructiveActionButton>
-                
+
                 <NeutralActionButton
                   onClick={handleCopyToClipboard}
+                  disabled={!reportSent && !popupBlocked}
                   aria-label="Copiar reporte"
                 >
                   <Copy />
                   Copiar
                 </NeutralActionButton>
-                
+
                 <PrimaryActionButton
-                  onClick={() => setShowFinishConfirmation(true)} // 🤖 [IA] - v1.2.24: Mostrar modal en lugar de finalizar directamente
+                  onClick={() => setShowFinishConfirmation(true)}
+                  disabled={!reportSent}
                   aria-label="Finalizar proceso"
                   className="h-fluid-3xl min-h-[var(--instruction-fluid-3xl)]"
                 >
@@ -1005,8 +1070,64 @@ Firma Digital: ${dataHash}`;
                   Finalizar
                 </PrimaryActionButton>
               </div>
+
+              {/* 🤖 [IA] - v1.3.7: Botón de confirmación después de abrir WhatsApp */}
+              {whatsappOpened && !reportSent && (
+                <div className="mt-[clamp(1rem,4vw,1.5rem)] p-[clamp(1rem,4vw,1.5rem)] rounded-[clamp(0.5rem,2vw,0.75rem)]" style={{
+                  background: 'rgba(0, 186, 124, 0.1)',
+                  border: '1px solid rgba(0, 186, 124, 0.3)'
+                }}>
+                  <p className="text-[clamp(0.875rem,3.5vw,1rem)] mb-3 text-center" style={{ color: '#8899a6' }}>
+                    ¿Ya envió el reporte por WhatsApp?
+                  </p>
+                  <ConstructiveActionButton
+                    onClick={handleConfirmSent}
+                    className="w-full"
+                    aria-label="Confirmar envío de reporte"
+                  >
+                    <CheckCircle />
+                    Sí, ya envié el reporte
+                  </ConstructiveActionButton>
+                </div>
+              )}
             </div>
           </div>
+
+          {/* 🤖 [IA] - v1.3.7: Banner advertencia inicial si NO enviado */}
+          {!reportSent && !whatsappOpened && !popupBlocked && (
+            <div className="p-[clamp(0.75rem,3vw,1rem)] rounded-[clamp(0.5rem,2vw,0.75rem)] mb-[clamp(1rem,4vw,1.5rem)] flex items-start gap-3" style={{
+              background: 'rgba(255, 159, 10, 0.1)',
+              border: '1px solid rgba(255, 159, 10, 0.3)'
+            }}>
+              <AlertTriangle className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)] mt-0.5" style={{ color: '#ff9f0a' }} />
+              <div>
+                <p className="font-medium text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#ff9f0a' }}>
+                  ⚠️ DEBE ENVIAR REPORTE PARA CONTINUAR
+                </p>
+                <p className="text-[clamp(0.75rem,3vw,0.875rem)] mt-1" style={{ color: '#8899a6' }}>
+                  Los resultados se revelarán después de enviar el reporte por WhatsApp.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* 🤖 [IA] - v1.3.7: Banner pop-up bloqueado */}
+          {popupBlocked && !reportSent && (
+            <div className="p-[clamp(0.75rem,3vw,1rem)] rounded-[clamp(0.5rem,2vw,0.75rem)] mb-[clamp(1rem,4vw,1.5rem)] flex items-start gap-3" style={{
+              background: 'rgba(255, 69, 58, 0.1)',
+              border: '1px solid rgba(255, 69, 58, 0.3)'
+            }}>
+              <AlertTriangle className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)] mt-0.5" style={{ color: '#ff453a' }} />
+              <div>
+                <p className="font-medium text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#ff453a' }}>
+                  🚫 Pop-ups Bloqueados
+                </p>
+                <p className="text-[clamp(0.75rem,3vw,0.875rem)] mt-1" style={{ color: '#8899a6' }}>
+                  Su navegador bloqueó la apertura de WhatsApp. Use el botón "Copiar" para enviar el reporte manualmente.
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

@@ -1,8 +1,9 @@
-// 🤖 [IA] - v1.1.13 - Mejora visual del detalle de denominaciones con tabla estructurada
-// 🤖 [IA] - v1.2.43 - Fix scroll congelado: Clase .morning-verification-container agregada
+// 🤖 [IA] - v1.3.7: ANTI-FRAUDE - Confirmación explícita envío WhatsApp ANTES de revelar resultados
+// Previous: v1.1.13 - Mejora visual del detalle de denominaciones con tabla estructurada
+// Previous: v1.2.43 - Fix scroll congelado: Clase .morning-verification-container agregada
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Sunrise, CheckCircle, AlertTriangle, Download, Share, ArrowLeft, Copy, FileText } from 'lucide-react';
+import { Sunrise, CheckCircle, AlertTriangle, Download, Share, ArrowLeft, Copy, FileText, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { calculateCashTotal, formatCurrency, generateDenominationSummary } from '@/utils/calculations';
@@ -39,7 +40,12 @@ export function MorningVerification({
   onComplete
 }: MorningVerificationProps) {
   const [verificationData, setVerificationData] = useState<VerificationData | null>(null);
-  
+
+  // 🤖 [IA] - v1.3.7: Estados confirmación explícita WhatsApp (Propuesta C Híbrida v2.1)
+  const [reportSent, setReportSent] = useState(false);
+  const [whatsappOpened, setWhatsappOpened] = useState(false);
+  const [popupBlocked, setPopupBlocked] = useState(false);
+
   const store = getStoreById(storeId);
   const cashierIn = getEmployeeById(cashierId);
   const cashierOut = getEmployeeById(witnessId);
@@ -75,19 +81,57 @@ export function MorningVerification({
     performVerification();
   }, [performVerification]);
 
-  const handleWhatsApp = () => {
-    const report = generateReport();
-    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(report)}`;
-    window.open(whatsappUrl, '_blank');
-    toast.success('Abriendo WhatsApp con el reporte');
-  };
-  
+  // 🤖 [IA] - v1.3.7: Handler con confirmación explícita + detección pop-ups bloqueados
+  const handleWhatsAppSend = useCallback(() => {
+    try {
+      const report = generateReport();
+      const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(report)}`;
+
+      // Intentar abrir WhatsApp
+      const windowRef = window.open(whatsappUrl, '_blank');
+
+      // Detectar bloqueo de pop-ups
+      if (!windowRef || windowRef.closed || typeof windowRef.closed === 'undefined') {
+        setPopupBlocked(true);
+        toast.error('⚠️ Habilite pop-ups para enviar por WhatsApp', {
+          duration: 6000,
+          action: {
+            label: 'Copiar en su lugar',
+            onClick: () => handleCopyToClipboard()
+          }
+        });
+        return;
+      }
+
+      // WhatsApp abierto exitosamente → Esperar confirmación
+      setWhatsappOpened(true);
+      toast.info('📱 Confirme cuando haya enviado el reporte', { duration: 10000 });
+
+      // Auto-confirmar después de 10 segundos (timeout de seguridad)
+      setTimeout(() => {
+        if (!reportSent) {
+          setReportSent(true);
+          toast.success('✅ Reporte marcado como enviado');
+        }
+      }, 10000);
+    } catch (error) {
+      toast.error('Error al generar el reporte');
+    }
+  }, [reportSent]);
+
+  // 🤖 [IA] - v1.3.7: Handler confirmación explícita usuario
+  const handleConfirmSent = useCallback(() => {
+    setReportSent(true);
+    setWhatsappOpened(false);
+    toast.success('✅ Reporte confirmado como enviado');
+  }, []);
+
   // 🤖 [IA] - v1.1.09: Función mejorada con fallback robusto
   const handleCopyToClipboard = async () => {
     try {
       const report = generateReport();
       const result = await copyToClipboard(report);
-      
+
       if (result.success) {
         toast.success('Reporte copiado al portapapeles');
       } else {
@@ -292,136 +336,162 @@ Sistema CashGuard Paradise v1.1.13
             </div>
           )}
 
-        {/* Main Content - 🤖 [IA] - v1.1.12: Grid reorganizado para coherencia con CashCalculation */}
-        <div className="grid md:grid-cols-2 gap-6 lg:max-w-3xl lg:mx-auto">
-          {/* Información del conteo */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.1 }}
-          >
-            <div style={{
-              background: 'rgba(36, 36, 36, 0.4)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              borderRadius: '16px',
-              padding: '24px'
-            }}>
-              <h3 className="text-xl font-bold mb-4" style={{ color: '#e1e8ed' }}>
-                Información del Conteo
-              </h3>
-              
-              <div className="space-y-4">
-                <div>
-                  <p className="text-sm" style={{ color: '#8899a6' }}>Sucursal</p>
-                  <p className="text-lg font-semibold" style={{ color: '#e1e8ed' }}>
-                    {store?.name || 'N/A'}
-                  </p>
-                </div>
-                
-                <div>
-                  <p className="text-sm" style={{ color: '#8899a6' }}>Cajero Entrante</p>
-                  <p className="text-lg font-semibold" style={{ color: '#ffb84d' }}>
-                    {cashierIn?.name || 'N/A'}
-                  </p>
-                </div>
-                
-                <div>
-                  <p className="text-sm" style={{ color: '#8899a6' }}>Cajero Saliente</p>
-                  <p className="text-lg font-semibold" style={{ color: '#e1e8ed' }}>
-                    {cashierOut?.name || 'N/A'}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </motion.div>
+        {/* 🤖 [IA] - v1.3.7: RENDERIZADO CONDICIONAL - Resultados bloqueados hasta confirmación WhatsApp */}
+        {!reportSent ? (
+          // BLOQUEADO: Mostrar mensaje de bloqueo
+          <div style={{
+            background: 'rgba(36, 36, 36, 0.4)',
+            backdropFilter: `blur(clamp(12px, 4vw, 20px))`,
+            WebkitBackdropFilter: `blur(clamp(12px, 4vw, 20px))`,
+            border: '1px solid rgba(255, 255, 255, 0.15)',
+            borderRadius: `clamp(8px, 3vw, 16px)`,
+            padding: `clamp(3rem, 8vw, 4rem)`,
+            textAlign: 'center'
+          }}>
+            <Lock className="w-[clamp(3rem,12vw,4rem)] h-[clamp(3rem,12vw,4rem)] mx-auto mb-[clamp(1rem,4vw,1.5rem)]" style={{ color: '#f4a52a' }} />
+            <h3 className="text-[clamp(1rem,4.5vw,1.25rem)] font-bold mb-2" style={{ color: '#e1e8ed' }}>
+              🔒 Resultados Bloqueados
+            </h3>
+            <p className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#8899a6' }}>
+              Los resultados de la verificación matutina se revelarán después de enviar el reporte por WhatsApp.
+              Esto garantiza la trazabilidad completa de todas las verificaciones realizadas.
+            </p>
+          </div>
+        ) : (
+          // DESBLOQUEADO: Mostrar todos los resultados
+          <>
+            {/* Main Content - 🤖 [IA] - v1.1.12: Grid reorganizado para coherencia con CashCalculation */}
+            <div className="grid md:grid-cols-2 gap-6 lg:max-w-3xl lg:mx-auto">
+              {/* Información del conteo */}
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.1 }}
+              >
+                <div style={{
+                  background: 'rgba(36, 36, 36, 0.4)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  borderRadius: '16px',
+                  padding: '24px'
+                }}>
+                  <h3 className="text-xl font-bold mb-4" style={{ color: '#e1e8ed' }}>
+                    Información del Conteo
+                  </h3>
 
-          {/* Resultados del conteo */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
-          >
-            <div style={{
-              background: 'rgba(36, 36, 36, 0.4)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              borderRadius: '16px',
-              padding: '24px'
-            }}>
-              <h3 className="text-xl font-bold mb-4" style={{ color: '#e1e8ed' }}>
-                Resultados del Conteo
-              </h3>
-              
-              <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span style={{ color: '#8899a6' }}>Total Contado:</span>
-                  <span className="text-2xl font-bold" style={{ color: '#e1e8ed' }}>
-                    {formatCurrency(verificationData.totalCash)}
-                  </span>
+                  <div className="space-y-4">
+                    <div>
+                      <p className="text-sm" style={{ color: '#8899a6' }}>Sucursal</p>
+                      <p className="text-lg font-semibold" style={{ color: '#e1e8ed' }}>
+                        {store?.name || 'N/A'}
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="text-sm" style={{ color: '#8899a6' }}>Cajero Entrante</p>
+                      <p className="text-lg font-semibold" style={{ color: '#ffb84d' }}>
+                        {cashierIn?.name || 'N/A'}
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="text-sm" style={{ color: '#8899a6' }}>Cajero Saliente</p>
+                      <p className="text-lg font-semibold" style={{ color: '#e1e8ed' }}>
+                        {cashierOut?.name || 'N/A'}
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                
-                <div className="flex justify-between items-center">
-                  <span style={{ color: '#8899a6' }}>Cambio Esperado:</span>
-                  <span className="text-xl" style={{ color: '#8899a6' }}>
-                    {formatCurrency(verificationData.expectedAmount)}
-                  </span>
+              </motion.div>
+
+              {/* Resultados del conteo */}
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                <div style={{
+                  background: 'rgba(36, 36, 36, 0.4)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  borderRadius: '16px',
+                  padding: '24px'
+                }}>
+                  <h3 className="text-xl font-bold mb-4" style={{ color: '#e1e8ed' }}>
+                    Resultados del Conteo
+                  </h3>
+
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span style={{ color: '#8899a6' }}>Total Contado:</span>
+                      <span className="text-2xl font-bold" style={{ color: '#e1e8ed' }}>
+                        {formatCurrency(verificationData.totalCash)}
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                      <span style={{ color: '#8899a6' }}>Cambio Esperado:</span>
+                      <span className="text-xl" style={{ color: '#8899a6' }}>
+                        {formatCurrency(verificationData.expectedAmount)}
+                      </span>
+                    </div>
+
+                    <div className="border-t border-gray-700 pt-3">
+                      <div className="flex justify-between items-center">
+                        <span style={{ color: '#8899a6' }}>Diferencia:</span>
+                        <span
+                          className="text-2xl font-bold"
+                          style={{
+                            color: verificationData.isCorrect ? '#00ba7c' : '#f4212e'
+                          }}
+                        >
+                          {verificationData.difference >= 0 ? '+' : ''}
+                          {formatCurrency(verificationData.difference)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                
-                <div className="border-t border-gray-700 pt-3">
-                  <div className="flex justify-between items-center">
-                    <span style={{ color: '#8899a6' }}>Diferencia:</span>
-                    <span 
-                      className="text-2xl font-bold"
-                      style={{ 
-                        color: verificationData.isCorrect ? '#00ba7c' : '#f4212e' 
-                      }}
-                    >
-                      {verificationData.difference >= 0 ? '+' : ''}
-                      {formatCurrency(verificationData.difference)}
-                    </span>
+              </motion.div>
+            </div>
+
+            {/* Detalle de denominaciones - 🤖 [IA] - v1.0.98: Responsive */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="mt-6 lg:max-w-3xl lg:mx-auto"
+            >
+              <div style={{
+                background: 'rgba(36, 36, 36, 0.4)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                borderRadius: '16px',
+                padding: '24px'
+              }}>
+                <h3 className="text-xl font-bold mb-4" style={{ color: '#e1e8ed' }}>
+                  Detalle de Denominaciones
+                </h3>
+
+                <div className="p-4 rounded-lg" style={{
+                  background: 'rgba(244, 165, 42, 0.1)',
+                  border: '1px solid rgba(244, 165, 42, 0.3)'
+                }}>
+                  <p className="text-sm font-medium mb-3" style={{ color: '#f4a52a' }}>
+                    Cambio verificado para inicio de turno:
+                  </p>
+
+                  <div className="space-y-1">
+                    {generateDenominationDisplay()}
                   </div>
                 </div>
               </div>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Detalle de denominaciones - 🤖 [IA] - v1.0.98: Responsive */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="mt-6 lg:max-w-3xl lg:mx-auto"
-        >
-          <div style={{
-            background: 'rgba(36, 36, 36, 0.4)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
-            border: '1px solid rgba(255, 255, 255, 0.15)',
-            borderRadius: '16px',
-            padding: '24px'
-          }}>
-            <h3 className="text-xl font-bold mb-4" style={{ color: '#e1e8ed' }}>
-              Detalle de Denominaciones
-            </h3>
-            
-            <div className="p-4 rounded-lg" style={{
-              background: 'rgba(244, 165, 42, 0.1)',
-              border: '1px solid rgba(244, 165, 42, 0.3)'
-            }}>
-              <p className="text-sm font-medium mb-3" style={{ color: '#f4a52a' }}>
-                Cambio verificado para inicio de turno:
-              </p>
-              
-              <div className="space-y-1">
-                {generateDenominationDisplay()}
-              </div>
-            </div>
-          </div>
-        </motion.div>
+            </motion.div>
+          </>
+        )}
 
         {/* Success Confirmation - 🤖 [IA] - v1.1.11: Glass morphism coherente con CashCalculation */}
         <motion.div
@@ -448,34 +518,91 @@ Sistema CashGuard Paradise v1.1.13
                 Los datos están bloqueados según el protocolo anti-fraude.
               </p>
               
-              {/* Botones de acción en grid - 🤖 [IA] - v1.1.11: Coherente con CashCalculation */}
-              {/* 🤖 [IA] - v1.2.8: Removido botón Reporte, grid ajustado a 3 columnas */}
+              {/* 🤖 [IA] - v1.3.7: Banner advertencia inicial si NO enviado */}
+              {!reportSent && !whatsappOpened && !popupBlocked && (
+                <div className="p-[clamp(0.75rem,3vw,1rem)] rounded-[clamp(0.5rem,2vw,0.75rem)] mb-[clamp(1rem,4vw,1.5rem)] flex items-start gap-3" style={{
+                  background: 'rgba(255, 159, 10, 0.1)',
+                  border: '1px solid rgba(255, 159, 10, 0.3)'
+                }}>
+                  <AlertTriangle className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)] mt-0.5" style={{ color: '#ff9f0a' }} />
+                  <div>
+                    <p className="font-medium text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#ff9f0a' }}>
+                      ⚠️ DEBE ENVIAR REPORTE PARA CONTINUAR
+                    </p>
+                    <p className="text-[clamp(0.75rem,3vw,0.875rem)] mt-1" style={{ color: '#8899a6' }}>
+                      Los resultados se revelarán después de enviar el reporte por WhatsApp.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* 🤖 [IA] - v1.3.7: Banner pop-up bloqueado */}
+              {popupBlocked && !reportSent && (
+                <div className="p-[clamp(0.75rem,3vw,1rem)] rounded-[clamp(0.5rem,2vw,0.75rem)] mb-[clamp(1rem,4vw,1.5rem)] flex items-start gap-3" style={{
+                  background: 'rgba(255, 69, 58, 0.1)',
+                  border: '1px solid rgba(255, 69, 58, 0.3)'
+                }}>
+                  <AlertTriangle className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)] mt-0.5" style={{ color: '#ff453a' }} />
+                  <div>
+                    <p className="font-medium text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#ff453a' }}>
+                      🚫 Pop-ups Bloqueados
+                    </p>
+                    <p className="text-[clamp(0.75rem,3vw,0.875rem)] mt-1" style={{ color: '#8899a6' }}>
+                      Su navegador bloqueó la apertura de WhatsApp. Use el botón "Copiar" para enviar el reporte manualmente.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Botones de acción en grid - 🤖 [IA] - v1.3.7: Handlers actualizados + disabled states */}
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3 lg:max-w-3xl mx-auto">
                 <Button
-                  onClick={handleWhatsApp}
-                  className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold hover:scale-105 transform transition-all duration-300 text-xs sm:text-sm px-2 py-2"
+                  onClick={handleWhatsAppSend}
+                  disabled={reportSent || whatsappOpened}
+                  className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold hover:scale-105 transform transition-all duration-300 text-xs sm:text-sm px-2 py-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                 >
                   <Share className="w-4 h-4 mr-2" />
-                  WhatsApp
+                  {reportSent ? 'Reporte Enviado' : whatsappOpened ? 'WhatsApp Abierto...' : 'WhatsApp'}
                 </Button>
-                
+
                 <Button
                   onClick={handleCopyToClipboard}
+                  disabled={!reportSent && !popupBlocked}
                   variant="secondary"
-                  className="border-warning/30 hover:bg-warning/10 hover:scale-105 transform transition-all duration-300 text-xs sm:text-sm px-2 py-2"
+                  className="border-warning/30 hover:bg-warning/10 hover:scale-105 transform transition-all duration-300 text-xs sm:text-sm px-2 py-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                 >
                   <Copy className="w-4 h-4 mr-2" />
                   Copiar
                 </Button>
-                
+
                 <Button
                   onClick={onComplete}
-                  className="bg-gradient-to-r from-[#f4a52a] to-[#ffb84d] hover:from-[#e89a1a] hover:to-[#ffa83d] text-white font-semibold hover:scale-105 transform transition-all duration-300 text-xs sm:text-sm px-2 py-2 md:col-span-1 col-span-2"
+                  disabled={!reportSent}
+                  className="bg-gradient-to-r from-[#f4a52a] to-[#ffb84d] hover:from-[#e89a1a] hover:to-[#ffa83d] text-white font-semibold hover:scale-105 transform transition-all duration-300 text-xs sm:text-sm px-2 py-2 md:col-span-1 col-span-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                 >
                   <CheckCircle className="w-4 h-4 mr-2" />
                   Finalizar
                 </Button>
               </div>
+
+              {/* 🤖 [IA] - v1.3.7: Botón de confirmación después de abrir WhatsApp */}
+              {whatsappOpened && !reportSent && (
+                <div className="mt-[clamp(1rem,4vw,1.5rem)] p-[clamp(1rem,4vw,1.5rem)] rounded-[clamp(0.5rem,2vw,0.75rem)]" style={{
+                  background: 'rgba(0, 186, 124, 0.1)',
+                  border: '1px solid rgba(0, 186, 124, 0.3)'
+                }}>
+                  <p className="text-[clamp(0.875rem,3.5vw,1rem)] mb-3 text-center" style={{ color: '#8899a6' }}>
+                    ¿Ya envió el reporte por WhatsApp?
+                  </p>
+                  <Button
+                    onClick={handleConfirmSent}
+                    className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold hover:scale-105 transform transition-all duration-300"
+                  >
+                    <CheckCircle className="w-4 h-4 mr-2" />
+                    Sí, ya envié el reporte
+                  </Button>
+                </div>
+              )}
               
               <div className="mt-4 text-center">
                 <Button
