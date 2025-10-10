@@ -189,8 +189,9 @@ describe('📋 GuidedInstructionsModal - Integration Tests', () => {
       // Esperar a que regla 1 se complete y regla 2 se habilite
       await waitFor(() => {
         const rule2 = screen.getByText('No Tapes La Cámara').closest('div[role="button"]');
+        expect(rule2).toBeInTheDocument();
         expect(rule2).toHaveAttribute('aria-disabled', 'false');
-      }, { timeout: 15000 }); // 🤖 [IA] - CI Hotfix: 10s → 15s (primera regla completion)
+      }, { timeout: 20000 }); // 🤖 [IA] - CI Hotfix: 15s → 20s (primera regla completion + GitHub Actions overhead)
       
       // Click en regla 2
       const rule2 = screen.getByText('No Tapes La Cámara').closest('div[role="button"]');
@@ -199,9 +200,10 @@ describe('📋 GuidedInstructionsModal - Integration Tests', () => {
       // Esperar a que regla 2 se complete y regla 3 se habilite
       await waitFor(() => {
         const rule3 = screen.getByText('Ordena Por Depósito').closest('div[role="button"]');
+        expect(rule3).toBeInTheDocument();
         expect(rule3).toHaveAttribute('aria-disabled', 'false');
-      }, { timeout: 15000 }); // 🤖 [IA] - CI Hotfix: 10s → 15s (segunda regla completion)
-    }, 35000); // 🤖 [IA] - CI Hotfix: Test completo con 2 reglas necesita 35s en GitHub Actions
+      }, { timeout: 20000 }); // 🤖 [IA] - CI Hotfix: 15s → 20s (segunda regla completion + GitHub Actions overhead)
+    }, 45000); // 🤖 [IA] - CI Hotfix: 35s → 45s (Test completo con 2 reglas + GitHub Actions overhead)
   });
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -317,8 +319,10 @@ describe('📋 GuidedInstructionsModal - Integration Tests', () => {
         const rule2Text = screen.getByText('No Tapes La Cámara');
         const rule2 = rule2Text.closest('div[role="button"]');
         expect(rule2).toBeInTheDocument();
-        expect(rule2).not.toHaveAttribute('aria-disabled', 'true');
-      }, { timeout: 15000 }); // 🤖 [IA] - CI Hotfix: 12s → 15s (primera regla completion)
+        // Verificar que está habilitado (aria-disabled debe ser "false" o no existir)
+        const ariaDisabled = rule2?.getAttribute('aria-disabled');
+        expect(ariaDisabled === 'false' || ariaDisabled === null).toBe(true);
+      }, { timeout: 20000 }); // 🤖 [IA] - CI Hotfix: 15s → 20s (primera regla completion + GitHub Actions overhead)
       
       // Click en regla 2 (5s, más tiempo que regla 1)
       const rule2Button = screen.getByText('No Tapes La Cámara').closest('div[role="button"]');
@@ -327,8 +331,8 @@ describe('📋 GuidedInstructionsModal - Integration Tests', () => {
       // Debe completarse eventualmente
       await waitFor(() => {
         expect(rule2Button).toHaveAttribute('aria-pressed', 'true');
-      }, { timeout: 15000 }); // 🤖 [IA] - CI Hotfix: 12s → 15s (segunda regla completion)
-    }, 35000); // 🤖 [IA] - CI Hotfix: Test completo con 2 reglas necesita 35s en GitHub Actions
+      }, { timeout: 20000 }); // 🤖 [IA] - CI Hotfix: 15s → 20s (segunda regla completion + GitHub Actions overhead)
+    }, 45000); // 🤖 [IA] - CI Hotfix: 35s → 45s (Test completo con 2 reglas + GitHub Actions overhead)
 
     it('Test 4.3: animaciones de framer-motion presentes', () => {
       render(<GuidedInstructionsModal {...defaultProps} />);

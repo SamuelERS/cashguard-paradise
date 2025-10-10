@@ -333,13 +333,8 @@ describe('Grupo 2: Primer Intento Correcto (success)', () => {
     const onVerificationBehaviorCollected = vi.fn();
     renderPhase2Verification({ onVerificationBehaviorCollected });
 
-    await completeStepCorrectly(user, 43); // penny
-    await completeStepCorrectly(user, 20); // nickel
-    await completeStepCorrectly(user, 33); // dime
-    await completeStepCorrectly(user, 8);  // quarter
-    await completeStepCorrectly(user, 1);  // dollarCoin
-    await completeStepCorrectly(user, 1);  // bill1
-    await completeStepCorrectly(user, 1);  // bill5
+    // 🤖 [IA] - v1.3.8 Fase 1: Aplicado helper completeAllStepsCorrectly() (timing robusto)
+    await completeAllStepsCorrectly(user, [43, 20, 33, 8, 1, 1, 1], mockDeliveryCalculation.verificationSteps);
 
     // Esperar callback
     await waitFor(() => {
@@ -416,13 +411,8 @@ describe('Grupo 2: Primer Intento Correcto (success)', () => {
     const onSectionComplete = vi.fn();
     renderPhase2Verification({ onSectionComplete });
 
-    await completeStepCorrectly(user, 43); // penny
-    await completeStepCorrectly(user, 20); // nickel
-    await completeStepCorrectly(user, 33); // dime
-    await completeStepCorrectly(user, 8);  // quarter
-    await completeStepCorrectly(user, 1);  // dollarCoin
-    await completeStepCorrectly(user, 1);  // bill1
-    await completeStepCorrectly(user, 1);  // bill5
+    // 🤖 [IA] - v1.3.8 Fase 1: Aplicado helper completeAllStepsCorrectly() (timing robusto)
+    await completeAllStepsCorrectly(user, [43, 20, 33, 8, 1, 1, 1], mockDeliveryCalculation.verificationSteps);
 
     await waitFor(() => {
       expect(onSectionComplete).toHaveBeenCalled();
@@ -454,13 +444,8 @@ describe('Grupo 2: Primer Intento Correcto (success)', () => {
     const onVerificationBehaviorCollected = vi.fn();
     renderPhase2Verification({ onVerificationBehaviorCollected });
 
-    await completeStepCorrectly(user, 43); // penny
-    await completeStepCorrectly(user, 20); // nickel
-    await completeStepCorrectly(user, 33); // dime
-    await completeStepCorrectly(user, 8);  // quarter
-    await completeStepCorrectly(user, 1);  // dollarCoin
-    await completeStepCorrectly(user, 1);  // bill1
-    await completeStepCorrectly(user, 1);  // bill5
+    // 🤖 [IA] - v1.3.8 Fase 1: Aplicado helper completeAllStepsCorrectly() (timing robusto)
+    await completeAllStepsCorrectly(user, [43, 20, 33, 8, 1, 1, 1], mockDeliveryCalculation.verificationSteps);
 
     await waitFor(() => {
       expect(onVerificationBehaviorCollected).toHaveBeenCalled();
@@ -474,13 +459,8 @@ describe('Grupo 2: Primer Intento Correcto (success)', () => {
     const onVerificationBehaviorCollected = vi.fn();
     renderPhase2Verification({ onVerificationBehaviorCollected });
 
-    await completeStepCorrectly(user, 43); // penny
-    await completeStepCorrectly(user, 20); // nickel
-    await completeStepCorrectly(user, 33); // dime
-    await completeStepCorrectly(user, 8);  // quarter
-    await completeStepCorrectly(user, 1);  // dollarCoin
-    await completeStepCorrectly(user, 1);  // bill1
-    await completeStepCorrectly(user, 1);  // bill5
+    // 🤖 [IA] - v1.3.8 Fase 1: Aplicado helper completeAllStepsCorrectly() (timing robusto)
+    await completeAllStepsCorrectly(user, [43, 20, 33, 8, 1, 1, 1], mockDeliveryCalculation.verificationSteps);
 
     await waitFor(() => {
       expect(onVerificationBehaviorCollected).toHaveBeenCalled();
@@ -1402,13 +1382,8 @@ describe('Grupo 6: buildVerificationBehavior() - Métricas Agregadas', () => {
     const onVerificationBehaviorColleted = vi.fn();
     renderPhase2Verification({ onVerificationBehaviorCollected: onVerificationBehaviorColleted });
 
-    await completeStepCorrectly(user, 43); // penny
-    await completeStepCorrectly(user, 20); // nickel
-    await completeStepCorrectly(user, 33); // dime
-    await completeStepCorrectly(user, 8);  // quarter
-    await completeStepCorrectly(user, 1);  // dollarCoin
-    await completeStepCorrectly(user, 1);  // bill1
-    await completeStepCorrectly(user, 1);  // bill5
+    // 🤖 [IA] - v1.3.8 Fase 1: Aplicado helper completeAllStepsCorrectly() (timing robusto)
+    await completeAllStepsCorrectly(user, [43, 20, 33, 8, 1, 1, 1], mockDeliveryCalculation.verificationSteps);
 
     await waitFor(() => {
       expect(onVerificationBehaviorColleted).toHaveBeenCalled();
@@ -1837,13 +1812,8 @@ describe('Grupo 7: Navigation & UX', () => {
   it('7.12 - Pantalla "Verificación Exitosa" muestra monto esperado correcto', async () => {
     renderPhase2Verification();
 
-    await completeStepCorrectly(user, 43); // penny
-    await completeStepCorrectly(user, 20); // nickel
-    await completeStepCorrectly(user, 33); // dime
-    await completeStepCorrectly(user, 8);  // quarter
-    await completeStepCorrectly(user, 1);  // dollarCoin
-    await completeStepCorrectly(user, 1);  // bill1
-    await completeStepCorrectly(user, 1);  // bill5
+    // 🤖 [IA] - v1.3.8 Fase 1: Aplicado helper completeAllStepsCorrectly() (timing robusto)
+    await completeAllStepsCorrectly(user, [43, 20, 33, 8, 1, 1, 1], mockDeliveryCalculation.verificationSteps);
 
     await waitFor(() => {
       expect(screen.getByText('Verificación Exitosa')).toBeInTheDocument();
@@ -1898,13 +1868,8 @@ describe('Grupo 8: Regresión Bugs Históricos', () => {
     const onVerificationBehaviorCollected = vi.fn();
     renderPhase2Verification({ onVerificationBehaviorCollected });
 
-    await completeStepCorrectly(user, 43); // penny
-    await completeStepCorrectly(user, 20); // nickel
-    await completeStepCorrectly(user, 33); // dime
-    await completeStepCorrectly(user, 8);  // quarter
-    await completeStepCorrectly(user, 1);  // dollarCoin
-    await completeStepCorrectly(user, 1);  // bill1
-    await completeStepCorrectly(user, 1);  // bill5
+    // 🤖 [IA] - v1.3.8 Fase 1: Aplicado helper completeAllStepsCorrectly() (timing robusto)
+    await completeAllStepsCorrectly(user, [43, 20, 33, 8, 1, 1, 1], mockDeliveryCalculation.verificationSteps);
 
     // Callback debe llamarse EXACTAMENTE 1 vez (NO loop infinito)
     await waitFor(() => {
