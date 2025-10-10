@@ -25,25 +25,27 @@
 
 | # | Documento | Descripción | Estado |
 |---|-----------|-------------|--------|
-| - | **PLAN_DE_ACCION.md** | Task list detallada con 12 fases y criterios de aceptación | ✅ Completado |
+| - | **PLAN_DE_ACCION_V2_HIBRIDO.md** | Task list simplificada Opción C (8 fases, 3-5h) | ✅ Completado |
+| - | ~~PLAN_DE_ACCION.md~~ | Plan original Modal+Hook (descartado) | ❌ Obsoleto |
 
 **Duración Fase 2:** ~1 hora  
-**Output clave:** Task list con 85+ subtareas, estimación 10-15 horas implementación
+**Output clave:** Plan simplificado 65-70% más rápido, 0 componentes nuevos
 
 ---
 
 ### Fase 3: EJECUCIÓN ⏳ PENDIENTE
 
-| # | Documento | Descripción | Estado |
-|---|-----------|-------------|--------|
-| 1 | **1_Implementacion_WhatsAppReportModal.md** | Guía de implementación del modal | ⏳ Pendiente |
-| 2 | **2_Implementacion_useWhatsAppReport_Hook.md** | Guía de implementación del hook | ⏳ Pendiente |
-| 3 | **3_Modificaciones_CashCalculation.md** | Cambios en componente nocturno | ⏳ Pendiente |
-| 4 | **4_Modificaciones_MorningVerification.md** | Cambios en componente matutino | ⏳ Pendiente |
-| 5 | **5_Actualizacion_Tests.md** | Tests nuevos y modificados | ⏳ Pendiente |
+**Nota:** Opción C no requiere documentos de implementación detallados por componente. La implementación es directa según `PLAN_DE_ACCION_V2_HIBRIDO.md`.
 
-**Duración estimada Fase 3:** ~8-12 horas (implementación + tests)  
-**Output esperado:** Código funcional, tests passing 100%
+| Tarea | Descripción | Estimación |
+|-------|-------------|------------|
+| Modificar CashCalculation.tsx | Agregar estado + renderizado condicional | 60-90 min |
+| Modificar MorningVerification.tsx | Misma lógica que CashCalculation | 45-60 min |
+| Actualizar tests existentes | 5 tests a modificar | 50-75 min |
+| Tests E2E | Validar flujo completo | 30-45 min |
+
+**Duración estimada Fase 3:** ~3-4 horas (implementación + tests)  
+**Output esperado:** Código funcional, tests passing 100%, sin componentes nuevos
 
 ---
 
@@ -51,12 +53,11 @@
 
 | # | Documento | Descripción | Estado |
 |---|-----------|-------------|--------|
-| 6 | **6_Arquitectura_Final.md** | Diagrama y explicación de arquitectura implementada | ⏳ Pendiente |
-| 7 | **7_Lecciones_Aprendidas.md** | Casos edge, decisiones técnicas, problemas resueltos | ⏳ Pendiente |
-| 8 | **8_Manual_Usuario.md** | Guía para empleados sobre nuevo flujo | ⏳ Pendiente |
+| 1 | **Arquitectura_Final.md** | Diagrama de flujo simple (bloque → bloqueado → revelado) | ⏳ Pendiente |
+| 2 | **Lecciones_Aprendidas.md** | Por qué Opción C vs Modal, decisiones tomadas | ⏳ Pendiente |
 
-**Duración estimada Fase 4:** ~2-3 horas  
-**Output esperado:** Documentación completa para mantenimiento futuro
+**Duración estimada Fase 4:** ~45-60 min (documentación simplificada)  
+**Output esperado:** Documentación mínima necesaria (arquitectura más simple)
 
 ---
 
@@ -79,34 +80,34 @@
 ### Problema
 Empleados ven resultados finales ANTES de enviar reporte → Reinician app si no les gusta → Pérdida de trazabilidad
 
-### Solución
-Modal obligatorio (no cancelable) que fuerza envío WhatsApp ANTES de revelar números
+### Solución (Opción C Híbrida) ✅
+Bloque de acción visible + resultados bloqueados hasta envío confirmado
 
 ### Componentes Afectados
-- `CashCalculation.tsx` (modificar)
-- `MorningVerification.tsx` (modificar)
-- `WhatsAppReportModal.tsx` (crear)
-- `useWhatsAppReport.ts` (crear)
+- `CashCalculation.tsx` (modificar - solo UI)
+- `MorningVerification.tsx` (modificar - solo UI)
+- **0 componentes nuevos** (sin modal ni hook)
 
 ### Impacto
-- **Usuarios:** Flujo más largo pero 100% trazabilidad
-- **Tests:** ~5-8 tests modificados + ~15 tests nuevos
-- **Código:** +300 líneas, 0 líneas eliminadas
-- **Riesgo:** Bajo (no toca lógica de cálculos)
+- **Usuarios:** UX clara y guiada, 100% trazabilidad
+- **Tests:** ~5 tests modificados + 0 tests nuevos
+- **Código:** +80-120 líneas, 0 líneas eliminadas
+- **Riesgo:** Muy Bajo (solo renderizado condicional)
+- **Tiempo:** 3-5 horas (65-70% menos que opciones descartadas)
 
 ---
 
 ## 🔗 Navegación Rápida
 
 ### Para Desarrolladores
-→ **Quiero implementar:** Lee `PLAN_DE_ACCION.md` (Fase 2, pendiente)  
+→ **Quiero implementar:** Lee `PLAN_DE_ACCION_V2_HIBRIDO.md` ✅  
 → **Necesito detalles técnicos:** Lee `ANALISIS_TECNICO_COMPONENTES.md`  
 → **¿Por qué hacemos esto?:** Lee `README.md` sección "Contexto y Justificación"
 
 ### Para Gerencia/Product Owners
 → **Resumen ejecutivo:** Lee `README.md` (primeras 3 secciones)  
-→ **¿Cuánto tiempo tomará?:** ~13-19 horas totales (análisis a cierre)  
-→ **¿Cuál es el riesgo?:** Bajo - Ver `README.md` sección "Análisis de Impacto"
+→ **¿Cuánto tiempo tomará?:** ~3-5 horas totales (65-70% reducción) ⚡  
+→ **¿Cuál es el riesgo?:** Muy Bajo - Ver `README.md` sección "Análisis de Impacto"
 
 ### Para Auditores
 → **Decisiones de arquitectura:** `README.md` sección "Opciones de Implementación"  

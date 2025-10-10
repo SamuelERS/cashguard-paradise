@@ -1,6 +1,6 @@
-// 🤖 [IA] - v1.3.6Y: FIX CÁLCULO PERFECTAS - firstAttemptSuccesses calculado por diferencia (Total - Errores) en lugar de contar en forEach
+// 🤖 [IA] - v1.3.6AD1: ELIMINACIÓN BOTÓN "ANTERIOR" - Patrón quirúrgico caso Delivery aplicado (interferencia con conteo ciego)
+// Previous: v1.3.6Y - FIX CÁLCULO PERFECTAS - firstAttemptSuccesses calculado por diferencia (Total - Errores) en lugar de contar en forEach
 // Previous: v1.3.6T - FIX DEFINITIVO WARNINGS - clearAttemptHistory() removido de intentos correctos (patrón v1.3.6M tercer intento)
-// Previous: v1.3.6S - DEBUG COMPLETO - 6 checkpoints console.log tracking buildVerificationBehavior → denominationsWithIssues array
 // 🤖 [IA] - v1.3.6M: FIX CRÍTICO - clearAttemptHistory() borraba intentos antes de buildVerificationBehavior (reporte sin datos)
 // 🤖 [IA] - v1.3.6h: BUG FIX CRÍTICO - Enter key leak modal verificación (triple defensa anti-fraude)
 // 🤖 [IA] - v1.3.6g: BUG FIX #1 - createTimeoutWithCleanup en deps causaba race conditions (9 errores loop)
@@ -11,14 +11,13 @@
 // 🤖 [IA] - v1.1.14 - Simplificación visual y eliminación de redundancias
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Building, ChevronRight, Check, Banknote, Target, CheckCircle, Coins, ArrowLeft } from 'lucide-react';
+import { Building, ChevronRight, Check, Banknote, Target, CheckCircle, Coins } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ConstructiveActionButton } from '@/components/shared/ConstructiveActionButton';
 import { DestructiveActionButton } from '@/components/shared/DestructiveActionButton';
 import { NeutralActionButton } from '@/components/ui/neutral-action-button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';  // 🤖 [IA] - v1.2.52: WCAG 2.1 SC 3.3.2 compliance
-import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 // 🤖 [IA] - FAE-02: PURGA QUIRÚRGICA COMPLETADA - CSS imports eliminados
 // Los 1 archivos CSS están ahora importados globalmente vía index.css:
 // - phase2-confirm-button.css
@@ -42,8 +41,6 @@ interface Phase2VerificationSectionProps {
   completedSteps: Record<string, boolean>;
   // 🤖 [IA] - v1.2.24: Navigation props to match Phase 1 pattern
   onCancel: () => void;
-  onPrevious: () => void;
-  canGoPrevious: boolean;
 }
 
 // Función para convertir labels a texto descriptivo
@@ -72,13 +69,10 @@ export function Phase2VerificationSection({
   onSectionComplete,
   onVerificationBehaviorCollected, // 🤖 [IA] - v1.3.6: MÓDULO 1 - Nueva prop callback
   completedSteps,
-  onCancel,
-  onPrevious,
-  canGoPrevious
+  onCancel
 }: Phase2VerificationSectionProps) {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [inputValue, setInputValue] = useState('');
-  const [showBackConfirmation, setShowBackConfirmation] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // 🤖 [IA] - v1.3.0: MÓDULO 4 - Estados para blind verification
@@ -615,55 +609,6 @@ export function Phase2VerificationSection({
     });
   };
 
-  // 🤖 [IA] - v1.2.24: Función para mostrar modal de confirmación al retroceder
-  const handlePreviousStep = () => {
-    if (currentStepIndex > 0) {
-      setShowBackConfirmation(true);
-    }
-  };
-
-  // 🤖 [IA] - v1.2.24: Función para confirmar retroceso
-  const handleConfirmedPrevious = () => {
-    if (currentStepIndex > 0) {
-      // Deshacer el paso actual si está completado
-      const currentStepKey = verificationSteps[currentStepIndex].key;
-      if (completedSteps[currentStepKey] && onStepUncomplete) {
-        onStepUncomplete(currentStepKey);
-      }
-
-      // También deshacer el paso anterior para poder reeditarlo
-      const prevIndex = currentStepIndex - 1;
-      const prevStepKey = verificationSteps[prevIndex].key;
-      if (completedSteps[prevStepKey] && onStepUncomplete) {
-        onStepUncomplete(prevStepKey);
-      }
-
-      // Ahora retroceder al índice anterior
-      setCurrentStepIndex(prevIndex);
-
-      // Restaurar el valor del paso anterior si estaba completado
-      const prevStep = verificationSteps[prevIndex];
-      if (completedSteps[prevStepKey]) {
-        // Si el paso estaba completado, restaurar su valor
-        setInputValue(prevStep.quantity.toString());
-      } else {
-        // Si no estaba completado, limpiar
-        setInputValue('');
-      }
-
-      // Mantener focus en el input
-      setTimeout(() => {
-        inputRef.current?.focus();
-        // Seleccionar el texto para facilitar la edición
-        inputRef.current?.select();
-      }, 100);
-    }
-    setShowBackConfirmation(false);
-  };
-
-  // 🤖 [IA] - v1.2.24: Calcular si se puede ir al paso anterior
-  const canGoPreviousInternal = currentStepIndex > 0;
-
   if (verificationSteps.length === 0) {
     return (
       <div className="glass-panel-success text-center p-8">
@@ -951,7 +896,7 @@ export function Phase2VerificationSection({
             </div>
 
             {/* Navigation footer - matching DeliveryFieldView */}
-            {/* 🚨 FIX v1.3.1: onCancel y onPrevious son props requeridas, condición removida */}
+            {/* 🚨 FIX v1.3.1: onCancel prop requerida */}
             <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-3 border-t border-white/10 p-4 bg-black/20 backdrop-blur-sm">
               <DestructiveActionButton
                 onClick={onCancel}
@@ -959,16 +904,6 @@ export function Phase2VerificationSection({
               >
                 Cancelar
               </DestructiveActionButton>
-
-              {/* 🤖 [IA] - v1.2.24: Botón Anterior con lógica local */}
-              <NeutralActionButton
-                onClick={handlePreviousStep}
-                disabled={!canGoPreviousInternal}
-                aria-label="Denominación anterior"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                <span className="ml-2">Anterior</span>
-              </NeutralActionButton>
             </div>
           </motion.div>
         );
@@ -1000,19 +935,6 @@ export function Phase2VerificationSection({
           </p>
         </div>
       )}
-
-      {/* Modal de confirmación para retroceder */}
-      <ConfirmationModal
-        open={showBackConfirmation}
-        onOpenChange={setShowBackConfirmation}
-        title="¿Retroceder al paso anterior?"
-        description="El progreso del paso actual se perderá."
-        warningText="Retrocede si necesitas corregir la cantidad anterior."
-        confirmText="Sí, retroceder"
-        cancelText="Continuar aquí"
-        onConfirm={handleConfirmedPrevious}
-        onCancel={() => setShowBackConfirmation(false)}
-      />
 
       {/* 🤖 [IA] - v1.3.0: MÓDULO 4 - BlindVerificationModal para triple intento */}
       <BlindVerificationModal

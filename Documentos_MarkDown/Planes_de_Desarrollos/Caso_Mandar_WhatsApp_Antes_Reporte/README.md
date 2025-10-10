@@ -168,99 +168,118 @@ Implementar un **modal obligatorio** que fuerce el envío del reporte de corte d
 
 ---
 
-## ⚖️ OPCIONES DE IMPLEMENTACIÓN
+## ⚖️ OPCIONES DE IMPLEMENTACIÓN EVALUADAS
 
-### Opción A: Modal Independiente con Hook de Estado Compartido (RECOMENDADA)
+### Opción A: Modal Flotante Obligatorio (Evaluada - Descartada)
 
 #### Ventajas
 - ✅ Separación de responsabilidades clara
-- ✅ Reutilizable para ambos flujos (matutino y nocturno)
-- ✅ Testeable de forma aislada
-- ✅ No requiere modificar lógica core de componentes existentes
-- ✅ Implementación limpia con hook personalizado
+- ✅ Anti-fraude máximo (no ven nada hasta enviar)
 
 #### Desventajas
-- ⚠️ Requiere crear hook nuevo (`useWhatsAppReport`)
-- ⚠️ Requiere gestionar estado intermedio entre cálculo y revelación
+- ❌ Requiere componente modal nuevo complejo
+- ❌ Requiere hook personalizado adicional
+- ❌ UX más invasiva (modal bloquea todo)
+- ❌ Mayor riesgo de regresión
+- ❌ Más tests a crear y mantener
+
+---
+
+### Opción B: Blur de Resultados (Evaluada - Descartada)
+
+#### Ventajas
+- ✅ Implementación simple (solo CSS)
+- ✅ UX fluida (una sola pantalla)
+
+#### Desventajas
+- ❌ Menos anti-fraude (pueden intuir números borrosos)
+- ❌ Accesibilidad limitada (lectores de pantalla problemáticos)
+- ❌ Puede generar frustración (ver borroso pero no poder leer)
+
+---
+
+### Opción C: Bloque Visible + Resultados Bloqueados (SELECCIONADA) ✅
+
+#### Ventajas
+- ✅ **Claridad total:** Usuario sabe exactamente qué debe hacer
+- ✅ **Anti-fraude efectivo:** No ve números reales hasta enviar
+- ✅ **UX guiada:** Botón WhatsApp destacado como acción principal
+- ✅ **Implementación simple:** Sin componentes nuevos complejos
+- ✅ **Accesible:** Lectores de pantalla leen instrucción clara
+- ✅ **Bajo riesgo:** Solo renderizado condicional, sin lógica nueva
+- ✅ **Menos tests:** No hay componentes nuevos que testear
+
+#### Desventajas
+- ⚠️ Ninguna significativa identificada
+
+#### Diseño Visual
+
+**ANTES DE ENVIAR:**
+```
+┌─────────────────────────────────────────┐
+│ ✅ Corte de Caja Completado            │
+│ Los datos están listos para el reporte │
+│                                         │
+│ [⬇️ ENVIAR POR WHATSAPP] ← DESTACADO  │
+│ [Copiar (deshabilitado)]               │
+│ [Finalizar (deshabilitado)]            │
+├─────────────────────────────────────────┤
+│ ⚠️ DEBE ENVIAR REPORTE PARA CONTINUAR  │
+├─────────────────────────────────────────┤
+│ ╔═══════════════════════════════════╗   │
+│ ║ 🔒 Resultados Bloqueados          ║   │
+│ ║                                   ║   │
+│ ║ Los resultados se revelarán       ║   │
+│ ║ después de enviar el reporte.     ║   │
+│ ╚═══════════════════════════════════╝   │
+└─────────────────────────────────────────┘
+```
+
+**DESPUÉS DE ENVIAR:**
+```
+┌─────────────────────────────────────────┐
+│ ✅ Reporte Enviado Correctamente       │
+│ [Re-enviar WhatsApp]                   │
+│ [Copiar]                               │
+│ [Finalizar]                            │
+├─────────────────────────────────────────┤
+│ 📊 Cálculo Completado                  │
+│ 🏢 Información del Corte               │
+│ 💰 Totales Calculados                  │
+│ 💵 Cambio para Mañana                  │
+└─────────────────────────────────────────┘
+```
 
 #### Archivos a Modificar
-1. **WhatsAppReportModal.tsx (NUEVO):**
-   - Componente modal OBLIGATORIO
-   - Lógica de envío automático
-   - Fallback manual si falla automático
-   - Estados: 'sending', 'success', 'error', 'manual'
 
-2. **useWhatsAppReport.ts (NUEVO):**
-   - Hook personalizado para gestionar envío
-   - `attemptAutoSend()` - Intento automático
-   - `sendManually()` - Fallback manual
-   - Estado de progreso
+**Solo 2 archivos (sin archivos nuevos):**
 
-3. **CashCalculation.tsx (MODIFICAR):**
+1. **CashCalculation.tsx (MODIFICAR):**
    - Agregar estado `reportSent` (boolean)
-   - Renderizar modal ANTES de mostrar resultados
-   - Revelar resultados solo después de `onReportSent`
+   - Renderizado condicional en dos partes:
+     - Parte 1: Bloque de acción (siempre visible)
+     - Parte 2: Resultados (solo después de `reportSent === true`)
+   - Deshabilitar botones Copiar y Finalizar hasta envío
+   - Mostrar mensaje "Resultados bloqueados" antes de envío
 
-4. **MorningVerification.tsx (MODIFICAR):**
+2. **MorningVerification.tsx (MODIFICAR):**
    - Implementar misma lógica que CashCalculation
-   - Agregar estado `reportSent`
-   - Renderizar modal ANTES de resultados
+   - Consistencia en UX entre ambos flujos
 
 ---
 
-### Opción B: HOC (Higher Order Component) Wrapper
+## ✅ DECISIÓN FINAL
 
-#### Ventajas
-- ✅ Encapsula lógica de envío en un solo lugar
-- ✅ Aplicable a múltiples componentes automáticamente
+### **OPCIÓN C: Bloque Visible + Resultados Bloqueados**
 
-#### Desventajas
-- ❌ Mayor complejidad arquitectónica
-- ❌ Más difícil de debuggear
-- ❌ Puede generar confusión en stack de componentes
-
-#### Archivos a Modificar
-1. **withWhatsAppReport.tsx (NUEVO):**
-   - HOC que envuelve componentes de resultados
-   - Intercepta revelación para forzar envío
-
-2. **CashCalculation.tsx (MODIFICAR):**
-   - Envolver con HOC: `export default withWhatsAppReport(CashCalculation)`
-
-3. **MorningVerification.tsx (MODIFICAR):**
-   - Envolver con HOC: `export default withWhatsAppReport(MorningVerification)`
-
----
-
-### Opción C: Middleware en CashCounter (Componente Raíz)
-
-#### Ventajas
-- ✅ Centraliza lógica en un solo punto
-- ✅ No requiere modificar componentes hijos
-
-#### Desventajas
-- ❌ Aumenta complejidad de CashCounter
-- ❌ Acoplamiento fuerte con flujo de navegación
-- ❌ Dificulta testing aislado
-
-#### Archivos a Modificar
-1. **CashCounter.tsx (MODIFICAR):**
-   - Interceptar transición a fase final
-   - Mostrar modal antes de renderizar resultados
-   - Gestionar estado global de envío
-
----
-
-## ✅ DECISIÓN RECOMENDADA
-
-### **OPCIÓN A: Modal Independiente con Hook de Estado Compartido**
-
-**Justificación final:**
-1. **Claridad arquitectónica:** Separación clara de responsabilidades (modal + hook + componentes)
-2. **Testeable:** Cada pieza se puede testear aisladamente
-3. **Mantenible:** Fácil de debuggear y extender en el futuro
-4. **Reutilizable:** Hook se puede usar en otros contextos si es necesario
-5. **No invasivo:** No modifica lógica core de cálculos ni reportes
+**Justificación:**
+1. **Máxima simplicidad:** No requiere componentes ni hooks nuevos
+2. **Claridad UX:** Usuario entiende inmediatamente qué debe hacer
+3. **Anti-fraude efectivo:** No ve resultados reales hasta enviar
+4. **Bajo riesgo:** Solo cambios de renderizado, 0% cambios en lógica
+5. **Mantenible:** Código simple y directo
+6. **Testeable:** Menos superficie de testing que opciones complejas
+7. **Accesible:** Compatible con lectores de pantalla
 
 ---
 
@@ -276,17 +295,17 @@ Implementar un **modal obligatorio** que fuerce el envío del reporte de corte d
   - ⚖️ Requiere conexión o confirmación manual
 
 ### Impacto en Tests
-- **Alto:** ~5-8 tests afectados
-  - 2 tests de CashCalculation (actualizar flujo)
-  - 2 tests de MorningVerification (actualizar flujo)
-  - 4-6 tests nuevos para WhatsAppReportModal + hook
+- **Bajo:** ~3-5 tests afectados
+  - 2-3 tests de CashCalculation (actualizar flujo)
+  - 2-3 tests de MorningVerification (actualizar flujo)
+  - 0 tests nuevos (no hay componentes nuevos)
 
 ### Impacto en Código
-- **Archivos nuevos:** 2 (Modal + Hook)
+- **Archivos nuevos:** 0 (ninguno)
 - **Archivos modificados:** 2 (CashCalculation + MorningVerification)
-- **Líneas agregadas:** ~300-400 líneas
-- **Líneas modificadas:** ~50-80 líneas
-- **Complejidad:** Media (nuevo flujo de estado pero lógica clara)
+- **Líneas agregadas:** ~80-120 líneas (renderizado condicional + mensajes)
+- **Líneas modificadas:** ~40-60 líneas
+- **Complejidad:** Baja (solo renderizado condicional simple)
 
 ---
 

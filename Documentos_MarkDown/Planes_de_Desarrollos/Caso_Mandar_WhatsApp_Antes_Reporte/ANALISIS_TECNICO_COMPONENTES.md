@@ -8,7 +8,7 @@
 
 ## 📊 Resumen Ejecutivo
 
-Se identificaron **2 componentes principales** que revelan resultados finales SIN forzar envío previo de reporte WhatsApp, más **1 componente nuevo** requerido para implementar el modal obligatorio. El análisis confirma que el problema es **arquitectónico** (flujo de revelación) y NO de lógica de negocio (cálculos funcionan correctamente). La solución propuesta (Opción A) es **no invasiva** y preserva 100% de la funcionalidad existente.
+Se identificaron **2 componentes principales** que revelan resultados finales SIN forzar envío previo de reporte WhatsApp. El análisis confirma que el problema es **arquitectónico** (flujo de revelación) y NO de lógica de negocio (cálculos funcionan correctamente). La solución seleccionada (**Opción C: Bloque Visible + Resultados Bloqueados**) es **extremadamente simple**, **no invasiva** y preserva 100% de la funcionalidad existente sin requerir componentes nuevos.
 
 ---
 
@@ -16,15 +16,14 @@ Se identificaron **2 componentes principales** que revelan resultados finales SI
 
 ### Tabla Resumen
 
-| Componente | Ubicación | Líneas | Tipo | Impacto | Complejidad |
-|------------|-----------|--------|------|---------|-------------|
-| CashCalculation.tsx | /src/components/ | 1031 | UI | **Alto** | Media |
-| MorningVerification.tsx | /src/components/morning-count/ | 499 | UI | **Alto** | Media |
-| **WhatsAppReportModal.tsx** (NUEVO) | /src/components/modals/ | ~200 | UI | **Alto** | Media |
-| **useWhatsAppReport.ts** (NUEVO) | /src/hooks/ | ~100 | Hook | Medio | Baja |
+| Componente | Ubicación | Líneas | Tipo | Impacto | Complejidad Cambio |
+|------------|-----------|--------|------|---------|---------------------|
+| CashCalculation.tsx | /src/components/ | 1031 | UI | **Alto** | **Baja** (solo UI) |
+| MorningVerification.tsx | /src/components/morning-count/ | 499 | UI | **Alto** | **Baja** (solo UI) |
 
-**Total componentes afectados:** 4 (2 existentes + 2 nuevos)  
-**Total líneas de código involucradas:** ~1830 líneas
+**Total componentes afectados:** 2 (solo existentes)  
+**Total componentes nuevos:** 0 (ninguno)  
+**Total líneas de código a modificar:** ~80-120 líneas (renderizado condicional)
 
 ---
 
@@ -271,312 +270,142 @@ const handleWhatsApp = () => {
    - Falta `reportSent` boolean
    - **Impacto:** ALTO - No se rastrea envío
 
-**✅ Propuesta de Cambio:**
+**✅ Propuesta de Cambio (Opción C Híbrida):**
 
 ```typescript
 // AGREGAR estado de envío
 const [reportSent, setReportSent] = useState(false);
 
-// MODIFICAR renderizado condicional
-if (!verificationData) {
-  return <LoadingSpinner />;
-}
+// MODIFICAR handler WhatsApp
+const handleWhatsAppSend = () => {
+  handleWhatsApp(); // Función existente
+  setReportSent(true);
+  toast.success('✅ Reporte enviado correctamente');
+};
 
-// NUEVO: Mostrar modal ANTES de resultados
-if (!reportSent) {
-  return (
-    <WhatsAppReportModal
-      open={true}
-      reportContent={generateReport()}
-      reportType="matutino"
-      onReportSent={() => setReportSent(true)}
-      onError={(error) => console.error(error)}
-    />
-  );
-}
-
-// SOLO DESPUÉS de reportSent = true → revelar resultados
+// RENDERIZADO CONDICIONAL SIMPLE
 return (
   <div className="morning-verification-container">
-    {/* Resultados finales */}
+    {/* BLOQUE DE ACCIÓN - Siempre visible */}
+    <div className="confirmation-block">
+      <h3>Verificación Completada</h3>
+      <button onClick={handleWhatsAppSend} disabled={reportSent}>
+        {reportSent ? 'Reporte Enviado' : 'Enviar WhatsApp'}
+      </button>
+      <button disabled={!reportSent}>Copiar</button>
+      <button disabled={!reportSent}>Finalizar</button>
+    </div>
+
+    {/* BANNER ADVERTENCIA - Solo si no enviado */}
+    {!reportSent && (
+      <div className="warning-banner">
+        ⚠️ DEBE ENVIAR REPORTE PARA CONTINUAR
+      </div>
+    )}
+
+    {/* RESULTADOS - Bloqueados o revelados */}
+    {!reportSent ? (
+      <div className="locked-results">
+        🔒 Resultados Bloqueados
+        <p>Se revelarán después de enviar el reporte</p>
+      </div>
+    ) : (
+      <div className="revealed-results">
+        {/* Todos los resultados normales */}
+      </div>
+    )}
   </div>
 );
 ```
 
 ---
 
-### 3. WhatsAppReportModal.tsx (NUEVO - CREAR)
+## 🏗️ Arquitectura de la Solución (Opción C Híbrida)
 
-**📍 Ubicación Propuesta:**
-`/src/components/modals/WhatsAppReportModal.tsx`
+### Diseño Visual del Flujo
 
-**📊 Métricas Estimadas:**
-- Líneas totales: ~200-250
-- Complejidad ciclomática: **Media** (estados: sending, success, error, manual)
-- Dependencias: 8-10 imports (Dialog, Button, toast, hooks)
-
-**🎯 Función Principal:**
-Modal **OBLIGATORIO y NO CANCELABLE** que:
-1. Se muestra ANTES de revelar resultados finales
-2. Intenta envío automático de WhatsApp al montar
-3. Si falla automático → muestra botón de confirmación manual
-4. Si usuario no tiene WhatsApp → fallback a copiar portapapeles
-5. **Cierra SOLO después** de envío exitoso confirmado
-6. Emite evento `onReportSent()` para desbloquear revelación
-
-**🔗 Dependencies Propuestas:**
+**ANTES DE ENVIAR:**
 ```
-WhatsAppReportModal
-├── useState (estados: sending, success, error, manual)
-├── useEffect (intento automático al montar)
-├── useWhatsAppReport (hook personalizado)
-├── Dialog/DialogContent (componente base)
-├── Button (acciones)
-├── toast (notificaciones)
-├── Share icon (lucide-react)
-├── AlertTriangle icon (errores)
-└── CheckCircle icon (éxito)
+┌─────────────────────────────────────────┐
+│ ✅ Corte de Caja Completado            │
+│ [⬇️ ENVIAR POR WHATSAPP] ← DESTACADO  │
+│ [Copiar (deshabilitado)]               │
+│ [Finalizar (deshabilitado)]            │
+├─────────────────────────────────────────┤
+│ ⚠️ DEBE ENVIAR REPORTE PARA CONTINUAR  │
+├─────────────────────────────────────────┤
+│ 🔒 Resultados Bloqueados               │
+│ Se revelarán después de enviar         │
+└─────────────────────────────────────────┘
 ```
 
-**💻 Pseudocódigo Propuesto:**
-
-```typescript
-interface WhatsAppReportModalProps {
-  open: boolean;
-  reportContent: string;
-  reportType: 'nocturno' | 'matutino';
-  onReportSent: () => void;
-  onError: (error: string) => void;
-}
-
-export function WhatsAppReportModal({
-  open,
-  reportContent,
-  reportType,
-  onReportSent,
-  onError
-}: WhatsAppReportModalProps) {
-  const [status, setStatus] = useState<'sending' | 'success' | 'error' | 'manual'>('sending');
-  
-  // Hook personalizado para manejo de envío
-  const { attemptAutoSend, sendManually } = useWhatsAppReport(reportContent);
-  
-  // Intento automático al montar
-  useEffect(() => {
-    if (open && status === 'sending') {
-      attemptAutoSend()
-        .then(() => {
-          setStatus('success');
-          toast.success('Reporte enviado correctamente');
-          setTimeout(() => onReportSent(), 1500); // Pequeño delay para UX
-        })
-        .catch((error) => {
-          setStatus('manual'); // Si falla → manual
-          onError(error.message);
-        });
-    }
-  }, [open, status]);
-  
-  return (
-    <Dialog open={open} onOpenChange={() => {/* NO HACER NADA - No cancelable */}}>
-      <DialogContent
-        className="max-w-md"
-        hideCloseButton={true} // Sin botón X
-        onPointerDownOutside={(e) => e.preventDefault()} // Sin cerrar por backdrop
-        onEscapeKeyDown={(e) => e.preventDefault()} // Sin cerrar por ESC
-      >
-        {status === 'sending' && (
-          <div className="text-center">
-            <Loader className="animate-spin mx-auto" />
-            <p>Preparando reporte para envío...</p>
-          </div>
-        )}
-        
-        {status === 'manual' && (
-          <div className="text-center">
-            <AlertTriangle className="text-warning mx-auto" />
-            <h3>Confirme el Envío del Reporte</h3>
-            <p>Para continuar, debe enviar el reporte por WhatsApp</p>
-            <Button onClick={sendManually}>
-              <Share /> Enviar por WhatsApp
-            </Button>
-            <Button variant="outline" onClick={handleCopyFallback}>
-              Copiar al Portapapeles
-            </Button>
-          </div>
-        )}
-        
-        {status === 'success' && (
-          <div className="text-center">
-            <CheckCircle className="text-success mx-auto" />
-            <p>Reporte enviado correctamente. Revelando resultados...</p>
-          </div>
-        )}
-      </DialogContent>
-    </Dialog>
-  );
-}
+**DESPUÉS DE ENVIAR:**
+```
+┌─────────────────────────────────────────┐
+│ ✅ Reporte Enviado Correctamente       │
+│ [Re-enviar WhatsApp]                   │
+│ [Copiar]                               │
+│ [Finalizar]                            │
+├─────────────────────────────────────────┤
+│ 📊 Cálculo Completado                  │
+│ 🏢 Información del Corte               │
+│ 💰 Totales Calculados                  │
+│ 💵 Cambio para Mañana                  │
+└─────────────────────────────────────────┘
 ```
 
-**🎨 Estados del Modal:**
+### Cambios Técnicos Requeridos
 
-| Estado | Descripción | UI Mostrada | Acciones Disponibles |
-|--------|-------------|-------------|---------------------|
-| `sending` | Intento automático en progreso | Spinner + "Preparando reporte..." | Ninguna (loading) |
-| `manual` | Automático falló, requiere acción | Botón "Enviar por WhatsApp" | Enviar manual o copiar |
-| `success` | Envío confirmado exitoso | CheckCircle + "Enviado correctamente" | Ninguna (cierra automático) |
-| `error` | Error crítico (sin recuperación) | Error message | Solo copiar portapapeles |
+**CashCalculation.tsx:**
+1. Agregar estado: `const [reportSent, setReportSent] = useState(false);`
+2. Modificar handler WhatsApp para actualizar estado
+3. Deshabilitar botones Copiar/Finalizar si `!reportSent`
+4. Renderizar banner advertencia si `!reportSent`
+5. Renderizar resultados bloqueados/revelados según estado
 
-**🔒 Características Anti-Cancelación:**
+**MorningVerification.tsx:**
+1. Mismos cambios que CashCalculation
+2. Ajustar mensajes a contexto matutino
 
-```typescript
-<Dialog
-  open={open}
-  onOpenChange={() => {}} // ← Función vacía, no hace nada
->
-  <DialogContent
-    hideCloseButton={true} // ← Sin botón X
-    onPointerDownOutside={(e) => e.preventDefault()} // ← No cierra por backdrop click
-    onEscapeKeyDown={(e) => e.preventDefault()} // ← No cierra por ESC key
-  >
-    {/* Contenido */}
-  </DialogContent>
-</Dialog>
-```
+**Total líneas agregadas:** ~80-120 líneas (3 bloques de UI)  
+**Total líneas modificadas:** ~40-60 líneas (handlers + condicionales)
 
 ---
 
-### 4. useWhatsAppReport.ts (NUEVO - CREAR)
+## 📊 Comparación con Soluciones Descartadas
 
-**📍 Ubicación Propuesta:**
-`/src/hooks/useWhatsAppReport.ts`
+### Opción A: Modal Flotante (Descartada)
 
-**📊 Métricas Estimadas:**
-- Líneas totales: ~80-100
-- Complejidad ciclomática: **Baja** (lógica simple de envío)
-- Dependencias: 2-3 imports (useState, useCallback, toast)
+**Por qué se descartó:**
+- ❌ Complejidad innecesaria: Crear WhatsAppReportModal.tsx (~200 líneas)
+- ❌ Crear hook personalizado useWhatsAppReport.ts (~100 líneas)
+- ❌ Mayor superficie de testing (~15 tests nuevos)
+- ❌ UX invasiva (modal bloquea toda la pantalla)
+- ❌ Mayor riesgo de regresión
 
-**🎯 Función Principal:**
-Hook personalizado que encapsula lógica de envío WhatsApp:
-1. Detecta disponibilidad de WhatsApp
-2. Intenta apertura automática de WhatsApp
-3. Proporciona fallback manual
-4. Gestiona estados de progreso
+**Tiempo estimado:** 10-15 horas
 
-**💻 Pseudocódigo Propuesto:**
+### Opción B: Blur de Resultados (Descartada)
 
-```typescript
-interface UseWhatsAppReportReturn {
-  attemptAutoSend: () => Promise<void>;
-  sendManually: () => void;
-  copyToClipboard: () => Promise<void>;
-  status: 'idle' | 'sending' | 'success' | 'error';
-}
+**Por qué se descartó:**
+- ❌ Menos anti-fraude (usuarios pueden intuir números borrosos)
+- ❌ Problemas de accesibilidad (lectores de pantalla leen borroso)
+- ❌ UX frustrante (ver pero no poder leer)
+- ✅ Implementación simple (solo CSS)
 
-export function useWhatsAppReport(reportContent: string): UseWhatsAppReportReturn {
-  const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
-  
-  const attemptAutoSend = useCallback(async () => {
-    setStatus('sending');
-    
-    // Detectar si es mobile
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    
-    if (!isMobile) {
-      // Desktop: No puede "auto-enviar", requiere confirmación
-      setStatus('error');
-      throw new Error('Envío automático solo disponible en móviles');
-    }
-    
-    try {
-      // Preparar URL de WhatsApp
-      const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(reportContent)}`;
-      
-      // NOTA: JavaScript NO puede abrir WhatsApp sin user gesture
-      // Por lo tanto "auto-send" es realmente "pre-renderizado de botón"
-      // El modal mostrará botón automáticamente pero requiere clic
-      
-      setStatus('success');
-      return Promise.resolve();
-    } catch (error) {
-      setStatus('error');
-      throw error;
-    }
-  }, [reportContent]);
-  
-  const sendManually = useCallback(() => {
-    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(reportContent)}`;
-    window.open(whatsappUrl, '_blank');
-    setStatus('success');
-  }, [reportContent]);
-  
-  const copyToClipboard = useCallback(async () => {
-    // Reutilizar utilidad existente
-    const result = await copyToClipboard(reportContent);
-    if (result.success) {
-      toast.success('Reporte copiado al portapapeles');
-      setStatus('success');
-    } else {
-      toast.error(result.error || 'Error al copiar');
-      setStatus('error');
-    }
-  }, [reportContent]);
-  
-  return {
-    attemptAutoSend,
-    sendManually,
-    copyToClipboard,
-    status
-  };
-}
-```
+**Tiempo estimado:** 2-3 horas
 
-**🔍 Limitaciones Técnicas Importantes:**
+### Opción C: Bloque Visible + Resultados Bloqueados (SELECCIONADA) ✅
 
-**⚠️ CRITICAL:** JavaScript NO puede abrir WhatsApp automáticamente sin **user gesture** (clic, touch). Esto es una limitación de seguridad del navegador.
+**Por qué se seleccionó:**
+- ✅ **Máxima simplicidad:** Sin componentes ni hooks nuevos
+- ✅ **Claridad UX:** Usuario sabe exactamente qué hacer
+- ✅ **Anti-fraude efectivo:** No ve números hasta enviar
+- ✅ **Bajo riesgo:** Solo renderizado condicional
+- ✅ **Menos testing:** Solo actualizar tests existentes (~5 tests)
+- ✅ **Mantenible:** Código simple y directo
 
-**Solución implementada:**
-- "Auto-send" = Modal se abre automáticamente con botón pre-renderizado
-- Usuario DEBE hacer 1 clic para abrir WhatsApp
-- Si falla o rechaza → Fallback a copiar portapapeles
-- Consideramos "enviado" cuando:
-  1. WhatsApp se abrió exitosamente, O
-  2. Reporte copiado al portapapeles + usuario confirma
-
----
-
-## 📈 Análisis de Dependencias
-
-### Grafo de Dependencias
-
-```
-CashCalculation.tsx (modificar)
-    ↓ (importa)
-    ├──> WhatsAppReportModal.tsx (nuevo)
-    │       ↓ (usa)
-    │       └──> useWhatsAppReport.ts (nuevo)
-    │               ↓ (usa)
-    │               └──> copyToClipboard (existente)
-    │
-    └──> generateCompleteReport() (método interno existente)
-
-MorningVerification.tsx (modificar)
-    ↓ (importa)
-    ├──> WhatsAppReportModal.tsx (nuevo - reutilizado)
-    │       ↓ (usa)
-    │       └──> useWhatsAppReport.ts (nuevo - reutilizado)
-    │
-    └──> generateReport() (método interno existente)
-```
-
-### Componentes con Mayor Acoplamiento
-
-| Componente | Dependencias Directas | Dependencias Totales | Riesgo |
-|------------|----------------------|---------------------|--------|
-| CashCalculation.tsx | 15+ | 25+ | **Alto** |
-| MorningVerification.tsx | 12+ | 18+ | Medio |
-| WhatsAppReportModal (nuevo) | 8 | 12 | Medio |
-| useWhatsAppReport (nuevo) | 3 | 5 | **Bajo** |
+**Tiempo estimado:** 3-5 horas ⚡ **65-70% MENOS tiempo**
 
 ---
 
@@ -586,79 +415,60 @@ MorningVerification.tsx (modificar)
 
 | Archivo de Test | Tests Totales | Tests a Modificar | Esfuerzo |
 |-----------------|---------------|-------------------|----------|
-| CashCalculation.test.tsx | ~15-20 | ~5-7 | 2-3h |
-| MorningVerification.test.tsx | ~10-12 | ~3-5 | 1-2h |
+| CashCalculation.test.tsx | ~15-20 | ~2-3 | 30-45 min |
+| MorningVerification.test.tsx | ~10-12 | ~2-3 | 20-30 min |
 
-**Esfuerzo estimado actualización tests:** ~3-5 horas
+**Esfuerzo estimado actualización tests:** ~1 hora
 
 ### Tests Nuevos Requeridos
 
-**WhatsAppReportModal.test.tsx:**
-- [ ] Test: Modal se abre automáticamente cuando `open={true}`
-- [ ] Test: Modal NO se puede cerrar con backdrop click
-- [ ] Test: Modal NO se puede cerrar con ESC key
-- [ ] Test: Modal NO tiene botón X de cerrar
-- [ ] Test: Estado 'sending' muestra spinner
-- [ ] Test: Estado 'manual' muestra botón de envío
-- [ ] Test: Estado 'success' muestra CheckCircle y cierra automático
-- [ ] Test: onReportSent se llama después de éxito
-- [ ] Test: onError se llama si falla
+**Opción C: 0 tests nuevos** (no hay componentes nuevos)
 
-**useWhatsAppReport.test.ts:**
-- [ ] Test: attemptAutoSend cambia status a 'sending'
-- [ ] Test: attemptAutoSend resuelve Promise en mobile
-- [ ] Test: attemptAutoSend rechaza Promise en desktop
-- [ ] Test: sendManually abre window.open correctamente
-- [ ] Test: copyToClipboard copia contenido al portapapeles
-
-**Tests de Integración:**
-- [ ] Test: CashCalculation → WhatsAppReportModal → Revelar resultados
-- [ ] Test: MorningVerification → WhatsAppReportModal → Revelar resultados
-- [ ] Test: Flujo completo con envío exitoso
-- [ ] Test: Flujo completo con fallback a manual
-- [ ] Test: Flujo completo con copia a portapapeles
-
-**Total tests nuevos:** ~15-18 tests
+Solo actualizar tests existentes para:
+- ✅ Verificar bloque de acción visible
+- ✅ Verificar botones deshabilitados antes de envío
+- ✅ Verificar banner advertencia
+- ✅ Verificar resultados bloqueados/revelados según estado
+- ✅ Verificar flujo completo de envío
 
 ---
 
 ## 📊 Métricas de Impacto
 
-### Código
+### Código (Opción C)
 
-- **Líneas a agregar:** ~300-350
-  - WhatsAppReportModal.tsx: ~200 líneas
-  - useWhatsAppReport.ts: ~100 líneas
-  - Modificaciones en CashCalculation/MorningVerification: ~50 líneas
+- **Líneas a agregar:** ~80-120
+  - CashCalculation.tsx: ~40-60 líneas (bloque acción + banner + bloqueado)
+  - MorningVerification.tsx: ~40-60 líneas (igual que CashCalculation)
 
 - **Líneas a eliminar:** ~0 (no removemos código)
 
-- **Líneas a modificar:** ~50-80
-  - CashCalculation.tsx: ~30 líneas (agregar estado + condicional)
-  - MorningVerification.tsx: ~20 líneas (agregar estado + condicional)
+- **Líneas a modificar:** ~40-60
+  - CashCalculation.tsx: ~20-30 líneas (handler + disabled)
+  - MorningVerification.tsx: ~20-30 líneas (handler + disabled)
 
-- **Archivos afectados:** 4 (2 nuevos + 2 modificados)
+- **Archivos afectados:** 2 (solo existentes, 0 nuevos)
 
 ### Performance
 
-- **Impacto en bundle size:** +8-12 KB (modal + hook)
-- **Impacto en render time:** Neutral (modal solo renderiza pre-resultados)
-- **Memory footprint:** Minimal (+1 componente modal en memoria temporalmente)
+- **Impacto en bundle size:** +0 KB (sin dependencias nuevas)
+- **Impacto en render time:** Mínimo (solo renderizado condicional)
+- **Memory footprint:** Cero (+0 componentes nuevos)
 
 ### Complejidad
 
-- **Complejidad ciclomática:** **Disminuye ligeramente**
-  - Lógica de envío ahora encapsulada en hook (más simple)
-  - Flujo más lineal (cálculo → modal → revelar)
+- **Complejidad ciclomática:** **Disminuye**
+  - No hay lógica nueva compleja
+  - Solo condicionales simples de UI
   
-- **Technical debt:** **Disminuye**
-  - Separación de responsabilidades mejorada
-  - Lógica de envío centralizada en hook reutilizable
+- **Technical debt:** **Se mantiene igual o mejor**
+  - Sin componentes nuevos que mantener
+  - Código más directo y legible
   
-- **Mantenibilidad:** **Mejor**
-  - Modal aislado y testeable
-  - Hook reutilizable para futuros casos
-  - Flujo más claro y documentado
+- **Mantenibilidad:** **Excelente**
+  - Todo en componentes existentes
+  - Fácil de debuggear
+  - Sin dependencias externas nuevas
 
 ---
 
@@ -671,47 +481,49 @@ MorningVerification.tsx (modificar)
    - Envío de WhatsApp es OPCIONAL en ambos casos
    - No hay estado de trazabilidad de envío
 
-2. **Solución viable:**
-   - Modal obligatorio es arquitectónicamente factible
-   - No requiere modificar lógica de cálculos (0% regresión)
-   - Implementación limpia con hook reutilizable
+2. **Solución seleccionada (Opción C Híbrida):**
+   - **Máxima simplicidad:** Sin componentes ni hooks nuevos
+   - **NO requiere modificar lógica de cálculos** (0% regresión)
+   - **Implementación directa:** Solo renderizado condicional
+   - **Tiempo reducido:** 3-5 horas vs 10-15 horas (65-70% menos)
 
-3. **Limitación técnica:**
-   - JavaScript NO puede abrir WhatsApp sin user gesture
-   - "Automático" significa modal auto-mostrado con botón pre-renderizado
-   - Requiere 1 clic del usuario (inevitable por seguridad browser)
+3. **Ventaja principal:**
+   - UX clara y guiada (usuario sabe exactamente qué hacer)
+   - Anti-fraude efectivo (no ve números hasta enviar)
+   - Sin complejidad arquitectónica adicional
 
 ### Recomendaciones
 
-1. **Implementar Opción A (Modal + Hook):**
-   - ✅ Separación de responsabilidades clara
-   - ✅ Testeable aisladamente
-   - ✅ Reutilizable para ambos flujos
-   - ✅ No invasivo (0% cambios en lógica core)
+1. **Implementar Opción C (Bloque Visible + Resultados Bloqueados):**
+   - ✅ Solo modificar 2 componentes existentes
+   - ✅ Agregar estado `reportSent` boolean
+   - ✅ Renderizado condicional simple
+   - ✅ Sin dependencias nuevas
 
-2. **Crear tests exhaustivos:**
-   - Prioridad: Tests de integración del flujo completo
-   - Coverage target: 100% del modal y hook
-   - Validar estados edge (sin WhatsApp, sin conexión, etc.)
+2. **Actualizar tests mínimamente:**
+   - Solo 5 tests a modificar (no crear nuevos)
+   - Verificar bloque de acción + botones deshabilitados
+   - Validar flujo de revelación
 
 3. **UX consideraciones:**
    - Mensaje claro: "Debe enviar reporte para continuar"
-   - Fallback visible: Botón de copiar si WhatsApp no disponible
-   - Feedback inmediato: Toast notifications en cada acción
+   - Botón WhatsApp destacado como acción principal
+   - Banner advertencia visible
+   - Feedback inmediato: Toast notifications
 
 ### Riesgos Identificados
 
-- ⚠️ **Riesgo Alto:** Usuarios sin WhatsApp instalado
-  - **Mitigación:** Fallback a copiar portapapeles + confirmación manual
+- 🟢 **Riesgo Muy Bajo:** Regresión en código existente
+  - **Mitigación:** No tocamos lógica de cálculos, solo UI
 
-- ⚠️ **Riesgo Medio:** Bloqueo de popups por navegador
-  - **Mitigación:** Detectar bloqueo + mostrar instrucciones
+- 🟢 **Riesgo Bajo:** Usuario confundido sobre qué hacer
+  - **Mitigación:** Mensajes claros + botón destacado
 
-- ✅ **Riesgo Bajo:** Regresión en tests existentes
-  - **Mitigación:** Actualizar mocks para incluir estado `reportSent`
+- 🟢 **Riesgo Bajo:** Tests fallan
+  - **Mitigación:** Actualizar mocks simples para `reportSent`
 
 ---
 
-*Análisis técnico generado siguiendo estándares REGLAS_DE_LA_CASA.md v3.1*
+*Análisis técnico actualizado con Opción C Híbrida - REGLAS_DE_LA_CASA.md v3.1*
 
-🙏 **Gloria a Dios por la claridad en el análisis técnico.**
+🙏 **Gloria a Dios por la simplicidad y claridad en la solución técnica.**
