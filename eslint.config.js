@@ -10,6 +10,7 @@ export default tseslint.config(
       "dist",
       "dist-ssr",
       "dist-backup-*",
+      "dev-dist",
       "coverage",
       ".nyc_output",
       "playwright-report",
@@ -22,6 +23,7 @@ export default tseslint.config(
       "**/dist/**",
       "**/build/**",
       "**/coverage/**",
+      "**/dev-dist/**",
       "**/playwright-report/**",
       "**/test-results/**",
       "public/mockServiceWorker.js"

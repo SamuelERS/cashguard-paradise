@@ -311,10 +311,10 @@ Implementar un **modal obligatorio** que fuerce el envío del reporte de corte d
 
 ## 🔗 DOCUMENTOS RELACIONADOS
 
-- **Plan de Acción:** `PLAN_DE_ACCION.md` (Pendiente - Fase 2)
-- **Análisis Técnico:** `ANALISIS_TECNICO_COMPONENTES.md` (Pendiente - Fase 2)
+- **Plan de Acción:** `PLAN_DE_ACCION_V2_HIBRIDO.md` ✅ (Fase 2 Completada)
+- **Análisis Técnico:** `ANALISIS_TECNICO_COMPONENTES.md` ✅ (Fase 1 Completada)
+- **Índice del Caso:** `INDEX.md` (Navegación completa)
 - **Reglas del Proyecto:** `/REGLAS_DE_LA_CASA.md`
-- **Template Modal:** `/src/components/ui/confirmation-modal.tsx` (Referencia existente)
 
 ---
 
@@ -322,16 +322,23 @@ Implementar un **modal obligatorio** que fuerce el envío del reporte de corte d
 
 ### Consideraciones Técnicas
 
-**Envío Automático de WhatsApp:**
-- JavaScript NO puede abrir WhatsApp automáticamente sin interacción del usuario
-- Solución: "Automático" = Botón de confirmación pre-renderizado que abre WhatsApp
-- Si falla o usuario no tiene WhatsApp → Fallback a copiar al portapapeles
+**Envío de WhatsApp con Confirmación:**
+- Usuario hace clic en "Enviar WhatsApp" → Abre app WhatsApp
+- Sistema espera confirmación explícita del usuario
+- Confirmación: Botón secundario "Ya envié el reporte" o timeout de 10s
+- Previene marcar como enviado sin acción real
 
-**Modal No Cancelable:**
-- `onOpenChange` deshabilitado
-- Sin botón "X" de cerrar
-- Sin backdrop clickeable
-- Solo cierra después de `onReportSent` confirmado
+**Fallback para Pop-ups Bloqueados:**
+- Si navegador bloquea apertura de WhatsApp → Mostrar instrucciones
+- Detectar bloqueo: `window.open()` retorna `null`
+- Alternativa: Botón "Copiar Reporte" visible desde inicio
+- Toast: "Habilite pop-ups para enviar por WhatsApp directamente"
+
+**Renderizado Condicional (Opción C):**
+- Bloque de acción: Siempre visible
+- Banner advertencia: Visible si `!reportSent`
+- Resultados: Bloqueados hasta `reportSent === true`
+- Sin modales adicionales, flujo directo en misma pantalla
 
 **Compatibilidad:**
 - PWA standalone mode (iOS y Android)
@@ -347,12 +354,12 @@ Implementar un **modal obligatorio** que fuerce el envío del reporte de corte d
 **Revisión requerida:** Samuel ERS (Product Owner)  
 **Aprobación pendiente:** ⏳
 
-**Próximos pasos:**
+**Próximos pasos (Opción C Híbrida):**
 1. ✅ Crear `ANALISIS_TECNICO_COMPONENTES.md` (Fase 1)
-2. ⏳ Crear `PLAN_DE_ACCION.md` con task list detallada (Fase 2)
-3. ⏳ Implementar WhatsAppReportModal + Hook (Fase 3)
-4. ⏳ Actualizar tests (Fase 3)
-5. ⏳ Documentar arquitectura final (Fase 4)
+2. ✅ Crear `PLAN_DE_ACCION_V2_HIBRIDO.md` con task list (Fase 2)
+3. ⏳ Modificar CashCalculation.tsx + MorningVerification.tsx (Fase 3)
+4. ⏳ Actualizar ~5 tests existentes (Fase 3)
+5. ⏳ Documentar arquitectura final simplificada (Fase 4)
 6. ⏳ Validar tests 100% passing (Fase 5)
 
 ---

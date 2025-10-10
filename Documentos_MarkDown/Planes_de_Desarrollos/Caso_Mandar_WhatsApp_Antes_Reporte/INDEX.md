@@ -17,7 +17,7 @@
 | - | **INDEX.md** | Este archivo - Índice de navegación | ✅ Completado |
 
 **Duración Fase 1:** ~2 horas  
-**Output clave:** Problema confirmado, solución identificada (Opción A)
+**Output clave:** Problema confirmado, solución identificada (Opción C Híbrida)
 
 ---
 
@@ -128,23 +128,26 @@ FASE 5: CIERRE                ░░░░░░░░░░░░░░░░�
 PROGRESO GENERAL:             ████████░░░░░░░░░░░░  40%
 ```
 
-**Próximo milestone:** Implementar Fase 3 - Crear hook + modal + modificar componentes
+**Próximo milestone:** Implementar Fase 3 - Modificar 2 componentes (solo renderizado UI)
 
 ---
 
 ## 🆘 Preguntas Frecuentes
 
 **P: ¿Por qué no solo hacer obligatorio el botón WhatsApp existente?**  
-R: El usuario puede reiniciar la app ANTES de hacer clic en el botón. El modal debe aparecer ANTES de revelar números.
+R: El usuario puede reiniciar la app ANTES de hacer clic en el botón. Los resultados deben estar bloqueados hasta confirmar envío.
 
 **P: ¿JavaScript puede abrir WhatsApp automáticamente?**  
-R: No sin user gesture (clic). El modal se abre automáticamente pero requiere 1 clic del usuario para abrir WhatsApp.
+R: No sin user gesture (clic). Usuario ve botón destacado "Enviar WhatsApp" que debe presionar. Después confirma explícitamente el envío.
 
-**P: ¿Qué pasa si el usuario no tiene WhatsApp?**  
-R: Fallback a copiar el reporte al portapapeles + confirmación manual de que fue enviado por otro medio.
+**P: ¿Qué pasa si el navegador bloquea pop-ups?**  
+R: Sistema detecta bloqueo y muestra instrucciones + botón alternativo "Copiar Reporte" para envío manual.
+
+**P: ¿Cómo se garantiza que realmente enviaron?**  
+R: Después de abrir WhatsApp, aparece botón de confirmación "Ya envié el reporte" (o timeout de 10s). Previene marcar como enviado sin acción.
 
 **P: ¿Esto rompe alguna funcionalidad existente?**  
-R: No. Solo reordena el flujo (cálculo → modal → revelar). Los cálculos y reportes NO cambian.
+R: No. Solo renderizado condicional (cálculo → bloqueo → revelar). Los cálculos y reportes NO cambian.
 
 **P: ¿Aplica para ambos conteos (matutino y nocturno)?**  
 R: Sí, ambos componentes (`CashCalculation` y `MorningVerification`) implementarán el modal.

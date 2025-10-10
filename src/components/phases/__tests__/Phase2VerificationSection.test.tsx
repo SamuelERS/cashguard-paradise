@@ -1340,7 +1340,7 @@ describe('Grupo 6: buildVerificationBehavior() - Métricas Agregadas', () => {
     });
 
     const behavior = onVerificationBehaviorCollected.mock.calls[0][0];
-    const timestamps = behavior.attempts.map((a: any) => a.timestamp);
+    const timestamps = behavior.attempts.map((a: { timestamp: string }) => a.timestamp);
 
     // Timestamps deben estar ordenados cronológicamente
     const sorted = [...timestamps].sort();
