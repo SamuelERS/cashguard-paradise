@@ -91,11 +91,17 @@ const completeStepCorrectly = async (user: ReturnType<typeof userEvent.setup>, q
 };
 
 // Helper: Ingresar valor incorrecto sin confirmar (para testing modal)
+// 🤖 [IA] - v1.3.7d FIX: enterIncorrectValue ahora espera modal después de Enter
 const enterIncorrectValue = async (user: ReturnType<typeof userEvent.setup>, value: number) => {
   const input = getCurrentInput();
   await user.clear(input);
   await user.type(input, value.toString());
   await user.keyboard('{Enter}');
+
+  // ✅ CRÍTICO: Esperar que modal "incorrect" aparezca (valor incorrecto → modal se abre)
+  await waitFor(() => {
+    expect(screen.queryByRole('alertdialog')).toBeInTheDocument();
+  }, { timeout: 3000 });
 };
 
 // 🤖 [IA] - v1.3.7b Fase 1: Fix Issue #1 (parcial) - Helper queries modales con timeout 3000ms
