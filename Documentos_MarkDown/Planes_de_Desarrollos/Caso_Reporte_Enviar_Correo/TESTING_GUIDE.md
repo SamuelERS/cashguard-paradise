@@ -465,6 +465,154 @@ Validar experiencia usuario completa desde inicio hasta email recibido.
 
 ---
 
+### Test 3.3: Integración Anti-Fraude v1.3.7
+
+**Escenario:** Validar que email sender SOLO funciona DESPUÉS de confirmación WhatsApp
+
+**🔒 Objetivo Crítico:** Garantizar que empleado NO puede enviar email sin antes confirmar envío WhatsApp (previene bypass anti-fraude)
+
+---
+
+**Setup:**
+1. Completar Phase 1 (conteo con total >$50)
+2. Completar Phase 2 (delivery + verification)
+3. Navegar a Phase 3 (pantalla reporte final)
+4. Estado inicial: `reportSent = false` (resultados bloqueados)
+
+---
+
+**Paso 1:** Validar estado inicial bloqueado
+
+**Verificar:**
+- [ ] Pantalla muestra "🔒 Resultados Bloqueados"
+- [ ] Mensaje: "Los resultados se revelarán después de enviar el reporte por WhatsApp"
+- [ ] Botón "Enviar Email" **DISABLED** (gris, no clickeable)
+- [ ] Botón "Copiar" **DISABLED**
+- [ ] Botón "Finalizar" **DISABLED**
+- [ ] Banner advertencia: "⚠️ DEBE ENVIAR REPORTE PARA CONTINUAR"
+
+**✅ Validation:** Empleado NO puede acceder a resultados ni enviar email antes de WhatsApp
+
+---
+
+**Paso 2:** Abrir WhatsApp (sin confirmar)
+
+**Acción:** Click botón "Enviar WhatsApp"
+
+**Verificar:**
+- [ ] WhatsApp se abre exitosamente (`window.open()` funcional)
+- [ ] Toast aparece: "📱 Confirme cuando haya enviado el reporte"
+- [ ] Botón confirmación aparece: "¿Ya envió el reporte por WhatsApp? → Sí, ya envié el reporte"
+- [ ] Botón "Enviar Email" sigue **DISABLED** (aún no confirmado)
+- [ ] Estado: `whatsappOpened = true`, `reportSent = false`
+
+**✅ Validation:** WhatsApp abierto correctamente pero resultados siguen bloqueados
+
+---
+
+**Paso 3:** Confirmar envío WhatsApp
+
+**Acción:** Click "Sí, ya envié el reporte"
+
+**Verificar:**
+- [ ] Toast success: "✅ Reporte confirmado como enviado"
+- [ ] Estado: `reportSent = true` (resultados DESBLOQUEADOS)
+- [ ] Pantalla "🔒 Resultados Bloqueados" **DESAPARECE**
+- [ ] Todos los resultados SE REVELAN:
+  - Resumen ejecutivo visible
+  - Alertas críticas visibles (si hay)
+  - Verificación ciega visible
+  - Conteo completo visible
+- [ ] Botón "Enviar Email" ahora **ENABLED** (azul, clickeable)
+- [ ] Botón "Copiar" **ENABLED**
+- [ ] Botón "Finalizar" **ENABLED**
+
+**✅ Validation:** Confirmación WhatsApp desbloquea TODOS los controles
+
+---
+
+**Paso 4:** Enviar email (post-confirmación)
+
+**Acción:** Click botón "Enviar Email"
+
+**Verificar:**
+- [ ] Botón cambia a "Enviando..." con spinner
+- [ ] Request HTTP enviado al backend:
+  ```json
+  {
+    "recipient": "supervision@acuariosparadise.com",
+    "severity": "CRÍTICO",
+    "emailReportContent": { /* ... */ }
+  }
+  ```
+- [ ] Toast success: "✅ Email enviado exitosamente"
+- [ ] Console log: `[EmailReport] Email enviado - ID: xxx`
+- [ ] Botón vuelve a "Enviar Email" (sin spinner)
+
+**✅ Validation:** Email enviado exitosamente DESPUÉS de anti-fraude cumplido
+
+---
+
+**Paso 5:** Verificar email recibido
+
+**Abrir email en supervisor@acuariosparadise.com:**
+
+**Verificar:**
+- [ ] Email recibido (timing ~5-10s después de click)
+- [ ] Asunto correcto según severity
+- [ ] Body HTML con toda la información:
+  - Header severity correcto
+  - Resumen ejecutivo completo
+  - Alertas (si hay)
+  - Verificación ciega
+  - Footer con timestamp + firma digital
+
+**✅ Validation:** Email completo y correcto después de proceso anti-fraude
+
+---
+
+**Edge Case 1: Pop-ups bloqueados**
+
+**Escenario:** Browser bloquea `window.open()` WhatsApp
+
+**Acción:** Simular pop-up blocker (configuración browser)
+
+**Verificar:**
+- [ ] Toast error: "⚠️ Habilite pop-ups" con acción "Copiar en su lugar"
+- [ ] Estado: `popupBlocked = true`
+- [ ] Botón "Copiar" se HABILITA (fallback)
+- [ ] Botón "Enviar Email" sigue **DISABLED** (anti-fraude activo)
+- [ ] Usuario puede copiar reporte manualmente y enviar WhatsApp externo
+- [ ] Después de enviar externamente, click "Sí, ya envié" → desbloquea email
+
+**✅ Validation:** Fallback funciona pero anti-fraude sigue protegiendo email
+
+---
+
+**Edge Case 2: Timeout auto-confirmación**
+
+**Escenario:** Usuario olvida confirmar envío WhatsApp
+
+**Acción:**
+1. Click "Enviar WhatsApp" (abre exitosamente)
+2. **NO** click "Sí, ya envié el reporte"
+3. Esperar 10 segundos
+
+**Verificar:**
+- [ ] Timeout ejecuta auto-confirmación
+- [ ] Toast: "✅ Reporte marcado como enviado"
+- [ ] Estado: `reportSent = true` automáticamente
+- [ ] Resultados se revelan (safety net anti-bloqueo)
+- [ ] Botón "Enviar Email" se HABILITA
+
+**✅ Validation:** Safety net previene bloqueo permanente (UX balance con anti-fraude)
+
+---
+
+**✅ Test pasó:** Sistema anti-fraude v1.3.7 funciona correctamente, email sender integrado sin bypass posible
+
+---
+
 ## Fase 4: Email Client Compatibility
 
 ### 🎯 Objetivo

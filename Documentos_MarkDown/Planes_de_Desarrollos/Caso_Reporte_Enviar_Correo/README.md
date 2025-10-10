@@ -570,14 +570,17 @@ define('SMTP_PASSWORD', 'wrong-password');
 | **Fase 2: Frontend** | emailReports.ts + htmlGenerator + CashCalculation | 30-45 min | Frontend Dev |
 | **Fase 3: Testing** | cURL + E2E + Email validation | 20-30 min | QA |
 | **Fase 4: Docs** | CLAUDE.md + verificación final | 10 min | Tech Lead |
-| **TOTAL** | | **1.25-1.75 horas** | 1 dev |
+| **TOTAL** | | **2-2.5 horas** | 1 dev |
+
+**🔧 FIX Issue #9: Estimación ajustada con buffer troubleshooting**
 
 **Nota:** Tiempo real desarrollo (código ya generado por Claude):
 - ✅ Archivos backend PHP: Pre-generados (0 min usuario)
 - ✅ Archivos frontend TS: Pre-generados (0 min usuario)
 - ⏱️ Setup manual cPanel: 15-20 min
 - ⏱️ Testing validación: 20-30 min
-- **Total usuario: ~40-50 minutos**
+- ⏱️ **Buffer troubleshooting:** +30-45 min (permisos, CORS, SMTP debug)
+- **Total usuario: ~1.25-1.75 horas** (incluye imprevistos comunes)
 
 ### 💰 Análisis Costo-Beneficio
 

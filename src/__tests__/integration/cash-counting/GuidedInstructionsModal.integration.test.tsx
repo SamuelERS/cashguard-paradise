@@ -3,7 +3,7 @@
 // Cobertura: Renderizado, progreso secuencial, timing, botón comenzar, edge cases
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GuidedInstructionsModal } from '@/components/cash-counting/GuidedInstructionsModal';
 
@@ -31,9 +31,21 @@ describe('📋 GuidedInstructionsModal - Integration Tests', () => {
     vi.clearAllMocks();
   });
 
-  afterEach(() => {
+  afterEach(async () => {
+    // 🤖 [IA] - ORDEN #7: Cleanup global completo entre tests
+    // Root cause: Animaciones Framer Motion + Radix UI no terminan entre tests → race conditions
+    // Solución: Limpiar DOM + esperar animaciones + limpiar timers/mocks
+    // Resultado esperado: 23/23 tests passing sin .skip() (elimina mesa pin pon)
+
+    cleanup(); // Testing Library: Limpia DOM completamente
+
+    // Esperar animaciones Framer Motion terminen (duración max: 300ms según InstructionRule.tsx)
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    // Limpiar timers y restaurar implementaciones
     vi.clearAllTimers();
     vi.useRealTimers();
+    vi.clearAllMocks();
   });
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -219,11 +231,7 @@ describe('📋 GuidedInstructionsModal - Integration Tests', () => {
       expect(button).toBeDisabled();
     });
 
-    // 🤖 [IA] - ORDEN #6 EXTENDIDO: Test excluido (timing visual no crítico - mismo root cause Test 4.2)
-    // Valida aria-disabled después de animación + cleanup entre tests
-    // Test 3.1 ya valida funcionalidad core (botón habilitado al completar), este test valida estado intermedio
-    // Mismo race condition suite completa (aria-disabled timing issue después de animación)
-    it.skip('Test 3.2: botón permanece deshabilitado hasta completar todas las reglas', async () => {
+    it('Test 3.2: botón permanece deshabilitado hasta completar todas las reglas', async () => {
       const user = userEvent.setup();
       
       render(<GuidedInstructionsModal {...defaultProps} />);
@@ -310,11 +318,7 @@ describe('📋 GuidedInstructionsModal - Integration Tests', () => {
       }, { timeout: 20000 }); // 🤖 [IA] - CI Hotfix FINAL: 15s → 20s (suite completa más lenta que individual)
     }, 25000); // 🤖 [IA] - CI Hotfix FINAL: Test completo necesita 25s en GitHub Actions
 
-    // 🤖 [IA] - ORDEN #6: Test excluido (timing visual no crítico - race condition suite)
-    // Valida aria-disabled después de animación + cleanup entre tests
-    // Test 4.1 ya valida funcionalidad core (estado enabled), este test es UX visual
-    // Pasa SOLO (23/23) pero falla en suite completa (race condition estado previo)
-    it.skip('Test 4.2: segunda regla toma más tiempo que la primera', async () => {
+    it('Test 4.2: segunda regla toma más tiempo que la primera', async () => {
       const user = userEvent.setup();
       
       render(<GuidedInstructionsModal {...defaultProps} />);

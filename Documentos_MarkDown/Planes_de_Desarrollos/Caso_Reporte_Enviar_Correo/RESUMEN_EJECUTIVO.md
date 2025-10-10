@@ -338,15 +338,18 @@ Total documentación: ~3,500 líneas markdown
 | **Fase 3:** Testing | 30 min | 45 min | **38 min** |
 | **Fase 4:** Deployment | 15 min | 20 min | **18 min** |
 | **Fase 5:** Docs | 10 min | 15 min | **13 min** |
-| **TOTAL** | **2h 55m** | **4h 10m** | **3h 35m** |
+| **Buffer troubleshooting** | 30 min | 45 min | **38 min** |
+| **TOTAL** | **3h 25m** | **5h 15m** | **4h 15m** |
+
+**🔧 FIX Issue #9:** Estimación ajustada +30-45 min para troubleshooting común (permisos, CORS, SMTP debug)
 
 ### Comparativa vs Alternativa Vercel
 
 | Arquitectura | Tiempo Total | Costo Setup | Costo Anual |
 |--------------|--------------|-------------|-------------|
-| **SiteGround PHP** ✅ | **3h 35m** | **$0** | **$0** |
-| Vercel Serverless ❌ | 7h 30m | $0 | **$480** |
-| **Ahorro** | **52% más rápido** | **$0** | **$480/año** |
+| **SiteGround PHP** ✅ | **4h 15m** | **$0** | **$0** |
+| Vercel Serverless ❌ | 8h 30m | $0 | **$480** |
+| **Ahorro** | **50% más rápido** | **$0** | **$480/año** |
 
 ---
 
@@ -356,9 +359,11 @@ Total documentación: ~3,500 líneas markdown
 
 | Concepto | SiteGround | Vercel | Ahorro |
 |----------|------------|--------|--------|
-| Tiempo desarrollo | 3.5h × $50/h = **$175** | 7.5h × $50/h = **$375** | **$200** |
+| Tiempo desarrollo | 4.25h × $50/h = **$213** | 8.5h × $50/h = **$425** | **$212** |
 | Setup infraestructura | **$0** (hosting existente) | **$0** (free tier) | $0 |
-| **TOTAL ONE-TIME** | **$175** | **$375** | **$200** |
+| **TOTAL ONE-TIME** | **$213** | **$425** | **$212** |
+
+**🔧 FIX Issue #9:** Costo ajustado por tiempo real esperado (incluye troubleshooting)
 
 ### Costos Operacionales (Recurrentes)
 
@@ -372,14 +377,16 @@ Total documentación: ~3,500 líneas markdown
 ### ROI (Return on Investment)
 
 **Año 1:**
-- Ahorro implementación: $200 (52% tiempo)
+- Ahorro implementación: $212 (50% tiempo)
 - Ahorro operacional: $480 (SiteGround gratis)
-- **ROI Año 1:** **$680**
+- **ROI Año 1:** **$692**
 
 **Año 2-5 (solo operacional):**
 - Ahorro anual: $480 × 4 años = **$1,920**
 
-**ROI Total 5 años:** **$2,600**
+**ROI Total 5 años:** **$2,612**
+
+**🔧 FIX Issue #9:** ROI ajustado con estimaciones realistas
 
 ---
 
@@ -586,7 +593,7 @@ Validar ANTES de deployment a producción:
 
 ### Estimaciones Finales
 
-- **Tiempo implementación:** 3.5 horas promedio
+- **Tiempo implementación:** 4.25 horas promedio (🔧 FIX Issue #9: incluye buffer troubleshooting)
 - **Costo setup:** $0 (aprovecha hosting existente)
 - **Costo operacional:** $0/mes (SiteGround incluido)
 - **ROI 5 años:** $2,600 ahorro vs alternativas
