@@ -26,10 +26,12 @@
 | # | Documento | Descripción | Estado |
 |---|-----------|-------------|--------|
 | - | **PLAN_DE_ACCION_V2_HIBRIDO.md** | Task list simplificada Opción C (8 fases, 3-5h) | ✅ Completado |
-| - | ~~PLAN_DE_ACCION.md~~ | Plan original Modal+Hook (descartado) | ❌ Obsoleto |
+| - | `Archive/PLAN_DE_ACCION.md` | Plan original Modal+Hook (archivado) | 📁 Archivado |
 
-**Duración Fase 2:** ~1 hora  
+**Duración Fase 2:** ~1 hora
 **Output clave:** Plan simplificado 65-70% más rápido, 0 componentes nuevos
+
+**Nota:** Plan original archivado debido a complejidad innecesaria (Modal+Hook vs renderizado condicional simple). Ver `Archive/README.md` para detalles.
 
 ---
 

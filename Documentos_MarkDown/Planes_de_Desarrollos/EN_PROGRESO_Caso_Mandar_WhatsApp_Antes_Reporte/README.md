@@ -311,7 +311,8 @@ Implementar un **modal obligatorio** que fuerce el envío del reporte de corte d
 
 ## 🔗 DOCUMENTOS RELACIONADOS
 
-- **Plan de Acción:** `PLAN_DE_ACCION_V2_HIBRIDO.md` ✅ (Fase 2 Completada)
+- **Plan de Acción:** `PLAN_DE_ACCION_V2_HIBRIDO.md` ✅ (Fase 2 Completada - Opción C Híbrida)
+- **Plan Original:** `Archive/PLAN_DE_ACCION.md` 📁 (Archivado - Opción A Modal+Hook descartada)
 - **Análisis Técnico:** `ANALISIS_TECNICO_COMPONENTES.md` ✅ (Fase 1 Completada)
 - **Índice del Caso:** `INDEX.md` (Navegación completa)
 - **Reglas del Proyecto:** `/REGLAS_DE_LA_CASA.md`

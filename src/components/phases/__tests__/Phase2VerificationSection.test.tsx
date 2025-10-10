@@ -110,6 +110,24 @@ const clickModalButton = async (user: ReturnType<typeof userEvent.setup>, text: 
   await user.click(button);
 };
 
+// 🤖 [IA] - v1.3.7d: Fix Quirúrgico Modal Async - Helpers mejorados para tests robustos
+// waitForModal: Espera que modal Radix UI esté completamente renderizado
+const waitForModal = async () => {
+  await waitFor(() => {
+    expect(screen.queryByRole('alertdialog')).toBeInTheDocument();
+  }, { timeout: 3000 });
+};
+
+// clickModalButtonSafe: Combina waitForModal + click para garantizar elemento existe
+const clickModalButtonSafe = async (
+  user: ReturnType<typeof userEvent.setup>,
+  text: string | RegExp
+) => {
+  await waitForModal(); // Garantizar modal renderizado
+  const button = await findModalElement(text);
+  await user.click(button);
+};
+
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // GRUPO 1: Inicialización & Props (8 tests) - 15 min
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -213,7 +231,7 @@ describe('Grupo 2: Primer Intento Correcto (success)', () => {
     // Esperar callback
     await waitFor(() => {
       expect(onVerificationBehaviorCollected).toHaveBeenCalled();
-    });
+    }, { timeout: 3000 });
 
     const behavior = onVerificationBehaviorCollected.mock.calls[0][0];
     expect(behavior.totalAttempts).toBe(0); // Ningún intento registrado (todos correctos primer intento)
@@ -572,7 +590,7 @@ describe('Grupo 4: Segundo Intento Patterns', () => {
     renderPhase2Verification({ onStepComplete });
 
     await enterIncorrectValue(user, 44); // Intento 1
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await completeStepCorrectly(user, 43); // Intento 2 correcto
 
     // Debe avanzar a nickel
@@ -588,7 +606,7 @@ describe('Grupo 4: Segundo Intento Patterns', () => {
     renderPhase2Verification({ onVerificationBehaviorCollected });
 
     await enterIncorrectValue(user, 44); // penny
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await completeStepCorrectly(user, 43);
 
     // Completar resto
@@ -611,7 +629,7 @@ describe('Grupo 4: Segundo Intento Patterns', () => {
     renderPhase2Verification();
 
     await enterIncorrectValue(user, 44); // Intento 1
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 44); // Intento 2 (mismo valor)
 
     // Modal force-same
@@ -622,7 +640,7 @@ describe('Grupo 4: Segundo Intento Patterns', () => {
     renderPhase2Verification();
 
     await enterIncorrectValue(user, 44);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 44);
 
     const forceButton = screen.getByText('Forzar este valor');
@@ -634,7 +652,7 @@ describe('Grupo 4: Segundo Intento Patterns', () => {
     renderPhase2Verification({ onStepComplete });
 
     await enterIncorrectValue(user, 44);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 44);
 
     const forceButton = screen.getByText('Forzar este valor');
@@ -648,7 +666,7 @@ describe('Grupo 4: Segundo Intento Patterns', () => {
     renderPhase2Verification({ onVerificationBehaviorCollected });
 
     await enterIncorrectValue(user, 44); // penny
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 44);
     await user.click(screen.getByText('Forzar este valor'));
 
@@ -678,7 +696,7 @@ describe('Grupo 4: Segundo Intento Patterns', () => {
     await completeStepCorrectly(user, 20); // nickel
 
     await enterIncorrectValue(user, 30); // dime (esperado: 33)
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 30); // mismo valor
     await user.click(screen.getByText('Forzar este valor'));
 
@@ -702,7 +720,7 @@ describe('Grupo 4: Segundo Intento Patterns', () => {
     renderPhase2Verification();
 
     await enterIncorrectValue(user, 44); // Intento 1
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 42); // Intento 2 (diferente, pero incorrecto)
 
     expect(screen.getByText(/Se requiere un tercer intento/i)).toBeInTheDocument();
@@ -712,7 +730,7 @@ describe('Grupo 4: Segundo Intento Patterns', () => {
     renderPhase2Verification();
 
     await enterIncorrectValue(user, 44);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 42);
 
     expect(screen.getByText('Volver a contar')).toBeInTheDocument();
@@ -722,7 +740,7 @@ describe('Grupo 4: Segundo Intento Patterns', () => {
     renderPhase2Verification();
 
     await enterIncorrectValue(user, 44);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 42);
 
     expect(screen.queryByText('Forzar este valor')).not.toBeInTheDocument();
@@ -732,9 +750,9 @@ describe('Grupo 4: Segundo Intento Patterns', () => {
     renderPhase2Verification();
 
     await enterIncorrectValue(user, 44);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 42);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
 
     // Input debe estar vacío para tercer intento
     const input = getCurrentInput();
@@ -746,7 +764,7 @@ describe('Grupo 4: Segundo Intento Patterns', () => {
     renderPhase2Verification({ onVerificationBehaviorCollected });
 
     await enterIncorrectValue(user, 44);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await completeStepCorrectly(user, 43);
 
     await completeStepCorrectly(user, 20); // nickel
@@ -769,7 +787,7 @@ describe('Grupo 4: Segundo Intento Patterns', () => {
     renderPhase2Verification({ onVerificationBehaviorCollected });
 
     await enterIncorrectValue(user, 44); // penny error
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await completeStepCorrectly(user, 43);
 
     await completeStepCorrectly(user, 20); // nickel
@@ -792,7 +810,7 @@ describe('Grupo 4: Segundo Intento Patterns', () => {
     renderPhase2Verification();
 
     await enterIncorrectValue(user, 44);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 44);
 
     expect(screen.getByText((content, element) => {
@@ -804,7 +822,7 @@ describe('Grupo 4: Segundo Intento Patterns', () => {
     renderPhase2Verification();
 
     await enterIncorrectValue(user, 44);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 42);
 
     expect(screen.getByText((content, element) => {
@@ -816,7 +834,7 @@ describe('Grupo 4: Segundo Intento Patterns', () => {
     renderPhase2Verification();
 
     await enterIncorrectValue(user, 44);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 44);
     await user.click(screen.getByText('Forzar este valor'));
 
@@ -830,7 +848,7 @@ describe('Grupo 4: Segundo Intento Patterns', () => {
     renderPhase2Verification();
 
     await enterIncorrectValue(user, 44);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 44);
     await user.click(screen.getByText('Forzar este valor'));
 
@@ -846,9 +864,9 @@ describe('Grupo 4: Segundo Intento Patterns', () => {
     renderPhase2Verification({ onVerificationBehaviorCollected });
 
     await enterIncorrectValue(user, 44);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 42);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await completeStepCorrectly(user, 43); // Tercer intento correcto
 
     await completeStepCorrectly(user, 20); // nickel
@@ -871,7 +889,7 @@ describe('Grupo 4: Segundo Intento Patterns', () => {
     renderPhase2Verification({ onVerificationBehaviorCollected });
 
     await enterIncorrectValue(user, 44);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await completeStepCorrectly(user, 43);
 
     await completeStepCorrectly(user, 20); // nickel
@@ -893,7 +911,7 @@ describe('Grupo 4: Segundo Intento Patterns', () => {
     renderPhase2Verification();
 
     await enterIncorrectValue(user, 44);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 44);
 
     // Modal debe mencionar el valor 44
@@ -916,9 +934,9 @@ describe('Grupo 5: Tercer Intento Patterns (critical)', () => {
     renderPhase2Verification();
 
     await enterIncorrectValue(user, 44); // Intento 1
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 42); // Intento 2
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 40); // Intento 3 (todos diferentes)
 
     // Modal third-result
@@ -929,9 +947,9 @@ describe('Grupo 5: Tercer Intento Patterns (critical)', () => {
     renderPhase2Verification();
 
     await enterIncorrectValue(user, 44);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 42);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 40);
 
     // Debe mostrar patrón inconsistente
@@ -942,9 +960,9 @@ describe('Grupo 5: Tercer Intento Patterns (critical)', () => {
     renderPhase2Verification();
 
     await enterIncorrectValue(user, 44); // 44
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 42); // 42
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 40); // 40
 
     // Promedio: (44 + 42 + 40) / 3 = 42
@@ -955,9 +973,9 @@ describe('Grupo 5: Tercer Intento Patterns (critical)', () => {
     renderPhase2Verification();
 
     await enterIncorrectValue(user, 44); // A
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 42); // B
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 44); // A (repite primer intento)
 
     expect(screen.getByText(/Resultado del Tercer Intento/i)).toBeInTheDocument();
@@ -967,9 +985,9 @@ describe('Grupo 5: Tercer Intento Patterns (critical)', () => {
     renderPhase2Verification();
 
     await enterIncorrectValue(user, 44); // A
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 42); // B
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 42); // B (repite segundo intento)
 
     expect(screen.getByText(/Resultado del Tercer Intento/i)).toBeInTheDocument();
@@ -980,9 +998,9 @@ describe('Grupo 5: Tercer Intento Patterns (critical)', () => {
     renderPhase2Verification({ onStepComplete });
 
     await enterIncorrectValue(user, 44);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 42);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 40);
 
     const acceptButton = screen.getByText('Aceptar resultado');
@@ -995,9 +1013,9 @@ describe('Grupo 5: Tercer Intento Patterns (critical)', () => {
     renderPhase2Verification();
 
     await enterIncorrectValue(user, 44);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 42);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 40);
     await user.click(screen.getByText('Aceptar resultado'));
 
@@ -1012,9 +1030,9 @@ describe('Grupo 5: Tercer Intento Patterns (critical)', () => {
     renderPhase2Verification({ onVerificationBehaviorCollected });
 
     await enterIncorrectValue(user, 44);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 42);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 40);
     await user.click(screen.getByText('Aceptar resultado'));
 
@@ -1038,9 +1056,9 @@ describe('Grupo 5: Tercer Intento Patterns (critical)', () => {
     renderPhase2Verification({ onVerificationBehaviorCollected });
 
     await enterIncorrectValue(user, 44);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 42);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 40);
     await user.click(screen.getByText('Aceptar resultado'));
 
@@ -1064,9 +1082,9 @@ describe('Grupo 5: Tercer Intento Patterns (critical)', () => {
     renderPhase2Verification({ onVerificationBehaviorCollected });
 
     await enterIncorrectValue(user, 44); // A
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 42); // B
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 44); // A
     await user.click(screen.getByText('Aceptar resultado'));
 
@@ -1089,9 +1107,9 @@ describe('Grupo 5: Tercer Intento Patterns (critical)', () => {
     renderPhase2Verification();
 
     await enterIncorrectValue(user, 44);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 42);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 40);
 
     expect(screen.getByText((content, element) => {
@@ -1104,9 +1122,9 @@ describe('Grupo 5: Tercer Intento Patterns (critical)', () => {
     renderPhase2Verification({ onVerificationBehaviorCollected });
 
     await enterIncorrectValue(user, 44);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 42);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 40);
     await user.click(screen.getByText('Aceptar resultado'));
 
@@ -1129,9 +1147,9 @@ describe('Grupo 5: Tercer Intento Patterns (critical)', () => {
     renderPhase2Verification();
 
     await enterIncorrectValue(user, 44);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 42);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await completeStepCorrectly(user, 43); // Correcto en tercer intento
 
     // NO debe aparecer modal
@@ -1147,9 +1165,9 @@ describe('Grupo 5: Tercer Intento Patterns (critical)', () => {
     renderPhase2Verification();
 
     await enterIncorrectValue(user, 66);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 64);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 68);
 
     // (66 + 64 + 68) / 3 = 66
@@ -1161,9 +1179,9 @@ describe('Grupo 5: Tercer Intento Patterns (critical)', () => {
     renderPhase2Verification({ onVerificationBehaviorCollected });
 
     await enterIncorrectValue(user, 44);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 42);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 40);
     await user.click(screen.getByText('Aceptar resultado'));
 
@@ -1188,9 +1206,9 @@ describe('Grupo 5: Tercer Intento Patterns (critical)', () => {
     renderPhase2Verification();
 
     await enterIncorrectValue(user, 44);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 42);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 40);
 
     // Modal debe mostrar descripción del pattern
@@ -1203,9 +1221,9 @@ describe('Grupo 5: Tercer Intento Patterns (critical)', () => {
     renderPhase2Verification();
 
     await enterIncorrectValue(user, 44);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 42);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 40);
     await user.click(screen.getByText('Aceptar resultado'));
 
@@ -1222,17 +1240,17 @@ describe('Grupo 5: Tercer Intento Patterns (critical)', () => {
 
     // penny: [A,B,C]
     await enterIncorrectValue(user, 44);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 42);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 40);
     await user.click(screen.getByText('Aceptar resultado'));
 
     // nickel: [A,B,C]
     await enterIncorrectValue(user, 15);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 18);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 22);
     await user.click(screen.getByText('Aceptar resultado'));
 
@@ -1297,11 +1315,11 @@ describe('Grupo 6: buildVerificationBehavior() - Métricas Agregadas', () => {
 
     // 2 denominaciones con error (penny, nickel)
     await enterIncorrectValue(user, 44); // penny error
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await completeStepCorrectly(user, 43);
 
     await enterIncorrectValue(user, 15); // nickel error
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await completeStepCorrectly(user, 20);
 
     // Resto correctas
@@ -1325,7 +1343,7 @@ describe('Grupo 6: buildVerificationBehavior() - Métricas Agregadas', () => {
     renderPhase2Verification({ onVerificationBehaviorCollected });
 
     await enterIncorrectValue(user, 44); // penny
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await completeStepCorrectly(user, 43);
 
     await completeStepCorrectly(user, 20); // nickel
@@ -1353,7 +1371,7 @@ describe('Grupo 6: buildVerificationBehavior() - Métricas Agregadas', () => {
 
     // Solo 1 error en penny
     await enterIncorrectValue(user, 44);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await completeStepCorrectly(user, 43);
 
     await completeStepCorrectly(user, 20); // nickel
@@ -1378,14 +1396,14 @@ describe('Grupo 6: buildVerificationBehavior() - Métricas Agregadas', () => {
 
     // penny: warning_retry
     await enterIncorrectValue(user, 44);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await completeStepCorrectly(user, 43);
 
     // nickel: critical_severe
     await enterIncorrectValue(user, 15);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 18);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 22);
     await user.click(screen.getByText('Aceptar resultado'));
 
@@ -1410,14 +1428,14 @@ describe('Grupo 6: buildVerificationBehavior() - Métricas Agregadas', () => {
 
     // penny: 2 intentos
     await enterIncorrectValue(user, 44);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await completeStepCorrectly(user, 43);
 
     // nickel: 3 intentos
     await enterIncorrectValue(user, 15);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 18);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 22);
     await user.click(screen.getByText('Aceptar resultado'));
 
@@ -1444,7 +1462,7 @@ describe('Grupo 6: buildVerificationBehavior() - Métricas Agregadas', () => {
     await completeStepCorrectly(user, 20); // nickel
 
     await enterIncorrectValue(user, 30); // dime
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 30); // mismo valor
     await user.click(screen.getByText('Forzar este valor'));
 
@@ -1468,9 +1486,9 @@ describe('Grupo 6: buildVerificationBehavior() - Métricas Agregadas', () => {
 
     // penny: [A,B,C]
     await enterIncorrectValue(user, 44);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 42);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 40);
     await user.click(screen.getByText('Aceptar resultado'));
 
@@ -1495,9 +1513,9 @@ describe('Grupo 6: buildVerificationBehavior() - Métricas Agregadas', () => {
 
     // penny: [A,B,A]
     await enterIncorrectValue(user, 44); // A
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 42); // B
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 44); // A
     await user.click(screen.getByText('Aceptar resultado'));
 
@@ -1522,7 +1540,7 @@ describe('Grupo 6: buildVerificationBehavior() - Métricas Agregadas', () => {
 
     // penny: [44, 43]
     await enterIncorrectValue(user, 44);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await completeStepCorrectly(user, 43);
 
     await completeStepCorrectly(user, 20); // nickel
@@ -1735,9 +1753,9 @@ describe('Grupo 8: Regresión Bugs Históricos', () => {
 
     // Tercer intento
     await enterIncorrectValue(user, 44);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 42);
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await enterIncorrectValue(user, 40);
     await user.click(screen.getByText('Aceptar resultado'));
 
@@ -1782,15 +1800,15 @@ describe('Grupo 8: Regresión Bugs Históricos', () => {
 
     // 3 denominaciones con error (penny, nickel, dime)
     await enterIncorrectValue(user, 44); // penny
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await completeStepCorrectly(user, 43);
 
     await enterIncorrectValue(user, 15); // nickel
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await completeStepCorrectly(user, 20);
 
     await enterIncorrectValue(user, 30); // dime
-    await user.click(screen.getByText('Volver a contar'));
+    await clickModalButtonSafe(user, 'Volver a contar');
     await completeStepCorrectly(user, 33);
 
     await completeStepCorrectly(user, 8);  // quarter
