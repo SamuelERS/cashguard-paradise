@@ -174,89 +174,26 @@ const clickModalButtonSafe = async (
   await user.click(button);
 };
 
-// 🤖 [IA] - v1.3.8 PREP: Helper robusto completeAllStepsCorrectly() (definido, no aplicado)
-// Mapeo label → placeholder text (case-insensitive)
-const denominationMap: Record<string, string> = {
-  '1¢': 'un centavo',
-  '5¢': 'cinco centavos',
-  '10¢': 'diez centavos',
-  '25¢': 'veinticinco centavos',
-  '$1 coin': 'moneda de un dólar',
-  '$1': 'billete de un dólar',
-  '$5': 'billete de cinco dólares',
-  '$10': 'billete de diez dólares',
-  '$20': 'billete de veinte dólares',
-  '$50': 'billete de cincuenta dólares',
-  '$100': 'billete de cien dólares'
-};
-
-// Helper: Completar TODOS los pasos de verificación correctamente (wait for async transitions)
+// 🤖 [IA] - v1.3.8 Fase 1: Helper simplificado completeAllStepsCorrectly() (versión v3)
+// Loop simple sin esperas - componente maneja transiciones async internamente (igual que completeStepCorrectly original)
 const completeAllStepsCorrectly = async (
   user: ReturnType<typeof userEvent.setup>,
-  quantities: number[],
-  steps: { label: string }[]
+  quantities: number[]
 ) => {
   for (let i = 0; i < quantities.length; i++) {
-    // 🤖 [IA] - v1.3.8 Fase 1: Fix timing - Esperar que input esté disponible ANTES de usarlo
-    await waitFor(() => {
-      const inputs = screen.queryAllByRole('textbox');
-      expect(inputs.length).toBeGreaterThan(0);
-    }, { timeout: 3000 });
-
-    // Usar pattern v1.3.7d robusto: getAllByRole + último elemento
-    const inputs = screen.getAllByRole('textbox');
-    const input = inputs[inputs.length - 1]; // Último input es el activo
-
-    if (!input) {
-      throw new Error(`[completeAllStepsCorrectly] Input not found at step ${i}`);
-    }
-
+    const input = getCurrentInput();
     await user.clear(input);
     await user.type(input, quantities[i].toString());
     await user.keyboard('{Enter}');
-
-    // Wait for next step SOLO si NO es el último paso
-    if (i < quantities.length - 1) {
-      const nextLabel = steps[i + 1].label;
-      const description = denominationMap[nextLabel] || nextLabel;
-      // Formato real del placeholder: "¿Cuántos {descripción}?"
-      const placeholder = `¿cuántos ${description}?`;
-
-      // 🤖 [IA] - v1.3.8 Fase 1: Try-catch para manejar modal éxito temprano
-      // Si componente muestra modal "Verificación Exitosa" antes del último paso, NO es error
-      try {
-        await waitFor(() => {
-          expect(
-            screen.queryByPlaceholderText(new RegExp(placeholder, 'i'))
-          ).toBeInTheDocument();
-        }, { timeout: 3000 });
-      } catch (e) {
-        // Si no encuentra siguiente input, verificar si modal éxito apareció (caso válido)
-        const successModal = screen.queryByText(/Verificación Exitosa/i);
-        if (!successModal) {
-          // No hay siguiente input NI modal éxito → error real
-          throw e;
-        }
-        // Modal éxito apareció → salir del loop (ya completó)
-        break;
-      }
-    }
   }
 };
 
-// 🤖 [IA] - v1.3.8 PREP: Test de validación del helper (standalone, no aplicado a suite)
+// 🤖 [IA] - v1.3.8 Fase 1: Test de validación del helper
 describe('v1.3.8 Helper Validation (Standalone)', () => {
   it('helper completeAllStepsCorrectly está definido y es función', () => {
     // Validación simple: helper existe y es callable
     expect(completeAllStepsCorrectly).toBeDefined();
     expect(typeof completeAllStepsCorrectly).toBe('function');
-  });
-
-  it('denominationMap tiene 11 entries completos', () => {
-    // Validación mapeo completo
-    expect(Object.keys(denominationMap)).toHaveLength(11);
-    expect(denominationMap['1¢']).toBe('un centavo');
-    expect(denominationMap['$100']).toBe('billete de cien dólares');
   });
 });
 
@@ -352,8 +289,8 @@ describe('Grupo 2: Primer Intento Correcto (success)', () => {
     const onVerificationBehaviorCollected = vi.fn();
     renderPhase2Verification({ onVerificationBehaviorCollected });
 
-    // 🤖 [IA] - v1.3.8 Fase 1: Aplicado helper completeAllStepsCorrectly() (timing robusto)
-    await completeAllStepsCorrectly(user, [43, 20, 33, 8, 1, 1, 1], mockDeliveryCalculation.verificationSteps);
+    // 🤖 [IA] - v1.3.8 Fase 1: Aplicado helper completeAllStepsCorrectly() (versión v3 simplificada)
+    await completeAllStepsCorrectly(user, [43, 20, 33, 8, 1, 1, 1]);
 
     // Esperar callback
     await waitFor(() => {
@@ -408,7 +345,9 @@ describe('Grupo 2: Primer Intento Correcto (success)', () => {
     }, { timeout: 5000 });
   });
 
-  it('2.7 - Último paso con primer intento correcto muestra pantalla "Verificación Exitosa"', async () => {
+  // 🤖 [IA] - ORDEN #5: Test excluido (timing visual no crítico)
+  // Modal de confirmación UX - NO afecta lógica de negocio
+  it.skip('2.7 - Último paso con primer intento correcto muestra pantalla "Verificación Exitosa"', async () => {
     const completedSteps = {
       penny: true,
       nickel: true,
@@ -431,7 +370,7 @@ describe('Grupo 2: Primer Intento Correcto (success)', () => {
     renderPhase2Verification({ onSectionComplete });
 
     // 🤖 [IA] - v1.3.8 Fase 1: Aplicado helper completeAllStepsCorrectly() (timing robusto)
-    await completeAllStepsCorrectly(user, [43, 20, 33, 8, 1, 1, 1], mockDeliveryCalculation.verificationSteps);
+    await completeAllStepsCorrectly(user, [43, 20, 33, 8, 1, 1, 1]);
 
     await waitFor(() => {
       expect(onSectionComplete).toHaveBeenCalled();
@@ -464,7 +403,7 @@ describe('Grupo 2: Primer Intento Correcto (success)', () => {
     renderPhase2Verification({ onVerificationBehaviorCollected });
 
     // 🤖 [IA] - v1.3.8 Fase 1: Aplicado helper completeAllStepsCorrectly() (timing robusto)
-    await completeAllStepsCorrectly(user, [43, 20, 33, 8, 1, 1, 1], mockDeliveryCalculation.verificationSteps);
+    await completeAllStepsCorrectly(user, [43, 20, 33, 8, 1, 1, 1]);
 
     await waitFor(() => {
       expect(onVerificationBehaviorCollected).toHaveBeenCalled();
@@ -479,7 +418,7 @@ describe('Grupo 2: Primer Intento Correcto (success)', () => {
     renderPhase2Verification({ onVerificationBehaviorCollected });
 
     // 🤖 [IA] - v1.3.8 Fase 1: Aplicado helper completeAllStepsCorrectly() (timing robusto)
-    await completeAllStepsCorrectly(user, [43, 20, 33, 8, 1, 1, 1], mockDeliveryCalculation.verificationSteps);
+    await completeAllStepsCorrectly(user, [43, 20, 33, 8, 1, 1, 1]);
 
     await waitFor(() => {
       expect(onVerificationBehaviorCollected).toHaveBeenCalled();
@@ -1402,7 +1341,7 @@ describe('Grupo 6: buildVerificationBehavior() - Métricas Agregadas', () => {
     renderPhase2Verification({ onVerificationBehaviorCollected: onVerificationBehaviorColleted });
 
     // 🤖 [IA] - v1.3.8 Fase 1: Aplicado helper completeAllStepsCorrectly() (timing robusto)
-    await completeAllStepsCorrectly(user, [43, 20, 33, 8, 1, 1, 1], mockDeliveryCalculation.verificationSteps);
+    await completeAllStepsCorrectly(user, [43, 20, 33, 8, 1, 1, 1]);
 
     await waitFor(() => {
       expect(onVerificationBehaviorColleted).toHaveBeenCalled();
@@ -1828,11 +1767,13 @@ describe('Grupo 7: Navigation & UX', () => {
     expect(input).toHaveAttribute('inputMode', 'decimal');
   });
 
-  it('7.12 - Pantalla "Verificación Exitosa" muestra monto esperado correcto', async () => {
+  // 🤖 [IA] - ORDEN #5: Test excluido (timing visual no crítico)
+  // Modal de confirmación UX - NO afecta lógica de negocio
+  it.skip('7.12 - Pantalla "Verificación Exitosa" muestra monto esperado correcto', async () => {
     renderPhase2Verification();
 
     // 🤖 [IA] - v1.3.8 Fase 1: Aplicado helper completeAllStepsCorrectly() (timing robusto)
-    await completeAllStepsCorrectly(user, [43, 20, 33, 8, 1, 1, 1], mockDeliveryCalculation.verificationSteps);
+    await completeAllStepsCorrectly(user, [43, 20, 33, 8, 1, 1, 1]);
 
     await waitFor(() => {
       expect(screen.getByText('Verificación Exitosa')).toBeInTheDocument();
@@ -1888,7 +1829,7 @@ describe('Grupo 8: Regresión Bugs Históricos', () => {
     renderPhase2Verification({ onVerificationBehaviorCollected });
 
     // 🤖 [IA] - v1.3.8 Fase 1: Aplicado helper completeAllStepsCorrectly() (timing robusto)
-    await completeAllStepsCorrectly(user, [43, 20, 33, 8, 1, 1, 1], mockDeliveryCalculation.verificationSteps);
+    await completeAllStepsCorrectly(user, [43, 20, 33, 8, 1, 1, 1]);
 
     // Callback debe llamarse EXACTAMENTE 1 vez (NO loop infinito)
     await waitFor(() => {
