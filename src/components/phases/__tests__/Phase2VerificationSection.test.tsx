@@ -128,6 +128,74 @@ const clickModalButtonSafe = async (
   await user.click(button);
 };
 
+// 🤖 [IA] - v1.3.8 PREP: Helper robusto completeAllStepsCorrectly() (definido, no aplicado)
+// Mapeo label → placeholder text (case-insensitive)
+const denominationMap: Record<string, string> = {
+  '1¢': 'un centavo',
+  '5¢': 'cinco centavos',
+  '10¢': 'diez centavos',
+  '25¢': 'veinticinco centavos',
+  '$1 coin': 'moneda de un dólar',
+  '$1': 'billete de un dólar',
+  '$5': 'billete de cinco dólares',
+  '$10': 'billete de diez dólares',
+  '$20': 'billete de veinte dólares',
+  '$50': 'billete de cincuenta dólares',
+  '$100': 'billete de cien dólares'
+};
+
+// Helper: Completar TODOS los pasos de verificación correctamente (wait for async transitions)
+const completeAllStepsCorrectly = async (
+  user: ReturnType<typeof userEvent.setup>,
+  quantities: number[],
+  steps: { label: string }[]
+) => {
+  for (let i = 0; i < quantities.length; i++) {
+    // getCurrentInput() puede fallar si async rendering, usar getAllByRole pattern v1.3.7d
+    const inputs = screen.getAllByRole('textbox');
+    const input = inputs[inputs.length - 1]; // Último input es el activo (patrón v1.3.7b)
+
+    if (!input) {
+      throw new Error(`[completeAllStepsCorrectly] Input textbox not found at step ${i}`);
+    }
+
+    await user.clear(input);
+    await user.type(input, quantities[i].toString());
+    await user.keyboard('{Enter}');
+
+    // Wait for next step SOLO si NO es el último paso
+    if (i < quantities.length - 1) {
+      const nextLabel = steps[i + 1].label;
+      const description = denominationMap[nextLabel] || nextLabel;
+      // Formato real del placeholder: "¿Cuántos {descripción}?"
+      const placeholder = `¿cuántos ${description}?`;
+
+      // v1.3.7d pattern: waitFor con timeout 3000ms para Radix UI async
+      await waitFor(() => {
+        expect(
+          screen.queryByPlaceholderText(new RegExp(placeholder, 'i'))
+        ).toBeInTheDocument();
+      }, { timeout: 3000 });
+    }
+  }
+};
+
+// 🤖 [IA] - v1.3.8 PREP: Test de validación del helper (standalone, no aplicado a suite)
+describe('v1.3.8 Helper Validation (Standalone)', () => {
+  it('helper completeAllStepsCorrectly está definido y es función', () => {
+    // Validación simple: helper existe y es callable
+    expect(completeAllStepsCorrectly).toBeDefined();
+    expect(typeof completeAllStepsCorrectly).toBe('function');
+  });
+
+  it('denominationMap tiene 11 entries completos', () => {
+    // Validación mapeo completo
+    expect(Object.keys(denominationMap)).toHaveLength(11);
+    expect(denominationMap['1¢']).toBe('un centavo');
+    expect(denominationMap['$100']).toBe('billete de cien dólares');
+  });
+});
+
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // GRUPO 1: Inicialización & Props (8 tests) - 15 min
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -766,6 +834,11 @@ describe('Grupo 4: Segundo Intento Patterns', () => {
     await enterIncorrectValue(user, 44);
     await clickModalButtonSafe(user, 'Volver a contar');
     await completeStepCorrectly(user, 43);
+
+    // 🤖 [IA] - v1.3.7d FIX: Esperar transición penny → nickel (race condition CI)
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText(/cinco centavos/i)).toBeInTheDocument();
+    }, { timeout: 3000 });
 
     await completeStepCorrectly(user, 20); // nickel
     await completeStepCorrectly(user, 33); // dime
