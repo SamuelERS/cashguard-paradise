@@ -298,7 +298,7 @@ describe('Grupo 1: Inicialización & Props', () => {
         penny: true,
         nickel: true
       }
-    }, { timeout: 5000 });
+    });
     // Debe avanzar a dime (tercer paso)
     expect(screen.getByPlaceholderText(/diez centavos/i)).toBeInTheDocument();
   });
@@ -309,14 +309,14 @@ describe('Grupo 1: Inicialización & Props', () => {
         ...mockDeliveryCalculation,
         verificationSteps: []
       }
-    }, { timeout: 5000 });
+    });
     expect(screen.getByText('Verificación Innecesaria')).toBeInTheDocument();
   });
 
   it('1.7 - onVerificationBehaviorCollected es opcional (undefined no crashea)', () => {
     const { container } = renderPhase2Verification({
       onVerificationBehaviorCollected: undefined
-    }, { timeout: 5000 });
+    });
     expect(container).toBeInTheDocument();
   });
 
@@ -372,7 +372,7 @@ describe('Grupo 2: Primer Intento Correcto (success)', () => {
     // Debe avanzar a nickel (segundo paso)
     await waitFor(() => {
       expect(screen.getByPlaceholderText(/cinco centavos/i)).toBeInTheDocument();
-    }, { timeout: 5000 });
+    });
   });
 
   it('2.4 - Input se limpia después de primer intento correcto', async () => {
@@ -384,7 +384,7 @@ describe('Grupo 2: Primer Intento Correcto (success)', () => {
     await waitFor(() => {
       const input = getCurrentInput();
       expect(input).toHaveValue('');
-    }, { timeout: 5000 });
+    });
   });
 
   it('2.5 - Primer intento correcto muestra "Cantidad correcta" antes de confirmar', async () => {
@@ -405,7 +405,7 @@ describe('Grupo 2: Primer Intento Correcto (success)', () => {
     // Progreso: 1/7
     await waitFor(() => {
       expect(screen.getByText(/✅ 1\/7/)).toBeInTheDocument();
-    }, { timeout: 5000 });
+    });
   });
 
   it('2.7 - Último paso con primer intento correcto muestra pantalla "Verificación Exitosa"', async () => {
@@ -423,7 +423,7 @@ describe('Grupo 2: Primer Intento Correcto (success)', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Verificación Exitosa')).toBeInTheDocument();
-    }, { timeout: 5000 });
+    });
   });
 
   it('2.8 - Todos los pasos con primer intento correcto llama onSectionComplete', async () => {
@@ -468,7 +468,7 @@ describe('Grupo 2: Primer Intento Correcto (success)', () => {
 
     await waitFor(() => {
       expect(onVerificationBehaviorCollected).toHaveBeenCalled();
-    }, { timeout: 5000 });
+    });
 
     const behavior = onVerificationBehaviorCollected.mock.calls[0][0];
     expect(behavior.severityFlags).toHaveLength(0);
@@ -483,7 +483,7 @@ describe('Grupo 2: Primer Intento Correcto (success)', () => {
 
     await waitFor(() => {
       expect(onVerificationBehaviorCollected).toHaveBeenCalled();
-    }, { timeout: 5000 });
+    });
 
     const behavior = onVerificationBehaviorCollected.mock.calls[0][0];
     expect(behavior.firstAttemptSuccesses).toBe(7); // Todas las 7 denominaciones
@@ -582,7 +582,7 @@ describe('Grupo 3: Primer Intento Incorrecto → Modal "incorrect"', () => {
     // Modal debe cerrarse
     await waitFor(() => {
       expect(screen.queryByText(/Verificación necesaria/i)).not.toBeInTheDocument();
-    }, { timeout: 5000 });
+    });
 
     // Input debe estar vacío
     const input = getCurrentInput();
@@ -626,7 +626,7 @@ describe('Grupo 3: Primer Intento Incorrecto → Modal "incorrect"', () => {
 
     await waitFor(() => {
       expect(onVerificationBehaviorCollected).toHaveBeenCalled();
-    }, { timeout: 5000 });
+    });
 
     const behavior = onVerificationBehaviorCollected.mock.calls[0][0];
     expect(behavior.totalAttempts).toBe(2); // 1 incorrecto + 1 correcto
@@ -682,7 +682,7 @@ describe('Grupo 3: Primer Intento Incorrecto → Modal "incorrect"', () => {
     // Modal debe cerrarse
     await waitFor(() => {
       expect(screen.queryByText(/Verificación necesaria/i)).not.toBeInTheDocument();
-    }, { timeout: 5000 });
+    });
   });
 });
 
@@ -708,7 +708,7 @@ describe('Grupo 4: Segundo Intento Patterns', () => {
     // Debe avanzar a nickel
     await waitFor(() => {
       expect(screen.getByPlaceholderText(/cinco centavos/i)).toBeInTheDocument();
-    }, { timeout: 5000 });
+    });
 
     expect(onStepComplete).toHaveBeenCalledWith('penny');
   });
@@ -731,7 +731,7 @@ describe('Grupo 4: Segundo Intento Patterns', () => {
 
     await waitFor(() => {
       expect(onVerificationBehaviorCollected).toHaveBeenCalled();
-    }, { timeout: 5000 });
+    });
 
     const behavior = onVerificationBehaviorCollected.mock.calls[0][0];
     expect(behavior.severityFlags).toContain('warning_retry');
@@ -792,7 +792,7 @@ describe('Grupo 4: Segundo Intento Patterns', () => {
 
     await waitFor(() => {
       expect(onVerificationBehaviorCollected).toHaveBeenCalled();
-    }, { timeout: 5000 });
+    });
 
     const behavior = onVerificationBehaviorCollected.mock.calls[0][0];
     // Force override limpia attemptHistory → totalAttempts NO incluye intentos forzados
@@ -820,7 +820,7 @@ describe('Grupo 4: Segundo Intento Patterns', () => {
 
     await waitFor(() => {
       expect(onVerificationBehaviorCollected).toHaveBeenCalled();
-    }, { timeout: 5000 });
+    });
 
     const behavior = onVerificationBehaviorCollected.mock.calls[0][0];
     // Como force limpia attemptHistory, severityFlags NO tendrá flag
@@ -893,7 +893,7 @@ describe('Grupo 4: Segundo Intento Patterns', () => {
 
     await waitFor(() => {
       expect(onVerificationBehaviorCollected).toHaveBeenCalled();
-    }, { timeout: 5000 });
+    });
 
     const behavior = onVerificationBehaviorCollected.mock.calls[0][0];
     expect(behavior.secondAttemptSuccesses).toBe(1);
@@ -916,7 +916,7 @@ describe('Grupo 4: Segundo Intento Patterns', () => {
 
     await waitFor(() => {
       expect(onVerificationBehaviorCollected).toHaveBeenCalled();
-    }, { timeout: 5000 });
+    });
 
     const behavior = onVerificationBehaviorCollected.mock.calls[0][0];
     // Total: 7 denominaciones - 1 con error (penny) = 6 perfectas
@@ -958,7 +958,7 @@ describe('Grupo 4: Segundo Intento Patterns', () => {
     // Debe avanzar a nickel
     await waitFor(() => {
       expect(screen.getByPlaceholderText(/cinco centavos/i)).toBeInTheDocument();
-    }, { timeout: 5000 });
+    });
   });
 
   it('4.17 - Force override limpia input', async () => {
@@ -973,7 +973,7 @@ describe('Grupo 4: Segundo Intento Patterns', () => {
     await waitFor(() => {
       const input = getCurrentInput();
       expect(input).toHaveValue('');
-    }, { timeout: 5000 });
+    });
   });
 
   it('4.18 - Pattern [A, B] incorrecto incrementa thirdAttemptRequired', async () => {
@@ -995,7 +995,7 @@ describe('Grupo 4: Segundo Intento Patterns', () => {
 
     await waitFor(() => {
       expect(onVerificationBehaviorCollected).toHaveBeenCalled();
-    }, { timeout: 5000 });
+    });
 
     const behavior = onVerificationBehaviorCollected.mock.calls[0][0];
     expect(behavior.thirdAttemptRequired).toBe(1);
@@ -1018,7 +1018,7 @@ describe('Grupo 4: Segundo Intento Patterns', () => {
 
     await waitFor(() => {
       expect(onVerificationBehaviorCollected).toHaveBeenCalled();
-    }, { timeout: 5000 });
+    });
 
     const behavior = onVerificationBehaviorCollected.mock.calls[0][0];
     expect(behavior.totalAttempts).toBe(2); // 1 incorrecto + 1 correcto
@@ -1139,7 +1139,7 @@ describe('Grupo 5: Tercer Intento Patterns (critical)', () => {
     // Debe avanzar a nickel
     await waitFor(() => {
       expect(screen.getByPlaceholderText(/cinco centavos/i)).toBeInTheDocument();
-    }, { timeout: 5000 });
+    });
   });
 
   it('5.8 - Tercer intento NO limpia attemptHistory (v1.3.6M fix)', async () => {
@@ -1162,7 +1162,7 @@ describe('Grupo 5: Tercer Intento Patterns (critical)', () => {
 
     await waitFor(() => {
       expect(onVerificationBehaviorCollected).toHaveBeenCalled();
-    }, { timeout: 5000 });
+    });
 
     const behavior = onVerificationBehaviorCollected.mock.calls[0][0];
     expect(behavior.totalAttempts).toBe(3); // Todos los intentos preservados
@@ -1188,7 +1188,7 @@ describe('Grupo 5: Tercer Intento Patterns (critical)', () => {
 
     await waitFor(() => {
       expect(onVerificationBehaviorCollected).toHaveBeenCalled();
-    }, { timeout: 5000 });
+    });
 
     const behavior = onVerificationBehaviorCollected.mock.calls[0][0];
     expect(behavior.severeInconsistencies).toBe(1);
@@ -1214,7 +1214,7 @@ describe('Grupo 5: Tercer Intento Patterns (critical)', () => {
 
     await waitFor(() => {
       expect(onVerificationBehaviorCollected).toHaveBeenCalled();
-    }, { timeout: 5000 });
+    });
 
     const behavior = onVerificationBehaviorCollected.mock.calls[0][0];
     expect(behavior.criticalInconsistencies).toBe(1);
@@ -1254,7 +1254,7 @@ describe('Grupo 5: Tercer Intento Patterns (critical)', () => {
 
     await waitFor(() => {
       expect(onVerificationBehaviorCollected).toHaveBeenCalled();
-    }, { timeout: 5000 });
+    });
 
     const behavior = onVerificationBehaviorCollected.mock.calls[0][0];
     expect(behavior.severityFlags).toContain('critical_severe');
@@ -1275,7 +1275,7 @@ describe('Grupo 5: Tercer Intento Patterns (critical)', () => {
     // Debe avanzar directamente
     await waitFor(() => {
       expect(screen.getByPlaceholderText(/cinco centavos/i)).toBeInTheDocument();
-    }, { timeout: 5000 });
+    });
   });
 
   it('5.14 - Promedio matemático redondea correctamente [66, 64, 68] → 66', async () => {
@@ -1311,7 +1311,7 @@ describe('Grupo 5: Tercer Intento Patterns (critical)', () => {
 
     await waitFor(() => {
       expect(onVerificationBehaviorCollected).toHaveBeenCalled();
-    }, { timeout: 5000 });
+    });
 
     const behavior = onVerificationBehaviorCollected.mock.calls[0][0];
     expect(behavior.denominationsWithIssues).toHaveLength(1);
@@ -1348,7 +1348,7 @@ describe('Grupo 5: Tercer Intento Patterns (critical)', () => {
     await waitFor(() => {
       const input = getCurrentInput();
       expect(input).toHaveValue('');
-    }, { timeout: 5000 });
+    });
   });
 
   it('5.18 - Múltiples errores críticos se suman correctamente', async () => {
@@ -1379,7 +1379,7 @@ describe('Grupo 5: Tercer Intento Patterns (critical)', () => {
 
     await waitFor(() => {
       expect(onVerificationBehaviorCollected).toHaveBeenCalled();
-    }, { timeout: 5000 });
+    });
 
     const behavior = onVerificationBehaviorCollected.mock.calls[0][0];
     expect(behavior.severeInconsistencies).toBe(2); // penny + nickel
@@ -1406,7 +1406,7 @@ describe('Grupo 6: buildVerificationBehavior() - Métricas Agregadas', () => {
 
     await waitFor(() => {
       expect(onVerificationBehaviorColleted).toHaveBeenCalled();
-    }, { timeout: 5000 });
+    });
 
     const behavior = onVerificationBehaviorColleted.mock.calls[0][0];
     expect(behavior).toHaveProperty('totalAttempts');
@@ -1443,7 +1443,7 @@ describe('Grupo 6: buildVerificationBehavior() - Métricas Agregadas', () => {
 
     await waitFor(() => {
       expect(onVerificationBehaviorCollected).toHaveBeenCalled();
-    }, { timeout: 5000 });
+    });
 
     const behavior = onVerificationBehaviorCollected.mock.calls[0][0];
     // Total: 7 - 2 con errores = 5 perfectas
@@ -1467,7 +1467,7 @@ describe('Grupo 6: buildVerificationBehavior() - Métricas Agregadas', () => {
 
     await waitFor(() => {
       expect(onVerificationBehaviorCollected).toHaveBeenCalled();
-    }, { timeout: 5000 });
+    });
 
     const behavior = onVerificationBehaviorCollected.mock.calls[0][0];
     const timestamps = behavior.attempts.map((a: { timestamp: string }) => a.timestamp);
@@ -1495,7 +1495,7 @@ describe('Grupo 6: buildVerificationBehavior() - Métricas Agregadas', () => {
 
     await waitFor(() => {
       expect(onVerificationBehaviorCollected).toHaveBeenCalled();
-    }, { timeout: 5000 });
+    });
 
     const behavior = onVerificationBehaviorCollected.mock.calls[0][0];
     expect(behavior.denominationsWithIssues).toHaveLength(1); // Solo penny
@@ -1527,7 +1527,7 @@ describe('Grupo 6: buildVerificationBehavior() - Métricas Agregadas', () => {
 
     await waitFor(() => {
       expect(onVerificationBehaviorCollected).toHaveBeenCalled();
-    }, { timeout: 5000 });
+    });
 
     const behavior = onVerificationBehaviorCollected.mock.calls[0][0];
     // severityFlags debe tener 2 flags (warning_retry + critical_severe)
@@ -1559,7 +1559,7 @@ describe('Grupo 6: buildVerificationBehavior() - Métricas Agregadas', () => {
 
     await waitFor(() => {
       expect(onVerificationBehaviorCollected).toHaveBeenCalled();
-    }, { timeout: 5000 });
+    });
 
     const behavior = onVerificationBehaviorCollected.mock.calls[0][0];
     expect(behavior.totalAttempts).toBe(5); // 2 (penny) + 3 (nickel)
@@ -1585,7 +1585,7 @@ describe('Grupo 6: buildVerificationBehavior() - Métricas Agregadas', () => {
 
     await waitFor(() => {
       expect(onVerificationBehaviorCollected).toHaveBeenCalled();
-    }, { timeout: 5000 });
+    });
 
     const behavior = onVerificationBehaviorCollected.mock.calls[0][0];
     // Force limpia attemptHistory → array vacío
@@ -1613,7 +1613,7 @@ describe('Grupo 6: buildVerificationBehavior() - Métricas Agregadas', () => {
 
     await waitFor(() => {
       expect(onVerificationBehaviorCollected).toHaveBeenCalled();
-    }, { timeout: 5000 });
+    });
 
     const behavior = onVerificationBehaviorCollected.mock.calls[0][0];
     expect(behavior.severeInconsistenciesDenoms).toEqual(['penny']);
@@ -1640,7 +1640,7 @@ describe('Grupo 6: buildVerificationBehavior() - Métricas Agregadas', () => {
 
     await waitFor(() => {
       expect(onVerificationBehaviorCollected).toHaveBeenCalled();
-    }, { timeout: 5000 });
+    });
 
     const behavior = onVerificationBehaviorCollected.mock.calls[0][0];
     expect(behavior.criticalInconsistenciesDenoms).toEqual(['penny']);
@@ -1664,7 +1664,7 @@ describe('Grupo 6: buildVerificationBehavior() - Métricas Agregadas', () => {
 
     await waitFor(() => {
       expect(onVerificationBehaviorCollected).toHaveBeenCalled();
-    }, { timeout: 5000 });
+    });
 
     const behavior = onVerificationBehaviorCollected.mock.calls[0][0];
     expect(behavior.denominationsWithIssues[0].attempts).toEqual([44, 43]);
@@ -1707,7 +1707,7 @@ describe('Grupo 7: Navigation & UX', () => {
     await waitFor(() => {
       const prevButton = screen.getByLabelText('Denominación anterior');
       expect(prevButton).toBeEnabled();
-    }, { timeout: 5000 });
+    });
   });
 
   it('7.4 - Click "Anterior" abre modal de confirmación', async () => {
@@ -1718,12 +1718,12 @@ describe('Grupo 7: Navigation & UX', () => {
     await waitFor(async () => {
       const prevButton = screen.getByLabelText('Denominación anterior');
       await user.click(prevButton);
-    }, { timeout: 5000 });
+    });
 
     // Modal confirmación retroceso
     await waitFor(() => {
       expect(screen.getByText(/¿Retroceder al paso anterior?/i)).toBeInTheDocument();
-    }, { timeout: 5000 });
+    });
   });
 
   it('7.5 - Modal retroceso tiene botones "Sí, retroceder" y "Continuar aquí"', async () => {
@@ -1734,12 +1734,12 @@ describe('Grupo 7: Navigation & UX', () => {
     await waitFor(async () => {
       const prevButton = screen.getByLabelText('Denominación anterior');
       await user.click(prevButton);
-    }, { timeout: 5000 });
+    });
 
     await waitFor(() => {
       expect(screen.getByText('Sí, retroceder')).toBeInTheDocument();
       expect(screen.getByText('Continuar aquí')).toBeInTheDocument();
-    }, { timeout: 5000 });
+    });
   });
 
   it('7.6 - Click "Sí, retroceder" llama onStepUncomplete para pasos correctos', async () => {
@@ -1751,12 +1751,12 @@ describe('Grupo 7: Navigation & UX', () => {
     await waitFor(async () => {
       const prevButton = screen.getByLabelText('Denominación anterior');
       await user.click(prevButton);
-    }, { timeout: 5000 });
+    });
 
     await waitFor(async () => {
       const confirmButton = screen.getByText('Sí, retroceder');
       await user.click(confirmButton);
-    }, { timeout: 5000 });
+    });
 
     // Debe llamar onStepUncomplete para penny (paso actual)
     expect(onStepUncomplete).toHaveBeenCalledWith('penny');
@@ -1770,18 +1770,18 @@ describe('Grupo 7: Navigation & UX', () => {
     await waitFor(async () => {
       const prevButton = screen.getByLabelText('Denominación anterior');
       await user.click(prevButton);
-    }, { timeout: 5000 });
+    });
 
     await waitFor(async () => {
       const confirmButton = screen.getByText('Sí, retroceder');
       await user.click(confirmButton);
-    }, { timeout: 5000 });
+    });
 
     // Input debe tener valor 43 (del paso penny completado)
     await waitFor(() => {
       const input = getCurrentInput();
       expect(input).toHaveValue('43');
-    }, { timeout: 5000 });
+    });
   });
 
   it('7.8 - Progreso visual actualiza correctamente (barra de progreso)', async () => {
@@ -1794,13 +1794,13 @@ describe('Grupo 7: Navigation & UX', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/✅ 1\/7/)).toBeInTheDocument();
-    }, { timeout: 5000 });
+    });
 
     await completeStepCorrectly(user, 20); // nickel → 2/7
 
     await waitFor(() => {
       expect(screen.getByText(/✅ 2\/7/)).toBeInTheDocument();
-    }, { timeout: 5000 });
+    });
   });
 
   it('7.9 - Badge "ACTIVO ▶" visible en paso actual', () => {
@@ -1836,7 +1836,7 @@ describe('Grupo 7: Navigation & UX', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Verificación Exitosa')).toBeInTheDocument();
-    }, { timeout: 5000 });
+    });
 
     // Debe mostrar $50.00 (objetivo)
     expect(screen.getByText(/\$50\.00/)).toBeInTheDocument();
@@ -1875,7 +1875,7 @@ describe('Grupo 8: Regresión Bugs Históricos', () => {
 
     await waitFor(() => {
       expect(onVerificationBehaviorCollected).toHaveBeenCalled();
-    }, { timeout: 5000 });
+    });
 
     const behavior = onVerificationBehaviorCollected.mock.calls[0][0];
     // Bug v1.3.6M: clearAttemptHistory() borraba intentos → totalAttempts=0
@@ -1920,7 +1920,7 @@ describe('Grupo 8: Regresión Bugs Históricos', () => {
 
     await waitFor(() => {
       expect(onVerificationBehaviorCollected).toHaveBeenCalled();
-    }, { timeout: 5000 });
+    });
 
     const behavior = onVerificationBehaviorCollected.mock.calls[0][0];
     // Bug v1.3.6Y: forEach solo contaba attemptHistory → firstAttemptSuccesses=0
