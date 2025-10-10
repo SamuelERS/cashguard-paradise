@@ -317,6 +317,8 @@ export function Phase2VerificationSection({
 
     return finalBehavior;
   }, [attemptHistory]); // ← v1.3.6a: Única dependencia, referencia estable
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // verificationSteps.length omitido intencionalmente - función solo lee attemptHistory Map
 
   // Auto-advance to next incomplete step
   useEffect(() => {
@@ -330,8 +332,8 @@ export function Phase2VerificationSection({
       }, 'focus', 'verification_step_focus', 100);
       return cleanup;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [completedSteps, verificationSteps, currentStepIndex]);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   // 🤖 [IA] - v1.3.6g: BUG FIX #1 (1/2) - createTimeoutWithCleanup removido de dependencies
   // Root cause: Función helper solo se LLAMA (no se LEE), incluirla en deps causa re-disparos
   // Problema: useTimingConfig puede re-crear función → ref cambia → useEffect se dispara → loop
@@ -364,8 +366,8 @@ export function Phase2VerificationSection({
       }, 'transition', 'verification_section_complete');
       return cleanup;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allStepsCompleted, verificationSteps.length, buildVerificationBehavior]);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   // 🤖 [IA] - v1.3.6g: BUG FIX #1 (2/2) - createTimeoutWithCleanup removido de dependencies
   // Mismo patrón que auto-advance: helper solo se ejecuta, no necesita estar en deps
   // Eliminación de ambos useEffects resuelve race condition que causaba 9 errores loop
