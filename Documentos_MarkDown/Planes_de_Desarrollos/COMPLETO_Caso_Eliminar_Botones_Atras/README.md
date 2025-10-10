@@ -281,10 +281,41 @@ Copia arquitectónica desde `GuidedFieldView.tsx` (Phase 1), donde el botón "An
 
 ## 🔗 DOCUMENTOS RELACIONADOS
 
-- **Plan de Acción:** `PLAN_DE_ACCION.md`
-- **Análisis Técnico:** `ANALISIS_TECNICO_COMPONENTES.md`
+### Documentos Especiales (5)
+- **README.md:** Este documento (índice maestro)
+- **ANALISIS_TECNICO_COMPONENTES.md:** Análisis arquitectónico exhaustivo
+- **COMPARATIVA_VISUAL_UX.md:** Mockups antes/después
+- **PLAN_DE_ACCION.md:** Estrategia completa implementación
+- **INDEX.md:** Índice navegación rápida
+
+### Documentos Numerados (7)
+1. **1_Guia_Implementacion_Eliminacion_Boton_Anterior.md** (923 líneas)
+   Cambios código detallados línea por línea con justificaciones técnicas
+
+2. **2_Plan_Pruebas_Version_v1.2.25_v1.2.49.md** (515 líneas)
+   Protocolo testing completo: 5 categorías, 18 criterios validación
+
+3. **3_Resultados_Validacion_v1.2.25_v1.2.49.md** (530 líneas)
+   Resultados tests medidos: 14/14 validaciones passing 100%
+
+4. **4_Comparativa_Metricas_ANTES_DESPUES.md** (795 líneas)
+   Métricas cuantitativas exhaustivas antes/después con ROI
+
+5. **5_Como_Funciona_Sistema_Navegacion_Simplificado.md** (1,085 líneas)
+   Arquitectura navegación completa con diagramas y flujos
+
+6. **6_Lecciones_Aprendidas_Eliminacion_Boton.md** (990 líneas)
+   Lecciones técnicas/UX organizadas en 5 categorías aplicables
+
+7. **7_Resumen_Ejecutivo_Caso_Completo.md** (450 líneas)
+   Resumen ejecutivo para gerencia con ROI y recomendaciones
+
+### Referencias Externas
 - **Reglas del Proyecto:** `/REGLAS_DE_LA_CASA.md`
-- **Task List:** Ver `PLAN_DE_ACCION.md` sección "Task List Detallada"
+- **CLAUDE.md:** Entrada v1.2.25/v1.2.49 (líneas 142-218)
+- **Código fuente:** `DeliveryFieldView.tsx`, `Phase2DeliverySection.tsx`
+
+**Total documentación:** 12 documentos completos (~6,545 líneas) ✅
 
 ---
 
