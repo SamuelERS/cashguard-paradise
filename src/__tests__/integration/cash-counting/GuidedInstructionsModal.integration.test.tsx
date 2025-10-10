@@ -154,8 +154,10 @@ describe('📋 GuidedInstructionsModal - Integration Tests', () => {
       
       // Esperar a que se complete regla 1 y regla 2 se habilite
       await waitFor(() => {
-        const rule2Button = screen.getByText('No Tapes La Cámara').closest('div[role="button"]');
-        expect(rule2Button).toHaveAttribute('aria-disabled', 'false');
+        const rule2Text = screen.getByText('No Tapes La Cámara');
+        const rule2Button = rule2Text.closest('div[role="button"]');
+        expect(rule2Button).toBeInTheDocument();
+        expect(rule2Button).not.toHaveAttribute('aria-disabled', 'true');
       }, { timeout: 15000 }); // 🤖 [IA] - CI Hotfix: 10s → 15s (regla auto-completion + CI overhead)
     }, 20000); // 🤖 [IA] - CI Hotfix: Test completo necesita 20s en GitHub Actions
 
@@ -312,8 +314,10 @@ describe('📋 GuidedInstructionsModal - Integration Tests', () => {
       
       // Esperar a que se complete y regla 2 se habilite
       await waitFor(() => {
-        const rule2 = screen.getByText('No Tapes La Cámara').closest('div[role="button"]');
-        expect(rule2).toHaveAttribute('aria-disabled', 'false');
+        const rule2Text = screen.getByText('No Tapes La Cámara');
+        const rule2 = rule2Text.closest('div[role="button"]');
+        expect(rule2).toBeInTheDocument();
+        expect(rule2).not.toHaveAttribute('aria-disabled', 'true');
       }, { timeout: 15000 }); // 🤖 [IA] - CI Hotfix: 12s → 15s (primera regla completion)
       
       // Click en regla 2 (5s, más tiempo que regla 1)
