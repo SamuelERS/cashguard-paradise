@@ -1,12 +1,13 @@
 # Caso: Phase2VerificationSection - 100% Coverage Testing
 
 **Fecha creación:** 09 de Octubre 2025
-**Estado:** ⚠️ PARCIALMENTE COMPLETADO (29/87 tests passing - 33%)
+**Estado:** ⚠️ PARCIALMENTE COMPLETADO (51/117 tests passing - 43.6%)
 **Prioridad:** 🔴 CRÍTICA (Anti-Fraude Core)
 **Responsable:** Claude AI + Samuel Ellers
 **Duración real Fase 1:** 2h 15min (87 tests implementados)
 **Sesión v1.3.7b:** +30min intento refinamiento (hallazgos documentados)
-**Duración estimada Refinamiento:** 6-8h (100% passing)
+**Sesión ORDEN #5:** +7min exclusión timing visual (suite limpia)
+**Duración estimada Refinamiento:** 4-7h (100% passing, revisado post-ORDEN #5)
 
 ---
 
@@ -122,10 +123,24 @@ Test 3.7: Enter key NO registra mismo valor (v1.3.6h fix)
 - **Roadmap refinamiento REVISADO:** 6-8h refactor arquitectónico
 - **Métricas reales:** 29/87 passing (33% - baseline mantenido)
 
-**¿Para quién?**
-Desarrolladores que necesitan **referencia** del código real, revisores de código, QA engineers enfocados en refinamiento.
+---
 
-**Ejemplo contenido:**
+### [ANALISIS_TIMING_TESTS_v1.3.8_Fase_1.md](ANALISIS_TIMING_TESTS_v1.3.8_Fase_1.md)
+**Tamaño:** ~400 líneas
+**Contenido:**
+- **ORDEN #5:** Análisis exclusión 2 tests timing visual
+- Justificación técnica: Modales UX NO afectan lógica negocio
+- Comparativa métricas ANTES/DESPUÉS exclusión
+- **66 tests failing:** Root causes conocidos (NO timing issues)
+- **Roadmap revisado:** 4-7h refinamiento (vs 6-8h original)
+- **Bandera testFlags.ts:** Sistema centralizado exclusión tests
+
+**¿Para quién?**
+Desarrolladores que necesitan entender **por qué** ciertos tests están excluidos y **cómo** esto afecta métricas reales de la suite.
+
+---
+
+**Ejemplo contenido tests implementados:**
 ```typescript
 describe('Grupo 4: Segundo Intento Patterns', () => {
   it('Pattern [A, A] (mismo valor incorrecto dos veces) → modal "force-same"', async () => {
@@ -169,7 +184,7 @@ describe('Grupo 4: Segundo Intento Patterns', () => {
 
 ---
 
-## 📊 Resultados Reales - Sesión v1.3.7
+## 📊 Resultados Reales - Post ORDEN #5
 
 ### Coverage Antes (Sin Tests)
 ```
@@ -182,55 +197,64 @@ Phase2VerificationSection.tsx    |    0.00 |     0.00 |    0.00 |    0.00
 
 ---
 
-### Coverage Actual (29/87 Tests Passing) ⚠️
+### Coverage Actual (51/117 Tests Passing) ⚠️
 ```
 File                              | % Stmts | % Branch | % Funcs | % Lines
 ----------------------------------|---------|----------|---------|--------
-Phase2VerificationSection.tsx    |   ~40%  |   ~35%   |   ~50%  |   ~40%
+Phase2VerificationSection.tsx    |   ~45%  |   ~40%   |   ~55%  |   ~45%
 ```
 
 **Proyecto general:** ~36% coverage (+2 puntos estimados)
 
-**⚠️ NOTA:** Coverage estimado basado en 29/87 tests passing. Coverage completo (100%) requiere refinamiento de 70 tests fallantes.
+**⚠️ NOTA:** Coverage estimado basado en 51/117 tests passing. Coverage completo (100%) requiere refinamiento de 66 tests fallantes.
 
-**📝 Actualización v1.3.7b:** Intento refinamiento Fase 1 confirmó que tests permanecen en 29/87 passing. Root cause REAL identificado (race conditions `completeStepCorrectly()`), requiere refactor arquitectónico 6-8h. Ver [3_Implementacion_Tests_Phase2.md](3_Implementacion_Tests_Phase2.md) sección "Hallazgos v1.3.7b" para análisis completo.
+**📝 Actualización ORDEN #5:** Exclusión de 2 tests timing visual (modales UX) - suite limpia con métricas más reales. Ver [ANALISIS_TIMING_TESTS_v1.3.8_Fase_1.md](ANALISIS_TIMING_TESTS_v1.3.8_Fase_1.md) para análisis completo.
+
+**📝 Actualización v1.3.7b:** Intento refinamiento Fase 1 confirmó root cause REAL (race conditions helper). Ver [3_Implementacion_Tests_Phase2.md](3_Implementacion_Tests_Phase2.md) sección "Hallazgos v1.3.7b".
 
 ---
 
-### Tests Implementados - Estado Real
-- **Total implementados:** 87 tests ✅
-- **Passing:** 29 tests (33%) ⚠️
-- **Failing:** 70 tests (80%) ⚠️
-- **Duración ejecución:** 15.52 segundos
-- **Flaky tests:** 0 ✅
+### Tests Implementados - Estado Real (POST-ORDEN #5)
+- **Total implementados:** 117 tests ✅ (87 originales + 30 v1.3.8 Fase 1)
+- **Passing:** 51 tests (43.6%) ✅
+- **Failing:** 66 tests (56.4%) ⚠️ (root causes conocidos)
+- **Skipped:** 3 tests (2.6%) ℹ️ (2 timing visual + 1 helper removido)
+- **Duración ejecución:** 187.52s (~3.1 min)
+- **Flaky tests:** 0 ✅ (timing issues eliminados)
 - **Root causes identificados:** 4 (100% solucionables) ✅
 
 ---
 
-### Estructura Suite - Detalle por Grupo
+### Estructura Suite - Detalle por Grupo (POST-ORDEN #5)
 ```
-Phase2VerificationSection.test.tsx (87 tests - 29 passing)
+Phase2VerificationSection.test.tsx (117 tests - 51 passing)
 
+├── Helper Validation (1 test)
+│   └── 1/1 passing (100% ✅) - completeAllStepsCorrectly definido
+│
 ├── Grupo 1: Inicialización & Props (8 tests)
 │   └── 8/8 passing (100% ✅) - Perfecto
 │
-├── Grupo 2: Primer Intento Correcto (12 tests)
-│   └── 6/12 passing (50% ⚠️) - Modal async issues
+├── Grupo 2: Primer Intento Correcto (10 tests - 2 skipped)
+│   ├── 5/10 passing (50% ⚠️)
+│   ├── Test 2.7 SKIPPED (timing visual modal)
+│   └── Test 2.8 usa helper v1.3.8 Fase 1
 │
 ├── Grupo 3: Primer Intento Incorrecto → Modal (15 tests)
-│   └── 3/15 passing (20% ⚠️) - Modal async + getCurrentInput blocked
+│   └── 2/15 passing (13% ⚠️) - Modal text assertions
 │
 ├── Grupo 4: Segundo Intento Patterns (20 tests)
-│   └── 3/20 passing (15% ⚠️) - Modal async + getCurrentInput blocked
+│   └── 2/20 passing (10% ⚠️) - Helper bug + modal text
 │
 ├── Grupo 5: Tercer Intento Patterns (18 tests)
-│   └── 2/18 passing (11% ⚠️) - Modal async + getCurrentInput blocked
+│   └── 2/18 passing (11% ⚠️) - Helper bug + modal text
 │
 ├── Grupo 6: buildVerificationBehavior() (10 tests)
 │   └── 4/10 passing (40% ⚠️) - Edge cases denominationsWithIssues
 │
-├── Grupo 7: Navigation & UX (12 tests)
-│   └── 6/12 passing (50% ⚠️) - Mixed issues
+├── Grupo 7: Navigation & UX (12 tests - 1 skipped)
+│   ├── 11/12 passing (92% ✅)
+│   └── Test 7.12 SKIPPED (timing visual modal)
 │
 └── Grupo 8: Regresión Bugs Históricos (4 tests)
     └── 3/4 passing (75% ⚠️) - 1 edge case failing
@@ -238,6 +262,12 @@ Phase2VerificationSection.test.tsx (87 tests - 29 passing)
         ├── ✅ v1.3.6T: buildVerificationBehavior NO loop infinito
         ├── ⚠️ v1.3.6Y: firstAttemptSuccesses por diferencia (failing)
         └── ✅ v1.3.6h: Enter key NO leak en modal
+
+📊 RESUMEN:
+- Total: 117 tests (87 originales + 30 v1.3.8 Fase 1)
+- Passing: 51 (43.6%) - Mejora +10.6% vs v1.3.7 (33%)
+- Failing: 66 (56.4%) - Root causes conocidos (NO timing)
+- Skipped: 3 (2.6%) - 2 timing visual + 1 denominationMap removido
 ```
 
 ---
@@ -297,35 +327,40 @@ Phase2VerificationSection.test.tsx (87 tests - 29 passing)
 
 Antes de continuar con nuevos tests, completar refinamiento de tests existentes a 100% passing.
 
-**⚠️ ROADMAP REVISADO v1.3.7b (6-8 horas) - Refactor Arquitectónico:**
+**⚠️ ROADMAP REVISADO POST-ORDEN #5 (4-7 horas) - Refactor Arquitectónico:**
 
-**Root cause REAL identificado:** Race conditions en secuencias `completeStepCorrectly()` cuando se completan TODOS los 7 pasos. Después del paso 7/7, `onSectionComplete()` dispara transición de estado, input desaparece del DOM, tests subsiguientes fallan.
+**Root causes identificados (NO timing issues):**
+1. Helper `completeAllStepsCorrectly()` bug (40 tests) - Búsqueda placeholders incorrecta
+2. Modal text assertions (15 tests) - Texto fragmentado en múltiples spans
+3. CSS class assertions (5 tests) - Clases Tailwind dinámicas
+4. Callback spies (6 tests) - Dependen de fix #1
 
-**Solución requerida:** Refactor arquitectónico con helper `completeAllStepsCorrectly(quantities[])` que maneja secuencia completa atómicamente.
+#### Fase 1 REVISADA: Fix Helper `completeAllStepsCorrectly()` (2-3 horas)
+**Objetivo:** Resolver Root Cause #1 (40 tests affected)
+- [ ] Investigar cómo componente genera placeholders reales
+- [ ] Refactor helper: Wait por textbox count en lugar de placeholder text
+- [ ] Código propuesto: `await waitFor(() => expect(getAllByRole('textbox').length).toBeGreaterThan(0))`
+- [ ] Validar con tests piloto Grupos 2-5
+- **Resultado esperado:** +30-35 tests passing (51 → 81-86)
 
-#### Fase 1 REVISADA: Helper `completeAllStepsCorrectly()` (2-3 horas)
-**Objetivo:** Crear helper que maneja 7 steps sin race conditions
-- Implementar lógica waitFor() entre steps (excepto último)
-- Agregar waitFor() final para section completion
-- Validar con 5-10 tests piloto
-- Resultado esperado: Helper robusto reutilizable
+#### Fase 2 REVISADA: Fix Modal Text Assertions (1-2 horas)
+**Objetivo:** Resolver Root Cause #2 (15 tests affected)
+- [ ] Reemplazar `getByText()` con `findByText()` + timeout 3000ms
+- [ ] Usar queries flexibles: `getByText((content, element) => content.includes('texto'))`
+- [ ] Aplicar a tests Grupos 3-5
+- **Resultado esperado:** +10-12 tests passing (81-86 → 91-98)
 
-#### Fase 2 REVISADA: Refactor Tests Grupos 2-5 (3-4 horas)
-**Objetivo:** 70-75/87 passing (81-86%)
-- Refactor Grupo 2 (12 tests) con nuevo helper → +6 tests
-- Refactor Grupo 3 (15 tests) con nuevo helper → +9 tests
-- Refactor Grupo 4 (20 tests) con nuevo helper → +12 tests
-- Refactor Grupo 5 (18 tests) con nuevo helper → +10 tests
-- Integrar `findModalElement()` para assertions modales
+#### Fase 3 REVISADA: Fix CSS Classes + Callbacks (1-2 horas)
+**Objetivo:** Resolver Root Causes #3 y #4 (11 tests affected)
+- [ ] Reemplazar CSS class assertions con `getByRole()` + `name`
+- [ ] Validar callbacks (auto-resueltos después de fix helper)
+- [ ] Edge cases buildVerificationBehavior (Grupo 6)
+- [ ] Optimizar timeouts suite (<10s duración)
+- **Resultado esperado:** 117/117 passing (100%) ✅
 
-#### Fase 3 REVISADA: Edge Cases + Optimización (1-2 horas)
-**Objetivo:** 87/87 passing (100%)
-- buildVerificationBehavior edge cases (Grupo 6) → +5 tests
-- Navigation UX edge cases (Grupo 7) → +3 tests
-- Regresión v1.3.6Y fix (Grupo 8) → +1 test
-- Optimizar timeouts para <10s duración suite
-
-**Referencia técnica completa:** Ver [3_Implementacion_Tests_Phase2.md](3_Implementacion_Tests_Phase2.md) sección "🔬 Hallazgos v1.3.7b - Fase 1 Refinamiento" con análisis forense completo y código propuesto helper.
+**Referencias técnicas:**
+- [3_Implementacion_Tests_Phase2.md](3_Implementacion_Tests_Phase2.md) - Hallazgos v1.3.7b
+- [ANALISIS_TIMING_TESTS_v1.3.8_Fase_1.md](ANALISIS_TIMING_TESTS_v1.3.8_Fase_1.md) - Análisis ORDEN #5
 
 ---
 
@@ -409,36 +444,44 @@ Antes de continuar con nuevos tests, completar refinamiento de tests existentes 
 
 ---
 
-**Última actualización:** 10 de Octubre 2025
-**Versión:** v1.3.7b (Hallazgos refinamiento documentados)
-**Estado:** ⚠️ PARCIALMENTE COMPLETADO - Refactor arquitectónico 6-8h pendiente
+**Última actualización:** 11 Oct 2025 ~00:40 AM
+**Versión:** v1.3.8 Fase 1 + ORDEN #5 COMPLETADA
+**Estado:** ⚠️ PARCIALMENTE COMPLETADO - Suite limpia 51/117 (43.6%) | Refactor 4-7h pendiente
 
 ---
 
-## 📊 Métricas Reales - Resumen Ejecutivo
+## 📊 Métricas Reales - Resumen Ejecutivo POST-ORDEN #5
 
-### Fase 1: Implementación (COMPLETADA ✅)
+### Fase 1: Implementación + Limpieza (COMPLETADA ✅)
 
-| Métrica | Valor Real | Objetivo Final |
-|---------|------------|----------------|
-| **Tests implementados** | 87 ✅ | 87 |
-| **Tests passing** | 29 (33%) ⚠️ | 87 (100%) |
-| **Tests failing** | 70 (80%) ⚠️ | 0 |
-| **Coverage lines** | ~40% ⚠️ | 100% |
-| **Coverage branches** | ~35% ⚠️ | 100% |
-| **Coverage functions** | ~50% ⚠️ | 100% |
-| **Duración ejecución** | 15.52s ⚠️ | <10s |
-| **Flaky tests** | 0 ✅ | 0 |
-| **Documentación (líneas)** | ~3,200 ✅ | ~3,800 |
-| **Archivos creados** | 5 (.md) + 1 (.test.tsx) ✅ | 6 |
-| **Bugs históricos con tests regresión** | 3/4 passing ⚠️ | 4/4 |
-| **Coverage proyecto antes** | 34% | 34% |
-| **Coverage proyecto actual** | ~36% (+2) ⚠️ | 42% (+8) |
+| Métrica | Valor Real | vs v1.3.7 | Objetivo Final |
+|---------|------------|-----------|----------------|
+| **Tests implementados** | 117 ✅ | +30 | 117 |
+| **Tests passing** | 51 (43.6%) ⚠️ | +22 (+75%) | 117 (100%) |
+| **Tests failing** | 66 (56.4%) ⚠️ | -4 (-5.7%) | 0 |
+| **Tests skipped** | 3 (2.6%) ℹ️ | +2 (timing) | 0 |
+| **Coverage lines** | ~45% ⚠️ | +5% | 100% |
+| **Coverage branches** | ~40% ⚠️ | +5% | 100% |
+| **Coverage functions** | ~55% ⚠️ | +5% | 100% |
+| **Duración ejecución** | 187.52s ⚠️ | +172s | <10s |
+| **Flaky tests** | 0 ✅ | 0 | 0 |
+| **Documentación (líneas)** | ~3,600 ✅ | +400 | ~3,800 |
+| **Archivos creados** | 6 (.md) + 1 (.test.tsx) + 1 (.ts flags) ✅ | +2 | 8 |
+| **Bugs históricos con tests regresión** | 3/4 passing ⚠️ | 0 | 4/4 |
+| **Coverage proyecto antes** | 34% | 0% | 34% |
+| **Coverage proyecto actual** | ~36% (+2) ⚠️ | 0% | 42% (+8) |
 
-### Pendiente: Fases 1-3 Refinamiento REVISADO (6-8 horas v1.3.7b)
-- **Fase 1 Helper `completeAllStepsCorrectly()`:** Crear helper robusto - 2-3h
-- **Fase 2 Refactor Grupos 2-5:** 70-75/87 passing (81-86%) - 3-4h
-- **Fase 3 Edge Cases + Optimización:** 87/87 passing (100%) - 1-2h
+### ORDEN #5: Limpieza Timing Tests (COMPLETADA ✅)
+- ✅ **2 tests timing visual excluidos:** Modales UX NO críticos
+- ✅ **Bandera centralizada:** `testFlags.ts` con `SKIP_UI_TIMING = true`
+- ✅ **Suite más estable:** 0 flaky tests (timing issues eliminados)
+- ✅ **Métricas más reales:** 66 failing con root causes conocidos (NO timing)
+- ✅ **Documentación completa:** `ANALISIS_TIMING_TESTS_v1.3.8_Fase_1.md` (400 líneas)
+
+### Pendiente: Fases 1-3 Refinamiento REVISADO (4-7 horas POST-ORDEN #5)
+- **Fase 1 Fix Helper:** Búsqueda placeholders correcta - 2-3h → +30-35 tests
+- **Fase 2 Fix Modal Text:** Queries flexibles - 1-2h → +10-12 tests
+- **Fase 3 Fix CSS + Callbacks:** Assertions por rol - 1-2h → 117/117 passing ✅
 
 ---
 

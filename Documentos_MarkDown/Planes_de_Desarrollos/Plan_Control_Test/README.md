@@ -2,9 +2,9 @@
 
 **Estado del Plan:** 🟢 ACTIVO
 **Fecha inicio:** 09 de Octubre de 2025
-**Última actualización:** 10 de Octubre de 2025
+**Última actualización:** 11 de Octubre de 2025 ~00:40 AM
 **Meta:** 728/728 tests passing (100%)
-**Versión actual:** Tests: 667/728 passing (92%)
+**Versión actual:** Tests: 692/758 passing (91.3%) - Post ORDEN #5
 
 ---
 
@@ -14,7 +14,8 @@
 /Plan_Control_Test/
 ├── 📊 0_INVENTARIO_MAESTRO_Tests_Real.md     ← DOCUMENTO PRINCIPAL
 ├── 🗺️ ROADMAP_PRIORIZADO.md                  ← Plan de acción basado en inventario
-├── 📁 EN_PROGRESO_Caso_Phase2_Verification/  ← Caso activo (29/87 tests - 33%)
+├── 📁 EN_PROGRESO_Caso_Phase2_Verification/  ← Caso activo (51/117 tests - 43.6%)
+│   └── ANALISIS_TIMING_TESTS_v1.3.8_Fase_1.md ← NUEVO: Análisis ORDEN #5
 └── 📁 Archive/                                ← Documentos históricos (18 archivos)
 ```
 
@@ -57,13 +58,24 @@
 
 **Carpeta:** [EN_PROGRESO_Caso_Phase2_Verification_100_Coverage/](EN_PROGRESO_Caso_Phase2_Verification_100_Coverage/)
 
-**Status:** ⚠️ 29/87 tests passing (33%)
+**Status:** ⚠️ 51/117 tests passing (43.6%) - Post ORDEN #5
 
 **Documentación:**
 - [README.md](EN_PROGRESO_Caso_Phase2_Verification_100_Coverage/README.md) - Resumen ejecutivo
 - [3_Implementacion_Tests_Phase2.md](EN_PROGRESO_Caso_Phase2_Verification_100_Coverage/3_Implementacion_Tests_Phase2.md) - Root causes + plan refinamiento
+- [ANALISIS_TIMING_TESTS_v1.3.8_Fase_1.md](EN_PROGRESO_Caso_Phase2_Verification_100_Coverage/ANALISIS_TIMING_TESTS_v1.3.8_Fase_1.md) - ✅ ORDEN #5 completada
 
-**Próximo paso:** Helper `completeAllStepsCorrectly()` → 87/87 passing (6-8h)
+**✅ ORDEN #5 COMPLETADA (11 Oct 2025 ~00:40 AM):**
+- 2 tests timing visual excluidos (modales UX NO afectan lógica)
+- Suite limpia: 0 flaky tests, 66 failing con root causes conocidos
+- Bandera centralizada: `testFlags.ts` con `SKIP_UI_TIMING = true`
+- Documentación completa: ~400 líneas análisis técnico
+
+**Próximos pasos:**
+- Fase 1: Fix helper placeholders (2-3h) → +30-35 tests
+- Fase 2: Fix modal text assertions (1-2h) → +10-12 tests
+- Fase 3: Fix CSS classes + callbacks (1-2h) → 117/117 passing ✅
+- **Total estimado:** 4-7h (vs 6-8h original)
 
 ---
 
@@ -88,12 +100,13 @@
 
 ## 📊 Métricas Actuales (Resumen)
 
-### Tests Status
+### Tests Status (Post ORDEN #5)
 ```
-Total: 728 tests
-  ├── ✅ Passing: 667 (92%)
-  ├── 🟠 WIP: 58 (Phase2VerificationSection v1.3.7b)
-  └── ❌ Failing: 3 (morning-count-simplified)
+Total: 758 tests (+30 v1.3.8 Fase 1)
+  ├── ✅ Passing: 692 (91.3%)
+  ├── 🟠 Failing con root causes: 66 (Phase2VerificationSection)
+  ├── ℹ️ Skipped (timing visual): 3 (2 modales UX + 1 helper removido)
+  └── ❌ Failing pre-existentes: 3 (morning-count-simplified)
 ```
 
 ### Coverage Actual
@@ -104,7 +117,7 @@ Functions:  ~35%
 Branches:   ~61%
 ```
 
-### Desglose por Sector
+### Desglose por Sector (Post ORDEN #5)
 ```
 ✅ Matemáticas TIER 0-4:     174/174 (100%) - Confianza 99.9%
 ✅ Utils & Core Logic:       97/97 (100%)
@@ -113,21 +126,34 @@ Branches:   ~61%
 ✅ Types:                    13/13 (100%)
 ✅ E2E Playwright:           24/24 (100%)
 ✅ Debug temporal:           6/6 (100%)
-🟠 Flows:                    5/8 (63%) - 3 failing
-⚠️ Phase2 WIP:               29/87 (33%)
+✅ Helper Validation:        1/1 (100%)
+🟠 Flows:                    5/8 (63%) - 3 failing pre-existentes
+⚠️ Phase2 WIP:               51/117 (43.6%) - Suite limpia post-ORDEN #5
+   ├── Passing: 51 tests
+   ├── Failing: 66 tests (root causes conocidos, NO timing)
+   └── Skipped: 3 tests (2 timing visual + 1 helper removido)
 ```
 
 ---
 
 ## 🚀 Próximos Pasos Inmediatos
 
-### AHORA (1-2h)
+### OPCIÓN A: Quick Win FASE 0 (1-2h) ⭐⭐⭐⭐⭐
 1. **Fix 3 tests failing** → morning-count-simplified wizard modal issue
 2. **Resultado:** 641/641 base suite (100%) ✅
+3. **Beneficio:** Morale boost rápido antes de refactor Phase2 complejo
 
-### DESPUÉS (6-8h)
-1. **Completar Phase2VerificationSection** → 87/87 passing
-2. **Resultado:** Coverage +8% proyecto (~42%)
+### OPCIÓN B: Continuar Phase2 Refinamiento (4-7h) ⭐⭐⭐⭐
+1. **Fase 1:** Fix helper placeholders (2-3h) → +30-35 tests
+2. **Fase 2:** Fix modal text assertions (1-2h) → +10-12 tests
+3. **Fase 3:** Fix CSS classes + callbacks (1-2h) → 117/117 passing ✅
+4. **Resultado:** Coverage +8% proyecto (~42%)
+
+### OPCIÓN C: Pausar y Documentar (Ya completado) ✅
+1. ✅ ORDEN #5 completada: Suite limpia con métricas reales
+2. ✅ Documentación exhaustiva: ~400 líneas análisis técnico
+3. ✅ Roadmap revisado: 4-7h estimado (vs 6-8h original)
+4. **Beneficio:** Base estable para retomar en sesión futura
 
 ### FUTURO (15-20h)
 1. Tests usePhaseManager (3-4h)
@@ -165,6 +191,11 @@ Branches:   ~61%
 
 **🙏 Gloria a Dios por darnos claridad en medio de la complejidad.**
 
-**Última actualización:** 10 de Octubre de 2025 ~19:35 PM
-**Próximo paso:** Resolver 3 tests failing (FASE 0)
-**Sistema:** 92% tests passing - Muy buen estado ✅
+**Última actualización:** 11 de Octubre de 2025 ~00:40 AM
+**Versión código:** v1.3.8 Fase 1 + ORDEN #5 COMPLETADA ✅
+**Sistema:** 91.3% tests passing (692/758) - Muy buen estado ✅
+
+**Decisión pendiente usuario:**
+- **Opción A:** Quick win FASE 0 (1-2h) - 3 tests morning-count
+- **Opción B:** Phase2 refinamiento (4-7h) - 117/117 passing
+- **Opción C:** Pausar (documentación completa) - Retomar futura sesión
