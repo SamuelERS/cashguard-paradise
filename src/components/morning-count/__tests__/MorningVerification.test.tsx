@@ -51,7 +51,7 @@ describe('MorningVerification - v1.3.7 WhatsApp Confirmation Flow', () => {
     windowOpenSpy = vi.spyOn(window, 'open').mockReturnValue({
       closed: false,
       close: vi.fn()
-    } as any);
+    } as Window);
     // Mock setTimeout para control manual
     setTimeoutSpy = vi.spyOn(global, 'setTimeout');
   });
@@ -234,7 +234,7 @@ describe('MorningVerification - v1.3.7 WhatsApp Confirmation Flow', () => {
     });
 
     it('3.2 - Si window.open.closed === true, debe detectar bloqueo', async () => {
-      windowOpenSpy.mockReturnValue({ closed: true, close: vi.fn() } as any);
+      windowOpenSpy.mockReturnValue({ closed: true, close: vi.fn() } as Window);
       const user = userEvent.setup();
       render(<MorningVerification {...defaultProps} />);
 

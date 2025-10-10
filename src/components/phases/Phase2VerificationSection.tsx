@@ -317,7 +317,6 @@ export function Phase2VerificationSection({
 
     return finalBehavior;
   }, [attemptHistory]); // ← v1.3.6a: Única dependencia, referencia estable
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   // verificationSteps.length omitido intencionalmente - función solo lee attemptHistory Map
 
   // Auto-advance to next incomplete step

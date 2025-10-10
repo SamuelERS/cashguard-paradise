@@ -156,7 +156,6 @@ export function Phase2Manager({
       return () => clearTimeout(timeoutId);
     }
   }, [verificationCompleted, verificationBehavior, onPhase2Complete, onDeliveryCalculationUpdate]);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   // 🤖 [IA] - v1.3.6k: REVERTIDO comentario v1.3.6f - verificationBehavior DEBE estar en deps
   // Justificación: Si behavior llega tarde (async state update), useEffect debe re-ejecutar para agregarlo
   // Justificación: Valor se captura en closure del setTimeout, NO necesita ser dependencia explícita
