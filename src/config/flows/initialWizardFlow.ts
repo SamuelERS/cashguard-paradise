@@ -149,10 +149,12 @@ const morningRules: ProtocolRule[] = [
 ];
 
 // [IA] - v3.0.0: Array dinámico para randomización elegante
-export let currentProtocolRules: ProtocolRule[] = [...protocolRules];
+// 🤖 [IA] - v1.3.7U: FIX CRÍTICO - Cambio let → const para prevenir "Cannot access before initialization"
+export const currentProtocolRules: ProtocolRule[] = [...protocolRules];
 
 // 🤖 [IA] - v1.2.38: Export para Morning Count Protocol
-export let morningProtocolRules: ProtocolRule[] = [...morningRules];
+// 🤖 [IA] - v1.3.7U: FIX CRÍTICO - Cambio let → const para prevenir "Cannot access before initialization"
+export const morningProtocolRules: ProtocolRule[] = [...morningRules];
 
 // [IA] - v3.0.0: Función shuffle Fisher-Yates para aleatoriedad real
 const shuffleRules = (rules: ProtocolRule[]): ProtocolRule[] => {
@@ -165,17 +167,17 @@ const shuffleRules = (rules: ProtocolRule[]): ProtocolRule[] => {
 };
 
 // 🤖 [IA] - v3.1.0: Función desactivada - orden estático de reglas (Evening Cut)
+// 🤖 [IA] - v1.3.7U: FIX CRÍTICO - Retorna nuevo array en lugar de reasignar const
 export const shuffleProtocolRules = (): ProtocolRule[] => {
   // Mantener orden original sin aleatoriedad
-  currentProtocolRules = [...protocolRules];
-  return currentProtocolRules;
+  return [...protocolRules];
 };
 
 // 🤖 [IA] - v1.2.38: Función para Morning Count (sin randomización)
+// 🤖 [IA] - v1.3.7U: FIX CRÍTICO - Retorna nuevo array en lugar de reasignar const
 export const shuffleMorningRules = (): ProtocolRule[] => {
   // Mantener orden original sin aleatoriedad
-  morningProtocolRules = [...morningRules];
-  return morningProtocolRules;
+  return [...morningRules];
 };
 
 // [IA] - v3.0.0: Export de reglas originales para compatibilidad
