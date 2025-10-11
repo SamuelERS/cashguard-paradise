@@ -468,9 +468,10 @@ describe('Grupo 3: Primer Intento Incorrecto → Modal "incorrect"', () => {
 
     await enterIncorrectValue(user, 44);
 
-    // 🤖 [IA] - FASE 2 RC #1: getByText → findByText async (modal text fragmentation fix)
+    // 🤖 [IA] - FASE 2 RC #1: Texto REAL del modal (BlindVerificationModal línea 85)
+    // Texto correcto: "Repite el conteo para confirmar la cantidad"
     const modalMessage = await screen.findByText(
-      (content) => content.includes('Por favor, vuelve a contar'),
+      (content) => content.includes('Repite el conteo para confirmar'),
       {},
       { timeout: 3000 }
     );
