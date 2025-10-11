@@ -81,6 +81,57 @@ export function MorningVerification({
     performVerification();
   }, [performVerification]);
 
+  // 🤖 [IA] - v1.3.7: Función generateReport DEBE estar PRIMERO (usada por otros callbacks)
+  const generateReport = useCallback(() => {
+    if (!verificationData) return '';
+
+    return `
+🌅 CONTEO DE CAJA MATUTINO
+============================
+Fecha/Hora: ${verificationData.timestamp}
+Sucursal: ${store?.name || 'N/A'}
+
+PERSONAL
+--------
+Cajero Entrante: ${cashierIn?.name || 'N/A'}
+Cajero Saliente: ${cashierOut?.name || 'N/A'}
+
+RESUMEN DEL CONTEO
+------------------
+${generateDenominationSummary(cashCount)}
+
+VERIFICACIÓN
+------------
+Total Contado: ${formatCurrency(verificationData.totalCash)}
+Cambio Esperado: ${formatCurrency(verificationData.expectedAmount)}
+Diferencia: ${formatCurrency(verificationData.difference)}
+
+ESTADO: ${verificationData.isCorrect ? '✅ CORRECTO' : '⚠️ DIFERENCIA DETECTADA'}
+
+${verificationData.hasShortage ? '⚠️ FALTANTE: Revisar con cajero saliente' : ''}
+${verificationData.hasExcess ? '⚠️ SOBRANTE: Verificar origen del exceso' : ''}
+
+============================
+Sistema CashGuard Paradise v1.1.13
+    `.trim();
+  }, [verificationData, store, cashierIn, cashierOut, cashCount]);
+
+  // 🤖 [IA] - v1.1.09: Función mejorada con fallback robusto
+  const handleCopyToClipboard = useCallback(async () => {
+    try {
+      const report = generateReport();
+      const result = await copyToClipboard(report);
+
+      if (result.success) {
+        toast.success('Reporte copiado al portapapeles');
+      } else {
+        toast.error(result.error || 'No se pudo copiar al portapapeles');
+      }
+    } catch (error) {
+      toast.error('Error al generar el reporte');
+    }
+  }, [generateReport]);
+
   // 🤖 [IA] - v1.3.7: Handler con confirmación explícita + detección pop-ups bloqueados
   const handleWhatsAppSend = useCallback(() => {
     try {
@@ -125,22 +176,6 @@ export function MorningVerification({
     setWhatsappOpened(false);
     toast.success('✅ Reporte confirmado como enviado');
   }, []);
-
-  // 🤖 [IA] - v1.1.09: Función mejorada con fallback robusto
-  const handleCopyToClipboard = useCallback(async () => {
-    try {
-      const report = generateReport();
-      const result = await copyToClipboard(report);
-
-      if (result.success) {
-        toast.success('Reporte copiado al portapapeles');
-      } else {
-        toast.error(result.error || 'No se pudo copiar al portapapeles');
-      }
-    } catch (error) {
-      toast.error('Error al generar el reporte');
-    }
-  }, [generateReport]);
   
   const handleShare = async () => {
     const report = generateReport();
@@ -173,40 +208,6 @@ export function MorningVerification({
     URL.revokeObjectURL(url);
     toast.success('Reporte descargado exitosamente');
   };
-
-  const generateReport = useCallback(() => {
-    if (!verificationData) return '';
-
-    return `
-🌅 CONTEO DE CAJA MATUTINO
-============================
-Fecha/Hora: ${verificationData.timestamp}
-Sucursal: ${store?.name || 'N/A'}
-
-PERSONAL
---------
-Cajero Entrante: ${cashierIn?.name || 'N/A'}
-Cajero Saliente: ${cashierOut?.name || 'N/A'}
-
-RESUMEN DEL CONTEO
-------------------
-${generateDenominationSummary(cashCount)}
-
-VERIFICACIÓN
-------------
-Total Contado: ${formatCurrency(verificationData.totalCash)}
-Cambio Esperado: ${formatCurrency(verificationData.expectedAmount)}
-Diferencia: ${formatCurrency(verificationData.difference)}
-
-ESTADO: ${verificationData.isCorrect ? '✅ CORRECTO' : '⚠️ DIFERENCIA DETECTADA'}
-
-${verificationData.hasShortage ? '⚠️ FALTANTE: Revisar con cajero saliente' : ''}
-${verificationData.hasExcess ? '⚠️ SOBRANTE: Verificar origen del exceso' : ''}
-
-============================
-Sistema CashGuard Paradise v1.1.13
-    `.trim();
-  }, [verificationData, store, cashierIn, cashierOut, cashCount]);
 
   // 🤖 [IA] - v1.1.13: Función para generar display visual de denominaciones con identidad naranja
   const generateDenominationDisplay = () => {
