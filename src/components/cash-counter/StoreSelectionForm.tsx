@@ -261,7 +261,7 @@ export function StoreSelectionForm({
                   }}
                 >
                   <p className="text-sm font-medium" style={{ color: '#f4212e' }}>
-                    ⚠️ El cajero y el testigo deben ser personas diferentes (protocolo anti-fraude)
+                    ⚠️ El cajero y el testigo deben ser personas diferentes (protocolo de seguridad)
                   </p>
                 </motion.div>
               )}

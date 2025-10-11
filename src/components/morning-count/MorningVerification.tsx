@@ -516,7 +516,7 @@ Sistema CashGuard Paradise v1.1.13
               </h3>
               <p className="mb-6" style={{ color: '#8899a6' }}>
                 El cambio ha sido verificado y está listo para iniciar el turno.
-                Los datos están bloqueados según el protocolo anti-fraude.
+                Los datos están protegidos según el protocolo de seguridad.
               </p>
               
               {/* 🤖 [IA] - v1.3.7: Banner advertencia inicial si NO enviado */}
