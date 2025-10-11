@@ -34,7 +34,8 @@ export default defineConfig(({ mode }) => ({
       includeAssets: [
         'favicon.ico',
         'apple-touch-icon.png',
-        'icons/*.png'
+        'icons/*.png',
+        '.htaccess' // 🤖 [IA] - v1.3.6O: Incluir .htaccess en build para SiteGround deployment
       ],
       manifest: {
         name: 'Paradise Cash Control - Sistema Anti-Fraude',

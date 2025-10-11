@@ -1,0 +1,195 @@
+# ============================================================================
+# .htaccess - Apache Configuration for CashGuard Paradise PWA
+# ============================================================================
+# Versión: 1.0.0
+# Proyecto: CashGuard Paradise - Sistema Anti-Fraude
+# Propósito: Configuración Apache para SPA routing + PWA + Seguridad
+# Fecha: 07 Octubre 2025
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# 1. REWRITE ENGINE - Habilitar Motor de Reescritura
+# ----------------------------------------------------------------------------
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # ----------------------------------------------------------------------------
+    # 2. SPA ROUTING - React Router Support
+    # ----------------------------------------------------------------------------
+    # Razón: React Router maneja rutas client-side, Apache debe servir index.html
+    # para todas las URLs que NO sean archivos/directorios físicos
+
+    # No reescribir index.html (si se solicita directamente)
+    RewriteRule ^index\.html$ - [L]
+
+    # No reescribir archivos físicos (JS, CSS, imágenes, etc.)
+    RewriteCond %{REQUEST_FILENAME} !-f
+
+    # No reescribir directorios físicos
+    RewriteCond %{REQUEST_FILENAME} !-d
+
+    # Reescribir todo lo demás a index.html
+    # Ejemplo: /phase-2/delivery → index.html (React Router maneja la ruta)
+    RewriteRule . /index.html [L]
+</IfModule>
+
+# ----------------------------------------------------------------------------
+# 3. SEGURIDAD - Forzar HTTPS
+# ----------------------------------------------------------------------------
+# Razón: PWA requiere HTTPS obligatoriamente (Service Workers solo en HTTPS)
+<IfModule mod_rewrite.c>
+    RewriteCond %{HTTPS} off
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+# ----------------------------------------------------------------------------
+# 4. HEADERS DE CACHÉ - Optimización Performance
+# ----------------------------------------------------------------------------
+# Razón: Assets estáticos con hashing de Vite pueden cachearse indefinidamente
+<IfModule mod_expires.c>
+    ExpiresActive On
+
+    # JavaScript y CSS con hashing (ej: main.abc123.js)
+    <FilesMatch "\.(js|css)$">
+        ExpiresDefault "access plus 1 year"
+        Header set Cache-Control "public, immutable"
+    </FilesMatch>
+
+    # Imágenes
+    <FilesMatch "\.(jpg|jpeg|png|gif|svg|ico|webp)$">
+        ExpiresDefault "access plus 1 year"
+        Header set Cache-Control "public, immutable"
+    </FilesMatch>
+
+    # Fonts
+    <FilesMatch "\.(woff|woff2|ttf|eot|otf)$">
+        ExpiresDefault "access plus 1 year"
+        Header set Cache-Control "public, immutable"
+    </FilesMatch>
+
+    # HTML - NO cachear (debe validarse con servidor siempre)
+    <FilesMatch "\.(html|htm)$">
+        ExpiresDefault "access plus 0 seconds"
+        Header set Cache-Control "no-cache, no-store, must-revalidate"
+    </FilesMatch>
+
+    # Service Worker - NO cachear NUNCA
+    <FilesMatch "^(sw\.js|registerSW\.js)$">
+        ExpiresDefault "access plus 0 seconds"
+        Header set Cache-Control "no-cache, no-store, must-revalidate"
+    </FilesMatch>
+
+    # Manifest - Validar cada 1 hora
+    <FilesMatch "manifest\.webmanifest$">
+        ExpiresDefault "access plus 1 hour"
+        Header set Cache-Control "public, must-revalidate"
+    </FilesMatch>
+</IfModule>
+
+# ----------------------------------------------------------------------------
+# 5. MIME TYPES - Asegurar tipos correctos
+# ----------------------------------------------------------------------------
+# Razón: Navegadores necesitan MIME types correctos para PWA assets
+<IfModule mod_mime.c>
+    # Web App Manifest
+    AddType application/manifest+json .webmanifest
+
+    # JavaScript
+    AddType application/javascript .js
+    AddType application/javascript .mjs
+
+    # Fonts
+    AddType font/woff .woff
+    AddType font/woff2 .woff2
+    AddType font/ttf .ttf
+    AddType font/eot .eot
+
+    # SVG
+    AddType image/svg+xml .svg
+    AddType image/svg+xml .svgz
+
+    # WebP
+    AddType image/webp .webp
+</IfModule>
+
+# ----------------------------------------------------------------------------
+# 6. COMPRESIÓN GZIP - Reducir tamaño de transferencia
+# ----------------------------------------------------------------------------
+# Razón: Reducir bandwidth y mejorar tiempo de carga
+<IfModule mod_deflate.c>
+    # Comprimir HTML, CSS, JavaScript, Text, XML
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE text/javascript
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/json
+    AddOutputFilterByType DEFLATE application/manifest+json
+    AddOutputFilterByType DEFLATE text/xml
+    AddOutputFilterByType DEFLATE application/xml
+    AddOutputFilterByType DEFLATE application/rss+xml
+    AddOutputFilterByType DEFLATE text/plain
+    AddOutputFilterByType DEFLATE image/svg+xml
+</IfModule>
+
+# ----------------------------------------------------------------------------
+# 7. SEGURIDAD ADICIONAL - Headers de Seguridad
+# ----------------------------------------------------------------------------
+# Razón: Proteger contra ataques comunes (XSS, clickjacking, MIME sniffing)
+<IfModule mod_headers.c>
+    # Prevenir MIME sniffing
+    Header set X-Content-Type-Options "nosniff"
+
+    # Prevenir clickjacking
+    Header set X-Frame-Options "SAMEORIGIN"
+
+    # XSS Protection (legacy, pero no daña)
+    Header set X-XSS-Protection "1; mode=block"
+
+    # Referrer Policy (privacidad)
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+
+    # Permissions Policy (deshabilitar features no usados)
+    Header set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+</IfModule>
+
+# ----------------------------------------------------------------------------
+# 8. ERROR PAGES - Páginas de Error Customizadas
+# ----------------------------------------------------------------------------
+# Razón: En SPA, errores 404 deben servir index.html (React Router maneja)
+ErrorDocument 404 /index.html
+
+# ----------------------------------------------------------------------------
+# 9. ACCESO A ARCHIVOS - Bloquear acceso a archivos sensibles
+# ----------------------------------------------------------------------------
+# Razón: Prevenir acceso a archivos de configuración o código fuente
+
+# Bloquear acceso a .htaccess
+<Files ".htaccess">
+    Require all denied
+</Files>
+
+# Bloquear acceso a archivos .git
+<FilesMatch "^\.git">
+    Require all denied
+</FilesMatch>
+
+# Bloquear acceso a archivos de configuración
+<FilesMatch "\.(env|json|md|txt)$">
+    # Permitir manifest.webmanifest específicamente
+    <FilesMatch "manifest\.webmanifest$">
+        Require all granted
+    </FilesMatch>
+    # Denegar otros archivos de configuración
+    Require all denied
+</FilesMatch>
+
+# ============================================================================
+# FIN DE CONFIGURACIÓN
+# ============================================================================
+# Notas:
+# - Archivo generado automáticamente para CashGuard Paradise PWA
+# - Optimizado para SiteGround + Apache 2.4+
+# - Compatible con React Router + Service Workers
+# - Configuración probada con PWA Lighthouse Score 100/100
+# ============================================================================

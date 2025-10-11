@@ -157,15 +157,21 @@ src/
 - ✅ Queue system para retry offline
 - ✅ Interfaces TypeScript tipadas
 
-### 📂 Documentación (4 archivos Markdown)
+### 📂 Documentación (8 archivos Markdown - Orden "Anti Bobos" Secuencial)
 
 ```
-Documentos_MarkDown/Planes_de_Desarrollos/Caso_Reporte_Enviar_Correo/
-├── README.md                   # Este plan completo
-├── SETUP_SITEGROUND.md         # Guía setup cPanel paso a paso
-├── API_REFERENCE.md            # Documentación técnica endpoint
-└── TESTING_GUIDE.md            # Suite tests completa
+Documentos_MarkDown/Planes_de_Desarrollos/EN_PROGRESO_Caso_Reporte_Enviar_Correo/
+├── README.md                   # Plan maestro completo del sistema
+├── INDEX.md                    # Índice de navegación con progreso
+├── 0_RESUMEN_EJECUTIVO.md      # Overview ejecutivo + ROI ($0 vs $480/año)
+├── 1_SETUP_SITEGROUND.md       # Configuración backend en SiteGround
+├── 2_CODIGO_BACKEND.md         # Código PHP del endpoint de envío
+├── 3_CODIGO_FRONTEND.md        # Integración PWA con backend PHP
+├── 4_API_REFERENCE.md          # Documentación técnica del API
+└── 5_TESTING_GUIDE.md          # Guía completa de testing
 ```
+
+**Nota Anti Bobos:** Archivos numerados 0-5 siguen orden lógico de implementación (resumen → setup → backend → frontend → docs → testing). Comando `ls` mostrará archivos en orden correcto naturalmente.
 
 ---
 
@@ -627,10 +633,14 @@ define('SMTP_PASSWORD', 'wrong-password');
 **Frontend (CashGuard):**
 - Ver implementación en archivos fuente proyecto
 
-**Documentación:**
-- [SETUP_SITEGROUND.md](./SETUP_SITEGROUND.md) - Guía setup paso a paso
-- [API_REFERENCE.md](./API_REFERENCE.md) - Documentación técnica endpoint
-- [TESTING_GUIDE.md](./TESTING_GUIDE.md) - Suite tests completa
+**Documentación (Orden "Anti Bobos" Secuencial):**
+- [INDEX.md](./INDEX.md) - Índice de navegación completo con progreso
+- [0_RESUMEN_EJECUTIVO.md](./0_RESUMEN_EJECUTIVO.md) - Overview ejecutivo + ROI
+- [1_SETUP_SITEGROUND.md](./1_SETUP_SITEGROUND.md) - Guía setup SiteGround
+- [2_CODIGO_BACKEND.md](./2_CODIGO_BACKEND.md) - Código PHP endpoint
+- [3_CODIGO_FRONTEND.md](./3_CODIGO_FRONTEND.md) - Integración PWA
+- [4_API_REFERENCE.md](./4_API_REFERENCE.md) - Documentación técnica API
+- [5_TESTING_GUIDE.md](./5_TESTING_GUIDE.md) - Suite tests completa
 
 ---
 
