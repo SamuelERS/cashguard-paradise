@@ -1,0 +1,78 @@
+# ============================================================================
+# deploy-siteground.yml - GitHub Actions Workflow for PWA Deployment
+# ============================================================================
+# Versión: 1.0.0
+# Fecha: 11 de Octubre 2025
+# Propósito: Despliegue automatizado de CashGuard Paradise PWA a SiteGround
+# 🤖 [IA] - v1.3.7P: Workflow creado siguiendo FASE 2 del Plan PWA
+# ============================================================================
+
+name: Deploy to SiteGround
+
+# Triggers: Push a main + Manual dispatch
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:  # Permite deployment manual desde GitHub UI
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout código desde repositorio
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Setup Node.js 20 con caché NPM para optimizar velocidad
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      # 3. Install dependencies (npm ci = limpio, reproducible)
+      - name: Install dependencies
+        run: npm ci
+
+      # 4. Build producción de PWA (Vite + VitePWA plugin)
+      - name: Build PWA
+        run: npm run build
+        env:
+          NODE_ENV: production
+
+      # 5. Verificar archivos críticos PWA están presentes
+      # 🤖 [IA] - v1.3.7P: Verificación crítica - fallo aquí = no deploy
+      - name: Verify PWA files
+        run: |
+          echo "Verificando archivos críticos PWA..."
+          test -f dist/manifest.webmanifest || exit 1
+          test -f dist/sw.js || exit 1
+          test -f dist/.htaccess || exit 1
+          echo "✅ Todos los archivos PWA presentes"
+
+      # 6. Deploy a SiteGround vía FTP
+      # 🤖 [IA] - v1.3.7P: Secrets deben estar configurados en GitHub Settings
+      - name: Deploy to SiteGround
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.SITEGROUND_FTP_HOST }}
+          username: ${{ secrets.SITEGROUND_FTP_USERNAME }}
+          password: ${{ secrets.SITEGROUND_FTP_PASSWORD }}
+          port: ${{ secrets.SITEGROUND_FTP_PORT }}
+          local-dir: ./dist/
+          server-dir: /public_html/
+          dangerous-clean-slate: false  # SEGURIDAD: NO borrar archivos no relacionados
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+
+      # 7. Notificación de éxito con metadata
+      - name: Deployment success
+        if: success()
+        run: |
+          echo "🎉 PWA deployada exitosamente a cashguard.paradisesystemlabs.com"
+          echo "Versión: ${{ github.sha }}"
+          echo "Branch: ${{ github.ref }}"
+          echo "Actor: ${{ github.actor }}"

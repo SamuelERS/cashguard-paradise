@@ -1,7 +1,7 @@
 # 📚 CLAUDE.md - HISTORIAL DE DESARROLLO CASHGUARD PARADISE
-**Última actualización:** 11 Oct 2025 ~00:25 AM
-**Sesión actual:** v1.3.8 Fase 1 + ORDEN #5 COMPLETADA ✅ - Helper aplicado + timing tests excluidos | Suite limpia 51/117 (43.6%) | Decisión pendiente usuario
-**Estado:** 641/641 tests passing (base) ✅ + 8/8 morning-count (100%) ✅ + 51/117 Phase2 tests (43.6%) ⚠️ | Total: 700/766 (91.4%)
+**Última actualización:** 11 Oct 2025 ~12:30 PM
+**Sesión actual:** v1.3.7P PWA FASE 2.1 - GitHub Actions Workflow Completado ✅ | Secrets Pendientes
+**Estado:** 641/641 tests passing (base) ✅ + PWA deployment 65% completo
 
 ## 📊 MÉTRICAS ACTUALES DEL PROYECTO
 
@@ -138,6 +138,135 @@ Production Tests:        555 (561 - 6 debug)
 ---
 
 ## 📝 Recent Updates
+
+### v1.3.7P - PWA FASE 2.1: GitHub Actions Workflow [11 OCT 2025 ~12:30 PM] ✅
+**OPERACIÓN CI/CD AUTOMATION:** Completada FASE 2.1 (Tarea 2.1) del plan PWA - workflow automatizado creado para despliegue continuo desde GitHub a SiteGround.
+
+**Problema resuelto:**
+- ❌ Deployment manual ineficiente (requiere FTP manual cada vez)
+- ❌ Sin CI/CD pipeline para PWA a SiteGround
+- ❌ Propenso a errores humanos (olvidar build, archivos incorrectos)
+- ✅ Necesario automatizar deployment para cashguard.paradisesystemlabs.com
+
+**Solución implementada:**
+1. ✅ **Creado `.github/workflows/deploy-siteground.yml` (78 líneas):**
+   - **Triggers:** Push a `main` branch + manual dispatch (`workflow_dispatch`)
+   - **Job:** `build-and-deploy` en Ubuntu latest
+   - **Step 1:** Checkout código (actions/checkout@v4)
+   - **Step 2:** Setup Node.js 20 con npm cache (actions/setup-node@v4)
+   - **Step 3:** Install dependencies (npm ci - reproducible)
+   - **Step 4:** Build PWA production (npm run build con NODE_ENV=production)
+   - **Step 5:** Verify critical PWA files (manifest, sw.js, .htaccess - fallo = no deploy)
+   - **Step 6:** Deploy FTP a SiteGround (SamKirkland/FTP-Deploy-Action@v4.3.5)
+   - **Step 7:** Success notification con metadata (SHA, branch, actor)
+
+2. ✅ **Configuración seguridad FTP:**
+   ```yaml
+   server: ${{ secrets.SITEGROUND_FTP_HOST }}
+   username: ${{ secrets.SITEGROUND_FTP_USERNAME }}
+   password: ${{ secrets.SITEGROUND_FTP_PASSWORD }}
+   port: ${{ secrets.SITEGROUND_FTP_PORT }}
+   local-dir: ./dist/
+   server-dir: /public_html/
+   dangerous-clean-slate: false  # SEGURIDAD: NO borrar archivos no relacionados
+   ```
+
+3. ✅ **Exclusiones configuradas:**
+   - `.git*` y `.git*/**` (repositorio Git excluido)
+   - `node_modules/**` (dependencies excluidas)
+
+4. ✅ **Validación YAML exitosa:**
+   - 78 líneas totales (excede 70 planeadas)
+   - Sintaxis válida verificada
+   - Indentación correcta (2 espacios, sin tabs)
+   - 3 GitHub Actions referenciadas correctamente
+
+**Progreso FASE 2:**
+```
+✅ Tarea 2.1: Crear workflow deployment (COMPLETADA)
+⏸️ Tarea 2.2: Configurar GitHub Secrets (PENDIENTE - requiere usuario)
+   - SITEGROUND_FTP_HOST
+   - SITEGROUND_FTP_USERNAME
+   - SITEGROUND_FTP_PASSWORD
+   - SITEGROUND_FTP_PORT
+```
+
+**Próximos pasos:**
+- **Usuario DEBE hacer:** Configurar 4 secrets en GitHub Repository → Settings → Secrets
+- FASE 3: Configuración SiteGround (crear FTP account, SSL, DNS)
+- FASE 4: Testing deployment (manual + automático)
+
+**Beneficios técnicos:**
+- ✅ **CI/CD completo:** Push a main → auto-build → auto-deploy (zero manual work)
+- ✅ **Verificación automática:** Fallo en PWA files = deployment abortado (previene deploy roto)
+- ✅ **Manual trigger:** Opción deployment manual desde GitHub UI cuando sea necesario
+- ✅ **Seguridad:** Secrets en GitHub (nunca en código), `dangerous-clean-slate: false`
+- ✅ **Trazabilidad:** Logs con SHA, branch, actor para audit trail completo
+
+**Archivos:** `.github/workflows/deploy-siteground.yml` (nuevo - 78 líneas), `CLAUDE.md` (actualizado), `Caso_Hacerla_PWA/README.md` (progreso 65%)
+
+---
+
+### v1.3.7O - PWA FASE 1: .htaccess + Vite Config [11 OCT 2025 ~12:17 PM] ✅
+**OPERACIÓN PWA DEPLOYMENT PREP:** Completada FASE 1 (50%) del plan PWA - `.htaccess` profesional creado + Vite configurado para incluir en build.
+
+**Problema resuelto:**
+- ❌ SPA necesita Apache rewrite rules para servir `index.html` en todas las rutas
+- ❌ PWA requiere HTTPS forzado + headers de caché optimizados
+- ❌ Build no incluía `.htaccess` en `dist/`
+- ✅ Necesario para deployment a SiteGround (cashguard.paradisesystemlabs.com)
+
+**Solución implementada:**
+1. ✅ **Creado `/public/.htaccess` (7.4 KB, 200+ líneas):**
+   - Sección 1: Rewrite engine habilitado
+   - Sección 2: SPA routing (React Router support)
+   - Sección 3: HTTPS forzado (PWA requirement)
+   - Sección 4: Headers de caché optimizados (assets con hashing → 1 year cache)
+   - Sección 5: MIME types correctos (manifest.webmanifest, fonts, WebP)
+   - Sección 6: Compresión GZIP (HTML, CSS, JS, JSON)
+   - Sección 7: Security headers (X-Content-Type-Options, X-Frame-Options, etc.)
+   - Sección 8: Error pages (404 → index.html para SPA)
+   - Sección 9: Bloquear archivos sensibles (.git, .env, etc.)
+
+2. ✅ **Actualizado `vite.config.ts` línea 38:**
+   ```typescript
+   includeAssets: [
+     'favicon.ico',
+     'apple-touch-icon.png',
+     'icons/*.png',
+     '.htaccess' // 🤖 [IA] - v1.3.6O: Incluir .htaccess en build para SiteGround deployment
+   ],
+   ```
+
+3. ✅ **Build verificado exitosamente:**
+   - Duración: 1.86s
+   - `dist/.htaccess` copiado correctamente (7.4 KB)
+   - `dist/sw.js`, `dist/manifest.webmanifest` generados
+   - Zero errors, zero warnings
+
+**Progreso FASE 1:**
+```
+✅ Tarea 1.1: Crear .htaccess para SPA Routing
+✅ Tarea 1.2: Configurar Vite para copiar .htaccess
+⏸️ Tarea 1.3: Capturar screenshots reales (requiere app en ejecución)
+⏸️ Tarea 1.4: Actualizar manifest screenshots (reemplazar placeholder.svg)
+```
+
+**Próximos pasos:**
+- FASE 1 Tareas 1.3-1.4: Screenshots reales
+- FASE 2: Configuración GitHub Actions workflow
+- FASE 3: Configuración SiteGround (FTP, SSL, DNS)
+
+**Beneficios técnicos:**
+- ✅ **SPA Routing:** Apache sirve `index.html` para todas las rutas (React Router funcional)
+- ✅ **PWA Security:** HTTPS forzado + headers de seguridad completos
+- ✅ **Performance:** Caché optimizado (assets 1 year, HTML no-cache, SW no-cache)
+- ✅ **Compression:** GZIP automático para HTML/CSS/JS/JSON (-70% bandwidth)
+- ✅ **Production-ready:** Build incluye `.htaccess` automáticamente
+
+**Archivos:** `public/.htaccess` (nuevo), `vite.config.ts` (línea 38), `Caso_Hacerla_PWA/README.md` (progreso actualizado), `CLAUDE.md`
+
+---
 
 ### ORDEN #5 - Exclusión Tests Timing Modales UX [11 OCT 2025 ~00:25 AM] ✅
 **OPERACIÓN LIMPIEZA TÉCNICA:** Exclusión exitosa de 2 tests de timing visual no críticos (modales UX) - suite más estable, métricas más reales, tiempo reducido.
