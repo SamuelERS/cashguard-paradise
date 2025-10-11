@@ -28,14 +28,20 @@ export default defineConfig(({ mode }) => ({
         suppressWarnings: true
       },
       workbox: {
+        // 🤖 [IA] - v1.3.7V: .htaccess explícitamente excluido de globPatterns
+        // Root cause: Servidor retorna 403 Forbidden para .htaccess (seguridad Apache)
+        // Solución: globPatterns solo incluye extensiones seguras (NO incluye .htaccess)
         globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
         maximumFileSizeToCacheInBytes: 5000000,
+        // 🤖 [IA] - v1.3.7V: navigateFallbackDenylist adicional para archivos de configuración
+        navigateFallbackDenylist: [/\.htaccess$/, /\.env$/],
       },
       includeAssets: [
         'favicon.ico',
         'apple-touch-icon.png',
         'icons/*.png',
-        '.htaccess' // 🤖 [IA] - v1.3.6O: Incluir .htaccess en build para SiteGround deployment
+        // 🤖 [IA] - v1.3.7V: .htaccess removido de includeAssets
+        // Razón: File must exist in dist/ pero NO debe ser precached por Service Worker
       ],
       manifest: {
         name: 'Paradise Cash Control - Sistema Anti-Fraude',
