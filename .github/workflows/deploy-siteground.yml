@@ -61,7 +61,7 @@ jobs:
           password: ${{ secrets.SITEGROUND_FTP_PASSWORD }}
           port: ${{ secrets.SITEGROUND_FTP_PORT }}
           local-dir: ./dist/
-          server-dir: public_html/cashguard/
+          server-dir: cashguard.paradisesystemlabs.com/public_html/
           dangerous-clean-slate: false  # SEGURIDAD: NO borrar archivos no relacionados
           exclude: |
             **/.git*
