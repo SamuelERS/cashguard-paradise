@@ -219,7 +219,8 @@ export function GuidedFieldView({
         );
       }
       case 'bill': {
-        // 🤖 [IA] - v1.2.24: Simplificado - usar solo identificadores canónicos
+        // 🤖 [IA] - v1.3.7T: Imágenes con fallback a placeholder.svg
+        // Rutas originales preservadas para cuando se agreguen assets profesionales
         let billImage = '/monedas-recortadas-dolares/billete-1.webp';
 
         // Estándar canónico: solo verificar identificador único
@@ -242,6 +243,13 @@ export function GuidedFieldView({
             src={billImage}
             alt={`Billete de ${currentFieldLabel}`}
             className="object-contain w-full h-full"
+            onError={(e) => {
+              // 🤖 [IA] - v1.3.7T: Fallback a placeholder.svg si imagen no existe
+              const target = e.target as HTMLImageElement;
+              if (target.src !== '/placeholder.svg') {
+                target.src = '/placeholder.svg';
+              }
+            }}
           />
         );
       }

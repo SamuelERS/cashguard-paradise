@@ -737,6 +737,8 @@ export function Phase2VerificationSection({
               />
             );
           } else {
+            // 🤖 [IA] - v1.3.7T: Imágenes con fallback a placeholder.svg
+            // Rutas originales preservadas para cuando se agreguen assets profesionales
             let billImage = '/monedas-recortadas-dolares/billete-1.webp';
 
             // Usar estándar canónico: bill1, bill5, bill10, bill20, bill50, bill100
@@ -759,6 +761,13 @@ export function Phase2VerificationSection({
                 src={billImage}
                 alt={`Billete de ${currentStep.label}`}
                 className="object-contain w-full h-full"
+                onError={(e) => {
+                  // 🤖 [IA] - v1.3.7T: Fallback a placeholder.svg si imagen no existe
+                  const target = e.target as HTMLImageElement;
+                  if (target.src !== '/placeholder.svg') {
+                    target.src = '/placeholder.svg';
+                  }
+                }}
               />
             );
           }

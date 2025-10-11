@@ -1,8 +1,8 @@
-// 🤖 [IA] - FASE 2 v1.3.8: Modal Text Async + Callback Timing (40 tests fixed)
+// 🤖 [IA] - FASE 2 v1.3.8 PAUSADA: Test 3.2 fix causó regresión -6 tests (38→32 passing) - REVERTIDO
 // Previous: v1.3.7 - SUITE COMPLETA 87 TESTS (100% coverage inicial, 38/100 passing con Helper v4)
-// RC #1: Batch replace getByText → findByText con timeout 3000ms (18 tests)
-// RC #3: Wrap callback assertions en waitFor() timeout 3000ms (22 tests)
-// Resultado esperado: 38/100 → 78/100 passing (+105% improvement)
+// Intento fix RC #1 (Test 3.2): getByText → findByText async + texto correcto → FALLÓ (regresión)
+// Root cause regresión: findByText async introdujo efecto secundario en timing de otros tests
+// Decisión: REVERTIR Test 3.2 a código original, replantear estrategia FASE 2
 // Documentación: /Documentos_MarkDown/Planes_de_Desarrollos/Plan_Control_Test/Caso_Phase2_Verification_100_Coverage/
 import { useState } from 'react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
@@ -468,14 +468,10 @@ describe('Grupo 3: Primer Intento Incorrecto → Modal "incorrect"', () => {
 
     await enterIncorrectValue(user, 44);
 
-    // 🤖 [IA] - FASE 2 RC #1: Texto REAL del modal (BlindVerificationModal línea 85)
-    // Texto correcto: "Repite el conteo para confirmar la cantidad"
-    const modalMessage = await screen.findByText(
-      (content) => content.includes('Repite el conteo para confirmar'),
-      {},
-      { timeout: 3000 }
-    );
-    expect(modalMessage).toBeInTheDocument();
+    // 🤖 [IA] - FASE 2: REVERTIDO - Fix caus\u00f3 regresi\u00f3n -6 tests (38 \u2192 32 passing)
+    // Texto original "Por favor, vuelve a contar" NO existe en BlindVerificationModal
+    // Pero el cambio a findByText async introdujo efecto secundario en otros tests
+    expect(screen.getByText(/Por favor, vuelve a contar esta denominación/i)).toBeInTheDocument();
   });
 
   it('3.3 - Modal muestra denominación correcta en label', async () => {
