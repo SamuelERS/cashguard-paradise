@@ -10,7 +10,7 @@
 
 ### 🎯 Documento Principal
 
-#### [README.md](README.md) - Guía Arquitectónica Completa
+#### [README.md](README.md) -- Guía Arquitectónica Completa
 - **Qué es:** Plan maestro con arquitectura completa del sistema de gastos
 - **Para quién:** Gerencia + Equipo técnico completo
 - **Contenido clave:**
