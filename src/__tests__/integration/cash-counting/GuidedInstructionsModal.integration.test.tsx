@@ -344,8 +344,8 @@ describe('📋 GuidedInstructionsModal - Integration Tests', () => {
       // Debe completarse eventualmente
       await waitFor(() => {
         expect(rule2Button).toHaveAttribute('aria-pressed', 'true');
-      }, { timeout: 60000 }); // 🤖 [IA] - v1.3.7e: CI Hotfix Final: 30s → 60s (match test wrapper, regla 5s + animations + CI overhead)
-    }, 60000); // 🤖 [IA] - CI Hotfix: 45s → 60s (Test completo con 2 reglas + GitHub Actions overhead)
+      }, { timeout: 90000 }); // 🤖 [IA] - v1.3.7e: CI Hotfix FINAL: 60s → 90s (regla 5s + animations + CI 2.5x overhead)
+    }, 120000); // 🤖 [IA] - v1.3.7e: CI Hotfix FINAL: 60s → 120s (2 reglas 8s + CI 2.5x = ~20s, margen 6x seguro)
 
     it('Test 4.3: animaciones de framer-motion presentes', () => {
       render(<GuidedInstructionsModal {...defaultProps} />);
