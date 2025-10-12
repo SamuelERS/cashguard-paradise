@@ -403,7 +403,7 @@ import { DevelopmentSettings } from '@/components/settings/DevelopmentSettings';
 - **Riesgo:** 🔴 ALTO (nueva infraestructura global)
 - **Tiempo estimado:** 60 minutos
 
----
+----
 
 ## 📊 COMPARATIVA DE OPCIONES
 
