@@ -1,6 +1,6 @@
-// 🤖 [IA] - v1.3.6AD1: ELIMINACIÓN BOTÓN "ANTERIOR" - Patrón quirúrgico caso Delivery aplicado (interferencia con conteo ciego)
+// 🤖 [IA] - v1.3.7AE: OCULTACIÓN "QUEDA EN CAJA" - Conditional rendering badges Phase 2 (conteo ciego producción)
+// Previous: v1.3.6AD1 - ELIMINACIÓN BOTÓN "ANTERIOR" - Patrón quirúrgico caso Delivery aplicado (interferencia con conteo ciego)
 // Previous: v1.3.6Y - FIX CÁLCULO PERFECTAS - firstAttemptSuccesses calculado por diferencia (Total - Errores) en lugar de contar en forEach
-// Previous: v1.3.6T - FIX DEFINITIVO WARNINGS - clearAttemptHistory() removido de intentos correctos (patrón v1.3.6M tercer intento)
 // 🤖 [IA] - v1.3.6M: FIX CRÍTICO - clearAttemptHistory() borraba intentos antes de buildVerificationBehavior (reporte sin datos)
 // 🤖 [IA] - v1.3.6h: BUG FIX CRÍTICO - Enter key leak modal verificación (triple defensa anti-fraude)
 // 🤖 [IA] - v1.3.6g: BUG FIX #1 - createTimeoutWithCleanup en deps causaba race conditions (9 errores loop)
@@ -61,6 +61,11 @@ const getDenominationDescription = (fieldName: string, fieldLabel: string): stri
 
   return descriptions[fieldName] || fieldLabel;
 };
+
+// 🤖 [IA] - v1.3.7AE: Bandera para ocultar montos en badges (conteo ciego producción)
+// true = DESARROLLO (montos visibles para debugging)
+// false = PRODUCCIÓN (conteo ciego anti-fraude - valores ocultos)
+const SHOW_REMAINING_AMOUNTS = false;
 
 export function Phase2VerificationSection({
   deliveryCalculation,
@@ -667,19 +672,37 @@ export function Phase2VerificationSection({
       <div className="glass-progress-container p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-[clamp(0.5rem,2vw,0.75rem)]">
-            {/* Badge QUEDA EN CAJA */}
-            <div className="glass-badge-success" style={{
-              padding: `clamp(0.25rem,1vw,0.375rem) clamp(0.5rem,2vw,0.75rem)`,
-              borderRadius: `clamp(10px,4vw,20px)`,
-              display: 'flex',
-              alignItems: 'center',
-              gap: `clamp(0.25rem,1vw,0.375rem)`
-            }}>
-              <span style={{ fontSize: `clamp(0.7rem,2.8vw,0.75rem)` }}>💼</span>
-              <span className="text-[clamp(0.7rem,2.8vw,0.75rem)] font-bold uppercase" style={{ color: 'var(--success-paradise)', letterSpacing: '0.5px' }}>
-                Queda en Caja
-              </span>
-            </div>
+            {/* 🔒 Badge condicional QUEDA EN CAJA (conteo ciego producción) */}
+            {SHOW_REMAINING_AMOUNTS && (
+              <div className="glass-badge-success" style={{
+                padding: `clamp(0.25rem,1vw,0.375rem) clamp(0.5rem,2vw,0.75rem)`,
+                borderRadius: `clamp(10px,4vw,20px)`,
+                display: 'flex',
+                alignItems: 'center',
+                gap: `clamp(0.25rem,1vw,0.375rem)`
+              }}>
+                <span style={{ fontSize: `clamp(0.7rem,2.8vw,0.75rem)` }}>💼</span>
+                <span className="text-[clamp(0.7rem,2.8vw,0.75rem)] font-bold uppercase" style={{ color: 'var(--success-paradise)', letterSpacing: '0.5px' }}>
+                  Queda en Caja
+                </span>
+              </div>
+            )}
+
+            {/* 🔒 Badge alternativo (modo producción - sin monto) */}
+            {!SHOW_REMAINING_AMOUNTS && (
+              <div className="glass-badge-success" style={{
+                padding: `clamp(0.25rem,1vw,0.375rem) clamp(0.5rem,2vw,0.75rem)`,
+                borderRadius: `clamp(10px,4vw,20px)`,
+                display: 'flex',
+                alignItems: 'center',
+                gap: `clamp(0.25rem,1vw,0.375rem)`
+              }}>
+                <span style={{ fontSize: `clamp(0.7rem,2.8vw,0.75rem)` }}>💼</span>
+                <span className="text-[clamp(0.7rem,2.8vw,0.75rem)] font-bold uppercase" style={{ color: 'var(--success-paradise)', letterSpacing: '0.5px' }}>
+                  Verificando Caja
+                </span>
+              </div>
+            )}
             {/* Contador de unidades */}
             {/* 🤖 [IA] - v1.2.41AF: Etiqueta visible en móvil para contexto ("Progreso:" en lugar de "Verificado:") */}
             <div className="flex items-center gap-[clamp(0.375rem,1.5vw,0.5rem)]">
@@ -809,14 +832,24 @@ export function Phase2VerificationSection({
                   {getIcon()}
                 </div>
 
-                {/* Badge ENTREGAR para Phase 2 */}
-                {/* 🤖 [IA] - v1.2.41AF: Fix emoji semántico 📤 → 💼 (maletín representa "lo que permanece en caja") */}
-                <div className="glass-status-error inline-block px-4 py-2 rounded-lg mt-4">
-                  <p className="text-sm font-semibold" style={{ color: '#22c55e' }}>
-                    {'💼\u00A0\u00A0QUEDA EN CAJA '}
-                    <span style={{ color: 'white', fontWeight: 'bold', fontSize: '1.4em' }}>{currentStep.quantity}</span>
-                  </p>
-                </div>
+                {/* 🔒 Badge condicional QUEDA EN CAJA (conteo ciego producción) */}
+                {SHOW_REMAINING_AMOUNTS && (
+                  <div className="glass-status-error inline-block px-4 py-2 rounded-lg mt-4">
+                    <p className="text-sm font-semibold" style={{ color: '#22c55e' }}>
+                      {'💼\u00A0\u00A0QUEDA EN CAJA '}
+                      <span style={{ color: 'white', fontWeight: 'bold', fontSize: '1.4em' }}>{currentStep.quantity}</span>
+                    </p>
+                  </div>
+                )}
+
+                {/* 🔒 Badge alternativo (modo producción - sin cantidad específica) */}
+                {!SHOW_REMAINING_AMOUNTS && (
+                  <div className="glass-status-error inline-block px-4 py-2 rounded-lg mt-4">
+                    <p className="text-sm font-semibold" style={{ color: '#22c55e' }}>
+                      {'💼\u00A0\u00A0VERIFICANDO CAJA'}
+                    </p>
+                  </div>
+                )}
 
                 {/* Etiqueta de denominación descriptiva */}
                 {/* 🤖 [IA] - v1.2.41AF: Aumentado contraste (70% → 90%) + tamaño (xs → sm móvil) para legibilidad */}
