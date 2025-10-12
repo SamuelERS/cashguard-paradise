@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Sunrise, Moon, ArrowRight, Calculator, Fish } from 'lucide-react';
 // 🤖 [IA] - v1.2.24 - FloatingParticles eliminado para mejorar rendimiento
 import { OperationMode, OPERATION_MODES } from '@/types/operation-mode';
+import { AppFooter } from '@/components/AppFooter';
 
 interface OperationSelectorProps {
   onSelectMode: (mode: OperationMode) => void;

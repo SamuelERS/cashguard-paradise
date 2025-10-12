@@ -1,6 +1,6 @@
-// 🤖 [IA] - v1.3.7AF: OCULTACIÓN MENSAJE ERROR ROJO - Conditional rendering hint validation (3 elementos ocultos: badge #1, badge #2, mensaje error)
+// 🤖 [IA] - v1.3.7AG: OCULTACIÓN BORDE ROJO INPUT - Conditional borderColor validation (4 elementos ocultos: badge #1, badge #2, mensaje error, borde input)
+// Previous: v1.3.7AF - OCULTACIÓN MENSAJE ERROR ROJO - Conditional rendering hint validation (3 elementos ocultos)
 // Previous: v1.3.7AE - OCULTACIÓN "QUEDA EN CAJA" - Conditional rendering 2 badges Phase 2 (conteo ciego producción)
-// Previous: v1.3.6AD1 - ELIMINACIÓN BOTÓN "ANTERIOR" - Patrón quirúrgico caso Delivery aplicado (interferencia con conteo ciego)
 // 🤖 [IA] - v1.3.6M: FIX CRÍTICO - clearAttemptHistory() borraba intentos antes de buildVerificationBehavior (reporte sin datos)
 // 🤖 [IA] - v1.3.6h: BUG FIX CRÍTICO - Enter key leak modal verificación (triple defensa anti-fraude)
 // 🤖 [IA] - v1.3.6g: BUG FIX #1 - createTimeoutWithCleanup en deps causaba race conditions (9 errores loop)
@@ -889,7 +889,8 @@ export function Phase2VerificationSection({
                     autoComplete="off"
                     placeholder={`¿Cuántos ${getDenominationDescription(currentStep.key, currentStep.label).toLowerCase()}?`}
                     style={{
-                      borderColor: parseInt(inputValue) !== currentStep.quantity && inputValue ? 'var(--danger)' : 'var(--accent-primary)',
+                      // 🔒 Borde condicional (conteo ciego producción)
+                      borderColor: SHOW_REMAINING_AMOUNTS && parseInt(inputValue) !== currentStep.quantity && inputValue ? 'var(--danger)' : 'var(--accent-primary)',
                       fontSize: 'clamp(18px, 4vw, 24px)',
                       fontWeight: 'bold',
                       height: 'clamp(48px, 12vw, 56px)',
