@@ -342,8 +342,10 @@ describe('📋 GuidedInstructionsModal - Integration Tests', () => {
       if (rule2Button) await user.click(rule2Button);
       
       // Debe completarse eventualmente
+      // 🤖 [IA] - v1.3.7f: FIX stale reference - Re-query button dentro de waitFor (Framer Motion re-renders)
       await waitFor(() => {
-        expect(rule2Button).toHaveAttribute('aria-pressed', 'true');
+        const updatedButton = screen.getByText('No Tapes La Cámara').closest('div[role="button"]');
+        expect(updatedButton).toHaveAttribute('aria-pressed', 'true');
       }, { timeout: 90000 }); // 🤖 [IA] - v1.3.7e: CI Hotfix FINAL: 60s → 90s (regla 5s + animations + CI 2.5x overhead)
     }, 120000); // 🤖 [IA] - v1.3.7e: CI Hotfix FINAL: 60s → 120s (2 reglas 8s + CI 2.5x = ~20s, margen 6x seguro)
 
