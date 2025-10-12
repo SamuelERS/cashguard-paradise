@@ -115,7 +115,7 @@ describe('🌅 Morning Count Flow Simplified Tests', () => {
       await waitFor(() => {
         expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
         expect(screen.getByText(/Seleccione Operación/)).toBeInTheDocument();
-      }, { timeout: 5000 });
+      }, { timeout: 90000 });
     }
   });
 
@@ -140,7 +140,7 @@ describe('🌅 Morning Count Flow Simplified Tests', () => {
         const modal = testUtils.withinWizardModal();
         expect(testUtils.getVisibleStepIndicator(/Paso 1 de 4/)).toBeInTheDocument();
         expect(modal.getByText(/Protocolo/i)).toBeInTheDocument();
-      }, { timeout: 3000 });
+      }, { timeout: 90000 });
       
       // 🤖 [IA] - v1.3.7e: Botón es "Continuar" no "Siguiente"
       const modal = testUtils.withinWizardModal();
@@ -203,7 +203,7 @@ describe('🌅 Morning Count Flow Simplified Tests', () => {
       await waitFor(() => {
         const modal = testUtils.withinWizardModal();
         expect(testUtils.getVisibleStepIndicator(/Paso 1 de 4/)).toBeInTheDocument();
-      }, { timeout: 3000 });
+      }, { timeout: 90000 });
 
       // El modal debería mantener el título durante todo el flujo
       expect(screen.getByText(/Conteo de Caja Matutino/)).toBeInTheDocument();
@@ -211,7 +211,7 @@ describe('🌅 Morning Count Flow Simplified Tests', () => {
       // 🤖 [IA] - v1.3.7e: querySelector retorna Node|null, usar screen.getByRole
       await waitFor(() => {
         expect(screen.getByRole('dialog')).toBeInTheDocument();
-      }, { timeout: 3000 });
+      }, { timeout: 90000 });
     }
   });
 

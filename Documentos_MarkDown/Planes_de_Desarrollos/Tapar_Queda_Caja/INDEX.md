@@ -1,7 +1,7 @@
 # 📚 Índice Completo - Caso "Tapar Queda Caja"
 
 **Fecha:** 11 Oct 2025
-**Versión:** v1.1
+**Versión:** v1.2 (actualizado v1.3.7AF)
 **Total documentos:** 6 archivos (incluye GUIA_REVERSION_COMPLETA.md)
 
 ---
@@ -31,10 +31,10 @@ Este caso documenta el plan completo para **ocultar los montos "QUEDA EN CAJA"**
    - Tiempo: 15 min (incluye ejecución)
    - Propósito: EJECUTAR la implementación paso a paso
 
-### Para Entender los Cambios (10 min)
+### Para Entender los Cambios (12 min)
 3. **[ANALISIS_TECNICO_UBICACIONES.md](./ANALISIS_TECNICO_UBICACIONES.md)** - Análisis código
-   - Leer secciones: Badge #1, Badge #2, Checklist Implementación
-   - Tiempo: 10 min
+   - Leer secciones: Badge #1, Badge #2, Mensaje Error #3, Checklist Implementación
+   - Tiempo: 12 min (aumentado por tercer elemento)
    - Propósito: Ver EXACTAMENTE qué código se modifica y DÓNDE
 
 ### Para Visualizar Resultados (5 min)
@@ -61,7 +61,7 @@ Este caso documenta el plan completo para **ocultar los montos "QUEDA EN CAJA"**
 
 #### Contenido
 - ✅ **Contexto del problema** (con screenshots)
-- ✅ **Elementos a ocultar** (2 badges identificados)
+- ✅ **Elementos a ocultar** (3 elementos identificados: 2 badges + mensaje error)
 - ✅ **Opción 1:** Conditional Rendering con Bandera (SIMPLE - RECOMENDADA)
 - ✅ **Opción 2:** Variable de Entorno (.env)
 - ✅ **Opción 3:** Feature Flag con Toggle UI
@@ -83,9 +83,10 @@ Este caso documenta el plan completo para **ocultar los montos "QUEDA EN CAJA"**
 **⏱️ Tiempo lectura:** 15-20 min completo
 
 #### Contenido
-- ✅ **Resumen ejecutivo:** 2 badges en 1 archivo
+- ✅ **Resumen ejecutivo:** 3 elementos en 1 archivo (2 badges + mensaje error)
 - ✅ **Badge #1 análisis completo** (Header Progress Container línea 670)
 - ✅ **Badge #2 análisis completo** (Placeholder Step línea 814)
+- ✅ **Mensaje Error #3 análisis completo** (Hint validación línea 904) ← NUEVO v1.3.7AF
 - ✅ **Checklist implementación:** Cambios exactos ANTES/DESPUÉS
 - ✅ **Alternativas de texto:** 5 opciones con pros/cons
 - ✅ **Impacto técnico estimado:** Archivos, líneas, testing
@@ -242,7 +243,7 @@ Este caso documenta el plan completo para **ocultar los montos "QUEDA EN CAJA"**
 **Respuesta:** Lee este INDEX.md completo (estás aquí), luego sigue la **Ruta Developer** si vas a implementar o **Ruta QA** si vas a validar.
 
 ### ¿Cuál es el cambio más importante?
-**Respuesta:** Badge #2 (Placeholder Step línea 814) es CRÍTICO - muestra cantidad exacta esperada, rompe conteo ciego 100%.
+**Respuesta:** Mensaje Error #3 (línea 904) es CRÍTICO MÁXIMO - revela explícitamente la cantidad esperada en texto rojo. Badge #2 (línea 814) es segundo más crítico - muestra cantidad en placeholder.
 
 ### ¿Cuánto tiempo toma implementar?
 **Respuesta:** 15 minutos siguiendo PLAN_IMPLEMENTACION_PASO_A_PASO.md.
@@ -287,16 +288,17 @@ Este caso documenta el plan completo para **ocultar los montos "QUEDA EN CAJA"**
 | Métrica | Valor |
 |---------|-------|
 | **Documentos creados** | 6 archivos (incluye GUIA_REVERSION_COMPLETA.md) |
-| **Total líneas documentación** | ~4,200 líneas |
+| **Total líneas documentación** | ~4,400 líneas (actualizado v1.3.7AF) |
 | **Tiempo investigación** | 30 min |
-| **Tiempo documentación** | 120 min |
-| **Tiempo implementación estimado** | 15 min |
+| **Tiempo documentación** | 130 min (actualizado) |
+| **Tiempo implementación estimado** | 17 min (3 elementos) |
 | **Tiempo reversión estimado** | 1-3 min (3 métodos disponibles) |
 | **Archivos código modificados** | 1 (Phase2VerificationSection.tsx) |
-| **Líneas código agregadas** | ~25 líneas |
+| **Líneas código agregadas** | ~27 líneas (3 elementos ocultos) |
+| **Elementos ocultos** | 3 (Badge #1, Badge #2, Mensaje Error) |
 | **Riesgo técnico** | 🟢 BAJO |
 | **Reversibilidad** | 🟢 100% (1 línea cambio) |
-| **Impacto anti-fraude** | 🔴 CRÍTICO (conteo ciego restaurado) |
+| **Impacto anti-fraude** | 🔴 CRÍTICO MÁXIMO (conteo ciego 100% restaurado) |
 
 ---
 
@@ -332,7 +334,7 @@ Este caso documenta el plan completo para **ocultar los montos "QUEDA EN CAJA"**
 ---
 
 **Índice creado:** 11 Oct 2025
-**Última actualización:** 11 Oct 2025 ~19:45 PM
-**Versión:** v1.1
-**Estado:** ✅ COMPLETO (incluye guía de reversión)
+**Última actualización:** 11 Oct 2025 ~20:15 PM
+**Versión:** v1.2 (actualizado v1.3.7AF - 3 elementos ocultos)
+**Estado:** ✅ COMPLETO (incluye guía de reversión + mensaje error)
 **Total archivos documentados:** 6

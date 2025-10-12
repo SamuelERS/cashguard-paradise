@@ -1,7 +1,7 @@
 # 🔄 Guía de Reversión Completa - Restaurar Montos "QUEDA EN CAJA"
 
 **Fecha creación:** 11 Oct 2025
-**Versión:** v1.0
+**Versión:** v1.1 (actualizado v1.3.7AF)
 **Tiempo estimado:** 3 minutos
 **Riesgo:** 🟢 CERO (solo cambiar un valor `false` → `true`)
 **Requiere:** Acceso a código fuente + permisos git
@@ -10,7 +10,10 @@
 
 ## 🎯 OBJETIVO
 
-Restaurar la visibilidad de montos "QUEDA EN CAJA" en los 2 badges de Phase 2 - Verificación Ciega.
+Restaurar la visibilidad de montos "QUEDA EN CAJA" en los 3 elementos de Phase 2 - Verificación Ciega:
+1. Badge #1 (header progress)
+2. Badge #2 (placeholder step)
+3. **Mensaje error rojo (hint validación)** ← NUEVO en v1.3.7AF
 
 **Caso de uso:**
 - Volver a modo desarrollo (debugging)
@@ -119,7 +122,13 @@ npm run dev
 ✅ AHORA: 💼 QUEDA EN CAJA 40   ← Muestra cantidad específica
 ```
 
-**Si ves los números (7 y 40), reversión EXITOSA ✅**
+**Mensaje Error Rojo (nuevo en v1.3.7AF):**
+```
+✅ ANTES: (Sin mensaje cuando valor incorrecto)
+✅ AHORA: Ingresa exactamente 30 un centavo  ← Aparece en rojo al ingresar valor incorrecto
+```
+
+**Si ves los números (7 y 40) Y el mensaje error rojo al ingresar valor incorrecto, reversión EXITOSA ✅**
 
 ---
 
@@ -282,7 +291,7 @@ npx tsc --noEmit
 
 ## 📊 COMPARATIVA VISUAL - Antes/Después Reversión
 
-### ESTADO ACTUAL (v1.3.7AE - Producción)
+### ESTADO ACTUAL (v1.3.7AF - Producción)
 ```
 Badge #1 Header:
 ┌─────────────────────────────┐
@@ -293,6 +302,9 @@ Badge #2 Placeholder:
 ┌─────────────────────────────┐
 │ 💼 VERIFICANDO CAJA         │  ← SIN cantidad
 └─────────────────────────────┘
+
+Mensaje Error (al ingresar valor incorrecto):
+(Sin mensaje)                   ← OCULTO
 ```
 
 ### DESPUÉS DE REVERSIÓN (Desarrollo)
@@ -306,6 +318,11 @@ Badge #2 Placeholder:
 ┌─────────────────────────────┐
 │ 💼 QUEDA EN CAJA 40         │  ← CON cantidad específica
 └─────────────────────────────┘
+
+Mensaje Error (al ingresar valor incorrecto):
+┌─────────────────────────────────────────────────────────┐
+│ Ingresa exactamente 30 un centavo  (ROJO)              │  ← VISIBLE
+└─────────────────────────────────────────────────────────┘
 ```
 
 ---

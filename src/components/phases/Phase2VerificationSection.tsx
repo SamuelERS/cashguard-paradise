@@ -1,6 +1,6 @@
-// 🤖 [IA] - v1.3.7AE: OCULTACIÓN "QUEDA EN CAJA" - Conditional rendering badges Phase 2 (conteo ciego producción)
+// 🤖 [IA] - v1.3.7AF: OCULTACIÓN MENSAJE ERROR ROJO - Conditional rendering hint validation (3 elementos ocultos: badge #1, badge #2, mensaje error)
+// Previous: v1.3.7AE - OCULTACIÓN "QUEDA EN CAJA" - Conditional rendering 2 badges Phase 2 (conteo ciego producción)
 // Previous: v1.3.6AD1 - ELIMINACIÓN BOTÓN "ANTERIOR" - Patrón quirúrgico caso Delivery aplicado (interferencia con conteo ciego)
-// Previous: v1.3.6Y - FIX CÁLCULO PERFECTAS - firstAttemptSuccesses calculado por diferencia (Total - Errores) en lugar de contar en forEach
 // 🤖 [IA] - v1.3.6M: FIX CRÍTICO - clearAttemptHistory() borraba intentos antes de buildVerificationBehavior (reporte sin datos)
 // 🤖 [IA] - v1.3.6h: BUG FIX CRÍTICO - Enter key leak modal verificación (triple defensa anti-fraude)
 // 🤖 [IA] - v1.3.6g: BUG FIX #1 - createTimeoutWithCleanup en deps causaba race conditions (9 errores loop)
@@ -901,7 +901,8 @@ export function Phase2VerificationSection({
                     className="focus:neon-glow-primary"
                     autoFocus
                   />
-                  {parseInt(inputValue) !== currentStep.quantity && inputValue && (
+                  {/* 🔒 Mensaje error condicional (conteo ciego producción) */}
+                  {SHOW_REMAINING_AMOUNTS && parseInt(inputValue) !== currentStep.quantity && inputValue && (
                     <div className="absolute -bottom-6 left-0 right-0 text-center">
                       <span className="text-xs text-destructive">
                         Ingresa exactamente {currentStep.quantity} {getDenominationDescription(currentStep.key, currentStep.label).toLowerCase()}

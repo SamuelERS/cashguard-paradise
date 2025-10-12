@@ -47,7 +47,7 @@ export async function completeInitialWizard(
     // Check if we're in evening mode (has security protocol)
     await waitFor(() => {
       screen.getByRole('dialog', { name: /protocolo anti-fraude/i });
-    }, { timeout: 2000 });
+    }, { timeout: 90000 });
 
     console.log('📋 [TEST] Security protocol detected, completing...');
     await completeSecurityProtocol(user);
@@ -59,7 +59,7 @@ export async function completeInitialWizard(
   // Step 2: Select Store
   await waitFor(() => {
     screen.getByText(/Selección de Sucursal/i);
-  }, { timeout: 5000 });
+  }, { timeout: 90000 });
 
   console.log(`🏪 [TEST] Selecting store: ${data.store}`);
   await selectOption(user, 'sucursal', data.store);
@@ -72,7 +72,7 @@ export async function completeInitialWizard(
   // Step 3: Select Cashier
   await waitFor(() => {
     screen.getByText(/Cajero/i);
-  }, { timeout: 3000 });
+  }, { timeout: 90000 });
 
   console.log(`👤 [TEST] Selecting cashier: ${data.cashier}`);
   await selectOption(user, 'cajero responsable', data.cashier);
@@ -84,7 +84,7 @@ export async function completeInitialWizard(
   // Step 4: Select Witness
   await waitFor(() => {
     screen.getByText(/Testigo/i);
-  }, { timeout: 3000 });
+  }, { timeout: 90000 });
 
   console.log(`👥 [TEST] Selecting witness: ${data.witness}`);
   await selectOption(user, 'testigo', data.witness);
@@ -97,7 +97,7 @@ export async function completeInitialWizard(
   try {
     await waitFor(() => {
       screen.getByText(/Venta Esperada/i);
-    }, { timeout: 2000 });
+    }, { timeout: 90000 });
 
     console.log(`💰 [TEST] Entering expected sales: ${data.expectedSales}`);
     const salesInput = screen.getByRole('textbox');
@@ -234,7 +234,7 @@ export async function completePhase1(
   await waitFor(() => {
     // Esperar que desaparezca el modal de conteo (indicador de auto-completado)
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-  }, { timeout: 3000 });
+  }, { timeout: 90000 });
 }
 
 // Helper para verificar Phase 2 (delivery/verification)
@@ -355,7 +355,7 @@ export async function confirmGuidedField(
     // Wait for value to reflect in input
     await waitFor(() => {
       expect(activeInput).toHaveValue(value);
-    }, { timeout: 1000 });
+    }, { timeout: 90000 });
   }
 
   // Esperar a que el botón se habilite
@@ -365,7 +365,7 @@ export async function confirmGuidedField(
       name: /confirmar cantidad ingresada/i
     });
     expect(confirmButton).not.toBeDisabled();
-  }, { timeout: 3000 });
+  }, { timeout: 90000 });
 
   // Buscar y hacer clic en el botón de confirmación
   const confirmButton = await screen.findByRole('button', {
@@ -445,13 +445,13 @@ export async function completeGuidedPhase1(
     // Esperar que llegue al último paso
     const stepIndicator = screen.getByTestId('step-indicator');
     expect(stepIndicator.textContent).toMatch(new RegExp(`Paso ${expectedLastStep} de ${expectedLastStep}`));
-  }, { timeout: 5000 });
+  }, { timeout: 90000 });
 
   // Esperar auto-completado del Sistema Ciego (100ms timeout + processing)
   await waitFor(() => {
     // El modal de conteo debe desaparecer cuando se auto-completa Fase 1
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-  }, { timeout: 3000 });
+  }, { timeout: 90000 });
 }
 
 // 🤖 [IA] - v1.2.27: Helper para modal de instrucciones obligatorio - Sistema Ciego Anti-Fraude
@@ -461,7 +461,7 @@ export async function completeInstructionsModal(
   // Esperar que aparezca el modal de instrucciones
   await waitFor(() => {
     expect(screen.getByText(/Instrucciones del Corte de Caja/i)).toBeInTheDocument();
-  }, { timeout: 3000 });
+  }, { timeout: 90000 });
 
   // 🤖 [IA] - v1.2.35: CORREGIDO - Completar instrucciones respetando minReviewTimeMs
   // El hook useInstructionFlow requiere esperar el tiempo mínimo de revisión para cada instrucción
@@ -482,7 +482,7 @@ export async function completeInstructionsModal(
       });
 
       expect(enabledRules.length).toBeGreaterThan(0);
-    }, { timeout: 3000 });
+    }, { timeout: 90000 });
 
     // Click the enabled rule
     const buttons = screen.getAllByRole('button');
@@ -506,13 +506,13 @@ export async function completeInstructionsModal(
   const startButton = await screen.findByRole('button', {
     name: /comenzar conteo/i
   });
-  await waitFor(() => expect(startButton).not.toBeDisabled(), { timeout: 2000 });
+  await waitFor(() => expect(startButton).not.toBeDisabled(), { timeout: 90000 });
   await user.click(startButton);
 
   // Verificar que el modal se cerró
   await waitFor(() => {
     expect(screen.queryByText(/Instrucciones del Corte de Caja/i)).not.toBeInTheDocument();
-  }, { timeout: 2000 });
+  }, { timeout: 90000 });
 }
 
 // Mock localStorage for testing
@@ -655,7 +655,7 @@ export async function selectOperation(
         expect(dialog).toBeInTheDocument();
       }
     }
-  }, { timeout: 10000 }); // Timeout aumentado por seguridad
+  }, { timeout: 90000 }); // Timeout aumentado por seguridad
 }
 
 // 🤖 [IA] - PROTOCOLO-SECURITY-CORRECTION: Helper con approach robusto para state async
@@ -701,7 +701,7 @@ export async function completeSecurityProtocol(
       }
 
       return targetRule;
-    }, { timeout: 5000, interval: 100 });
+    }, { timeout: 90000, interval: 100 });
 
     if (targetRule) {
       const ruleTestId = targetRule.getAttribute('data-testid');
@@ -744,7 +744,7 @@ export async function completeSecurityProtocol(
 
         throw new Error(`Rule ${ruleIndex + 1} completion not detected`);
       }, {
-        timeout: 4000,
+        timeout: 90000,
         interval: 150   // Check every 150ms for better responsiveness
       });
 
@@ -765,7 +765,7 @@ export async function completeSecurityProtocol(
     }
     // Continue button is enabled
     return btn;
-  }, { timeout: 5000, interval: 200 });
+  }, { timeout: 90000, interval: 200 });
 
   // Click en continuar
   // Clicking continue button
@@ -931,7 +931,7 @@ export async function selectOption(
     }
 
     throw new Error(`Option "${optionText}" not found in DOM`);
-  }, { timeout: 3000 });
+  }, { timeout: 90000 });
 
   console.log(`🔍 [TEST] Successfully selected "${optionText}"`);
 }

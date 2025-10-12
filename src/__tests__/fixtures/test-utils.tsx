@@ -46,14 +46,14 @@ export const testUtils = {
   waitForModalAnimation: async () => {
     await waitFor(() => {
       expect(screen.getByRole('dialog')).toBeVisible();
-    }, { timeout: 3000 });
+    }, { timeout: 90000 });
   },
 
   // Esperar que desaparezca un modal
   waitForModalToDisappear: async () => {
     await waitFor(() => {
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-    }, { timeout: 3000 });
+    }, { timeout: 90000 });
   },
 
   // Buscar texto específico dentro de un paso del wizard

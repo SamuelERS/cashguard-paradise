@@ -1,21 +1,22 @@
 # 🔍 Análisis Técnico - Ubicaciones Exactas "QUEDA EN CAJA"
 
 **Fecha:** 11 Oct 2025
-**Versión:** v1.0
+**Versión:** v1.1 (actualizado v1.3.7AF)
 **Archivo analizado:** `Phase2VerificationSection.tsx`
 
 ---
 
 ## 📊 RESUMEN EJECUTIVO
 
-**Total de ocurrencias encontradas:** 2 badges visibles en el mismo archivo
+**Total de ocurrencias encontradas:** 3 elementos visibles en el mismo archivo
 
 **Archivo:** `/src/components/phases/Phase2VerificationSection.tsx`
 
-| Badge | Línea | Contexto | Valor mostrado | Criticidad |
-|-------|-------|----------|----------------|------------|
+| Elemento | Línea | Contexto | Valor mostrado | Criticidad |
+|----------|-------|----------|----------------|------------|
 | Badge 1 | 670-678 | Header/Progress Container | Variable `verificationSteps.length` | 🔴 ALTA |
 | Badge 2 | 814-818 | Placeholder (pantalla step activo) | `currentStep.quantity` | 🔴 ALTA |
+| **Mensaje Error** | **904-911** | **Debajo del input (validación)** | **`currentStep.quantity` + denominación** | **🔴 CRÍTICA** |
 
 ---
 
@@ -120,6 +121,78 @@ Significa: "Debes verificar que hay exactamente 40 unidades de Un centavo (1¢)"
 
 ---
 
+## 🎯 MENSAJE ERROR #3: Hint Validación Rojo (Línea 904-911)
+
+### Ubicación Exacta
+**Archivo:** `Phase2VerificationSection.tsx`
+**Línea:** 904-911 (v1.3.7AF actualizado)
+**Contexto:** Debajo del input field, aparece cuando valor ingresado es incorrecto
+
+### Código Actual (v1.3.7AE - ANTES DE FIX)
+```tsx
+904→                  {parseInt(inputValue) !== currentStep.quantity && inputValue && (
+905→                    <div className="absolute -bottom-6 left-0 right-0 text-center">
+906→                      <span className="text-xs text-destructive">
+907→                        Ingresa exactamente {currentStep.quantity} {getDenominationDescription(currentStep.key, currentStep.label).toLowerCase()}
+908→                      </span>
+909→                    </div>
+910→                  )}
+```
+
+### Código Nuevo (v1.3.7AF - DESPUÉS DE FIX)
+```tsx
+904→                  {/* 🔒 Mensaje error condicional (conteo ciego producción) */}
+905→                  {SHOW_REMAINING_AMOUNTS && parseInt(inputValue) !== currentStep.quantity && inputValue && (
+906→                    <div className="absolute -bottom-6 left-0 right-0 text-center">
+907→                      <span className="text-xs text-destructive">
+908→                        Ingresa exactamente {currentStep.quantity} {getDenominationDescription(currentStep.key, currentStep.label).toLowerCase()}
+909→                      </span>
+910→                    </div>
+911→                  )}
+```
+
+### Análisis Técnico
+
+**Variables visibles:**
+- `currentStep.quantity`: Cantidad exacta esperada (ej: `30`)
+- `getDenominationDescription(...)`: Nombre denominación (ej: "un centavo")
+
+**Clase CSS:** `text-destructive`
+- **Color:** Rojo (error)
+- **Tamaño:** `text-xs` (extra pequeño)
+- **Posición:** `absolute -bottom-6` (6 unidades debajo del input)
+
+**Propósito original:**
+Proporcionar feedback inmediato cuando el usuario ingresa un valor incorrecto, indicando el valor exacto esperado.
+
+**Ejemplo visual:**
+```
+[Input: 2] ← Usuario ingresó valor incorrecto
+Ingresa exactamente 30 un centavo ← Mensaje error rojo
+```
+
+### Riesgo Anti-Fraude
+🔴 **CRÍTICO MÁXIMO**: Última línea de defensa del conteo ciego - revela cantidad esperada de forma explícita.
+
+**Escenario problemático:**
+1. Cajero ingresa valor al azar (sin contar físicamente): "2"
+2. Sistema muestra inmediatamente: "Ingresa exactamente 30 un centavo"
+3. Cajero conoce valor correcto sin haber contado físicamente
+4. Puede reingresar "30" sin validar realmente la caja
+5. **Anula completamente el propósito de verificación ciega**
+
+**Redundancia detectada:**
+- Modal de instrucciones ya explicó qué denominación debe contar
+- Mensaje de error repite información que NO debe revelarse
+- Usuario ya sabe QUÉ contar, solo debe ingresar LO QUE CONTÓ (sin pistas)
+
+**Comparativa criticidad:**
+- Badge #1: Sesgo leve (total denominaciones)
+- Badge #2: Sesgo severo (cantidad específica)
+- **Mensaje Error #3: Sesgo crítico (revela respuesta correcta en texto explícito)** ← PEOR CASO
+
+---
+
 ## 📋 CHECKLIST DE IMPLEMENTACIÓN
 
 ### ✅ Opción 1: Conditional Rendering con Bandera (RECOMENDADA)
@@ -201,6 +274,40 @@ const SHOW_REMAINING_AMOUNTS = false; // ← true = DESARROLLO | false = PRODUCC
   </div>
 )}
 ```
+
+---
+
+#### Cambio 4: Mensaje Error Rojo (Línea 904-911) - v1.3.7AF
+
+**ANTES (v1.3.7AE):**
+```tsx
+{parseInt(inputValue) !== currentStep.quantity && inputValue && (
+  <div className="absolute -bottom-6 left-0 right-0 text-center">
+    <span className="text-xs text-destructive">
+      Ingresa exactamente {currentStep.quantity} {getDenominationDescription(currentStep.key, currentStep.label).toLowerCase()}
+    </span>
+  </div>
+)}
+```
+
+**DESPUÉS (v1.3.7AF):**
+```tsx
+{/* 🔒 Mensaje error condicional (conteo ciego producción) */}
+{SHOW_REMAINING_AMOUNTS && parseInt(inputValue) !== currentStep.quantity && inputValue && (
+  <div className="absolute -bottom-6 left-0 right-0 text-center">
+    <span className="text-xs text-destructive">
+      Ingresa exactamente {currentStep.quantity} {getDenominationDescription(currentStep.key, currentStep.label).toLowerCase()}
+    </span>
+  </div>
+)}
+```
+
+**Justificación:**
+- Mensaje revela cantidad exacta esperada de forma explícita
+- Es redundante (modal ya explicó qué denominación debe contar)
+- Usuario debe ingresar LO QUE CONTÓ, sin pistas del valor correcto
+- Con `SHOW_REMAINING_AMOUNTS = false` (producción): Mensaje NUNCA aparece
+- Con `SHOW_REMAINING_AMOUNTS = true` (desarrollo): Mensaje aparece para debugging
 
 ---
 

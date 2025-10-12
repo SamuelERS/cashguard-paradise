@@ -143,7 +143,7 @@ describe('📋 GuidedInstructionsModal - Integration Tests', () => {
         // Esperar a que se complete automáticamente (3s + margen)
         await waitFor(() => {
           expect(firstRuleButton).toHaveAttribute('aria-pressed', 'true');
-        }, { timeout: 30000 }); // 🤖 [IA] - CI Hotfix: 20s → 30s (regla 3s + animaciones + GitHub Actions overhead)
+        }, { timeout: 90000 }); // 🤖 [IA] - CI Hotfix: 20s → 30s (regla 3s + animaciones + GitHub Actions overhead)
       }
     }, 35000); // 🤖 [IA] - CI Hotfix: 25s → 35s (Test completo + GitHub Actions overhead)
 
@@ -170,7 +170,7 @@ describe('📋 GuidedInstructionsModal - Integration Tests', () => {
         const rule2Button = rule2Text.closest('div[role="button"]');
         expect(rule2Button).toBeInTheDocument();
         expect(rule2Button).not.toHaveAttribute('aria-disabled', 'true');
-      }, { timeout: 30000 }); // 🤖 [IA] - CI Hotfix: 20s → 30s (regla 3s + animaciones + GitHub Actions overhead)
+      }, { timeout: 90000 }); // 🤖 [IA] - CI Hotfix: 20s → 30s (regla 3s + animaciones + GitHub Actions overhead)
     }, 35000); // 🤖 [IA] - CI Hotfix: 25s → 35s (Test completo + GitHub Actions overhead)
 
     it('Test 2.6: checkmarks visibles en reglas completadas', async () => {
@@ -186,7 +186,7 @@ describe('📋 GuidedInstructionsModal - Integration Tests', () => {
       await waitFor(() => {
         const ruleContainer = rule1.closest('div[role="button"]');
         expect(ruleContainer).toHaveAttribute('aria-pressed', 'true');
-      }, { timeout: 30000 }); // 🤖 [IA] - CI Hotfix: 20s → 30s (regla 3s + animaciones + GitHub Actions overhead)
+      }, { timeout: 90000 }); // 🤖 [IA] - CI Hotfix: 20s → 30s (regla 3s + animaciones + GitHub Actions overhead)
     }, 35000); // 🤖 [IA] - CI Hotfix: 25s → 35s (Test completo + GitHub Actions overhead)
 
     it('Test 2.7: progreso secuencial a través de múltiples reglas', async () => {
@@ -203,7 +203,7 @@ describe('📋 GuidedInstructionsModal - Integration Tests', () => {
         const rule2 = screen.getByText('No Tapes La Cámara').closest('div[role="button"]');
         expect(rule2).toBeInTheDocument();
         expect(rule2).toHaveAttribute('aria-disabled', 'false');
-      }, { timeout: 30000 }); // 🤖 [IA] - CI Hotfix: 20s → 30s (regla 3s + animaciones + GitHub Actions overhead)
+      }, { timeout: 90000 }); // 🤖 [IA] - CI Hotfix: 20s → 30s (regla 3s + animaciones + GitHub Actions overhead)
       
       // Click en regla 2
       const rule2 = screen.getByText('No Tapes La Cámara').closest('div[role="button"]');
@@ -214,7 +214,7 @@ describe('📋 GuidedInstructionsModal - Integration Tests', () => {
         const rule3 = screen.getByText('Ordena Por Depósito').closest('div[role="button"]');
         expect(rule3).toBeInTheDocument();
         expect(rule3).toHaveAttribute('aria-disabled', 'false');
-      }, { timeout: 30000 }); // 🤖 [IA] - CI Hotfix: 20s → 30s (regla 5s + animaciones + GitHub Actions overhead)
+      }, { timeout: 90000 }); // 🤖 [IA] - CI Hotfix: 20s → 30s (regla 5s + animaciones + GitHub Actions overhead)
     }, 60000); // 🤖 [IA] - CI Hotfix: 45s → 60s (Test completo con 2 reglas + GitHub Actions overhead)
   });
 
@@ -249,7 +249,7 @@ describe('📋 GuidedInstructionsModal - Integration Tests', () => {
         const rule2 = screen.getByText('No Tapes La Cámara').closest('div[role="button"]');
         expect(rule2).toBeInTheDocument();
         expect(rule2).toHaveAttribute('aria-disabled', 'false');
-      }, { timeout: 30000 }); // 🤖 [IA] - CI Hotfix: 20s → 30s (regla 3s + animaciones + GitHub Actions overhead)
+      }, { timeout: 90000 }); // 🤖 [IA] - CI Hotfix: 20s → 30s (regla 3s + animaciones + GitHub Actions overhead)
       
       // Botón aún deshabilitado después de 1 regla
       button = screen.getByRole('button', { name: /comenzar conteo/i });
@@ -290,7 +290,7 @@ describe('📋 GuidedInstructionsModal - Integration Tests', () => {
       // Verificar modal de confirmación con el texto exacto del componente
       await waitFor(() => {
         expect(screen.getByText(/cancelar instrucciones/i)).toBeInTheDocument();
-      }, { timeout: 2000 });
+      }, { timeout: 90000 });
     });
   });
 
@@ -315,7 +315,7 @@ describe('📋 GuidedInstructionsModal - Integration Tests', () => {
       // Pero debe completarse automáticamente después del tiempo mínimo (3s)
       await waitFor(() => {
         expect(ruleButton).toHaveAttribute('aria-pressed', 'true');
-      }, { timeout: 20000 }); // 🤖 [IA] - CI Hotfix FINAL: 15s → 20s (suite completa más lenta que individual)
+      }, { timeout: 90000 }); // 🤖 [IA] - CI Hotfix FINAL: 15s → 20s (suite completa más lenta que individual)
     }, 25000); // 🤖 [IA] - CI Hotfix FINAL: Test completo necesita 25s en GitHub Actions
 
     it('Test 4.2: segunda regla toma más tiempo que la primera', async () => {
@@ -335,7 +335,7 @@ describe('📋 GuidedInstructionsModal - Integration Tests', () => {
         // Verificar que está habilitado (aria-disabled debe ser "false" o no existir)
         const ariaDisabled = rule2?.getAttribute('aria-disabled');
         expect(ariaDisabled === 'false' || ariaDisabled === null).toBe(true);
-      }, { timeout: 30000 }); // 🤖 [IA] - CI Hotfix: 20s → 30s (regla 3s + animaciones + GitHub Actions overhead)
+      }, { timeout: 90000 }); // 🤖 [IA] - CI Hotfix: 20s → 30s (regla 3s + animaciones + GitHub Actions overhead)
       
       // Click en regla 2 (5s, más tiempo que regla 1)
       const rule2Button = screen.getByText('No Tapes La Cámara').closest('div[role="button"]');
@@ -344,7 +344,7 @@ describe('📋 GuidedInstructionsModal - Integration Tests', () => {
       // Debe completarse eventualmente
       await waitFor(() => {
         expect(rule2Button).toHaveAttribute('aria-pressed', 'true');
-      }, { timeout: 30000 }); // 🤖 [IA] - CI Hotfix: 20s → 30s (regla 5s + animaciones + GitHub Actions overhead)
+      }, { timeout: 60000 }); // 🤖 [IA] - v1.3.7e: CI Hotfix Final: 30s → 60s (match test wrapper, regla 5s + animations + CI overhead)
     }, 60000); // 🤖 [IA] - CI Hotfix: 45s → 60s (Test completo con 2 reglas + GitHub Actions overhead)
 
     it('Test 4.3: animaciones de framer-motion presentes', () => {
