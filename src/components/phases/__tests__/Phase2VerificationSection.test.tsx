@@ -148,10 +148,11 @@ const enterIncorrectValue = async (user: ReturnType<typeof userEvent.setup>, val
   }, { timeout: 3000 });
 };
 
-// 🤖 [IA] - v1.3.7b Fase 1: Fix Issue #1 (parcial) - Helper queries modales con timeout 3000ms
-// Wrapper para queries modales con timeout automático (Radix UI AlertDialog toma ~100-300ms renderizar)
+// 🤖 [IA] - v1.3.7e Fase 0: FIX CRÍTICO TIMEOUT - Aumentado 3000ms → 5000ms para CI/CD robustez
+// Root cause: Radix UI AlertDialog + Framer Motion animations pueden tardar >3s en CI
+// Solución: Timeout 5000ms garantiza modal renderizado completamente antes de query
 const findModalElement = async (text: string | RegExp) => {
-  return await screen.findByText(text, {}, { timeout: 3000 });
+  return await screen.findByText(text, {}, { timeout: 5000 });
 };
 
 // Helper: Click en botón modal con timeout
@@ -160,12 +161,13 @@ const clickModalButton = async (user: ReturnType<typeof userEvent.setup>, text: 
   await user.click(button);
 };
 
-// 🤖 [IA] - v1.3.7d: Fix Quirúrgico Modal Async - Helpers mejorados para tests robustos
+// 🤖 [IA] - v1.3.7e Fase 0: FIX CRÍTICO TIMEOUT - Aumentado 3000ms → 5000ms para CI/CD robustez
 // waitForModal: Espera que modal Radix UI esté completamente renderizado
+// Root cause: Radix UI rendering + async state updates pueden tardar >3s en CI
 const waitForModal = async () => {
   await waitFor(() => {
     expect(screen.queryByRole('alertdialog')).toBeInTheDocument();
-  }, { timeout: 3000 });
+  }, { timeout: 5000 });
 };
 
 // clickModalButtonSafe: Combina waitForModal + click para garantizar elemento existe
