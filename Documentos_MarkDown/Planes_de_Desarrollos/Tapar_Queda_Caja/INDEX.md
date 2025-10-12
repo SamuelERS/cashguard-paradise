@@ -1,8 +1,8 @@
 # 📚 Índice Completo - Caso "Tapar Queda Caja"
 
 **Fecha:** 11 Oct 2025
-**Versión:** v1.0
-**Total documentos:** 5 archivos
+**Versión:** v1.1
+**Total documentos:** 6 archivos (incluye GUIA_REVERSION_COMPLETA.md)
 
 ---
 
@@ -42,6 +42,12 @@ Este caso documenta el plan completo para **ocultar los montos "QUEDA EN CAJA"**
    - Ver mockups ASCII art completos
    - Tiempo: 5 min
    - Propósito: Ver CÓMO se verá la app después de implementar
+
+### Para Revertir Cambios (3 min)
+5. **[GUIA_REVERSION_COMPLETA.md](./GUIA_REVERSION_COMPLETA.md)** - Guía reversión paso a paso
+   - 3 métodos de reversión (simple, git, documentado)
+   - Tiempo: 3 min (método simple)
+   - Propósito: RESTAURAR montos visibles si es necesario
 
 ---
 
@@ -141,16 +147,41 @@ Este caso documenta el plan completo para **ocultar los montos "QUEDA EN CAJA"**
 
 ---
 
-### 5️⃣ INDEX.md (Este Archivo)
+### 5️⃣ GUIA_REVERSION_COMPLETA.md (Reversión Paso a Paso)
+
+**📍 Archivo:** [GUIA_REVERSION_COMPLETA.md](./GUIA_REVERSION_COMPLETA.md)
+**📊 Tamaño:** ~22 KB
+**⏱️ Tiempo ejecución:** 1-3 min (dependiendo del método)
+
+#### Contenido
+- ✅ **Método 1:** Reversión Simple (1 línea - 1 min) - RECOMENDADO
+- ✅ **Método 2:** Reversión con Git (2 min)
+- ✅ **Método 3:** Reversión con Documentación Completa (3 min)
+- ✅ **Troubleshooting:** 3 problemas comunes + soluciones
+- ✅ **Comparativa visual:** ANTES/DESPUÉS reversión
+- ✅ **Casos de uso:** Debugging, Demo, QA Testing
+- ✅ **Checklist post-reversión:** 10 verificaciones
+- ✅ **Best practices:** Qué hacer y qué NO hacer
+
+#### Cuándo leer
+- **Desarrollo:** Si necesitas ver montos para debugging
+- **Demo:** Si vas a mostrar funcionalidad completa
+- **Testing:** Si QA necesita validar cálculos visualmente
+- **Rollback:** Si cambio fue error y necesitas revertir
+- **Cambio requerimiento:** Si conteo ciego ya no es necesario
+
+---
+
+### 6️⃣ INDEX.md (Este Archivo)
 
 **📍 Archivo:** [INDEX.md](./INDEX.md)
-**📊 Tamaño:** ~15 KB
+**📊 Tamaño:** ~18 KB
 **⏱️ Tiempo lectura:** 3-5 min
 
 #### Contenido
 - ✅ **Resumen ejecutivo del caso**
 - ✅ **Guía de lectura recomendada** (orden óptimo)
-- ✅ **Detalle de 5 documentos** (contenido + cuándo leer)
+- ✅ **Detalle de 6 documentos** (contenido + cuándo leer)
 - ✅ **Rutas de lectura por perfil** (Developer, QA, PM)
 - ✅ **FAQ rápido**
 - ✅ **Referencias relacionadas**
@@ -217,7 +248,7 @@ Este caso documenta el plan completo para **ocultar los montos "QUEDA EN CAJA"**
 **Respuesta:** 15 minutos siguiendo PLAN_IMPLEMENTACION_PASO_A_PASO.md.
 
 ### ¿Es reversible el cambio?
-**Respuesta:** SÍ, 100% reversible. Cambiar `SHOW_REMAINING_AMOUNTS = false` a `true` restaura montos visibles instantáneamente.
+**Respuesta:** SÍ, 100% reversible. Cambiar `SHOW_REMAINING_AMOUNTS = false` a `true` restaura montos visibles instantáneamente. Ver **GUIA_REVERSION_COMPLETA.md** con 3 métodos paso a paso.
 
 ### ¿Qué opción se eligió?
 **Respuesta:** Opción 1 (Conditional Rendering con Bandera) - la más simple, rápida y apropiada para pre-producción.
@@ -255,14 +286,16 @@ Este caso documenta el plan completo para **ocultar los montos "QUEDA EN CAJA"**
 
 | Métrica | Valor |
 |---------|-------|
-| **Documentos creados** | 5 archivos |
-| **Total líneas documentación** | ~3,500 líneas |
+| **Documentos creados** | 6 archivos (incluye GUIA_REVERSION_COMPLETA.md) |
+| **Total líneas documentación** | ~4,200 líneas |
 | **Tiempo investigación** | 30 min |
-| **Tiempo documentación** | 90 min |
+| **Tiempo documentación** | 120 min |
 | **Tiempo implementación estimado** | 15 min |
+| **Tiempo reversión estimado** | 1-3 min (3 métodos disponibles) |
 | **Archivos código modificados** | 1 (Phase2VerificationSection.tsx) |
 | **Líneas código agregadas** | ~25 líneas |
 | **Riesgo técnico** | 🟢 BAJO |
+| **Reversibilidad** | 🟢 100% (1 línea cambio) |
 | **Impacto anti-fraude** | 🔴 CRÍTICO (conteo ciego restaurado) |
 
 ---
@@ -299,6 +332,7 @@ Este caso documenta el plan completo para **ocultar los montos "QUEDA EN CAJA"**
 ---
 
 **Índice creado:** 11 Oct 2025
-**Versión:** v1.0
-**Estado:** ✅ COMPLETO
-**Total archivos documentados:** 5
+**Última actualización:** 11 Oct 2025 ~19:45 PM
+**Versión:** v1.1
+**Estado:** ✅ COMPLETO (incluye guía de reversión)
+**Total archivos documentados:** 6
