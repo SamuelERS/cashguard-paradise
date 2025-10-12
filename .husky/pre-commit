@@ -1,6 +1,12 @@
 #!/bin/sh
-# 🤖 [IA] - v1.2.4: Pre-commit hook - Validates code before commit
+# 🤖 [IA] - v1.2.5: Pre-commit hook - Validates code before commit (skip in CI)
 . "$(dirname "$0")/_/husky.sh"
+
+# Skip pre-commit validation in CI environments
+if [ -n "$CI" ] || [ -n "$GITHUB_ACTIONS" ]; then
+    echo "⏭️  Skipping pre-commit validation in CI environment"
+    exit 0
+fi
 
 # Run pre-commit checks in Docker
 echo "🔍 Running pre-commit checks..."

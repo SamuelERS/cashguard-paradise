@@ -1,6 +1,12 @@
 #!/bin/sh
-# 🤖 [IA] - v1.2.4: Pre-push hook - Full validation before push
+# 🤖 [IA] - v1.2.5: Pre-push hook - Full validation before push (skip in CI)
 . "$(dirname "$0")/_/husky.sh"
+
+# Skip pre-push validation in CI environments
+if [ -n "$CI" ] || [ -n "$GITHUB_ACTIONS" ]; then
+    echo "⏭️  Skipping pre-push validation in CI environment"
+    exit 0
+fi
 
 echo "🚀 Running pre-push validation..."
 echo "This will run complete test suite to ensure code quality"
