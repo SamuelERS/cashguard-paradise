@@ -1,7 +1,7 @@
 # 📚 Índice Completo - Caso "Tapar Queda Caja"
 
 **Fecha:** 11 Oct 2025
-**Versión:** v1.2 (actualizado v1.3.7AF)
+**Versión:** v1.3 (actualizado v1.3.7AG - 4 elementos)
 **Total documentos:** 6 archivos (incluye GUIA_REVERSION_COMPLETA.md)
 
 ---
@@ -61,7 +61,7 @@ Este caso documenta el plan completo para **ocultar los montos "QUEDA EN CAJA"**
 
 #### Contenido
 - ✅ **Contexto del problema** (con screenshots)
-- ✅ **Elementos a ocultar** (3 elementos identificados: 2 badges + mensaje error)
+- ✅ **Elementos a ocultar** (4 elementos identificados: 2 badges + mensaje error + borde input)
 - ✅ **Opción 1:** Conditional Rendering con Bandera (SIMPLE - RECOMENDADA)
 - ✅ **Opción 2:** Variable de Entorno (.env)
 - ✅ **Opción 3:** Feature Flag con Toggle UI
@@ -83,10 +83,11 @@ Este caso documenta el plan completo para **ocultar los montos "QUEDA EN CAJA"**
 **⏱️ Tiempo lectura:** 15-20 min completo
 
 #### Contenido
-- ✅ **Resumen ejecutivo:** 3 elementos en 1 archivo (2 badges + mensaje error)
+- ✅ **Resumen ejecutivo:** 4 elementos en 1 archivo (2 badges + mensaje error + borde input)
 - ✅ **Badge #1 análisis completo** (Header Progress Container línea 670)
 - ✅ **Badge #2 análisis completo** (Placeholder Step línea 814)
 - ✅ **Mensaje Error #3 análisis completo** (Hint validación línea 904) ← NUEVO v1.3.7AF
+- ✅ **Borde Input #4 análisis completo** (borderColor línea 893) ← NUEVO v1.3.7AG
 - ✅ **Checklist implementación:** Cambios exactos ANTES/DESPUÉS
 - ✅ **Alternativas de texto:** 5 opciones con pros/cons
 - ✅ **Impacto técnico estimado:** Archivos, líneas, testing
@@ -243,10 +244,10 @@ Este caso documenta el plan completo para **ocultar los montos "QUEDA EN CAJA"**
 **Respuesta:** Lee este INDEX.md completo (estás aquí), luego sigue la **Ruta Developer** si vas a implementar o **Ruta QA** si vas a validar.
 
 ### ¿Cuál es el cambio más importante?
-**Respuesta:** Mensaje Error #3 (línea 904) es CRÍTICO MÁXIMO - revela explícitamente la cantidad esperada en texto rojo. Badge #2 (línea 814) es segundo más crítico - muestra cantidad en placeholder.
+**Respuesta:** Mensaje Error #3 (línea 904) es CRÍTICO MÁXIMO - revela explícitamente la cantidad esperada en texto rojo. Borde Input #4 (línea 893) es CRÍTICA ALTA - feedback instantáneo durante escritura. Badge #2 (línea 814) es segundo más crítico - muestra cantidad en placeholder.
 
 ### ¿Cuánto tiempo toma implementar?
-**Respuesta:** 15 minutos siguiendo PLAN_IMPLEMENTACION_PASO_A_PASO.md.
+**Respuesta:** 20 minutos siguiendo PLAN_IMPLEMENTACION_PASO_A_PASO.md (4 elementos).
 
 ### ¿Es reversible el cambio?
 **Respuesta:** SÍ, 100% reversible. Cambiar `SHOW_REMAINING_AMOUNTS = false` a `true` restaura montos visibles instantáneamente. Ver **GUIA_REVERSION_COMPLETA.md** con 3 métodos paso a paso.
@@ -255,7 +256,7 @@ Este caso documenta el plan completo para **ocultar los montos "QUEDA EN CAJA"**
 **Respuesta:** Opción 1 (Conditional Rendering con Bandera) - la más simple, rápida y apropiada para pre-producción.
 
 ### ¿Dónde está el código exacto a modificar?
-**Respuesta:** ANALISIS_TECNICO_UBICACIONES.md sección "Checklist de Implementación" tiene los 4 cambios exactos ANTES/DESPUÉS.
+**Respuesta:** ANALISIS_TECNICO_UBICACIONES.md sección "Checklist de Implementación" tiene los 5 cambios exactos ANTES/DESPUÉS (Cambio 1: constante + Cambios 2-5: 4 elementos).
 
 ### ¿Cómo valido que funcionó?
 **Respuesta:** MOCKUPS_VISUAL_COMPARATIVA.md sección "Testing Visual Checklist" tiene 12 tests específicos.
@@ -291,11 +292,11 @@ Este caso documenta el plan completo para **ocultar los montos "QUEDA EN CAJA"**
 | **Total líneas documentación** | ~4,400 líneas (actualizado v1.3.7AF) |
 | **Tiempo investigación** | 30 min |
 | **Tiempo documentación** | 130 min (actualizado) |
-| **Tiempo implementación estimado** | 17 min (3 elementos) |
+| **Tiempo implementación estimado** | 20 min (4 elementos) |
 | **Tiempo reversión estimado** | 1-3 min (3 métodos disponibles) |
 | **Archivos código modificados** | 1 (Phase2VerificationSection.tsx) |
-| **Líneas código agregadas** | ~27 líneas (3 elementos ocultos) |
-| **Elementos ocultos** | 3 (Badge #1, Badge #2, Mensaje Error) |
+| **Líneas código agregadas** | ~30 líneas (4 elementos ocultos) |
+| **Elementos ocultos** | 4 (Badge #1, Badge #2, Mensaje Error, Borde Input) |
 | **Riesgo técnico** | 🟢 BAJO |
 | **Reversibilidad** | 🟢 100% (1 línea cambio) |
 | **Impacto anti-fraude** | 🔴 CRÍTICO MÁXIMO (conteo ciego 100% restaurado) |
@@ -334,7 +335,7 @@ Este caso documenta el plan completo para **ocultar los montos "QUEDA EN CAJA"**
 ---
 
 **Índice creado:** 11 Oct 2025
-**Última actualización:** 11 Oct 2025 ~20:15 PM
-**Versión:** v1.2 (actualizado v1.3.7AF - 3 elementos ocultos)
-**Estado:** ✅ COMPLETO (incluye guía de reversión + mensaje error)
+**Última actualización:** 11 Oct 2025 ~20:40 PM
+**Versión:** v1.3 (actualizado v1.3.7AG - 4 elementos ocultos)
+**Estado:** ✅ COMPLETO (incluye guía de reversión + mensaje error + borde input)
 **Total archivos documentados:** 6

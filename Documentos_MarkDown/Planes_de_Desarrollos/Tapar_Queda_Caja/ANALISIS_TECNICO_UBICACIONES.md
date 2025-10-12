@@ -1,22 +1,23 @@
 # 🔍 Análisis Técnico - Ubicaciones Exactas "QUEDA EN CAJA"
 
 **Fecha:** 11 Oct 2025
-**Versión:** v1.1 (actualizado v1.3.7AF)
+**Versión:** v1.2 (actualizado v1.3.7AG - 4 elementos)
 **Archivo analizado:** `Phase2VerificationSection.tsx`
 
 ---
 
 ## 📊 RESUMEN EJECUTIVO
 
-**Total de ocurrencias encontradas:** 3 elementos visibles en el mismo archivo
+**Total de ocurrencias encontradas:** 4 elementos visibles en el mismo archivo
 
 **Archivo:** `/src/components/phases/Phase2VerificationSection.tsx`
 
 | Elemento | Línea | Contexto | Valor mostrado | Criticidad |
 |----------|-------|----------|----------------|------------|
-| Badge 1 | 670-678 | Header/Progress Container | Variable `verificationSteps.length` | 🔴 ALTA |
+| Badge 1 | 670-678 | Header/Progress Container | Variable `verificationSteps.length` | 🟡 MEDIA |
 | Badge 2 | 814-818 | Placeholder (pantalla step activo) | `currentStep.quantity` | 🔴 ALTA |
-| **Mensaje Error** | **904-911** | **Debajo del input (validación)** | **`currentStep.quantity` + denominación** | **🔴 CRÍTICA** |
+| Mensaje Error | 904-911 | Debajo del input (validación) | `currentStep.quantity` + denominación | 🔴 CRÍTICA MÁXIMA |
+| **Borde Input** | **893** | **Color del input field** | **Rojo (#ff453a) cuando incorrecto** | **🔴 CRÍTICA ALTA** |
 
 ---
 
@@ -308,6 +309,42 @@ const SHOW_REMAINING_AMOUNTS = false; // ← true = DESARROLLO | false = PRODUCC
 - Usuario debe ingresar LO QUE CONTÓ, sin pistas del valor correcto
 - Con `SHOW_REMAINING_AMOUNTS = false` (producción): Mensaje NUNCA aparece
 - Con `SHOW_REMAINING_AMOUNTS = true` (desarrollo): Mensaje aparece para debugging
+
+---
+
+#### Cambio 5: Borde Rojo Input Field (Línea 893) - v1.3.7AG
+
+**ANTES (v1.3.7AF):**
+```tsx
+style={{
+  borderColor: parseInt(inputValue) !== currentStep.quantity && inputValue ? 'var(--danger)' : 'var(--accent-primary)',
+  fontSize: 'clamp(18px, 4vw, 24px)',
+  // ...
+}}
+```
+
+**DESPUÉS (v1.3.7AG):**
+```tsx
+style={{
+  // 🔒 Borde condicional (conteo ciego producción)
+  borderColor: SHOW_REMAINING_AMOUNTS && parseInt(inputValue) !== currentStep.quantity && inputValue ? 'var(--danger)' : 'var(--accent-primary)',
+  fontSize: 'clamp(18px, 4vw, 24px)',
+  // ...
+}}
+```
+
+**Justificación:**
+- Borde rojo (#ff453a) revela INSTANTÁNEAMENTE cuando valor es incorrecto
+- Usuario puede "adivinar" ingresando valores hasta que borde deje de ser rojo
+- Feedback visual durante ingreso = pista sutil pero efectiva
+- Con `SHOW_REMAINING_AMOUNTS = false` (producción): Borde SIEMPRE azul (sin hints)
+- Con `SHOW_REMAINING_AMOUNTS = true` (desarrollo): Borde rojo cuando incorrecto (debugging)
+
+**Criticidad:**
+- 🔴 **CRÍTICA ALTA** - Feedback instantáneo durante TODO el proceso de ingreso
+- Permite pattern adivinanza: ingresar valores hasta que color no cambie
+- Más sutil que mensaje de texto pero igualmente revelador
+- Tiempo de exposición: Visible MIENTRAS escribe (vs mensaje que aparece después)
 
 ---
 

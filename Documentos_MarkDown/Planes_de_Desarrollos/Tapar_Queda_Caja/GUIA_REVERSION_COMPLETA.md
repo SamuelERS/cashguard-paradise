@@ -1,7 +1,7 @@
 # 🔄 Guía de Reversión Completa - Restaurar Montos "QUEDA EN CAJA"
 
 **Fecha creación:** 11 Oct 2025
-**Versión:** v1.1 (actualizado v1.3.7AF)
+**Versión:** v1.2 (actualizado v1.3.7AG - 4 elementos)
 **Tiempo estimado:** 3 minutos
 **Riesgo:** 🟢 CERO (solo cambiar un valor `false` → `true`)
 **Requiere:** Acceso a código fuente + permisos git
@@ -10,10 +10,11 @@
 
 ## 🎯 OBJETIVO
 
-Restaurar la visibilidad de montos "QUEDA EN CAJA" en los 3 elementos de Phase 2 - Verificación Ciega:
+Restaurar la visibilidad de montos "QUEDA EN CAJA" en los 4 elementos de Phase 2 - Verificación Ciega:
 1. Badge #1 (header progress)
 2. Badge #2 (placeholder step)
 3. **Mensaje error rojo (hint validación)** ← NUEVO en v1.3.7AF
+4. **Borde rojo input field (validación instantánea)** ← NUEVO en v1.3.7AG
 
 **Caso de uso:**
 - Volver a modo desarrollo (debugging)
@@ -128,7 +129,13 @@ npm run dev
 ✅ AHORA: Ingresa exactamente 30 un centavo  ← Aparece en rojo al ingresar valor incorrecto
 ```
 
-**Si ves los números (7 y 40) Y el mensaje error rojo al ingresar valor incorrecto, reversión EXITOSA ✅**
+**Borde Input Field (nuevo en v1.3.7AG):**
+```
+✅ ANTES: Borde siempre azul (#0a84ff) - sin hints
+✅ AHORA: Borde rojo (#ff453a) cuando valor incorrecto  ← Feedback instantáneo durante escritura
+```
+
+**Si ves los números (7 y 40), el mensaje error rojo Y el borde rojo al ingresar valor incorrecto, reversión EXITOSA ✅**
 
 ---
 
@@ -291,7 +298,7 @@ npx tsc --noEmit
 
 ## 📊 COMPARATIVA VISUAL - Antes/Después Reversión
 
-### ESTADO ACTUAL (v1.3.7AF - Producción)
+### ESTADO ACTUAL (v1.3.7AG - Producción)
 ```
 Badge #1 Header:
 ┌─────────────────────────────┐
@@ -305,6 +312,11 @@ Badge #2 Placeholder:
 
 Mensaje Error (al ingresar valor incorrecto):
 (Sin mensaje)                   ← OCULTO
+
+Borde Input Field:
+┌─────────────────────────────┐
+│ [Input con borde AZUL]      │  ← SIEMPRE azul (sin hints)
+└─────────────────────────────┘
 ```
 
 ### DESPUÉS DE REVERSIÓN (Desarrollo)
@@ -323,6 +335,11 @@ Mensaje Error (al ingresar valor incorrecto):
 ┌─────────────────────────────────────────────────────────┐
 │ Ingresa exactamente 30 un centavo  (ROJO)              │  ← VISIBLE
 └─────────────────────────────────────────────────────────┘
+
+Borde Input Field:
+┌─────────────────────────────┐
+│ [Input con borde ROJO]      │  ← Rojo cuando valor incorrecto
+└─────────────────────────────┘
 ```
 
 ---
@@ -442,6 +459,8 @@ const SHOW_REMAINING_AMOUNTS = true;  // QA validation
 - [ ] Dev server reiniciado: `npm run dev`
 - [ ] Badge #1 muestra: "💼 QUEDA EN CAJA 7"
 - [ ] Badge #2 muestra: "💼 QUEDA EN CAJA 40"
+- [ ] Mensaje error rojo aparece al ingresar valor incorrecto
+- [ ] Borde input field rojo cuando valor incorrecto
 - [ ] Funcionalidad preservada: Conteo sigue funcionando
 - [ ] Commit creado (si aplica) con mensaje descriptivo
 - [ ] Documentado por qué se revirtió (en commit o ticket)
