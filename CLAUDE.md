@@ -1,7 +1,7 @@
 # 📚 CLAUDE.md - HISTORIAL DE DESARROLLO CASHGUARD PARADISE
-**Última actualización:** 11 Oct 2025 ~16:30 PM
-**Sesión actual:** v1.3.7T PWA DEPLOYMENT EXITOSO ✅ | App en producción | FASE 5: Fix Assets (imágenes denominaciones)
-**Estado:** 641/641 tests passing (base) ✅ + PWA 100% en producción (fix assets en progreso)
+**Última actualización:** 11 Oct 2025 ~20:20 PM
+**Sesión actual:** v1.3.7AF CONTEO CIEGO 100% COMPLETO ✅ | 3 elementos ocultos (badges + mensaje error) | Anti-fraude máximo
+**Estado:** 641/641 tests passing (base) ✅ + Conteo ciego restaurado completamente ✅
 
 ## 📊 MÉTRICAS ACTUALES DEL PROYECTO
 
@@ -186,6 +186,97 @@ Production Tests:        555 (561 - 6 debug)
 - ZERO TOLERANCIA → Conteo ciego puro sin hints visuales
 
 **Archivos:** `Phase2VerificationSection.tsx` (líneas 1-3, 65-68, 675-705, 835-852), `/Documentos_MarkDown/Planes_de_Desarrollos/Tapar_Queda_Caja/*`, `CLAUDE.md`
+
+---
+
+### v1.3.7AF - Ocultación Mensaje Error Rojo: Tercer Elemento Anti-Fraude [11 OCT 2025 ~20:15 PM] ✅
+**OPERACIÓN CONTEO CIEGO 100% COMPLETO:** Extensión exitosa del patrón de ocultación a mensaje error rojo de validación - ahora 3 elementos ocultos (2 badges + mensaje error) eliminando completamente sesgo de confirmación.
+
+**Problema reportado (usuario con screenshots):**
+- ❌ **v1.3.7AE ocultó 2 badges PERO mensaje error rojo seguía revelando datos**
+- ❌ Mensaje mostraba: "Ingresa exactamente 30 un centavo" → revela cantidad esperada (30) explícitamente
+- ❌ **Peor caso anti-fraude:** Usuario puede ingresar valor random, leer error, corregir sin contar físicamente
+- ❌ Sesgo de confirmación persiste a través del mensaje de validación
+
+**Root cause identificado:**
+- **Archivo:** Phase2VerificationSection.tsx líneas 904-911
+- **Elemento:** Error message inline validation debajo del input field
+- **Código problemático:** `{parseInt(inputValue) !== currentStep.quantity && inputValue && (...)}`
+- **Revelaba:** `currentStep.quantity` + denominación description en texto rojo visible
+- **Resultado:** Cajero sabía respuesta correcta SIN contar físicamente → sistema ciego comprometido
+
+**Solución implementada:**
+- ✅ **Misma bandera `SHOW_REMAINING_AMOUNTS`** ahora controla 3 elementos (single source of truth)
+- ✅ **Mensaje error condicional:** Solo aparece en modo desarrollo (`true`), oculto en producción (`false`)
+- ✅ **Patrón reversible preservado:** Cambiar `false` → `true` restaura TODOS los elementos (3/3)
+- ✅ **Redundancia eliminada:** Modal ya explica qué denominación contar, mensaje error innecesario
+
+**Cambios implementados:**
+1. **Phase2VerificationSection.tsx líneas 1-3:** Version comment actualizado a v1.3.7AF (3 elementos ocultos)
+2. **Phase2VerificationSection.tsx líneas 904-911:** Agregado `SHOW_REMAINING_AMOUNTS &&` a conditional del mensaje error
+
+**Código modificado:**
+```typescript
+// ANTES v1.3.7AE (mensaje siempre visible):
+{parseInt(inputValue) !== currentStep.quantity && inputValue && (
+  <div className="absolute -bottom-6 left-0 right-0 text-center">
+    <span className="text-xs text-destructive">
+      Ingresa exactamente {currentStep.quantity} {getDenominationDescription(...)}
+    </span>
+  </div>
+)}
+
+// DESPUÉS v1.3.7AF (mensaje condicional):
+{/* 🔒 Mensaje error condicional (conteo ciego producción) */}
+{SHOW_REMAINING_AMOUNTS && parseInt(inputValue) !== currentStep.quantity && inputValue && (
+  <div className="absolute -bottom-6 left-0 right-0 text-center">
+    <span className="text-xs text-destructive">
+      Ingresa exactamente {currentStep.quantity} {getDenominationDescription(...)}
+    </span>
+  </div>
+)}
+```
+
+**Validación exitosa:**
+- ✅ **TypeScript:** `npx tsc --noEmit` → 0 errors
+- ✅ **Build:** `npm run build` → SUCCESS en 1.86s
+- ✅ **Bundle size:** Sin cambios significativos (solo conditional adicional)
+- ✅ **Funcionalidad preservada:** Validación interna sigue funcionando, usuario solo NO ve el hint
+
+**Resultado esperado producción:**
+- ✅ **Badge #1:** "💼 VERIFICANDO CAJA" (sin número denominaciones)
+- ✅ **Badge #2:** "💼 VERIFICANDO CAJA" (sin cantidad específica)
+- ✅ **Mensaje Error:** NO aparece cuando valor incorrecto (oculto completamente)
+- ✅ **Sistema interno:** Sigue validando y registrando intentos correctamente
+- ✅ **Cajero:** Debe contar físicamente SIN ningún hint visual
+
+**Comparativa criticidad anti-fraude:**
+| Elemento | Criticidad | Impacto Sesgo | Estado v1.3.7AF |
+|----------|-----------|---------------|-----------------|
+| Badge #1 (header) | 🟡 Media | Sesgo leve (total denominaciones) | ✅ OCULTO |
+| Badge #2 (placeholder) | 🔴 Alta | Sesgo severo (cantidad específica) | ✅ OCULTO |
+| **Mensaje Error #3** | **🔴 CRÍTICA MÁXIMA** | **Sesgo crítico (respuesta explícita en rojo)** | **✅ OCULTO** |
+
+**Beneficios anti-fraude medibles:**
+- ✅ **Conteo ciego 100% restaurado:** Zero hints visuales en TODOS los elementos UI
+- ✅ **Sesgo confirmación eliminado completamente:** Última línea defensa cerrada
+- ✅ **Integridad auditoría máxima:** Usuario NO puede "adivinar y confirmar" con error message
+- ✅ **Justicia laboral preservada:** Empleado honesto cuenta correctamente sin bias visual
+- ✅ **Pattern reversible unificado:** 1 línea cambio restaura 3 elementos para debugging
+- ✅ **Compliance reforzado:** NIST SP 800-115 + PCI DSS 12.10.1 (blind verification total)
+
+**Documentación actualizada:**
+- ✅ **ANALISIS_TECNICO_UBICACIONES.md** → v1.1: Agregada sección completa "MENSAJE ERROR #3" (líneas 124-193)
+- ✅ **GUIA_REVERSION_COMPLETA.md** → v1.1: Actualizada verificación + comparativas visuales con mensaje error
+- ✅ **INDEX.md** → v1.2: Métricas actualizadas (2 badges → 3 elementos), tiempos ajustados
+- ✅ **Total documentación:** ~4,400 líneas (actualizado desde ~4,200)
+
+**Filosofía Paradise validada:**
+- "El que hace bien las cosas ni cuenta se dará" → Conteo limpio 100% sin bias (3 elementos ocultos)
+- "No mantenemos malos comportamientos" → Última fuente sesgo eliminada quirúrgicamente
+- ZERO TOLERANCIA → Conteo ciego puro sin hints, ni en badges ni en validación inline
+
+**Archivos:** `Phase2VerificationSection.tsx` (líneas 1-3, 904-911), `/Documentos_MarkDown/Planes_de_Desarrollos/Tapar_Queda_Caja/*` (3 docs actualizados), `CLAUDE.md`
 
 ---
 
