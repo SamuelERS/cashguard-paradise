@@ -132,6 +132,11 @@ const completeStepCorrectly = async (user: ReturnType<typeof userEvent.setup>, q
   await user.clear(input);
   await user.type(input, quantity.toString());
   await user.keyboard('{Enter}');
+
+  // 🤖 [IA] - v1.3.7e FASE 0: FIX CRÍTICO SATURACIÓN - Wait transición entre pasos
+  // Root cause: Tests ejecutan 6+ pasos consecutivos → componente NO termina state updates
+  // Solución: Delay 100ms mínimo para que estado interno se actualice antes de siguiente paso
+  await new Promise(resolve => setTimeout(resolve, 100));
 };
 
 // Helper: Ingresar valor incorrecto sin confirmar (para testing modal)
