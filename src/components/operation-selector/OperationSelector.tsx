@@ -1,6 +1,6 @@
 // 🤖 [IA] - v1.0.87 - Selector de modo con elementos corporativos integrados
 import { motion } from 'framer-motion';
-import { Sunrise, Moon, ArrowRight, Calculator, Fish } from 'lucide-react';
+import { Sunrise, Moon, ArrowRight, Calculator, Fish, Heart } from 'lucide-react';
 // 🤖 [IA] - v1.2.24 - FloatingParticles eliminado para mejorar rendimiento
 import { OperationMode, OPERATION_MODES } from '@/types/operation-mode';
 import { AppFooter } from '@/components/AppFooter';
@@ -360,6 +360,65 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
           }}>
             - Equipo de Acuarios Paradise
           </span>
+
+          {/* 🤖 [IA] - v1.0.0 - Footer espiritual integrado - OPCIÓN 1: Esquina inferior derecha */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.9, duration: 0.5 }}
+            className="flex items-center justify-end gap-2 mt-4 pt-3"
+            style={{
+              borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+            }}
+          >
+            <motion.span
+              animate={{
+                scale: [1, 1.1, 1],
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                repeatType: 'reverse',
+              }}
+              style={{
+                fontSize: `clamp(0.875rem, 3.5vw, 1rem)`,
+              }}
+            >
+              🕊️
+            </motion.span>
+            
+            <span
+              className="font-semibold"
+              style={{
+                fontSize: `clamp(0.625rem, 2.5vw, 0.75rem)`,
+                color: '#0a84ff',
+                letterSpacing: '0.02em',
+              }}
+            >
+              JesucristoEsDios
+            </span>
+
+            <motion.div
+              animate={{
+                scale: [1, 1.2, 1],
+              }}
+              transition={{
+                duration: 1.5,
+                repeat: Infinity,
+                repeatType: 'reverse',
+              }}
+            >
+              <Heart
+                fill="#ef4444"
+                stroke="#ef4444"
+                style={{
+                  width: `clamp(12px, 3vw, 14px)`,
+                  height: `clamp(12px, 3vw, 14px)`,
+                  filter: 'drop-shadow(0 0 6px rgba(239, 68, 68, 0.5))',
+                }}
+              />
+            </motion.div>
+          </motion.div>
         </motion.div>
       </div>
     </div>
