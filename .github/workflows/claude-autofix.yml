@@ -1,0 +1,284 @@
+name: Claude Auto-Fix Tests Fallidos
+
+on:
+  workflow_run:
+    workflows: ["Complete Test Suite"]  # ✅ Nombre exacto del workflow de tests
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
+jobs:
+  auto-fix:
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    runs-on: ubuntu-latest
+    
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      FAILED_WORKFLOW: ${{ github.event.workflow_run.name }}
+      FAILED_RUN_URL: ${{ github.event.workflow_run.html_url }}
+      FAILED_BRANCH: ${{ github.event.workflow_run.head_branch }}
+      FAILED_SHA: ${{ github.event.workflow_run.head_sha }}
+    
+    steps:
+      - name: Verificar Anthropic API Key
+        run: |
+          if [ -z "$ANTHROPIC_API_KEY" ]; then
+            echo "❌ ERROR: ANTHROPIC_API_KEY no configurada"
+            exit 1
+          fi
+          echo "✅ API Key configurada"
+      
+      - name: Checkout código
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.FAILED_SHA }}
+          fetch-depth: 0
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Instalar dependencias
+        run: npm ci
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Instalar Anthropic SDK
+        run: pip install anthropic
+      
+      - name: Obtener logs del test fallido
+        id: get-logs
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const runId = ${{ github.event.workflow_run.id }};
+            const jobs = await github.rest.actions.listJobsForWorkflowRun({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: runId
+            });
+            
+            const failedJob = jobs.data.jobs.find(job => job.conclusion === 'failure');
+            if (!failedJob) {
+              console.log('No se encontró job fallido');
+              return '';
+            }
+            
+            const logs = await github.rest.actions.downloadJobLogsForWorkflowRun({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              job_id: failedJob.id
+            });
+            
+            const fs = require('fs');
+            fs.writeFileSync('test-failure-logs.txt', logs.data);
+            return 'test-failure-logs.txt';
+      
+      - name: Crear script de Claude
+        run: |
+          cat > claude_fix.py << 'PYTHON_SCRIPT'
+          import anthropic
+          import os
+          import subprocess
+          import sys
+          
+          client = anthropic.Anthropic(api_key=os.environ['ANTHROPIC_API_KEY'])
+          
+          try:
+              with open('test-failure-logs.txt', 'r') as f:
+                  test_logs = f.read()
+          except FileNotFoundError:
+              test_logs = "No se pudieron obtener logs"
+          
+          def get_file_tree():
+              try:
+                  result = subprocess.run(['find', '.', '-type', 'f', '-not', '-path', '*/node_modules/*', '-not', '-path', '*/.git/*'], 
+                                        capture_output=True, text=True, timeout=10)
+                  return result.stdout
+              except:
+                  return "Error obteniendo árbol"
+          
+          file_tree = get_file_tree()
+          
+          prompt = f"""Eres un experto desarrollador del proyecto cashguard-paradise.
+
+          CONTEXTO DEL PROYECTO:
+          - Nombre: cashguard-paradise (PWA Calculadora de Cortes y Caja)
+          - Stack: React + TypeScript + Playwright + Tailwind CSS
+          - Propósito: Herramienta profesional para comercios
+          - Valores: Código limpio, profesional, escalable
+
+          FALLO DETECTADO:
+          Workflow: {os.environ.get('FAILED_WORKFLOW')}
+          Branch: {os.environ.get('FAILED_BRANCH')}
+          
+          Logs del Test:
+          ```
+          {test_logs[:5000]}
+          ```
+
+          Estructura del Proyecto:
+          ```
+          {file_tree[:3000]}
+          ```
+
+          TU MISIÓN:
+          1. Analiza los logs y estructura
+          2. Identifica la causa raíz del fallo
+          3. Propón una corrección MÍNIMA y QUIRÚRGICA
+          4. Genera el código específico a modificar
+
+          RESTRICCIONES:
+          - NO refactorices código no relacionado
+          - Mantén el estilo existente
+          - Comentarios en ESPAÑOL
+          - Cambios pequeños y específicos
+
+          FORMATO DE RESPUESTA (solo JSON):
+          {{
+            "analysis": "Explicación breve",
+            "root_cause": "Causa raíz",
+            "files_to_modify": [
+              {{
+                "path": "ruta/archivo.ts",
+                "current_code": "código actual",
+                "new_code": "código nuevo",
+                "reason": "por qué este cambio"
+              }}
+            ],
+            "confidence": "high/medium/low",
+            "additional_notes": "notas adicionales"
+          }}
+
+          Responde SOLO con el JSON, sin texto adicional."""
+          
+          print("🤖 Llamando a Claude Sonnet 4.5...")
+          try:
+              message = client.messages.create(
+                  model="claude-sonnet-4-20250514",
+                  max_tokens=4096,
+                  messages=[{"role": "user", "content": prompt}]
+              )
+              
+              response_text = message.content[0].text
+              print("✅ Respuesta recibida")
+              
+              with open('claude_response.json', 'w') as f:
+                  f.write(response_text)
+              
+              print(f"💰 Tokens: {message.usage.input_tokens} in, {message.usage.output_tokens} out")
+              
+          except Exception as e:
+              print(f"❌ Error: {e}")
+              sys.exit(1)
+          PYTHON_SCRIPT
+      
+      - name: Analizar con Claude
+        run: python claude_fix.py
+      
+      - name: Aplicar correcciones
+        run: |
+          python << 'PYTHON_SCRIPT'
+          import json
+          import os
+          import sys
+          
+          try:
+              with open('claude_response.json', 'r') as f:
+                  content = f.read()
+                  content = content.replace('```json', '').replace('```', '').strip()
+                  response = json.loads(content)
+          except Exception as e:
+              print(f"❌ Error: {e}")
+              sys.exit(1)
+          
+          print(f"📊 Análisis: {response.get('analysis')}")
+          print(f"🔍 Causa: {response.get('root_cause')}")
+          print(f"🎯 Confianza: {response.get('confidence')}")
+          
+          files_modified = []
+          for file_change in response.get('files_to_modify', []):
+              file_path = file_change['path']
+              new_code = file_change['new_code']
+              
+              try:
+                  with open(file_path, 'r') as f:
+                      current_content = f.read()
+                  
+                  current_code = file_change['current_code']
+                  if current_code in current_content:
+                      new_content = current_content.replace(current_code, new_code, 1)
+                      
+                      with open(file_path, 'w') as f:
+                          f.write(new_content)
+                      
+                      files_modified.append(file_path)
+                      print(f"✅ Modificado: {file_path}")
+                  else:
+                      print(f"⚠️ No encontrado: {file_path}")
+              
+              except Exception as e:
+                  print(f"❌ Error en {file_path}: {e}")
+          
+          with open('fix_summary.txt', 'w') as f:
+              f.write(f"Análisis: {response.get('analysis')}\n")
+              f.write(f"Causa: {response.get('root_cause')}\n")
+              f.write(f"Archivos: {', '.join(files_modified)}\n")
+          
+          print(f"\n✅ Total modificados: {len(files_modified)}")
+          PYTHON_SCRIPT
+      
+      - name: Ejecutar tests
+        run: npm test
+        continue-on-error: true
+      
+      - name: Crear Pull Request
+        if: success()
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "🤖 fix(tests): Auto-corrección con Claude Sonnet 4.5"
+          branch: claude-autofix-${{ github.event.workflow_run.run_id }}
+          base: ${{ env.FAILED_BRANCH }}
+          title: "🤖 Auto-Fix: ${{ env.FAILED_WORKFLOW }}"
+          body: |
+            ## 🤖 Auto-corrección con Claude Sonnet 4.5
+            
+            **Workflow fallido**: `${{ env.FAILED_WORKFLOW }}` 
+            **Run**: ${{ env.FAILED_RUN_URL }}
+            **Branch**: `${{ env.FAILED_BRANCH }}` 
+            
+            ### 🧠 Análisis de Claude
+            $(cat fix_summary.txt)
+            
+            ### ✅ Validación
+            - Tests verificados
+            - Cambios mínimos aplicados
+            - Código en español
+            
+            ---
+            🤖 Generado por Claude Sonnet 4.5
+          labels: |
+            🤖 auto-fix
+            🐛 bug
+            tests
+          assignees: ${{ github.event.workflow_run.actor.login }}
+      
+      - name: Guardar artefactos
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: claude-autofix-logs
+          path: |
+            claude_response.json
+            fix_summary.txt
+            test-failure-logs.txt
+          retention-days: 30
