@@ -33,6 +33,48 @@ Agregar sección **"💸 GASTOS DEL DÍA"** al reporte WhatsApp final, mostrando
 
 ---
 
+## ✅ REGLAS_DE_LA_CASA.md Compliance
+
+Esta fase cumple las siguientes reglas constitucionales de Paradise System Labs:
+
+### Checklist Pre-Ejecución:
+
+- [ ] **🔒 Preservación del código existente:**
+  - `CashCalculation.tsx` ya existe - solo agregar helper `generateExpensesSection()`
+  - NO modificar generadores existentes de reporte (resumen, alertas, verificación)
+
+- [ ] **⚡ Principio de no regresión:**
+  - Reporte WhatsApp existente debe seguir funcionando idénticamente
+  - Botones Compartir/Copiar/WhatsApp preservados sin cambios
+
+- [ ] **💻 TypeScript estricto (cero `any`):**
+  - Helper `generateExpensesSection()` completamente tipado
+  - Parámetros `DailyExpense[]` y `number` con tipos explícitos
+  - Validar con `npx tsc --noEmit` → 0 errors obligatorio
+
+- [ ] **🧪 Tests de reportería:**
+  - 6-8 tests para sección de gastos en reporte
+  - Casos: Sin gastos, 1 gasto, múltiples gastos, formato WhatsApp, mobile-friendly
+
+- [ ] **🗺️ Task list completada:**
+  - 3 modificaciones específicas verificadas (líneas 55-415)
+  - Checklist líneas 484-508 completada antes de marcar fase terminada
+
+- [ ] **📝 Documentación obligatoria:**
+  - TSDoc completo en helper `generateExpensesSection()`
+  - Comentarios `// 🤖 [IA] - v1.4.0: [Razón]` en modificaciones
+  - Mockups de reporte actualizados si formato cambia
+
+- [ ] **🎯 Versionado consistente:**
+  - Header comment actualizado en `CashCalculation.tsx`
+  - CLAUDE.md actualizado con entrada de esta fase
+
+**Referencia:** `/Users/samuelers/Paradise System Labs/cashguard-paradise/REGLAS_DE_LA_CASA.md` (líneas 60-76)
+
+**⚠️ CRÍTICO:** Validar formato mobile-friendly en dispositivo real (WhatsApp iOS/Android) - separadores, emojis, saltos de línea.
+
+---
+
 ## 🔍 Análisis de Reporte Actual
 
 ### Archivo Actual

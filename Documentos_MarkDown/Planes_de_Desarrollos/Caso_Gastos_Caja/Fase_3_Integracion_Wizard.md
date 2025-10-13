@@ -58,6 +58,49 @@ Phase 2 (Delivery si >$50) → Phase 3 (Reporte Final)
 
 ---
 
+## ✅ REGLAS_DE_LA_CASA.md Compliance
+
+Esta fase cumple las siguientes reglas constitucionales de Paradise System Labs:
+
+### Checklist Pre-Ejecución:
+
+- [ ] **🔒 Preservación del código existente:**
+  - `InitialWizardModal.tsx` ya existe - modificar quirúrgicamente solo 10 secciones específicas
+  - NO tocar lógica de Steps 1-5 (SICAR, sucursal, cajero, testigo, venta esperada)
+
+- [ ] **⚡ Principio de no regresión:**
+  - Steps 1-5 del wizard deben seguir funcionando idénticamente
+  - Navegación adelante/atrás preservada sin cambios
+  - Tests existentes del wizard (si existen) deben pasar
+
+- [ ] **💻 TypeScript estricto (cero `any`):**
+  - Interface `InitialWizardData` extendida con tipado completo
+  - `DailyExpense[]` array tipado correctamente
+  - Validar con `npx tsc --noEmit` → 0 errors obligatorio
+
+- [ ] **🧪 Tests de integración:**
+  - 5-8 tests para Step 6 y navegación wizard
+  - Validar localStorage persistence de gastos
+  - Edge cases: Modal cerrado prematuramente, navegación atrás desde Step 6
+
+- [ ] **🗺️ Task list completada:**
+  - 10 modificaciones específicas (líneas 218-273) verificadas una por una
+  - Checklist líneas 567-585 completada antes de marcar fase terminada
+
+- [ ] **📝 Documentación obligatoria:**
+  - Comentario crítico en Step 6 (líneas 309-311) presente
+  - Comentarios `// 🤖 [IA] - v1.4.0: [Razón]` en cada modificación
+
+- [ ] **🎯 Versionado consistente:**
+  - Header comment actualizado en `InitialWizardModal.tsx`
+  - CLAUDE.md actualizado con entrada de esta fase
+
+**Referencia:** `/Users/samuelers/Paradise System Labs/cashguard-paradise/REGLAS_DE_LA_CASA.md` (líneas 60-76)
+
+**⚠️ CRÍTICO:** Esta fase modifica archivo existente - MÁXIMA precaución con inmutabilidad de lógica no relacionada.
+
+---
+
 ## 🔍 Análisis de InitialWizardModal
 
 ### Archivo Actual

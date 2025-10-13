@@ -70,6 +70,46 @@ thresholds: {
 
 ---
 
+## ✅ REGLAS_DE_LA_CASA.md Compliance
+
+Esta fase cumple las siguientes reglas constitucionales de Paradise System Labs:
+
+### Checklist Pre-Ejecución:
+
+- [ ] **🔒 Preservación del código existente:**
+  - Todas las fases anteriores (1-5) no rompieron funcionalidad existente
+  - Tests base (641) siguen pasando sin cambios
+
+- [ ] **⚡ Principio de no regresión:**
+  - **641 tests base + 45-55 tests nuevos = 100% passing obligatorio**
+  - Zero funcionalidad rota en wizard, conteo, delivery, verificación, reporte
+
+- [ ] **💻 TypeScript estricto (cero `any`):**
+  - `npx tsc --noEmit` → **0 errors obligatorio**
+  - Todo el código de gastos (types, componentes, hooks, utils) completamente tipado
+
+- [ ] **🧪 100% coverage para lógica financiera:**
+  - TIER 0 Cross-Validation para cálculos de gastos ejecutado y pasando ✅
+  - 45-55 tests totales (Unit + Integration + TIER 0) verificados
+
+- [ ] **🗺️ Task lists completadas:**
+  - Fases 1-5 con checklists completados 100%
+  - Esta fase (6) con checklist líneas 738-759 completado
+
+- [ ] **📝 Documentación obligatoria:**
+  - CLAUDE.md actualizado con entrada final de Gastos de Caja
+  - README.md (si necesario) actualizado con nueva funcionalidad
+
+- [ ] **🎯 Versionado consistente:**
+  - Todos los archivos modificados tienen v1.4.0 en headers
+  - Git commit message sigue convención Paradise
+
+**Referencia:** `/Users/samuelers/Paradise System Labs/cashguard-paradise/REGLAS_DE_LA_CASA.md` (líneas 60-76, 85-90)
+
+**⚠️ CRÍTICO:** Esta fase es el "gate" final - si algo falla aquí, NO se puede considerar feature completada.
+
+---
+
 ## 🔬 Tests Unitarios (15-20 tests)
 
 ### Test Suite 1: `calculateTotalExpenses()` Helper
@@ -750,6 +790,12 @@ describe('TIER 0: Expense Cross-Validation', () => {
 - [ ] **ESLint:** 0 errors, 0 warnings ✅
 - [ ] **Build:** `npm run build` → Success ✅
 - [ ] **Coverage:** branches +2%, functions +3%, lines +3% ✅
+- [ ] **REGLAS_DE_LA_CASA.md compliance completa verificada:**
+  - [ ] Checklist constitucional línea 60-76 completado 100%
+  - [ ] Regla línea 85-90 cumplida (TIER 0 para lógica financiera gastos) ✅
+  - [ ] Metodología ANALIZO → PLANIFICO → EJECUTO → DOCUMENTO → VALIDO seguida
+  - [ ] Zero `any` types en TODO el código de gastos (validado con TypeScript)
+  - [ ] Zero regresiones (641 tests base + 45-55 tests gastos = 100% passing)
 
 ---
 

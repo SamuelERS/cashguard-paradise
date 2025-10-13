@@ -60,6 +60,46 @@ ExpenseListManager/
 
 ---
 
+## ✅ REGLAS_DE_LA_CASA.md Compliance
+
+Esta fase cumple las siguientes reglas constitucionales de Paradise System Labs:
+
+### Checklist Pre-Ejecución:
+
+- [ ] **🔒 Preservación del código existente:**
+  - No modificar componentes existentes sin justificación explícita
+  - Solo crear archivos nuevos en `/src/components/cash-counting/expenses/`
+
+- [ ] **⚡ Principio de no regresión:**
+  - Todos los tests existentes (637/641) deben seguir pasando
+  - Nuevos componentes NO rompen funcionalidad actual
+
+- [ ] **💻 TypeScript estricto (cero `any`):**
+  - Todas las props interfaces completamente tipadas
+  - Validar con `npx tsc --noEmit` → 0 errors obligatorio
+
+- [ ] **🧪 Tests exhaustivos:**
+  - 8-12 tests para este componente UI (según estimado)
+  - Coverage mínimo: Props validation, user interactions, edge cases
+
+- [ ] **🗺️ Task list completada:**
+  - Checklist líneas 819-855 verificada antes de ejecutar
+  - Cada subtarea marcada con criterio de aceptación claro
+
+- [ ] **📝 Documentación obligatoria:**
+  - TSDoc completo en todas las interfaces públicas
+  - Comentarios `// 🤖 [IA] - v1.4.0: [Razón]` en código nuevo
+
+- [ ] **🎯 Versionado consistente:**
+  - Header comments con v1.4.0 en todos los archivos nuevos
+  - Actualizar CLAUDE.md con entrada de esta fase
+
+**Referencia:** `/Users/samuelers/Paradise System Labs/cashguard-paradise/REGLAS_DE_LA_CASA.md` (líneas 60-76, 85-90)
+
+**⚠️ CRÍTICO:** Ejecutar `npm run lint` y `npx tsc --noEmit` ANTES de considerar esta fase completada.
+
+---
+
 ## 📐 Especificación de Props
 
 ### Interface `ExpenseListManagerProps`
