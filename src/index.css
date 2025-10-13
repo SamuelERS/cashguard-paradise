@@ -976,25 +976,25 @@
   /* Removed obsolete button styles as they are now managed by button variants in button.tsx */
   /* .btn-primary, .btn-secondary, .btn-success, etc., are no longer needed */
 
-  /* Gradient Aqua - Paradise Theme - Azul Moderno iOS */
+  /* Gradient Aqua - Paradise Theme - Gris Grafito Elegante */
   .bg-gradient-aqua {
-    background: linear-gradient(135deg, #0A84FF 0%, #0066CC 100%);
+    background: linear-gradient(135deg, #374151 0%, #1F2937 100%);
     color: white;
     transition: all 0.3s ease;
     box-shadow:
-      0 4px 12px rgba(10, 132, 255, 0.25),
+      0 4px 12px rgba(55, 65, 81, 0.25),
       inset 0 1px 2px rgba(255, 255, 255, 0.15);
   }
 
   .bg-gradient-aqua:hover:not(:disabled) {
-    background: linear-gradient(135deg, #3A9BFF 0%, #0A75E8 100%);
+    background: linear-gradient(135deg, #4B5563 0%, #374151 100%);
     box-shadow:
-      0 6px 16px rgba(10, 132, 255, 0.35),
+      0 6px 16px rgba(55, 65, 81, 0.35),
       inset 0 1px 2px rgba(255, 255, 255, 0.2);
   }
 
   .bg-gradient-aqua:disabled {
-    background: linear-gradient(135deg, #6B9FD8 0%, #5580B8 100%);
+    background: linear-gradient(135deg, #6B7280 0%, #4B5563 100%);
     opacity: 0.6;
     cursor: not-allowed;
   }
