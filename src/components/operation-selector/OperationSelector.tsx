@@ -1,4 +1,5 @@
-// 🤖 [IA] - v1.0.87 - Selector de modo con elementos corporativos integrados
+// 🤖 [IA] - v2.0: Badge versión visible en header (parche diferencia vuelto v1.3.6AD2 aplicado)
+// Previous: v1.0.87 - Selector de modo con elementos corporativos integrados
 import { motion } from 'framer-motion';
 import { Sunrise, Moon, ArrowRight, Calculator, Fish, Heart } from 'lucide-react';
 // 🤖 [IA] - v1.2.24 - FloatingParticles eliminado para mejorar rendimiento
@@ -58,7 +59,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
           className="text-center mb-12 pt-20"
         >
           <div className="flex items-center justify-center gap-3 mb-4">
-            <Calculator 
+            <Calculator
               style={{
                 width: `clamp(40px, 10vw, 48px)`,
                 height: `clamp(40px, 10vw, 48px)`,
@@ -66,14 +67,26 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text'
-              }} 
+              }}
             />
-            <h1 className="font-bold" style={{
-              fontSize: `clamp(1.5rem, 6vw, 1.875rem)`,
-              color: '#e1e8ed'
-            }}>
-              Seleccione Operación
-            </h1>
+            <div className="flex items-center gap-3">
+              <h1 className="font-bold" style={{
+                fontSize: `clamp(1.5rem, 6vw, 1.875rem)`,
+                color: '#e1e8ed'
+              }}>
+                Seleccione Operación
+              </h1>
+              {/* 🤖 [IA] - v2.0: Badge versión visible (parche diferencia vuelto aplicado) */}
+              <span className="px-3 py-1 rounded-full text-xs font-semibold shadow-lg" style={{
+                background: 'linear-gradient(135deg, #d4af37 0%, #aa8c2d 100%)',
+                color: '#1a1a1a',
+                fontSize: 'clamp(0.75rem, 2.5vw, 0.875rem)',
+                boxShadow: '0 4px 6px rgba(212, 175, 55, 0.4)',
+                border: '1px solid rgba(255, 215, 0, 0.3)'
+              }}>
+                v2.0
+              </span>
+            </div>
           </div>
           <p style={{
             fontSize: `clamp(0.875rem, 3.5vw, 1.125rem)`,

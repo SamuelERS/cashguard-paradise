@@ -1,4 +1,5 @@
-// 🤖 [IA] - v1.3.6N: FIX DEFINITIVO STATE MUTATION - Callback actualiza usePhaseManager state correctamente
+// 🤖 [IA] - v1.3.6AD2: FIX BUG CRÍTICO DIFERENCIA VUELTO - Helper ajusta denominationsToKeep post-verificación con valores ACEPTADOS
+// Previous: v1.3.6N - FIX DEFINITIVO STATE MUTATION - Callback actualiza usePhaseManager state correctamente
 // 🤖 [IA] - v1.3.6f: BUG FIX CRÍTICO #3 - handleVerificationSectionComplete sin useCallback + verificationBehavior en deps
 // 🤖 [IA] - v1.2.41AD: Doctrina D.5 Compliance - Migración a arquitectura basada en datos separada
 // 🤖 [IA] - v1.2.50: Fix definitivo setTimeout nativo - eliminado createTimeoutWithCleanup de dependencies
@@ -37,7 +38,7 @@ import { NeutralActionButton } from "@/components/ui/neutral-action-button";
 import { Phase2DeliverySection } from './Phase2DeliverySection';
 import { Phase2VerificationSection } from './Phase2VerificationSection';
 import { DeliveryCalculation } from '@/types/phases';
-import { formatCurrency } from '@/utils/calculations';
+import { formatCurrency, calculateCashTotal } from '@/utils/calculations'; // 🤖 [IA] - v1.3.6AD2: Agregado calculateCashTotal para helper adjustDenominationsWithVerification
 import { useTimingConfig } from '@/hooks/useTimingConfig'; // 🤖 [IA] - Hook de timing unificado v1.0.22
 import { useChecklistFlow } from '@/hooks/useChecklistFlow'; // 🤖 [IA] - v1.2.26: Hook especializado para checklist
 // 🤖 [IA] - v1.3.6: MÓDULO 2 - Import VerificationBehavior type para state
@@ -135,17 +136,38 @@ export function Phase2Manager({
       console.log('[Phase2Manager] 🔍 verificationBehavior en useEffect:', verificationBehavior);
 
       const timeoutId = setTimeout(() => {
-        // 🤖 [IA] - v1.3.6N: STATE UPDATE (NO mutation) - Actualizar usePhaseManager state via callback
+        // 🤖 [IA] - v1.3.6AD2: FIX BUG DIFERENCIA VUELTO - Ajustar denominationsToKeep con valores ACEPTADOS
         if (verificationBehavior) {
-          console.log('[Phase2Manager] 🎯 verificationBehavior EXISTE - procediendo a actualizar deliveryCalculation');
-          console.log('[Phase2Manager] 📊 Objeto completo a pasar:', JSON.stringify(verificationBehavior, null, 2));
+          console.log('[Phase2Manager] 🎯 verificationBehavior EXISTE - procediendo a ajustar denominationsToKeep');
+          console.log('[Phase2Manager] 📊 Objeto completo verificationBehavior:', JSON.stringify(verificationBehavior, null, 2));
+
+          // ✅ PASO 1: Ajustar denominationsToKeep con valores ACEPTADOS post-verificación
+          const { adjustedKeep, adjustedAmount } = adjustDenominationsWithVerification(
+            deliveryCalculation.denominationsToKeep,
+            verificationBehavior
+          );
+
+          console.log('[Phase2Manager] 🔄 denominationsToKeep AJUSTADO:');
+          console.log('[Phase2Manager]   - Original:', deliveryCalculation.denominationsToKeep);
+          console.log('[Phase2Manager]   - Ajustado:', adjustedKeep);
+          console.log('[Phase2Manager]   - Monto original: $50.00');
+          console.log('[Phase2Manager]   - Monto ajustado:', adjustedAmount);
 
           if (onDeliveryCalculationUpdate) {
-            onDeliveryCalculationUpdate({ verificationBehavior }); // ✅ State update correcto
-            console.log('[Phase2Manager] ✅ onDeliveryCalculationUpdate EJECUTADO - callback llamado con verificationBehavior');
+            // ✅ PASO 2: Pasar TODOS los valores actualizados al callback
+            onDeliveryCalculationUpdate({
+              verificationBehavior,       // ← Datos de errores
+              denominationsToKeep: adjustedKeep,  // ← Cantidades AJUSTADAS
+              amountRemaining: adjustedAmount     // ← Total REAL recalculado
+            });
+            console.log('[Phase2Manager] ✅ onDeliveryCalculationUpdate EJECUTADO - 3 valores actualizados');
+            console.log('[Phase2Manager]   - verificationBehavior ✅');
+            console.log('[Phase2Manager]   - denominationsToKeep ✅ (ajustado con valores aceptados)');
+            console.log('[Phase2Manager]   - amountRemaining ✅ (total recalculado: ' + adjustedAmount + ')');
           } else {
             console.warn('[Phase2Manager] ⚠️ onDeliveryCalculationUpdate no disponible - usando fallback mutation');
             deliveryCalculation.verificationBehavior = verificationBehavior; // Fallback (legacy)
+            deliveryCalculation.denominationsToKeep = adjustedKeep; // ← Ajustar también en fallback
           }
         } else {
           console.error('[Phase2Manager] 🔴 PROBLEMA CRÍTICO: verificationBehavior es undefined - timing issue detectado');
@@ -166,6 +188,48 @@ export function Phase2Manager({
   // Problema: Mutación cambia referencia → useEffect se re-dispara infinitamente → loop #2
   // Solución: Remover de deps - mutación es side effect válido para enriquecer objeto
   // eslint-disable: deliveryCalculation intencionalmente omitido - solo se muta como fallback, no se lee
+
+  // 🤖 [IA] - v1.3.6AD2: HELPER FUNCIÓN - Ajusta denominationsToKeep con valores ACEPTADOS post-verificación
+  // Root cause fix: deliveryCalculation.denominationsToKeep usa cantidades ESPERADAS (línea 29 deliveryCalculation.ts)
+  // Problema: Verificación acepta valores diferentes (ej: 70 en lugar de 75) pero reporte usa esperados
+  // Solución: Recalcular denominationsToKeep usando verificationBehavior.denominationsWithIssues[].attempts
+  // Input: denominationsToKeep original + verificationBehavior con denominaciones que tuvieron errores
+  // Output: { adjustedKeep: CashCount ajustado, adjustedAmount: número total recalculado }
+  const adjustDenominationsWithVerification = useCallback((
+    denominationsToKeep: Record<string, number>,
+    verificationBehavior: VerificationBehavior
+  ): { adjustedKeep: Record<string, number>; adjustedAmount: number } => {
+    console.log('[Phase2Manager] 🔧 adjustDenominationsWithVerification() INICIO');
+    console.log('[Phase2Manager] 📊 Input denominationsToKeep:', denominationsToKeep);
+    console.log('[Phase2Manager] 📊 Input verificationBehavior.denominationsWithIssues:', verificationBehavior.denominationsWithIssues);
+
+    // Clonar objeto para no mutar el original
+    const adjusted = { ...denominationsToKeep };
+
+    // Iterar solo denominaciones con errores (las demás quedan con valores esperados originales)
+    verificationBehavior.denominationsWithIssues.forEach(issue => {
+      console.log(`[Phase2Manager] 🔍 Procesando denominación con issue: ${issue.denomination}`);
+      console.log(`[Phase2Manager] 📊 Severity: ${issue.severity}, Attempts: [${issue.attempts.join(', ')}]`);
+
+      if (issue.attempts.length > 0) {
+        // Usar ÚLTIMO valor del array attempts (valor aceptado final)
+        // Puede ser: override (2 iguales), promedio (3 diferentes), o correcto en segundo intento
+        const acceptedValue = issue.attempts[issue.attempts.length - 1];
+        console.log(`[Phase2Manager] ✅ Valor aceptado para ${issue.denomination}: ${acceptedValue} (era: ${adjusted[issue.denomination]})`);
+        adjusted[issue.denomination] = acceptedValue;
+      } else {
+        console.warn(`[Phase2Manager] ⚠️ Denominación ${issue.denomination} sin attempts - preservando valor esperado`);
+      }
+    });
+
+    // Recalcular total REAL con cantidades ajustadas
+    const adjustedAmount = calculateCashTotal(adjusted);
+    console.log('[Phase2Manager] 💰 Total recalculado:', adjustedAmount);
+    console.log('[Phase2Manager] 📊 Output adjustedKeep:', adjusted);
+    console.log('[Phase2Manager] 🔧 adjustDenominationsWithVerification() FIN');
+
+    return { adjustedKeep: adjusted, adjustedAmount };
+  }, []);
 
   const handleDeliveryStepComplete = (stepKey: string) => {
     setDeliveryProgress(prev => ({
