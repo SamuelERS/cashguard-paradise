@@ -397,28 +397,50 @@ src/
 ### Nuevo Flujo Usuario
 
 ```
-1. Protocolo ✅
-2. Sucursal ✅
-3. Cajero ✅
-4. Testigo ✅
+🧭 WIZARD INICIAL (Steps 1-6) - ANTES DEL CONTEO:
+
+1. Protocolo Anti-Fraude ✅
+2. Selección Sucursal ✅
+3. Selección Cajero ✅
+4. Selección Testigo ✅
 5. Venta Esperada SICAR ✅
-6. Gastos del Día 🆕 NUEVO
+   ($1,000 esperado - ingreso esperado)
+
+6. 💸 Gastos del Día 🆕 NUEVO (OPCIONAL)
    ↓
-   Usuario agrega gastos:
+   Usuario agrega gastos operacionales:
    - Concepto: "Compra productos"
    - Monto: $30
    - Categoría: Insumos
    - [+ Agregar]
-   
+
    - Concepto: "Limpieza"
    - Monto: $20
    - Categoría: Servicios
    - [+ Agregar]
-   
-   Total Gastos: $50
-   
+
+   Total Gastos: $50 (egresos del día)
+
 7. Confirmación Final ✅
-8. Iniciar Conteo →
+   ↓
+   ✅ Wizard Completo → localStorage.setItem('wizardData', ...)
+   ↓
+
+📊 PHASE 1: CONTEO DE EFECTIVO - DURANTE EL CONTEO:
+
+8. Iniciar Conteo → Ingresar efectivo por denominación ($900)
+                 → 💳 Ingresar pagos electrónicos ($200)
+                    • PayPal       ← Ingresos recibidos
+                    • Promerica    ← (NO son gastos)
+                    • Credomatic
+                    • Transferencias
+   ↓
+Phase 2 (Delivery si >$50) → Phase 3 (Reporte Final)
+
+⚠️ IMPORTANTE:
+   • Gastos (Step 6) = Egresos operacionales (WIZARD - ANTES)
+   • Pagos electrónicos = Ingresos recibidos (PHASE 1 - DURANTE)
+   • NO confundir: gastos se restan (-), pagos se suman (+)
 ```
 
 ### Comparativa Antes vs Después
