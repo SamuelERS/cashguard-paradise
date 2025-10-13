@@ -47,7 +47,7 @@ export default defineConfig(({ mode }) => ({
         name: 'Paradise Cash Control - Control de Caja Inteligente',
         short_name: 'Paradise Cash',
         description: 'Sistema de control de caja inteligente para Acuarios Paradise con protocolos profesionales',
-        theme_color: '#00CED1',
+        theme_color: '#0A84FF',
         background_color: '#0D1117',
         display: 'standalone',
         orientation: 'portrait-primary',
