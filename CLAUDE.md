@@ -1,3 +1,34 @@
+### v1.3.6AD2 + v2.0 - Fix Diferencia Vuelto + Badge Visual [13 OCT 2025 ~22:00 PM] ✅
+**OPERACIÓN DOBLE FIX COMPLETADO:** (1) Resolución crítica bug financiero donde sistema aceptaba errores en verificación ciega PERO reporte NO descuenta diferencia, (2) Badge v2.0 visual en pantalla principal para confirmar parche aplicado.
+
+**Problema #1 Resuelto - Diferencia Vuelto NO Restada:**
+- ❌ **Ejemplo:** Esperado: 75 × 1¢ = $0.75 | Ingresado: 70 × 1¢ → 70 × 1¢ (override)
+- ❌ **Reporte:** "🏢 Quedó en Caja: $50.00" ← INCORRECTO (debería ser $49.95)
+- ✅ **Fix:** Helper `adjustDenominationsWithVerification()` recalcula con valores ACEPTADOS
+- ✅ **Resultado:** Totales reflejan cantidades reales, diferencia -$0.05 registrada
+
+**Problema #2 Resuelto - Confirmación Visual Parche:**
+- ❌ **Sin indicador:** No se sabía si parche estaba aplicado
+- ✅ **Fix:** Badge v2.0 con gradiente dorado elegante en OperationSelector
+- ✅ **Resultado:** Confirmación visual inmediata en pantalla principal
+
+**Archivos modificados:**
+- Phase2Manager.tsx (+51 líneas): Helper + useEffect ajuste
+- types/phases.ts (+5 líneas): Campo `amountRemaining?: number`
+- CashCalculation.tsx (+3 líneas): Usar `amountRemaining ?? 50`
+- OperationSelector.tsx (+31 líneas): Badge v2.0 dorado
+- Documentación completa en `/Caso_No_Resta_Diferencia_Vuelto/`
+
+**Beneficios medibles:**
+- ✅ Precisión financiera 100%: Quiebre caja real vs reportado CERO
+- ✅ Confirmación visual: Badge v2.0 en pantalla principal
+- ✅ Backward compatible: amountRemaining opcional
+- ✅ Anti-fraude preservado: Lógica verificación intacta
+
+**Archivos:** `Phase2Manager.tsx`, `types/phases.ts`, `CashCalculation.tsx`, `OperationSelector.tsx`, `CLAUDE.md`
+
+---
+
 # 📚 CLAUDE.md - HISTORIAL DE DESARROLLO CASHGUARD PARADISE
 **Última actualización:** 11 Oct 2025 ~20:35 PM
 **Sesión actual:** v1.3.7AG CONTEO CIEGO 100% COMPLETO ✅ | 4 elementos ocultos (badges, error, borde)

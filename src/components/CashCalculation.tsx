@@ -1,4 +1,5 @@
-// 🤖 [IA] - v1.3.7: ANTI-FRAUDE - Confirmación explícita envío WhatsApp ANTES de revelar resultados
+// 🤖 [IA] - v1.3.6AD2: FIX BUG DIFERENCIA VUELTO - Usar amountRemaining ?? 50 en reporte (monto ajustado post-verificación)
+// Previous: v1.3.7 - ANTI-FRAUDE - Confirmación explícita envío WhatsApp ANTES de revelar resultados
 // Previous: v1.3.6AD - FIX MÉTRICA CRÍTICA - totalDenoms usa verificationSteps.length (denominaciones verificadas)
 // Previous: v1.3.6AB - FIX ROOT CAUSE REAL - Clase .cash-calculation-container agregada (patrón v1.2.41A9)
 import { useState, useEffect, useCallback } from "react";
@@ -433,7 +434,9 @@ Hora: __:__  Firma: ________
     if (!phaseState?.shouldSkipPhase2 && deliveryCalculation?.denominationsToKeep) {
       // Phase 2 ejecutado: usar denominationsToKeep
       remainingCash = deliveryCalculation.denominationsToKeep;
-      remainingAmount = 50;
+      // 🤖 [IA] - v1.3.6AD2: FIX BUG DIFERENCIA VUELTO - Usar amountRemaining si existe (ajustado post-verificación)
+      // Ejemplo: 75 esperado → 70 aceptado = $50.00 → $49.95 ajustado
+      remainingAmount = deliveryCalculation.amountRemaining ?? 50;
     } else if (phaseState?.shouldSkipPhase2) {
       // Phase 2 omitido (≤$50): todo el efectivo queda en caja
       remainingCash = cashCount;

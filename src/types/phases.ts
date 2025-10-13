@@ -1,5 +1,6 @@
+// 🤖 [IA] - v1.3.6AD2: Agregado campo amountRemaining (monto REAL post-verificación ajustado)
+// Previous: v1.3.0 - MÓDULO 1 - Import tipos verificación ciega
 import { CashCount } from './cash';
-// 🤖 [IA] - v1.3.0: MÓDULO 1 - Import tipos verificación ciega
 import type { VerificationBehavior } from './verification';
 
 export interface PhaseState {
@@ -40,4 +41,9 @@ export interface DeliveryCalculation {
   }>;
   // 🤖 [IA] - v1.3.0: MÓDULO 1 - Campo para tracking blind verification (triple intento)
   verificationBehavior?: VerificationBehavior;
+  // 🤖 [IA] - v1.3.6AD2: Campo para monto REAL post-verificación (ajustado con valores ACEPTADOS)
+  // Justificación: denominationsToKeep puede cambiar si verificación acepta valores diferentes (override, promedio)
+  // Ejemplo: 75 esperado → 70 aceptado = $50.00 original → $49.95 ajustado
+  // Uso: CashCalculation reporte sección "LO QUE QUEDÓ EN CAJA" debe usar este valor si existe
+  amountRemaining?: number;
 }
