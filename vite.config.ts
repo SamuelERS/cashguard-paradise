@@ -44,9 +44,9 @@ export default defineConfig(({ mode }) => ({
         // Razón: File must exist in dist/ pero NO debe ser precached por Service Worker
       ],
       manifest: {
-        name: 'Paradise Cash Control - Sistema Anti-Fraude',
+        name: 'Paradise Cash Control - Control de Caja Inteligente',
         short_name: 'Paradise Cash',
-        description: 'Sistema de control de caja para Acuarios Paradise con protocolos anti-fraude',
+        description: 'Sistema de control de caja inteligente para Acuarios Paradise con protocolos profesionales',
         theme_color: '#00CED1',
         background_color: '#0D1117',
         display: 'standalone',
