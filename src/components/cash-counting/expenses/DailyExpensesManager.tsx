@@ -129,7 +129,7 @@ export const DailyExpensesManager: React.FC<DailyExpensesManagerProps> = ({
     } else {
       // Validar máximo 2 decimales
       const decimals = (formData.amount.toString().split('.')[1] || '').length;
-      if (decimals > EXPENSE_VALIDATION.MAX_DECIMAL_PLACES) {
+      if (decimals > EXPENSE_VALIDATION.DECIMAL_PLACES) {
         newErrors.amount = 'Máximo 2 decimales';
       }
     }
@@ -286,7 +286,7 @@ export const DailyExpensesManager: React.FC<DailyExpensesManagerProps> = ({
           </h3>
         </div>
 
-        {!isAdding && !disabled && (
+        {!isAdding && !disabled && expenses.length > 0 && (
           <Button
             onClick={() => {
               if (canAddExpense()) {
@@ -395,7 +395,7 @@ export const DailyExpensesManager: React.FC<DailyExpensesManagerProps> = ({
           <div className="flex gap-2">
             <Button
               onClick={handleCancel}
-              variant="outline"
+              variant="ghost"
               disabled={disabled}
               className="flex-1 border-[rgba(255,255,255,0.15)] text-[#8899a6] hover:bg-[rgba(255,255,255,0.05)]"
             >
