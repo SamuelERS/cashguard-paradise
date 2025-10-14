@@ -1,4 +1,5 @@
-// 🤖 [IA] - v2.3: Badge versión actualizado (fix input decimal gastos: acepta comas y puntos)
+// 🤖 [IA] - v2.4: Badge versión actualizado (reporte matutino profesional)
+// Previous: v2.3 - Badge versión actualizado (fix input decimal gastos: acepta comas y puntos)
 // Previous: v2.2 - Badge versión actualizado (fix crítico warning_override v1.3.7AI implementado)
 import { motion } from 'framer-motion';
 import { Sunrise, Moon, ArrowRight, Calculator, Fish, Heart } from 'lucide-react';
@@ -76,7 +77,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
               }}>
                 Seleccione Operación
               </h1>
-              {/* 🤖 [IA] - v2.3: Badge versión actualizado (fix input decimal gastos: acepta comas y puntos) */}
+              {/* 🤖 [IA] - v2.4: Badge versión actualizado (reporte matutino profesional) */}
               <span className="px-3 py-1 rounded-full text-xs font-semibold shadow-lg" style={{
                 background: 'linear-gradient(135deg, #d4af37 0%, #aa8c2d 100%)',
                 color: '#1a1a1a',
@@ -84,7 +85,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
                 boxShadow: '0 4px 6px rgba(212, 175, 55, 0.4)',
                 border: '1px solid rgba(255, 215, 0, 0.3)'
               }}>
-                v2.3
+                v2.4
               </span>
             </div>
           </div>
