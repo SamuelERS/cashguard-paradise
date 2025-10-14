@@ -429,8 +429,8 @@ export const DailyExpensesManager: React.FC<DailyExpensesManagerProps> = ({
             </label>
           </div>
 
-          {/* Botones - 🤖 [IA] - v2.5: Fix alineación responsive móvil */}
-          <div className="flex gap-[clamp(0.5rem,2vw,0.75rem)] w-full">
+          {/* Botones - 🤖 [IA] - v2.5: Fix alineación responsive móvil + vertical center */}
+          <div className="flex items-center gap-[clamp(0.5rem,2vw,0.75rem)] w-full">
             <Button
               onClick={handleCancel}
               variant="ghost"

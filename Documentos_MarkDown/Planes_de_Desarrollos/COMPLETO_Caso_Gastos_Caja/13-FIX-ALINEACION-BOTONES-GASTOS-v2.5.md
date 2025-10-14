@@ -1,9 +1,9 @@
 # 🔧 FIX ESTÉTICO - Alineación Botones Gastos Móvil v2.5
 
-**Fecha:** 14 Octubre 2025, 08:20 AM  
+**Fecha:** 14 Octubre 2025, 08:20 AM (Actualizado 08:48 AM)  
 **Tipo:** 🎨 FIX ESTÉTICO  
 **Severidad:** 🟡 MENOR (UX)  
-**Estado:** ✅ IMPLEMENTADO
+**Estado:** ✅ IMPLEMENTADO + MEJORADO
 
 ---
 
@@ -12,11 +12,15 @@
 ### Descripción Visual
 En dispositivos móviles, los botones "Cancelar" y "Guardar Gasto" en el formulario de gastos no estaban alineados correctamente:
 
-**Síntomas:**
+**Síntomas Originales:**
 - ❌ Botones con alturas inconsistentes
 - ❌ Espaciado irregular entre botones
 - ❌ Texto desalineado verticalmente
 - ❌ Padding no responsive
+
+**Síntoma Adicional (08:48 AM):**
+- ❌ Botón "Guardar Gasto" visualmente más arriba que "Cancelar"
+- ❌ Falta alineación vertical en el eje Y
 
 **Ubicación:**
 - Componente: `DailyExpensesManager.tsx`
@@ -49,6 +53,7 @@ En dispositivos móviles, los botones "Cancelar" y "Guardar Gasto" en el formula
 3. **Sin altura responsive:** Altura por defecto no se adapta
 4. **Sin padding responsive:** Padding fijo causa desalineación
 5. **Sin font-size responsive:** Texto no escala correctamente
+6. **🔴 Sin items-center:** Contenedor flex no alinea verticalmente (NUEVO)
 
 ---
 
@@ -56,8 +61,8 @@ En dispositivos móviles, los botones "Cancelar" y "Guardar Gasto" en el formula
 
 ### Código Nuevo (v2.5):
 ```tsx
-{/* Botones - 🤖 [IA] - v2.5: Fix alineación responsive móvil */}
-<div className="flex gap-[clamp(0.5rem,2vw,0.75rem)] w-full">
+{/* Botones - 🤖 [IA] - v2.5: Fix alineación responsive móvil + vertical center */}
+<div className="flex items-center gap-[clamp(0.5rem,2vw,0.75rem)] w-full">
   <Button
     onClick={handleCancel}
     variant="ghost"
@@ -89,6 +94,14 @@ En dispositivos móviles, los botones "Cancelar" y "Guardar Gasto" en el formula
 ---
 
 ## 🎨 MEJORAS IMPLEMENTADAS
+
+### 0. 🔴 Alineación Vertical (NUEVO - 08:48 AM)
+```tsx
+className="flex items-center ..."
+```
+- **Antes:** Sin `items-center` → botones desalineados en eje Y
+- **Después:** Con `items-center` → botones perfectamente alineados verticalmente
+- **Efecto:** Ambos botones ahora están en la misma línea base
 
 ### 1. Gap Responsive
 ```tsx
@@ -324,15 +337,65 @@ className="w-full"
 - Botones se distribuyen equitativamente
 - No hay espacios vacíos a los lados
 
+### 🔴 Por qué items-center (CRÍTICO - 08:48 AM)
+```tsx
+className="flex items-center ..."
+```
+
+**Problema sin items-center:**
+- Flexbox por defecto usa `align-items: stretch`
+- Los botones se estiran verticalmente de forma desigual
+- El botón con más texto puede quedar más arriba visualmente
+- Causa desalineación en el eje Y
+
+**Solución con items-center:**
+- Fuerza alineación vertical en el centro del contenedor
+- Ambos botones comparten la misma línea base
+- Independiente del contenido de cada botón
+- Alineación perfecta garantizada
+
+**Antes (sin items-center):**
+```
+┌─────────────┐  ┌──────────────────┐
+│  Cancelar   │  │  Guardar Gasto   │ ← Más arriba
+└─────────────┘  └──────────────────┘
+```
+
+**Después (con items-center):**
+```
+┌─────────────┐  ┌──────────────────┐
+│  Cancelar   │  │  Guardar Gasto   │ ← Misma altura
+└─────────────┘  └──────────────────┘
+```
+
+---
+
+## 📊 HISTORIAL DE CAMBIOS
+
+### v2.5.0 - Primera Implementación (08:20 AM)
+- ✅ Gap responsive con clamp()
+- ✅ Altura responsive
+- ✅ Font-size responsive
+- ✅ Padding responsive
+- ✅ Min-width protection
+- ✅ Width full
+
+### v2.5.1 - Fix Alineación Vertical (08:48 AM)
+- ✅ **items-center agregado al contenedor flex**
+- ✅ Alineación vertical perfecta
+- ✅ Botones en la misma línea base
+- ✅ Fix quirúrgico de 1 línea
+
 ---
 
 ## ✅ CONCLUSIÓN
 
-Fix estético quirúrgico implementado exitosamente. Los botones ahora están perfectamente alineados en todos los dispositivos, con escalado responsive y manteniendo la estética del diseño.
+Fix estético quirúrgico implementado exitosamente en **2 iteraciones**. Los botones ahora están perfectamente alineados **horizontal Y verticalmente** en todos los dispositivos, con escalado responsive y manteniendo la estética del diseño.
 
-**Versión:** v2.5.0  
+**Versión:** v2.5.1  
 **Componente:** DailyExpensesManager  
-**Impacto:** Mejora visual en móvil  
-**Breaking Changes:** Ninguno
+**Impacto:** Mejora visual en móvil (horizontal + vertical)  
+**Breaking Changes:** Ninguno  
+**Líneas modificadas:** 1 (línea 433)
 
 **El formulario de gastos ahora se ve perfecto en cualquier dispositivo. 🎨✨**
