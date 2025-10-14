@@ -684,21 +684,57 @@ ${WHATSAPP_SEPARATOR}
 
 📊 *RESUMEN EJECUTIVO*
 
-💰 Efectivo Contado: *${formatCurrency(calculationData?.totalCash || 0)}*
-   (Incluye fondo $50.00)
+${WHATSAPP_SEPARATOR}
+💰 EFECTIVO FÍSICO
+${WHATSAPP_SEPARATOR}
+Contado total:       *${formatCurrency(calculationData?.totalCash || 0)}*
+Menos fondo:         -$50.00
+                    ────────
+Ventas efectivo:     *${formatCurrency(calculationData?.salesCash || 0)}*
+${WHATSAPP_SEPARATOR}
 
-${electronicDetailsDesglosed}
+${WHATSAPP_SEPARATOR}
+💳 ELECTRÓNICO
+${WHATSAPP_SEPARATOR}
+${electronicDetailsDesglosed}                    ────────
+Total:               *${formatCurrency(calculationData?.totalElectronic || 0)}*
+${WHATSAPP_SEPARATOR}
 
-📦 *Entregado a Gerencia:* ${formatCurrency(deliveryCalculation?.amountToDeliver || 0)}
-🏢 *Quedó en Caja:* ${phaseState?.shouldSkipPhase2 ? formatCurrency(calculationData?.totalCash || 0) : formatCurrency(deliveryCalculation?.amountRemaining ?? 50)}
+${WHATSAPP_SEPARATOR}
+📦 DIVISIÓN EFECTIVO
+${WHATSAPP_SEPARATOR}
+Entregado:           *${formatCurrency(deliveryCalculation?.amountToDeliver || 0)}*
+Quedó (fondo):       *${phaseState?.shouldSkipPhase2 ? formatCurrency(calculationData?.totalCash || 0) : formatCurrency(deliveryCalculation?.amountRemaining ?? 50)}*
+                    ────────
+Suma:                *${formatCurrency(calculationData?.totalCash || 0)}* ✓
+${WHATSAPP_SEPARATOR}
 
-💵 *Efectivo de Ventas:* ${formatCurrency(calculationData?.salesCash || 0)}
-💼 *Total Ventas:* ${formatCurrency(calculationData?.totalGeneral || 0)}
-${(calculationData?.totalExpenses || 0) > 0 ? `💸 *Gastos del Día:* +${formatCurrency(calculationData?.totalExpenses || 0)}
-📊 *Ventas + Gastos:* ${formatCurrency(calculationData?.totalWithExpenses || 0)}
+${WHATSAPP_SEPARATOR}
+💼 VENTAS
+${WHATSAPP_SEPARATOR}
+Efectivo:            ${formatCurrency(calculationData?.salesCash || 0)}
+Electrónico:         ${formatCurrency(calculationData?.totalElectronic || 0)}
+                    ────────
+Total:               *${formatCurrency(calculationData?.totalGeneral || 0)}*
+${WHATSAPP_SEPARATOR}
+${(calculationData?.totalExpenses || 0) > 0 ? `
+${WHATSAPP_SEPARATOR}
+💸 GASTOS
+${WHATSAPP_SEPARATOR}
+Operativos:          +${formatCurrency(calculationData?.totalExpenses || 0)}
+                    ────────
+Ventas + Gastos:     *${formatCurrency(calculationData?.totalWithExpenses || 0)}*
+${WHATSAPP_SEPARATOR}
 ` : ''}
-🎯 *SICAR Entradas:* ${formatCurrency(expectedSales)}
-${(calculationData?.difference || 0) >= 0 ? '📈' : '📉'} *Diferencia:* ${formatCurrency(Math.abs(calculationData?.difference || 0))} (${(calculationData?.difference || 0) >= 0 ? 'SOBRANTE' : 'FALTANTE'})
+${WHATSAPP_SEPARATOR}
+🎯 SICAR
+${WHATSAPP_SEPARATOR}
+Calculado:           ${formatCurrency((calculationData?.totalExpenses || 0) > 0 ? (calculationData?.totalWithExpenses || 0) : (calculationData?.totalGeneral || 0))}
+Esperado:            ${formatCurrency(expectedSales)}
+                    ────────
+${(calculationData?.difference || 0) >= 0 ? '📈' : '📉'} *Diferencia:*        *${formatCurrency(Math.abs(calculationData?.difference || 0))}*
+                  *(${(calculationData?.difference || 0) >= 0 ? 'SOBRANTE' : 'FALTANTE'})*
+${WHATSAPP_SEPARATOR}
 ${deliveryChecklistSection}${remainingChecklistSection}${generateExpensesSection()}${fullAlertsSection}${verificationSection}
 ${WHATSAPP_SEPARATOR}
 
@@ -709,7 +745,7 @@ ${denominationDetails}
 ${WHATSAPP_SEPARATOR}
 
 📅 ${calculationData?.timestamp || ''}
-🔐 CashGuard Paradise v1.3.6Y
+🔐 CashGuard Paradise v2.5
 🔒 NIST SP 800-115 | PCI DSS 12.10.1
 
 ✅ Reporte automático
