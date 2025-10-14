@@ -421,7 +421,7 @@ import { DevelopmentSettings } from '@/components/settings/DevelopmentSettings';
 | **Documentación** | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ |
 | **Over-engineering** | ❌ (apropiado) | ❌ (apropiado) | ⚠️ (posible) |
 
----
+----
 
 ## 🎯 RECOMENDACIÓN
 

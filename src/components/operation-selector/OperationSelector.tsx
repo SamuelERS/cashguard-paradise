@@ -1,5 +1,5 @@
-// 🤖 [IA] - v2.0: Badge versión visible en header (parche diferencia vuelto v1.3.6AD2 aplicado)
-// Previous: v1.0.87 - Selector de modo con elementos corporativos integrados
+// 🤖 [IA] - v2.1: Badge versión visible en header (12 tests unitarios ajuste post-verificación passing)
+// Previous: v2.0 - Badge versión visible en header (parche diferencia vuelto v1.3.6AD2 aplicado)
 import { motion } from 'framer-motion';
 import { Sunrise, Moon, ArrowRight, Calculator, Fish, Heart } from 'lucide-react';
 // 🤖 [IA] - v1.2.24 - FloatingParticles eliminado para mejorar rendimiento
@@ -76,7 +76,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
               }}>
                 Seleccione Operación
               </h1>
-              {/* 🤖 [IA] - v2.0: Badge versión visible (parche diferencia vuelto aplicado) */}
+              {/* 🤖 [IA] - v2.1: Badge versión visible (12 tests unitarios ajuste post-verificación passing) */}
               <span className="px-3 py-1 rounded-full text-xs font-semibold shadow-lg" style={{
                 background: 'linear-gradient(135deg, #d4af37 0%, #aa8c2d 100%)',
                 color: '#1a1a1a',
@@ -84,7 +84,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
                 boxShadow: '0 4px 6px rgba(212, 175, 55, 0.4)',
                 border: '1px solid rgba(255, 215, 0, 0.3)'
               }}>
-                v2.0
+                v2.1
               </span>
             </div>
           </div>

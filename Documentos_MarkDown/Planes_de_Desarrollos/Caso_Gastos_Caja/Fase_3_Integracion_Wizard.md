@@ -30,15 +30,74 @@ Integrar componente `<ExpenseListManager />` como **Step 6** en el wizard inicia
 
 **Flujo wizard modificado:**
 ```
+🧭 WIZARD INICIAL (Steps 1-6) - ANTES DEL CONTEO:
+
 Step 1: Protocolo Anti-Fraude (4 reglas)
 Step 2: Selección Sucursal
 Step 3: Selección Cajero
 Step 4: Selección Testigo (≠ cajero)
-Step 5: Venta Esperada SICAR
-Step 6: Gastos del Día (NUEVO) ← 🆕
+Step 5: Venta Esperada SICAR ($1,000 ingreso esperado)
+Step 6: 💸 Gastos del Día (NUEVO - OPCIONAL) ← 🆕
+        Ejemplos: $50 suministros, $30 transporte
   ↓
-Comenzar Conteo (Phase 1)
+✅ Wizard Completo → localStorage.setItem('wizardData', ...)
+  ↓
+
+📊 PHASE 1: CONTEO DE EFECTIVO - DURANTE EL CONTEO:
+
+Comenzar Conteo → Ingresar efectivo por denominación
+                → 💳 Ingresar pagos electrónicos (PayPal, Promerica, etc.)
+  ↓
+Phase 2 (Delivery si >$50) → Phase 3 (Reporte Final)
+
+⚠️ CRÍTICO - Diferencia Temporal:
+   • Step 6 (Gastos) = ANTES del conteo (wizard setup)
+   • Pagos electrónicos = DURANTE el conteo (Phase 1)
+   • Gastos = Egresos (-) | Pagos = Ingresos (+)
 ```
+
+---
+
+## ✅ REGLAS_DE_LA_CASA.md Compliance
+
+Esta fase cumple las siguientes reglas constitucionales de Paradise System Labs:
+
+### Checklist Pre-Ejecución:
+
+- [ ] **🔒 Preservación del código existente:**
+  - `InitialWizardModal.tsx` ya existe - modificar quirúrgicamente solo 10 secciones específicas
+  - NO tocar lógica de Steps 1-5 (SICAR, sucursal, cajero, testigo, venta esperada)
+
+- [ ] **⚡ Principio de no regresión:**
+  - Steps 1-5 del wizard deben seguir funcionando idénticamente
+  - Navegación adelante/atrás preservada sin cambios
+  - Tests existentes del wizard (si existen) deben pasar
+
+- [ ] **💻 TypeScript estricto (cero `any`):**
+  - Interface `InitialWizardData` extendida con tipado completo
+  - `DailyExpense[]` array tipado correctamente
+  - Validar con `npx tsc --noEmit` → 0 errors obligatorio
+
+- [ ] **🧪 Tests de integración:**
+  - 5-8 tests para Step 6 y navegación wizard
+  - Validar localStorage persistence de gastos
+  - Edge cases: Modal cerrado prematuramente, navegación atrás desde Step 6
+
+- [ ] **🗺️ Task list completada:**
+  - 10 modificaciones específicas (líneas 218-273) verificadas una por una
+  - Checklist líneas 567-585 completada antes de marcar fase terminada
+
+- [ ] **📝 Documentación obligatoria:**
+  - Comentario crítico en Step 6 (líneas 309-311) presente
+  - Comentarios `// 🤖 [IA] - v1.4.0: [Razón]` en cada modificación
+
+- [ ] **🎯 Versionado consistente:**
+  - Header comment actualizado en `InitialWizardModal.tsx`
+  - CLAUDE.md actualizado con entrada de esta fase
+
+**Referencia:** `/Users/samuelers/Paradise System Labs/cashguard-paradise/REGLAS_DE_LA_CASA.md` (líneas 60-76)
+
+**⚠️ CRÍTICO:** Esta fase modifica archivo existente - MÁXIMA precaución con inmutabilidad de lógica no relacionada.
 
 ---
 
@@ -290,16 +349,23 @@ export interface WizardData {
     transition={{ duration: 0.3 }}
     className="space-y-6"
   >
+    {/* ⚠️ CRÍTICO: Este step captura gastos ANTES de contar efectivo.
+        Los pagos electrónicos (PayPal, Promerica) se ingresan DURANTE Phase 1.
+        NO confundir gastos operacionales (wizard) con pagos recibidos (conteo). */}
+
     {/* Header */}
     <div className="text-center space-y-2">
       <h3 className="text-[clamp(1.25rem,4vw,1.5rem)] font-semibold text-[#e1e8ed]">
         💸 Gastos del Día
       </h3>
       <p className="text-[clamp(0.875rem,3vw,1rem)] text-[#8899a6]">
-        Registre los gastos realizados hoy (opcional)
+        Registre los gastos operacionales realizados hoy (opcional)
       </p>
       <p className="text-xs text-[#8899a6]">
-        Los gastos se restarán automáticamente del total antes de calcular la diferencia con SICAR
+        Los gastos se restarán del total antes de calcular la diferencia con SICAR
+      </p>
+      <p className="text-xs text-amber-400 mt-2">
+        💡 Tip: Si no hubo gastos hoy, puede continuar directamente
       </p>
     </div>
 

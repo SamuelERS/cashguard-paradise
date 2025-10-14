@@ -26,6 +26,50 @@ const difference = totalAdjusted - expectedSales;
 
 ---
 
+## ✅ REGLAS_DE_LA_CASA.md Compliance
+
+Esta fase cumple las siguientes reglas constitucionales de Paradise System Labs:
+
+### Checklist Pre-Ejecución:
+
+- [ ] **🔒 Preservación del código existente:**
+  - `CashCalculation.tsx` ya existe - modificar solo ecuaciones específicas (4 ubicaciones)
+  - NO tocar lógica de conteo, delivery, ni verificación ciega
+
+- [ ] **⚡ Principio de no regresión:**
+  - Todos los cálculos existentes deben seguir funcionando correctamente
+  - Tests TIER 0-4 (174 tests) deben seguir pasando sin cambios
+
+- [ ] **💻 TypeScript estricto (cero `any`):**
+  - Helper `calculateTotalExpenses()` completamente tipado
+  - Parámetro `DailyExpense[]` con interface correcta
+  - Validar con `npx tsc --noEmit` → 0 errors obligatorio
+
+- [ ] **🧪 100% coverage para lógica financiera (CRÍTICO):**
+  - **15 tests requeridos** (Unit + Integration + TIER 0)
+  - **TIER 0 Cross-Validation obligatorio** para ecuaciones financieras
+  - **⚠️ REGLA CONSTITUCIONAL:** REGLAS_DE_LA_CASA.md línea 85-90 establece:
+    *"🧪 Tests: 100% coverage para funciones financieras críticas (calculations.ts, deliveryCalculation.ts)."*
+  - Gastos afectan ecuación final → TIER 0 valida corrección matemática
+
+- [ ] **🗺️ Task list completada:**
+  - 4 modificaciones de ecuaciones verificadas una por una
+  - Checklist líneas 88-102 completada antes de marcar fase terminada
+
+- [ ] **📝 Documentación obligatoria:**
+  - Comentarios `// 🤖 [IA] - v1.4.0: [Razón]` en cada cambio de ecuación
+  - Before/After comments explicando cambio matemático
+
+- [ ] **🎯 Versionado consistente:**
+  - Header comment actualizado en `CashCalculation.tsx`
+  - CLAUDE.md actualizado con entrada de esta fase
+
+**Referencia:** `/Users/samuelers/Paradise System Labs/cashguard-paradise/REGLAS_DE_LA_CASA.md` (líneas 60-76, **85-90** CRÍTICA)
+
+**⚠️ CRÍTICO:** Esta fase modifica lógica financiera - TIER 0 Cross-Validation NO es opcional, es OBLIGATORIO constitucional.
+
+---
+
 ## 🔧 Archivos a Modificar
 
 ### 1. `src/utils/calculations.ts` - Helper

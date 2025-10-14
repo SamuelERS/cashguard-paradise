@@ -214,11 +214,113 @@ Para preguntas sobre este caso:
 
 ---
 
+## ❓ FAQ - Preguntas Frecuentes
+
+### ¿Cuándo se ingresan los gastos vs pagos electrónicos?
+
+Esta es una de las preguntas más importantes sobre el flujo temporal del sistema.
+
+#### **Gastos del Día (Step 6 Wizard - ANTES del conteo):**
+
+- **Qué son:** Egresos operacionales del negocio
+- **Cuándo:** Step 6 del wizard inicial (ANTES de comenzar a contar)
+- **Ejemplos:**
+  - $50 compra de papel y productos
+  - $30 taxi para transportar mercancía
+  - $25 pago servicio de mantenimiento
+  - $15 compra de suministros de limpieza
+- **Propósito:** Ajustar ecuación diferencia desde el inicio
+- **Signo matemático:** Se restan del total (-)
+- **Momento exacto:** Durante wizard setup, antes de Phase 1
+
+#### **Pagos Electrónicos (Phase 1 - DURANTE el conteo):**
+
+- **Qué son:** Ingresos recibidos por ventas
+- **Cuándo:** Durante Phase 1 (mientras se cuenta efectivo)
+- **Ejemplos:**
+  - Cliente pagó $120 con tarjeta Promerica
+  - Cliente pagó $80 por transferencia bancaria
+  - Cliente pagó $45 con PayPal
+  - Cliente pagó $60 con tarjeta Credomatic
+- **Propósito:** Sumar al total del día (ingresos, no gastos)
+- **Signo matemático:** Se suman al total (+)
+- **Momento exacto:** Después de completar wizard, durante conteo físico
+
+#### **Tabla Comparativa:**
+
+| Aspecto | Gastos (Step 6) | Pagos Electrónicos (Phase 1) |
+|---------|-----------------|------------------------------|
+| **Cuándo** | Wizard inicial (ANTES del conteo) | Durante conteo (DESPUÉS del wizard) |
+| **Tipo** | Egresos (salidas de dinero) | Ingresos (entradas de dinero) |
+| **Signo** | Resta del total (-) | Suma al total (+) |
+| **Ejemplo** | Compré papel ($50) | Cliente pagó con tarjeta ($120) |
+| **Momento** | Step 6 (antes Phase 1) | Phase 1 (después wizard) |
+| **UI** | ExpenseListManager en wizard | Electronic payments en conteo |
+| **Estado** | dailyExpenses array | electronicPayments object |
+
+#### **Diagrama de Flujo Temporal:**
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  WIZARD INICIAL (Steps 1-6) - ANTES DEL CONTEO                 │
+├─────────────────────────────────────────────────────────────────┤
+│  Step 1: Protocolo Anti-Fraude                                 │
+│  Step 2: Selección Sucursal                                    │
+│  Step 3: Selección Cajero                                      │
+│  Step 4: Selección Testigo                                     │
+│  Step 5: Venta Esperada SICAR  ← Ingreso esperado ($1,000)   │
+│  Step 6: 💸 Gastos del Día      ← Egresos del día ($80)      │
+│          [NUEVO - OPCIONAL]                                     │
+│          Ejemplos: $50 papel, $30 taxi                         │
+└─────────────────────────────────────────────────────────────────┘
+                         ↓
+                 ✅ Wizard Completo
+                         ↓
+┌─────────────────────────────────────────────────────────────────┐
+│  PHASE 1: CONTEO DE EFECTIVO - DURANTE EL CONTEO               │
+├─────────────────────────────────────────────────────────────────┤
+│  → Contar billetes y monedas  ($900 efectivo)                  │
+│  → 💳 Pagos Electrónicos       ($200 tarjetas)                 │
+│     • PayPal: $45              ← Ingresos recibidos            │
+│     • Promerica: $80           ← (NO son gastos)               │
+│     • Credomatic: $60                                           │
+│     • Transferencias: $15                                       │
+└─────────────────────────────────────────────────────────────────┘
+                         ↓
+┌─────────────────────────────────────────────────────────────────┐
+│  CÁLCULO FINAL (con gastos incluidos)                          │
+├─────────────────────────────────────────────────────────────────┤
+│  Total General = $900 (efectivo) + $200 (electrónico) = $1,100│
+│  Total Ajustado = $1,100 - $80 (gastos) = $1,020              │
+│  Diferencia = $1,020 - $1,000 (SICAR) = +$20 ✅               │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+#### **¿Por qué esta separación temporal?**
+
+1. **Gastos en wizard:** Necesitan conocerse ANTES del conteo para preparar el sistema
+2. **Pagos durante conteo:** Se descubren MIENTRAS se cuenta el efectivo físico
+3. **Lógica de negocio:** Gastos son planeados/conocidos, pagos son descubiertos durante auditoría
+4. **UX optimizada:** Wizard captura setup, conteo captura realidad física
+
+#### **⚠️ Errores Comunes a Evitar:**
+
+❌ **ERROR:** "Voy a ingresar el pago de PayPal en Step 6 Gastos"
+✅ **CORRECTO:** PayPal es un INGRESO, se ingresa durante Phase 1 (no en wizard)
+
+❌ **ERROR:** "El gasto de $50 papel lo ingreso cuando cuento el efectivo"
+✅ **CORRECTO:** Gastos se ingresan en Step 6 (wizard, ANTES del conteo)
+
+❌ **ERROR:** "Si gasté $50, lo sumo al total porque es dinero que manejé"
+✅ **CORRECTO:** Gastos se RESTAN (egresos, no ingresos)
+
+---
+
 **Última actualización:** 11 de Octubre de 2025 ~17:00 PM
 **Documentación:** ✅ 100% COMPLETA (8/10 documentos - todos los críticos e importantes)
 **Próximo paso:** Aprobación gerencial → Inicio implementación (Fase 1: Tipos TypeScript)
 
 ---
 
-**Desarrollado con 💙 por Acuarios Paradise**  
+**Desarrollado con 💙 por Acuarios Paradise**
 **Gloria a Dios por cada línea de código funcionando** 🙏
