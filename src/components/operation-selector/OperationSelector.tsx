@@ -1,5 +1,5 @@
-// 🤖 [IA] - v2.2: Badge versión actualizado (fix crítico warning_override v1.3.7AI implementado)
-// Previous: v2.1 - Badge versión visible en header (12 tests unitarios ajuste post-verificación passing)
+// 🤖 [IA] - v2.3: Badge versión actualizado (fix input decimal gastos: acepta comas y puntos)
+// Previous: v2.2 - Badge versión actualizado (fix crítico warning_override v1.3.7AI implementado)
 import { motion } from 'framer-motion';
 import { Sunrise, Moon, ArrowRight, Calculator, Fish, Heart } from 'lucide-react';
 // 🤖 [IA] - v1.2.24 - FloatingParticles eliminado para mejorar rendimiento
@@ -76,15 +76,15 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
               }}>
                 Seleccione Operación
               </h1>
-              {/* 🤖 [IA] - v2.2: Badge versión actualizado (fix crítico warning_override v1.3.7AI implementado) */}
+              {/* 🤖 [IA] - v2.3: Badge versión actualizado (fix input decimal gastos: acepta comas y puntos) */}
               <span className="px-3 py-1 rounded-full text-xs font-semibold shadow-lg" style={{
                 background: 'linear-gradient(135deg, #d4af37 0%, #aa8c2d 100%)',
                 color: '#1a1a1a',
-                fontSize: 'clamp(0.75rem, 2.5vw, 0.875rem)',
+                fontWeight: '700',
                 boxShadow: '0 4px 6px rgba(212, 175, 55, 0.4)',
                 border: '1px solid rgba(255, 215, 0, 0.3)'
               }}>
-                v2.2
+                v2.3
               </span>
             </div>
           </div>

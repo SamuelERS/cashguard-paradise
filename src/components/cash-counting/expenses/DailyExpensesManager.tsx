@@ -337,13 +337,19 @@ export const DailyExpensesManager: React.FC<DailyExpensesManagerProps> = ({
               Monto (USD) <span className="text-red-500">*</span>
             </label>
             <Input
-              type="number"
-              value={formData.amount || ''}
-              onChange={(e) => setFormData({ ...formData, amount: parseFloat(e.target.value) || undefined })}
+              type="text"
+              inputMode="decimal"
+              value={formData.amount !== undefined ? formData.amount.toString() : ''}
+              onChange={(e) => {
+                // 🤖 [IA] - v2.3: Normalizar comas a puntos para universalidad
+                const normalizedValue = e.target.value.replace(',', '.');
+                const numericValue = parseFloat(normalizedValue);
+                setFormData({ 
+                  ...formData, 
+                  amount: isNaN(numericValue) ? undefined : numericValue 
+                });
+              }}
               placeholder="0.00"
-              step="0.01"
-              min={EXPENSE_VALIDATION.MIN_AMOUNT}
-              max={EXPENSE_VALIDATION.MAX_AMOUNT}
               disabled={disabled}
               className="bg-[rgba(20,20,20,0.8)] border-[rgba(255,255,255,0.15)] text-[#e1e8ed]"
             />
