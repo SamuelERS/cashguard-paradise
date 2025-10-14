@@ -14,7 +14,7 @@ describe('DailyExpensesManager', () => {
     id: 'test-id-1',
     concept: 'Reparación bomba agua',
     amount: 45.0,
-    category: 'operational' as ExpenseCategory,
+    category: 'maintenance' as ExpenseCategory,
     hasInvoice: true,
     timestamp: '2025-10-13T09:45:00.000Z',
   };
@@ -161,7 +161,7 @@ describe('DailyExpensesManager', () => {
         id: `test-id-${i}`,
         concept: `Gasto ${i + 1}`,
         amount: 10.0,
-        category: 'operational' as ExpenseCategory,
+        category: 'maintenance' as ExpenseCategory,
         hasInvoice: false,
         timestamp: new Date().toISOString(),
       }));

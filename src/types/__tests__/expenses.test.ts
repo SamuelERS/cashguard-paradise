@@ -135,13 +135,15 @@ describe('expenses.ts - Types y Guards', () => {
   });
 
   // SUITE 4: EXPENSE_CATEGORY_EMOJI (1 test)
+  // 🤖 [IA] - v2.5: Tests actualizados con nuevas categorías Paradise Acuarios
   describe('EXPENSE_CATEGORY_EMOJI mapping', () => {
-    it('4.1 - Contiene emojis para todas las 5 categorias', () => {
+    it('4.1 - Contiene emojis para todas las 6 categorias', () => {
       const categories: ExpenseCategory[] = [
-        'operational',
+        'employees',
         'supplies',
-        'transport',
-        'services',
+        'maintenance',
+        'shipping',
+        'small_purchases',
         'other'
       ];
 
@@ -154,13 +156,15 @@ describe('expenses.ts - Types y Guards', () => {
   });
 
   // SUITE 5: EXPENSE_CATEGORY_LABEL (1 test)
+  // 🤖 [IA] - v2.5: Tests actualizados con nuevas categorías Paradise Acuarios
   describe('EXPENSE_CATEGORY_LABEL mapping', () => {
-    it('5.1 - Contiene labels en espa�ol para todas las 5 categorias', () => {
+    it('5.1 - Contiene labels en español para todas las 6 categorias', () => {
       const categories: ExpenseCategory[] = [
-        'operational',
+        'employees',
         'supplies',
-        'transport',
-        'services',
+        'maintenance',
+        'shipping',
+        'small_purchases',
         'other'
       ];
 
@@ -168,7 +172,8 @@ describe('expenses.ts - Types y Guards', () => {
         expect(EXPENSE_CATEGORY_LABEL[category]).toBeDefined();
         expect(typeof EXPENSE_CATEGORY_LABEL[category]).toBe('string');
         expect(EXPENSE_CATEGORY_LABEL[category].length).toBeGreaterThan(0);
-        expect(EXPENSE_CATEGORY_LABEL[category].length).toBeLessThanOrEqual(12);
+        // 🤖 [IA] - v2.5: Límite aumentado a 20 para "Insumos Operativos" (18 chars)
+        expect(EXPENSE_CATEGORY_LABEL[category].length).toBeLessThanOrEqual(20);
       });
     });
   });

@@ -429,20 +429,30 @@ export const DailyExpensesManager: React.FC<DailyExpensesManagerProps> = ({
             </label>
           </div>
 
-          {/* Botones */}
-          <div className="flex gap-2">
+          {/* Botones - 🤖 [IA] - v2.5: Fix alineación responsive móvil */}
+          <div className="flex gap-[clamp(0.5rem,2vw,0.75rem)] w-full">
             <Button
               onClick={handleCancel}
               variant="ghost"
               disabled={disabled}
-              className="flex-1 border-[rgba(255,255,255,0.15)] text-[#8899a6] hover:bg-[rgba(255,255,255,0.05)]"
+              className="flex-1 min-w-0 border-[rgba(255,255,255,0.15)] text-[#8899a6] hover:bg-[rgba(255,255,255,0.05)]"
+              style={{
+                height: 'clamp(2.5rem, 10vw, 3rem)',
+                fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
+                padding: 'clamp(0.5rem, 2vw, 1rem)'
+              }}
             >
               Cancelar
             </Button>
             <Button
               onClick={editingId ? handleUpdateExpense : handleAddExpense}
               disabled={disabled || !isFormValid}
-              className="flex-1 bg-[#0a84ff] hover:bg-[#0070dd] text-white disabled:opacity-50"
+              className="flex-1 min-w-0 bg-[#0a84ff] hover:bg-[#0070dd] text-white disabled:opacity-50"
+              style={{
+                height: 'clamp(2.5rem, 10vw, 3rem)',
+                fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
+                padding: 'clamp(0.5rem, 2vw, 1rem)'
+              }}
             >
               {editingId ? 'Actualizar' : 'Guardar Gasto'}
             </Button>
