@@ -1,5 +1,5 @@
-// 🤖 [IA] - v1.3.7AG: OCULTACIÓN BORDE ROJO INPUT - Conditional borderColor validation (4 elementos ocultos: badge #1, badge #2, mensaje error, borde input)
-// Previous: v1.3.7AF - OCULTACIÓN MENSAJE ERROR ROJO - Conditional rendering hint validation (3 elementos ocultos)
+// 🤖 [IA] - v1.3.7AH: OCULTACIÓN MENSAJE "CANTIDAD CORRECTA" - Conditional success message (5 elementos ocultos: badge #1, badge #2, mensaje error, borde input, mensaje success)
+// Previous: v1.3.7AG - OCULTACIÓN BORDE ROJO INPUT - Conditional borderColor validation (4 elementos ocultos)
 // Previous: v1.3.7AE - OCULTACIÓN "QUEDA EN CAJA" - Conditional rendering 2 badges Phase 2 (conteo ciego producción)
 // 🤖 [IA] - v1.3.6M: FIX CRÍTICO - clearAttemptHistory() borraba intentos antes de buildVerificationBehavior (reporte sin datos)
 // 🤖 [IA] - v1.3.6h: BUG FIX CRÍTICO - Enter key leak modal verificación (triple defensa anti-fraude)
@@ -926,7 +926,8 @@ export function Phase2VerificationSection({
                 </ConstructiveActionButton>
               </div>
               {/* Success indicator */}
-              {inputValue && parseInt(inputValue) === currentStep.quantity && (
+              {/* 🔒 Mensaje success condicional (conteo ciego producción) */}
+              {SHOW_REMAINING_AMOUNTS && inputValue && parseInt(inputValue) === currentStep.quantity && (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}

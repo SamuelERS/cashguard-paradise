@@ -402,6 +402,80 @@ Total estimado restante: 18-23 horas
 
 ---
 
+### v1.3.7AH - Ocultación Mensaje "✓ Cantidad correcta": 5º Elemento Conteo Ciego [13 OCT 2025 ~18:15 PM] ✅
+**OPERACIÓN QUINTO ELEMENTO OCULTO:** Eliminación definitiva del último feedback visual instantáneo - mensaje verde "✓ Cantidad correcta" revelaba cuando valor ingresado era correcto ANTES de presionar Confirmar.
+
+**Problema reportado (usuario con screenshot):**
+- Usuario compartió imagen mostrando mensaje **"✓ Cantidad correcta"** apareciendo debajo del input
+- Screenshot mostraba: Usuario ingresó **20** (valor correcto) → Sistema mostró mensaje verde con check → REVELA CORRECCIÓN INSTANTÁNEA
+- Este era el **5º elemento crítico** que rompía conteo ciego (después de: Badge #1, Badge #2, Mensaje Error, Borde Rojo)
+- **Riesgo anti-fraude MÁXIMO:** Empleado puede "tantear" valores hasta ver el ✓ verde sin contar físicamente
+
+**Root cause identificado:**
+```typescript
+// Phase2VerificationSection.tsx línea 929 (ANTES v1.3.7AG):
+{inputValue && parseInt(inputValue) === currentStep.quantity && (
+  <motion.div>
+    <div className="flex items-center gap-1 text-xs text-success">
+      <Check className="w-3 h-3" />
+      <span>Cantidad correcta</span>
+    </div>
+  </motion.div>
+)}
+// Problema: Compara inputValue vs currentStep.quantity Y MUESTRA RESULTADO INMEDIATO
+// Resultado: Valor correcto → Mensaje verde ✓ → PISTA VISUAL CRÍTICA ❌
+```
+
+**Solución implementada:**
+```typescript
+// ✅ DESPUÉS v1.3.7AH (línea 929-930):
+{/* 🔒 Mensaje success condicional (conteo ciego producción) */}
+{SHOW_REMAINING_AMOUNTS && inputValue && parseInt(inputValue) === currentStep.quantity && (
+  <motion.div>
+    <div className="flex items-center gap-1 text-xs text-success">
+      <Check className="w-3 h-3" />
+      <span>Cantidad correcta</span>
+    </div>
+  </motion.div>
+)}
+
+// Producción (false): Mensaje NUNCA aparece - sin feedback instantáneo ✅
+// Desarrollo (true): Mensaje aparece cuando correcto - debugging visual ✅
+```
+
+**Resultado esperado:**
+```
+Usuario ingresa: 20 (esperado: 20)
+Mensaje "Cantidad correcta": NO APARECE ❌
+Borde input: Azul (sin cambio)
+Usuario DEBE presionar "Confirmar" para avanzar
+Zero feedback visual hasta confirmación explícita ✅
+```
+
+**Arquitectura Single Source of Truth:**
+Un **ÚNICO** flag controla **5 elementos**:
+1. Badge #1 (header) - línea 676
+2. Badge #2 (placeholder) - línea 836
+3. Mensaje Error #3 - línea 906
+4. Borde Input #4 - línea 893
+5. **Mensaje Success #5 - línea 930** ← NUEVO ✅
+
+**Beneficios:**
+- ✅ Conteo ciego 100% COMPLETO (5/5 elementos ocultos)
+- ✅ Zero feedback instantáneo (ni error, ni success)
+- ✅ Adivinanza por "tanteo" ELIMINADA completamente
+- ✅ Empleado DEBE contar físicamente sin pistas visuales
+- ✅ Reversible con 1 línea (`false` → `true`)
+
+**Filosofía Paradise validada:**
+- "El que hace bien las cosas ni cuenta se dará" → Empleado honesto cuenta bien, confirma, avanza sin fricción
+- "No mantenemos malos comportamientos" → Última fuente de feedback visual eliminada quirúrgicamente
+- ZERO TOLERANCIA → Conteo ciego puro sin hints: ni badges, ni mensajes, ni colores, ni checks
+
+**Archivos:** `Phase2VerificationSection.tsx` (líneas 1-2, 929-930), `CLAUDE.md`
+
+---
+
 ### v1.3.7AG - Ocultación Borde Rojo Input: 4º Elemento Conteo Ciego [11 OCT 2025 ~20:35 PM] ✅
 **OPERACIÓN CUARTO ELEMENTO OCULTO:** Eliminación definitiva de la última pista visual de conteo ciego - borde rojo del input field revelaba cuando valor era incorrecto.
 
@@ -5293,7 +5367,7 @@ src/
 - All payment types (cash + electronic)
 - Colors: Blue-purple gradient (#0a84ff → #5e5ce6)
 
-## 🏠 Reglas de la Casa v2.0
+## 🏠 Reglas de la Casa v2.1
 
 ### 📋 Directrices Esenciales
 
