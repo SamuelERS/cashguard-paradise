@@ -74,6 +74,9 @@ export const DailyExpensesManager: React.FC<DailyExpensesManagerProps> = ({
     hasInvoice: false,
   });
 
+  /** 🤖 [IA] - v2.3: Input temporal para permitir "44." mientras usuario escribe */
+  const [amountInput, setAmountInput] = useState<string>('');
+
   /** Errores de validación */
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -146,7 +149,7 @@ export const DailyExpensesManager: React.FC<DailyExpensesManagerProps> = ({
   }, [formData]);
 
   /**
-   * Reset formulario
+   * Resetear formulario
    */
   const resetForm = useCallback(() => {
     setFormData({
@@ -155,9 +158,10 @@ export const DailyExpensesManager: React.FC<DailyExpensesManagerProps> = ({
       category: undefined,
       hasInvoice: false,
     });
-    setErrors({});
-    setIsAdding(false);
+    setAmountInput(''); // 🤖 [IA] - v2.3: Limpiar input temporal
     setEditingId(null);
+    setIsAdding(false);
+    setErrors({});
   }, []);
 
   // ==================== EVENT HANDLERS ====================
@@ -212,6 +216,7 @@ export const DailyExpensesManager: React.FC<DailyExpensesManagerProps> = ({
       category: expense.category,
       hasInvoice: expense.hasInvoice,
     });
+    setAmountInput(expense.amount.toString()); // 🤖 [IA] - v2.3: Sincronizar input temporal
     setEditingId(expense.id);
     setIsAdding(true);
     setErrors({});
@@ -339,15 +344,42 @@ export const DailyExpensesManager: React.FC<DailyExpensesManagerProps> = ({
             <Input
               type="text"
               inputMode="decimal"
-              value={formData.amount !== undefined ? formData.amount.toString() : ''}
+              value={amountInput}
               onChange={(e) => {
                 // 🤖 [IA] - v2.3: Normalizar comas a puntos para universalidad
-                const normalizedValue = e.target.value.replace(',', '.');
-                const numericValue = parseFloat(normalizedValue);
-                setFormData({ 
-                  ...formData, 
-                  amount: isNaN(numericValue) ? undefined : numericValue 
-                });
+                let rawValue = e.target.value;
+                
+                // Permitir solo números, punto, coma
+                rawValue = rawValue.replace(/[^0-9.,]/g, '');
+                
+                // Reemplazar TODAS las comas por puntos
+                rawValue = rawValue.replace(/,/g, '.');
+                
+                // Permitir solo UN punto decimal
+                const parts = rawValue.split('.');
+                if (parts.length > 2) {
+                  rawValue = parts[0] + '.' + parts.slice(1).join('');
+                }
+                
+                // Actualizar input temporal (permite "44." mientras escribe)
+                setAmountInput(rawValue);
+                
+                // Convertir a número para validación
+                if (rawValue === '' || rawValue === '.') {
+                  setFormData({ ...formData, amount: undefined });
+                } else {
+                  const numericValue = parseFloat(rawValue);
+                  setFormData({ 
+                    ...formData, 
+                    amount: isNaN(numericValue) ? undefined : numericValue 
+                  });
+                }
+              }}
+              onBlur={() => {
+                // 🤖 [IA] - v2.3: Al perder focus, formatear correctamente
+                if (formData.amount !== undefined) {
+                  setAmountInput(formData.amount.toString());
+                }
               }}
               placeholder="0.00"
               disabled={disabled}
