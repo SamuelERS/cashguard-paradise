@@ -24,6 +24,8 @@ import { CashCount, ElectronicPayments } from "@/types/cash";
 import { PhaseState, DeliveryCalculation } from "@/types/phases";
 // 🤖 [IA] - v1.3.6: MÓDULO 3 - Import tipos para sección anomalías
 import type { VerificationBehavior, VerificationAttempt } from "@/types/verification";
+// 🤖 [IA] - v1.4.0 FASE 5: Import tipos y constantes para gastos
+import { DailyExpense, EXPENSE_CATEGORY_EMOJI, EXPENSE_CATEGORY_LABEL } from '@/types/expenses';
 import { getStoreById, getEmployeeById } from "@/data/paradise";
 import { DenominationsList } from "@/components/cash-calculation/DenominationsList"; // 🤖 [IA] - v1.0.0: Componente extraído
 
@@ -32,6 +34,8 @@ interface CalculationData {
   totalCash: number;
   totalElectronic: number;
   totalGeneral: number;
+  totalExpenses: number; // 🤖 [IA] - v1.4.0 FASE 5: Total gastos
+  totalAdjusted: number; // 🤖 [IA] - v1.4.0 FASE 5: Total ajustado (totalGeneral - gastos)
   difference: number;
   changeResult: {
     change: Partial<CashCount>;
@@ -57,6 +61,7 @@ interface CashCalculationProps {
   expectedSales: number;
   cashCount: CashCount;
   electronicPayments: ElectronicPayments;
+  expenses?: DailyExpense[]; // 🤖 [IA] - v1.4.0 FASE 5: Gastos del día
   deliveryCalculation?: DeliveryCalculation;
   phaseState?: PhaseState;
   onBack: () => void;
@@ -73,6 +78,7 @@ const CashCalculation = ({
   expectedSales,
   cashCount,
   electronicPayments,
+  expenses = [], // 🤖 [IA] - v1.4.0 FASE 5: Default array vacío
   deliveryCalculation,
   phaseState,
   onBack,
@@ -103,7 +109,15 @@ const CashCalculation = ({
     const totalCash = calculateCashTotal(cashCount);
     const totalElectronic = Object.values(electronicPayments).reduce((sum, val) => sum + val, 0);
     const totalGeneral = totalCash + totalElectronic;
-    const difference = totalGeneral - expectedSales;
+    
+    // 🤖 [IA] - v1.4.0 FASE 5: Calcular total gastos
+    const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+    
+    // 🤖 [IA] - v1.4.0 FASE 5: Total ajustado = totalGeneral - gastos
+    const totalAdjusted = totalGeneral - totalExpenses;
+    
+    // 🤖 [IA] - v1.4.0 FASE 5: Diferencia usa totalAdjusted (NO totalGeneral)
+    const difference = totalAdjusted - expectedSales;
     
     const changeResult = calculateChange50(cashCount);
     
@@ -111,6 +125,8 @@ const CashCalculation = ({
       totalCash,
       totalElectronic,
       totalGeneral,
+      totalExpenses, // 🤖 [IA] - v1.4.0 FASE 5
+      totalAdjusted, // 🤖 [IA] - v1.4.0 FASE 5
       difference,
       changeResult,
       hasAlert: difference < -3.00,
@@ -126,8 +142,8 @@ const CashCalculation = ({
     };
     
     setCalculationData(data);
-    setIsCalculated(true);
-  }, [cashCount, electronicPayments, expectedSales]);
+    setCalculationData(data);
+  }, [cashCount, electronicPayments, expectedSales, expenses]); // 🤖 [IA] - v1.4.0 FASE 5: expenses agregado
 
   useEffect(() => {
     if (!isCalculated) {
@@ -545,6 +561,36 @@ ${videoTimestamp}
 ${alerts}`;
   };
 
+  // 🤖 [IA] - v1.4.0 FASE 5: Generar sección de gastos del día
+  const generateExpensesSection = useCallback(() => {
+    if (!expenses || expenses.length === 0) {
+      return ''; // No mostrar sección si no hay gastos
+    }
+
+    const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
+    
+    const expensesList = expenses.map((expense, index) => {
+      const categoryEmoji = EXPENSE_CATEGORY_EMOJI[expense.category];
+      const categoryLabel = EXPENSE_CATEGORY_LABEL[expense.category];
+      const invoiceStatus = expense.hasInvoice ? '✓ Con factura' : '✗ Sin factura';
+      
+      return `${index + 1}. ${categoryEmoji} ${expense.concept}
+   💵 ${formatCurrency(expense.amount)} | ${invoiceStatus}
+   📂 ${categoryLabel}`;
+    }).join('\n\n');
+
+    return `
+${WHATSAPP_SEPARATOR}
+
+💸 *GASTOS DEL DÍA*
+
+${expensesList}
+
+💰 *Total Gastos:* ${formatCurrency(totalExpenses)}
+⚠️ Este monto se restó del total general
+`;
+  }, [expenses]);
+
   const generateCompleteReport = useCallback(() => {
     validatePhaseCompletion();
 
@@ -642,10 +688,12 @@ ${electronicDetailsDesglosed}
 📦 *Entregado a Gerencia:* ${formatCurrency(deliveryCalculation?.amountToDeliver || 0)}
 🏢 *Quedó en Caja:* ${phaseState?.shouldSkipPhase2 ? formatCurrency(calculationData?.totalCash || 0) : '$50.00'}
 
-💼 *Total Día:* ${formatCurrency(calculationData?.totalGeneral || 0)}
-🎯 *SICAR Esperado:* ${formatCurrency(expectedSales)}
+💼 *Total General:* ${formatCurrency(calculationData?.totalGeneral || 0)}
+${(calculationData?.totalExpenses || 0) > 0 ? `💸 *Gastos del Día:* -${formatCurrency(calculationData?.totalExpenses || 0)}
+📊 *Total Ajustado:* ${formatCurrency(calculationData?.totalAdjusted || 0)}
+` : ''}🎯 *SICAR Esperado:* ${formatCurrency(expectedSales)}
 ${(calculationData?.difference || 0) >= 0 ? '📈' : '📉'} *Diferencia:* ${formatCurrency(calculationData?.difference || 0)} (${(calculationData?.difference || 0) >= 0 ? 'SOBRANTE' : 'FALTANTE'})
-${deliveryChecklistSection}${remainingChecklistSection}${fullAlertsSection}${verificationSection}
+${deliveryChecklistSection}${remainingChecklistSection}${generateExpensesSection()}${fullAlertsSection}${verificationSection}
 ${WHATSAPP_SEPARATOR}
 
 💰 *CONTEO COMPLETO (${formatCurrency(calculationData?.totalCash || 0)})*
@@ -664,7 +712,8 @@ ${WHATSAPP_SEPARATOR}
 Firma Digital: ${dataHash}`;
   }, [calculationData, electronicPayments, deliveryCalculation, store, cashier, witness, phaseState, expectedSales,
       validatePhaseCompletion, generateDenominationDetails, generateDataHash, generateCriticalAlertsBlock,
-      generateWarningAlertsBlock, generateDeliveryChecklistSection, generateRemainingChecklistSection]);
+      generateWarningAlertsBlock, generateDeliveryChecklistSection, generateRemainingChecklistSection, generateExpensesSection]);
+  // 🤖 [IA] - v1.4.0 FASE 5: expenses NO incluido en deps porque generateExpensesSection ya lo captura
 
   // 🤖 [IA] - v1.3.7: Handler con confirmación explícita + detección pop-ups bloqueados
   const handleWhatsAppSend = useCallback(() => {
@@ -949,11 +998,19 @@ Firma Digital: ${dataHash}`;
                     {formatCurrency(calculationData?.totalElectronic || 0)}
                   </span>
                 </div>
+                {(calculationData?.totalExpenses || 0) > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#8899a6' }}>Gastos:</span>
+                    <span className="font-bold text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#ff453a' }}>
+                      -{formatCurrency(calculationData?.totalExpenses || 0)}
+                    </span>
+                  </div>
+                )}
                 <div className="border-t border-gray-700 pt-3">
                   <div className="flex justify-between text-[clamp(1rem,4vw,1.125rem)] font-bold">
-                    <span style={{ color: '#8899a6' }}>Total General:</span>
+                    <span style={{ color: '#8899a6' }}>Total {(calculationData?.totalExpenses || 0) > 0 ? 'Ajustado' : 'General'}:</span>
                     <span style={{ color: '#0a84ff' }}>
-                      {formatCurrency(calculationData?.totalGeneral || 0)}
+                      {formatCurrency((calculationData?.totalExpenses || 0) > 0 ? (calculationData?.totalAdjusted || 0) : (calculationData?.totalGeneral || 0))}
                     </span>
                   </div>
                 </div>

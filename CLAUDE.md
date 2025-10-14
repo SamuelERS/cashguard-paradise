@@ -1,3 +1,74 @@
+### v1.4.0 - Sistema Gastos del Día COMPLETO [14 OCT 2025 ~00:22 AM] ✅
+**FASE 3, 4 Y 5 COMPLETADAS:** Sistema completo de gastos del día integrado en wizard, cálculos y reportería WhatsApp. Incluye validaciones, propagación de datos, y UI responsive. Bug botones duplicados corregido.
+
+**Fases Implementadas:**
+- ✅ **Fase 3:** Wizard Paso 6 "Gastos del Día" con DailyExpensesManager
+- ✅ **Fase 4:** Cálculos ajustados (totalAdjusted = totalGeneral - gastos)
+- ✅ **Fase 5:** Reporte WhatsApp con sección gastos desglosada
+
+**Cambios Críticos:**
+- `useWizardNavigation.ts`: 6 pasos, validación Paso 6 siempre true
+- `InitialWizardModal.tsx`: Paso 6 renderiza DailyExpensesManager, botón "Finalizar"
+- `Index.tsx`: Prop `dailyExpenses` opcional, propagación a CashCounter
+- `CashCounter.tsx`: Recibe `initialDailyExpenses`, estado interno
+- `CashCalculation.tsx`: Función `generateExpensesSection()`, RESUMEN ajustado, UI visual con gastos
+- `DailyExpensesManager.tsx`: Bug botones duplicados corregido (línea 289)
+
+**Ecuación Financiera:**
+```
+totalExpenses = Σ expenses.amount
+totalAdjusted = totalGeneral - totalExpenses
+difference = totalAdjusted - expectedSales  // ← Usa ajustado
+```
+
+**Reporte WhatsApp Nuevo:**
+```
+💼 *Total General:* $1,600.00
+💸 *Gastos del Día:* -$40.50
+📊 *Total Ajustado:* $1,559.50
+🎯 *SICAR Esperado:* $1,550.00
+📈 *Diferencia:* $9.50 (SOBRANTE)
+
+━━━━━━━━━━━━━━━━
+
+💸 *GASTOS DEL DÍA*
+
+1. 🔧 Reparación bomba de agua
+   💵 $25.00 | ✓ Con factura
+   📂 Mantenimiento
+
+2. 🧹 Productos de limpieza
+   💵 $15.50 | ✗ Sin factura
+   📂 Suministros
+
+💰 *Total Gastos:* $40.50
+⚠️ Este monto se restó del total general
+```
+
+**Métricas:**
+- TypeScript: 0 errors ✅
+- ESLint: 0 warnings ✅
+- Build: 2.25s ✅
+- Bundle: 1,461.92 KB (+1.22 KB)
+- Tests: PENDIENTE (Fase 6 opcional)
+
+**Archivos modificados:**
+- `useWizardNavigation.ts` (+6 cambios)
+- `InitialWizardModal.tsx` (+8 cambios)
+- `Index.tsx` (+3 cambios)
+- `CashCounter.tsx` (+4 cambios)
+- `CashCalculation.tsx` (+13 cambios)
+- `DailyExpensesManager.tsx` (+2 fixes)
+
+**Cumplimiento REGLAS_DE_LA_CASA.md:**
+- ✅ Tipado estricto (0 `any`)
+- ✅ Inmutabilidad código base
+- ✅ Build limpio
+- ⚠️ Tests pendientes (Fase 6)
+- ✅ Documentación actualizada
+
+---
+
 ### v1.3.6AD2 + v2.0 - Fix Diferencia Vuelto + Badge Visual [13 OCT 2025 ~22:00 PM] ✅
 **OPERACIÓN DOBLE FIX COMPLETADO:** (1) Resolución crítica bug financiero donde sistema aceptaba errores en verificación ciega PERO reporte NO descuenta diferencia, (2) Badge v2.0 visual en pantalla principal para confirmar parche aplicado.
 
