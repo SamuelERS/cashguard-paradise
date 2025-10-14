@@ -724,6 +724,7 @@ const CashCounter = ({
         expectedSales={parseFloat(expectedSales)}
         cashCount={cashCount}
         electronicPayments={electronicPayments}
+        expenses={dailyExpenses}
         deliveryCalculation={deliveryCalculation}
         phaseState={phaseState}
         onComplete={handleCompleteCalculation}
