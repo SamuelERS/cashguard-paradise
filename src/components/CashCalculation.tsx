@@ -434,10 +434,6 @@ ${alerts}`;
 📦 *LO QUE RECIBES (${formatCurrency(amountToDeliver)})*
 
 ${checklistContent}
-
-✅ Recibido: $________
-Hora: __:__  Firma: ________
-
 `;
   };
 
@@ -691,7 +687,8 @@ ${electronicDetailsDesglosed}
 💼 *Total General:* ${formatCurrency(calculationData?.totalGeneral || 0)}
 ${(calculationData?.totalExpenses || 0) > 0 ? `💸 *Gastos del Día:* -${formatCurrency(calculationData?.totalExpenses || 0)}
 📊 *Total Ajustado:* ${formatCurrency(calculationData?.totalAdjusted || 0)}
-` : ''}🎯 *SICAR Esperado:* ${formatCurrency(expectedSales)}
+` : ''}
+🎯 *SICAR Esperado:* ${formatCurrency(expectedSales)}
 ${(calculationData?.difference || 0) >= 0 ? '📈' : '📉'} *Diferencia:* ${formatCurrency(calculationData?.difference || 0)} (${(calculationData?.difference || 0) >= 0 ? 'SOBRANTE' : 'FALTANTE'})
 ${deliveryChecklistSection}${remainingChecklistSection}${generateExpensesSection()}${fullAlertsSection}${verificationSection}
 ${WHATSAPP_SEPARATOR}
