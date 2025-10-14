@@ -273,17 +273,35 @@ const handleAcceptThird = () => {
 
 ### Análisis de Intención Original
 
-**Posible justificación histórica:**
-- Permitir al usuario "re-intentar desde cero" si se arrepiente del override
-- Limpiar estado para evitar confusión en siguientes denominaciones
-- Prevenir memory leaks con Maps grandes
+**Justificación v1.3.6M (CLAUDE.md línea 4430):**
+```typescript
+// Justificación: Permite re-intentar si usuario se arrepiente del override antes de completar
+```
 
-**Contraargumento técnico:**
+**✅ HALLAZGO CRÍTICO - Justificación OBSOLETA:**
+
+**Evidencia forense (BlindVerificationModal.tsx línea 91-101):**
+```typescript
+case 'force-same':
+  // 🤖 [IA] - v1.3.2: Escenario 2a - Dos intentos iguales incorrectos (UX simplificada - solo "Forzar")
+  return {
+    title: 'Segundo Intento Idéntico',
+    confirmText: 'Forzar y Continuar',
+    cancelText: '',           // Sin botón cancelar - respeto al trabajo del empleado
+    showCancel: false         // Modal con único botón "Forzar y Continuar"
+  };
+```
+
+**Conclusión definitiva:**
+- ❌ Modal force-same **NO tiene botón cancelar** desde v1.3.2 (no documentado en CLAUDE.md)
+- ❌ Usuario **NO PUEDE arrepentirse** después de ver el modal
+- ❌ Justificación v1.3.6M "Permite re-intentar si se arrepiente" es **OBSOLETA**
+- ✅ clearAttemptHistory() en handleForce() es **INNECESARIO Y PERJUDICIAL**
+
+**Contraargumento técnico adicional:**
 1. **Re-intentar:** Usuario YA confirmó forzar valor → paso completado → no hay más intentos
 2. **Siguiente denominación:** Cada denominación tiene su propia key en el Map → no hay cross-contamination
 3. **Memory leaks:** Map se limpia automáticamente al desmontar componente (React lifecycle)
-
-**Conclusión:** clearAttemptHistory() en handleForce() es INNECESARIO y PERJUDICIAL.
 
 ---
 
@@ -330,6 +348,7 @@ clearAttemptHistory(currentStep.key);
 - [x] ✅ Solución propuesta lista (remover 1 línea)
 
 **Confianza en root cause:** 🟢 100% (evidencia forense exhaustiva)
+**Confianza en solución:** 🟢 100% (justificación v1.3.6M obsoleta confirmada)
 
 ---
 
