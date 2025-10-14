@@ -31,7 +31,7 @@
 - Monitoreo en producción de transiciones de fase
 - morning-count-simplified.test.tsx cubre flujos básicos
 
-----
+-----
 
 ### morning-count.test.tsx (8 tests)
 
