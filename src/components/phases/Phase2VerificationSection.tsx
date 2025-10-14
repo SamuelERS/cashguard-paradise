@@ -1,6 +1,6 @@
-// 🤖 [IA] - v1.3.7AH: OCULTACIÓN MENSAJE "CANTIDAD CORRECTA" - Conditional success message (5 elementos ocultos: badge #1, badge #2, mensaje error, borde input, mensaje success)
+// 🤖 [IA] - v1.3.7AI: FIX CRÍTICO warning_override NO reportado - clearAttemptHistory() removido handleForce() (patrón v1.3.6M/v1.3.6T)
+// Previous: v1.3.7AH - OCULTACIÓN MENSAJE "CANTIDAD CORRECTA" - Conditional success message (5 elementos ocultos)
 // Previous: v1.3.7AG - OCULTACIÓN BORDE ROJO INPUT - Conditional borderColor validation (4 elementos ocultos)
-// Previous: v1.3.7AE - OCULTACIÓN "QUEDA EN CAJA" - Conditional rendering 2 badges Phase 2 (conteo ciego producción)
 // 🤖 [IA] - v1.3.6M: FIX CRÍTICO - clearAttemptHistory() borraba intentos antes de buildVerificationBehavior (reporte sin datos)
 // 🤖 [IA] - v1.3.6h: BUG FIX CRÍTICO - Enter key leak modal verificación (triple defensa anti-fraude)
 // 🤖 [IA] - v1.3.6g: BUG FIX #1 - createTimeoutWithCleanup en deps causaba race conditions (9 errores loop)
@@ -556,9 +556,15 @@ export function Phase2VerificationSection({
     // Cerrar modal
     setModalState(prev => ({ ...prev, isOpen: false }));
 
-    // 🤖 [IA] - v1.3.6M: Limpiar historial SOLO en force override (usuario forzó mismo valor 2 veces)
-    // Justificación: Permite re-intentar si usuario se arrepiente del override antes de completar
-    clearAttemptHistory(currentStep.key);
+    // 🤖 [IA] - v1.3.7AI: FIX CRÍTICO warning_override - clearAttemptHistory() removido (patrón v1.3.6M/v1.3.6T)
+    // Root cause: Borraba attemptHistory Map ANTES de buildVerificationBehavior() → warnings NO aparecían en reporte WhatsApp
+    // Problema: handleForce() ejecuta línea 561 → attemptHistory.delete('nickel') → onStepComplete() → allStepsCompleted=true
+    //          → useEffect dispara buildVerificationBehavior() 7s después → forEach no itera key borrada → denominationsWithIssues=[]
+    // Solución: Preservar attemptHistory completo para que buildVerificationBehavior() construya reporte con TODOS los intentos ✅
+    // Justificación v1.3.6M OBSOLETA: "Permite re-intentar si se arrepiente" - Modal force-same NO tiene botón cancelar desde v1.3.2
+    //                                  (BlindVerificationModal.tsx línea 100: showCancel: false)
+    // Justificación ACTUAL: Map se limpia automáticamente al unmount componente (React lifecycle) - no hay memory leaks
+    // Patrón validado: v1.3.6T (línea 411 handleConfirmStep) + v1.3.6M (handleAcceptThird) - ambos funcionan correctamente
 
     // Marcar paso completado con valor forzado
     onStepComplete(currentStep.key);
