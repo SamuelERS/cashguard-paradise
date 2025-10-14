@@ -29,13 +29,15 @@ import { DailyExpense, EXPENSE_CATEGORY_EMOJI, EXPENSE_CATEGORY_LABEL } from '@/
 import { getStoreById, getEmployeeById } from "@/data/paradise";
 import { DenominationsList } from "@/components/cash-calculation/DenominationsList"; // 🤖 [IA] - v1.0.0: Componente extraído
 
-// 🤖 [IA] - v1.2.22: TypeScript interface for calculation results
+// 🤖 [IA] - v2.4.2: TypeScript interface actualizada con nueva lógica de ventas
 interface CalculationData {
-  totalCash: number;
-  totalElectronic: number;
-  totalGeneral: number;
+  totalCash: number; // Efectivo total contado (incluye fondo $50)
+  totalElectronic: number; // Pagos electrónicos
+  salesCash: number; // 🤖 [IA] - v2.4.2: Efectivo de ventas (totalCash - $50 fondo)
+  totalGeneral: number; // 🤖 [IA] - v2.4.2: Total ventas (salesCash + electronic)
   totalExpenses: number; // 🤖 [IA] - v1.4.0 FASE 5: Total gastos
-  totalAdjusted: number; // 🤖 [IA] - v1.4.0 FASE 5: Total ajustado (totalGeneral - gastos)
+  totalWithExpenses: number; // 🤖 [IA] - v2.4.2: Ventas + Gastos (para comparar con SICAR Entradas)
+  totalAdjusted?: number; // 🤖 [IA] - v2.4.2: DEPRECATED - Mantener para compatibilidad
   difference: number;
   changeResult: {
     change: Partial<CashCount>;
@@ -108,25 +110,30 @@ const CashCalculation = ({
   const performCalculation = useCallback(() => {
     const totalCash = calculateCashTotal(cashCount);
     const totalElectronic = Object.values(electronicPayments).reduce((sum, val) => sum + val, 0);
-    const totalGeneral = totalCash + totalElectronic;
+    
+    // 🤖 [IA] - v2.4.2: FIX CRÍTICO - Restar fondo de $50 del efectivo para obtener ventas reales
+    const CHANGE_FUND = 50.00;
+    const salesCash = totalCash - CHANGE_FUND;
+    const totalGeneral = salesCash + totalElectronic;
     
     // 🤖 [IA] - v1.4.0 FASE 5: Calcular total gastos
     const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
     
-    // 🤖 [IA] - v1.4.0 FASE 5: Total ajustado = totalGeneral - gastos
-    const totalAdjusted = totalGeneral - totalExpenses;
+    // 🤖 [IA] - v2.4.2: Total con gastos = ventas + gastos (para comparar con SICAR Entradas)
+    const totalWithExpenses = totalGeneral + totalExpenses;
     
-    // 🤖 [IA] - v1.4.0 FASE 5: Diferencia usa totalAdjusted (NO totalGeneral)
-    const difference = totalAdjusted - expectedSales;
+    // 🤖 [IA] - v2.4.2: Diferencia = (Ventas + Gastos) - SICAR Entradas
+    const difference = totalWithExpenses - expectedSales;
     
     const changeResult = calculateChange50(cashCount);
     
     const data = {
       totalCash,
       totalElectronic,
-      totalGeneral,
+      salesCash, // 🤖 [IA] - v2.4.2: Efectivo de ventas (sin fondo)
+      totalGeneral, // 🤖 [IA] - v2.4.2: Total ventas (sin fondo, sin gastos)
       totalExpenses, // 🤖 [IA] - v1.4.0 FASE 5
-      totalAdjusted, // 🤖 [IA] - v1.4.0 FASE 5
+      totalWithExpenses, // 🤖 [IA] - v2.4.2: Ventas + Gastos (para comparar con SICAR)
       difference,
       changeResult,
       hasAlert: difference < -3.00,
@@ -678,18 +685,20 @@ ${WHATSAPP_SEPARATOR}
 📊 *RESUMEN EJECUTIVO*
 
 💰 Efectivo Contado: *${formatCurrency(calculationData?.totalCash || 0)}*
+   (Incluye fondo $50.00)
 
 ${electronicDetailsDesglosed}
 
 📦 *Entregado a Gerencia:* ${formatCurrency(deliveryCalculation?.amountToDeliver || 0)}
 🏢 *Quedó en Caja:* ${phaseState?.shouldSkipPhase2 ? formatCurrency(calculationData?.totalCash || 0) : formatCurrency(deliveryCalculation?.amountRemaining ?? 50)}
 
-💼 *Total General:* ${formatCurrency(calculationData?.totalGeneral || 0)}
-${(calculationData?.totalExpenses || 0) > 0 ? `💸 *Gastos del Día:* -${formatCurrency(calculationData?.totalExpenses || 0)}
-📊 *Total Ajustado:* ${formatCurrency(calculationData?.totalAdjusted || 0)}
+💵 *Efectivo de Ventas:* ${formatCurrency(calculationData?.salesCash || 0)}
+💼 *Total Ventas:* ${formatCurrency(calculationData?.totalGeneral || 0)}
+${(calculationData?.totalExpenses || 0) > 0 ? `💸 *Gastos del Día:* +${formatCurrency(calculationData?.totalExpenses || 0)}
+📊 *Ventas + Gastos:* ${formatCurrency(calculationData?.totalWithExpenses || 0)}
 ` : ''}
-🎯 *SICAR Esperado:* ${formatCurrency(expectedSales)}
-${(calculationData?.difference || 0) >= 0 ? '📈' : '📉'} *Diferencia:* ${formatCurrency(calculationData?.difference || 0)} (${(calculationData?.difference || 0) >= 0 ? 'SOBRANTE' : 'FALTANTE'})
+🎯 *SICAR Entradas:* ${formatCurrency(expectedSales)}
+${(calculationData?.difference || 0) >= 0 ? '📈' : '📉'} *Diferencia:* ${formatCurrency(Math.abs(calculationData?.difference || 0))} (${(calculationData?.difference || 0) >= 0 ? 'SOBRANTE' : 'FALTANTE'})
 ${deliveryChecklistSection}${remainingChecklistSection}${generateExpensesSection()}${fullAlertsSection}${verificationSection}
 ${WHATSAPP_SEPARATOR}
 
@@ -984,9 +993,21 @@ Firma Digital: ${dataHash}`;
               </h3>
               <div className="space-y-[clamp(0.75rem,3vw,1rem)]">
                 <div className="flex justify-between">
-                  <span className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#8899a6' }}>Efectivo:</span>
+                  <span className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#8899a6' }}>Efectivo Contado:</span>
                   <span className="font-bold text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#e1e8ed' }}>
                     {formatCurrency(calculationData?.totalCash || 0)}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-[clamp(0.75rem,3vw,0.875rem)]" style={{ color: '#8899a6' }}>  (Incluye fondo $50)</span>
+                  <span className="text-[clamp(0.75rem,3vw,0.875rem)]" style={{ color: '#8899a6' }}>
+                    -$50.00
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#8899a6' }}>Efectivo Ventas:</span>
+                  <span className="font-bold text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#e1e8ed' }}>
+                    {formatCurrency(calculationData?.salesCash || 0)}
                   </span>
                 </div>
                 <div className="flex justify-between">
@@ -995,24 +1016,32 @@ Firma Digital: ${dataHash}`;
                     {formatCurrency(calculationData?.totalElectronic || 0)}
                   </span>
                 </div>
-                {(calculationData?.totalExpenses || 0) > 0 && (
-                  <div className="flex justify-between">
-                    <span className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#8899a6' }}>Gastos:</span>
-                    <span className="font-bold text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#ff453a' }}>
-                      -{formatCurrency(calculationData?.totalExpenses || 0)}
-                    </span>
-                  </div>
-                )}
                 <div className="border-t border-gray-700 pt-3">
                   <div className="flex justify-between text-[clamp(1rem,4vw,1.125rem)] font-bold">
-                    <span style={{ color: '#8899a6' }}>Total {(calculationData?.totalExpenses || 0) > 0 ? 'Ajustado' : 'General'}:</span>
+                    <span style={{ color: '#8899a6' }}>Total Ventas:</span>
                     <span style={{ color: '#0a84ff' }}>
-                      {formatCurrency((calculationData?.totalExpenses || 0) > 0 ? (calculationData?.totalAdjusted || 0) : (calculationData?.totalGeneral || 0))}
+                      {formatCurrency(calculationData?.totalGeneral || 0)}
                     </span>
                   </div>
                 </div>
+                {(calculationData?.totalExpenses || 0) > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#8899a6' }}>Gastos:</span>
+                    <span className="font-bold text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#ff9f0a' }}>
+                      +{formatCurrency(calculationData?.totalExpenses || 0)}
+                    </span>
+                  </div>
+                )}
+                {(calculationData?.totalExpenses || 0) > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#8899a6' }}>Ventas + Gastos:</span>
+                    <span className="font-bold text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#e1e8ed' }}>
+                      {formatCurrency(calculationData?.totalWithExpenses || 0)}
+                    </span>
+                  </div>
+                )}
                 <div className="flex justify-between">
-                  <span className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#8899a6' }}>Venta Esperada:</span>
+                  <span className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#8899a6' }}>SICAR Entradas:</span>
                   <span className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#8899a6' }}>
                     {formatCurrency(expectedSales)}
                   </span>
