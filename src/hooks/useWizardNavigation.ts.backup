@@ -1,9 +1,9 @@
 /**
- * 🤖 [IA] - Hook para navegación del wizard inicial - v1.4.0
+ * 🤖 [IA] - Hook para navegación del wizard inicial - v1.0.38
  * 
  * @description
  * Hook que gestiona la navegación y validación del wizard de configuración inicial
- * del corte de caja. Maneja 6 pasos: protocolo, sucursal, cajero, testigo, venta esperada y gastos.
+ * del corte de caja. Maneja 5 pasos: protocolo, sucursal, cajero, testigo y venta esperada.
  * Incluye validación automática y prevención de avance con datos inválidos.
  * 
  * @example
@@ -35,7 +35,6 @@
  * @property {function} getNavigationState - Obtiene el estado de navegación actual
  */
 import { useState, useCallback } from 'react';
-import { DailyExpense } from '@/types/expenses'; // 🤖 [IA] - v1.4.0: Soporte gastos del día
 
 /**
  * Datos recopilados durante el wizard
@@ -46,7 +45,6 @@ import { DailyExpense } from '@/types/expenses'; // 🤖 [IA] - v1.4.0: Soporte 
  * @property {string} selectedCashier - ID del cajero seleccionado
  * @property {string} selectedWitness - ID del testigo seleccionado
  * @property {string} expectedSales - Venta esperada según SICAR
- * @property {DailyExpense[]} dailyExpenses - Gastos operacionales del día (opcional)
  */
 export interface WizardData {
   // Paso 1: Protocolo
@@ -63,9 +61,6 @@ export interface WizardData {
   
   // Paso 5: Venta Esperada
   expectedSales: string;
-  
-  // 🤖 [IA] - v1.4.0: Paso 6 - Gastos del Día (opcional)
-  dailyExpenses?: DailyExpense[];
 }
 
 export interface WizardNavigationState {
@@ -82,14 +77,13 @@ const INITIAL_WIZARD_DATA: WizardData = {
   selectedStore: '',
   selectedCashier: '',
   selectedWitness: '',
-  expectedSales: '',
-  dailyExpenses: [] // 🤖 [IA] - v1.4.0: Array vacío por defecto
+  expectedSales: ''
 };
 
 export function useWizardNavigation() {
   const [currentStep, setCurrentStep] = useState(1);
   const [wizardData, setWizardData] = useState<WizardData>(INITIAL_WIZARD_DATA);
-  const totalSteps = 6; // 🤖 [IA] - v1.4.0: Agregado Paso 6 (Gastos del Día)
+  const totalSteps = 5;
 
   // Validaciones por paso - ahora acepta estado externo para las reglas
   const validateStep = useCallback((step: number, data: WizardData, rulesCompleted?: boolean): boolean => {
@@ -111,9 +105,6 @@ export function useWizardNavigation() {
         const salesValue = parseFloat(data.expectedSales);
         return !isNaN(salesValue) && salesValue > 0;
       }
-
-      case 6: // 🤖 [IA] - v1.4.0: Gastos del Día (OPCIONAL)
-        return true; // Siempre válido - gastos son opcionales
 
       default:
         return false;
@@ -193,8 +184,6 @@ export function useWizardNavigation() {
         return 'Selección de Testigo';
       case 5:
         return 'Venta Esperada Segun SICAR';
-      case 6: // 🤖 [IA] - v1.4.0
-        return 'Gastos del Día';
       default:
         return '';
     }

@@ -1,6 +1,7 @@
-// 🤖 [IA] - v1.3.6AC: FIX S0-003 - Excepción Phase 3 en PWA mode (permite scroll natural reportes largos)
-// Previous: v1.2.19 - Phase 1 Navigation System simplified to 2-button layout
+// 🤖 [IA] - v1.4.0: Integración Sistema Gastos de Caja
+// Previous: v1.3.6AC - FIX S0-003 - Excepción Phase 3 en PWA mode
 import { useState, useEffect, useCallback } from "react";
+import { DailyExpense } from '@/types/expenses'; // 🤖 [IA] - v1.4.0: Tipos gastos
 import { motion } from "framer-motion";
 import { ArrowLeft, X, Calculator, Users, MapPin, DollarSign, Sunrise } from "lucide-react";
 // 🤖 [IA] - FAE-02: PURGA QUIRÚRGICA COMPLETADA - CSS imports eliminados
@@ -59,26 +60,28 @@ interface ExtendedCSSStyleDeclaration extends CSSStyleDeclaration {
   webkitOverflowScrolling?: string;
 }
 
-// 🤖 [IA] - v1.0.81 - Props con modo de operación
+// 🤖 [IA] - v1.4.0 - Props con modo de operación y gastos
 interface CashCounterProps {
-  operationMode?: OperationMode; // 🤖 [IA] - v1.0.81
+  operationMode?: OperationMode;
   initialStore?: string;
   initialCashier?: string;
   initialWitness?: string;
   initialExpectedSales?: string;
+  initialDailyExpenses?: DailyExpense[]; // 🤖 [IA] - v1.4.0: Gastos del día
   onBack?: () => void;
-  onFlowCancel?: () => void; // 🤖 [IA] - SAFE-RETURN: Callback para cancelación de flujo
+  onFlowCancel?: () => void;
 }
 
-// 🤖 [IA] - v1.0.81 - Glass effect con modo dual
+// 🤖 [IA] - v1.4.0 - Glass effect con modo dual y gastos
 const CashCounter = ({
-  operationMode = OperationMode.CASH_CUT, // 🤖 [IA] - v1.0.81
+  operationMode = OperationMode.CASH_CUT,
   initialStore = "",
   initialCashier = "",
   initialWitness = "",
   initialExpectedSales = "",
+  initialDailyExpenses = [], // 🤖 [IA] - v1.4.0: Array vacío por defecto
   onBack,
-  onFlowCancel // 🤖 [IA] - SAFE-RETURN: Callback para cancelación de flujo
+  onFlowCancel
 }: CashCounterProps) => {
   // 🤖 [IA] - v1.0.81 - Detectar modo de operación
   const isMorningCount = operationMode === OperationMode.CASH_COUNT;
@@ -96,6 +99,7 @@ const CashCounter = ({
   const [selectedCashier, setSelectedCashier] = useState(initialCashier);
   const [selectedWitness, setSelectedWitness] = useState(initialWitness);
   const [expectedSales, setExpectedSales] = useState(initialExpectedSales);
+  const [dailyExpenses] = useState<DailyExpense[]>(initialDailyExpenses); // 🤖 [IA] - v1.4.0: Gastos del día
   const [showExitConfirmation, setShowExitConfirmation] = useState(false); // 🤖 [IA] - v1.2.9: Estado para diálogo de confirmación
   const [showBackConfirmation, setShowBackConfirmation] = useState(false); // 🤖 [IA] - v1.2.19: Estado para confirmación de retroceso
   

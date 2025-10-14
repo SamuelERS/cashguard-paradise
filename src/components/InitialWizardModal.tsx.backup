@@ -1,4 +1,4 @@
-// 🤖 [IA] - InitialWizardModal v1.4.0 - Integración Sistema Gastos de Caja
+// 🤖 [IA] - InitialWizardModal v1.3.0 - Arquitectura Guiada Basada en Datos + Performance Optimized
 // 🤖 [IA] - v1.2.41N: UX/UI migrado de MorningCount - header con icono + botón X
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -9,8 +9,6 @@ import {
   X,           // 🆕 v1.2.41N: Botón cerrar
   ArrowLeft    // 🆕 v1.2.41R: Flecha para botón Anterior
 } from "lucide-react";
-import { DailyExpense } from '@/types/expenses'; // 🤖 [IA] - v1.4.0: Tipos gastos
-import { DailyExpensesManager } from '@/components/cash-counting/expenses/DailyExpensesManager'; // 🤖 [IA] - v1.4.0: Componente gastos
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button"; // 🆕 v1.2.41N: Botón cerrar
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -46,7 +44,6 @@ interface InitialWizardModalProps {
     selectedCashier: string;
     selectedWitness: string;
     expectedSales: string;
-    dailyExpenses: DailyExpense[]; // 🤖 [IA] - v1.4.0: Gastos del día
   }) => void;
 }
 
@@ -169,8 +166,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
         selectedStore: wizardData.selectedStore,
         selectedCashier: wizardData.selectedCashier,
         selectedWitness: wizardData.selectedWitness,
-        expectedSales: wizardData.expectedSales,
-        dailyExpenses: wizardData.dailyExpenses || [] // 🤖 [IA] - v1.4.0: Gastos del día
+        expectedSales: wizardData.expectedSales
       });
       resetWizard();
     }
@@ -194,15 +190,14 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
     setShowCancelConfirmation(false);
   }, []);
 
-  // 🤖 [IA] - v1.4.0: Calcular progreso basado en tareas completadas (6 pasos)
-  const totalTasks = 6; // 🤖 [IA] - v1.4.0: 6 pasos del wizard
+  // 🤖 [IA] - v1.2.25: Calcular progreso basado en tareas completadas - flujo guiado como fuente única de verdad
+  const totalTasks = 5; // 5 pasos del wizard
   const completedTasks = [
     isFlowCompleted(),                         // Paso 1: Protocolo completado
     wizardData.selectedStore !== '',          // Paso 2: Sucursal seleccionada
     wizardData.selectedCashier !== '',        // Paso 3: Cajero seleccionado
     wizardData.selectedWitness !== '',        // Paso 4: Testigo seleccionado
-    wizardData.expectedSales !== '' && parseFloat(wizardData.expectedSales) > 0,  // Paso 5: Venta esperada
-    true // 🤖 [IA] - v1.4.0: Paso 6 siempre completable (gastos opcionales)
+    wizardData.expectedSales !== '' && parseFloat(wizardData.expectedSales) > 0  // Paso 5: Venta esperada
   ].filter(Boolean).length;
 
   const progressValue = Math.round((completedTasks / totalTasks) * 100);
@@ -402,7 +397,6 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               <DollarSign className="flex-shrink-0 w-[clamp(1.25rem,5vw,1.5rem)] h-[clamp(1.25rem,5vw,1.5rem)] bg-gradient-to-br from-green-400 to-emerald-400 bg-clip-text text-transparent" />
               <div className="flex-1 min-w-0">
                 <h3 className="font-semibold text-primary-foreground text-fluid-xl">Ingresa Total Vendido</h3>
-                <p className="text-muted-foreground text-fluid-xs mt-fluid-xs">Según SICAR</p>
               </div>
             </div>
 
@@ -438,19 +432,18 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
                     autoComplete="off" // 🤖 [IA] - Desactiva autocompletado del navegador
                   />
                 </div>
-                {/* Botón Continuar al lado del input */}
-                {currentStep < totalSteps && (
+                {/* Botón Confirmar al lado del input */}
+                {/* 🤖 [IA] - v1.2.30: Botón migrado a ConstructiveActionButton estándar */}
                 <ConstructiveActionButton
-                  onClick={handleNext}
-                  disabled={!getNavigationState(isFlowCompleted()).canGoNext}
-                  aria-label="Continuar al siguiente paso"
+                  onClick={handleComplete}
+                  disabled={!getNavigationState(isFlowCompleted()).isCompleted}
+                  aria-label="Confirmar venta esperada"
                   type="button"
                   className="h-[clamp(2.25rem,9vw,2.75rem)]"
                 >
-                  <span className="text-fluid-base">Continuar</span>
-                  <ArrowRight aria-hidden="true" className="w-[clamp(1.25rem,5vw,1.5rem)] h-[clamp(1.25rem,5vw,1.5rem)] ml-fluid-sm" />
+                  <CheckCircle aria-hidden="true" className="w-[clamp(1.25rem,5vw,1.5rem)] h-[clamp(1.25rem,5vw,1.5rem)] mr-fluid-sm" />
+                  <span className="text-fluid-base">Confirmar</span>
                 </ConstructiveActionButton>
-              )}
               </div>
               {wizardData.expectedSales && parseFloat(wizardData.expectedSales) <= 0 && (
                 <p className="text-xs text-red-500">
@@ -500,40 +493,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
           </div>
         );
 
-      case 6: // 🤖 [IA] - v1.4.0: Gastos del Día
-        return (
-          <div className="glass-morphism-panel space-y-fluid-lg">
-            {/* Header */}
-            <div className="glass-morphism-panel header-section">
-              <DollarSign className="flex-shrink-0 w-[clamp(1.5rem,6vw,2rem)] h-[clamp(1.5rem,6vw,2rem)] text-amber-400" />
-              <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-primary-foreground text-fluid-xl">
-                  💸 Gastos del Día
-                </h3>
-                <p className="text-muted-foreground text-fluid-xs mt-fluid-xs">
-                  Registre gastos operacionales (opcional)
-                </p>
-              </div>
-            </div>
-
-            {/* Componente DailyExpensesManager */}
-            <DailyExpensesManager
-              expenses={wizardData.dailyExpenses || []}
-              onExpensesChange={(expenses) => updateWizardData({ dailyExpenses: expenses })}
-              disabled={false}
-              maxExpenses={10}
-            />
-
-            {/* Helper text */}
-            <div className="glass-morphism-panel border-l-4 border-l-amber-500 shadow-lg shadow-amber-500/20">
-              <p className="text-fluid-xs text-muted-foreground">
-                💡 <strong>Tip:</strong> Si no hubo gastos hoy, puede continuar directamente sin agregar ninguno.
-              </p>
-            </div>
-          </div>
-        );
-
-      default:
+// ...
         return null;
     }
   };
@@ -608,7 +568,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
             </motion.div>
           </AnimatePresence>
 
-          {/* 🤖 [IA] - v1.4.0: Footer con navegación profesional (← Anterior | Continuar/Finalizar →) */}
+          {/* 🤖 [IA] - v1.2.41R: Footer con navegación profesional + flechas direccionales (← Anterior | Continuar →) */}
           <div className="flex items-center justify-center mt-fluid-2xl pt-fluid-xl border-t border-slate-600 gap-fluid-lg wizard-dialog-footer">
             <NeutralActionButton
               onClick={handlePrevious}
@@ -625,16 +585,6 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               >
                 Continuar
                 <ArrowRight className="h-4 w-4 ml-2" />
-              </ConstructiveActionButton>
-            )}
-
-            {currentStep === totalSteps && (
-              <ConstructiveActionButton
-                onClick={handleComplete}
-                disabled={!getNavigationState(isFlowCompleted()).isCompleted}
-              >
-                <CheckCircle className="h-4 w-4 mr-2" />
-                Finalizar
               </ConstructiveActionButton>
             )}
           </div>
