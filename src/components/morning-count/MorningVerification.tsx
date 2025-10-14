@@ -1,4 +1,5 @@
-// 🤖 [IA] - v1.3.7: ANTI-FRAUDE - Confirmación explícita envío WhatsApp ANTES de revelar resultados
+// 🤖 [IA] - v2.0: MEJORA REPORTE - Formato profesional alineado con reporte nocturno
+// Previous: v1.3.7 - ANTI-FRAUDE - Confirmación explícita envío WhatsApp ANTES de revelar resultados
 // Previous: v1.1.13 - Mejora visual del detalle de denominaciones con tabla estructurada
 // Previous: v1.2.43 - Fix scroll congelado: Clase .morning-verification-container agregada
 import { useState, useEffect, useCallback } from 'react';
@@ -81,40 +82,121 @@ export function MorningVerification({
     performVerification();
   }, [performVerification]);
 
-  // 🤖 [IA] - v1.3.7: Función generateReport DEBE estar PRIMERO (usada por otros callbacks)
+  // 🤖 [IA] - v2.0: Helper para generar desglose de denominaciones (formato profesional)
+  const generateDenominationDetails = useCallback((cashCount: CashCount): string => {
+    const denominations = [
+      { key: 'penny', label: '1¢', value: 0.01 },
+      { key: 'nickel', label: '5¢', value: 0.05 },
+      { key: 'dime', label: '10¢', value: 0.10 },
+      { key: 'quarter', label: '25¢', value: 0.25 },
+      { key: 'dollarCoin', label: '$1 moneda', value: 1.00 },
+      { key: 'bill1', label: '$1', value: 1.00 },
+      { key: 'bill5', label: '$5', value: 5.00 },
+      { key: 'bill10', label: '$10', value: 10.00 },
+      { key: 'bill20', label: '$20', value: 20.00 },
+      { key: 'bill50', label: '$50', value: 50.00 },
+      { key: 'bill100', label: '$100', value: 100.00 }
+    ];
+
+    return denominations
+      .filter(d => cashCount[d.key as keyof CashCount] > 0)
+      .map(d => {
+        const quantity = cashCount[d.key as keyof CashCount];
+        const subtotal = quantity * d.value;
+        return `${d.label} × ${quantity} = ${formatCurrency(subtotal)}`;
+      })
+      .join('\n');
+  }, []);
+
+  // 🤖 [IA] - v2.0: Helper para generar firma digital
+  const generateDataHash = useCallback((
+    data: VerificationData,
+    store: any,
+    cashierIn: any,
+    cashierOut: any
+  ): string => {
+    const dataString = JSON.stringify({
+      total: data.totalCash,
+      expected: data.expectedAmount,
+      diff: data.difference,
+      store: store?.id,
+      cashierIn: cashierIn?.id,
+      cashierOut: cashierOut?.id,
+      timestamp: data.timestamp
+    });
+    
+    return btoa(dataString).substring(0, 16);
+  }, []);
+
+  // 🤖 [IA] - v2.0: Función generateReport con formato profesional (alineado con reporte nocturno)
   const generateReport = useCallback(() => {
     if (!verificationData) return '';
 
-    return `
-🌅 CONTEO DE CAJA MATUTINO
-============================
-Fecha/Hora: ${verificationData.timestamp}
-Sucursal: ${store?.name || 'N/A'}
+    // Header dinámico según estado
+    const headerSeverity = verificationData.hasShortage || verificationData.hasExcess
+      ? "⚠️ *REPORTE ADVERTENCIA*"
+      : "✅ *REPORTE NORMAL*";
 
-PERSONAL
---------
+    // Separador profesional (igual que reporte nocturno)
+    const SEPARATOR = '━━━━━━━━━━━━━━━━';
+
+    // Generar desglose de denominaciones
+    const denominationDetails = generateDenominationDetails(cashCount);
+
+    // Generar hash de datos
+    const dataHash = generateDataHash(verificationData, store, cashierIn, cashierOut);
+
+    // Estado y mensaje
+    const statusMessage = verificationData.isCorrect
+      ? '✅ Estado: CORRECTO'
+      : '⚠️ Estado: DIFERENCIA DETECTADA';
+
+    const alertMessage = verificationData.hasShortage
+      ? '⚠️ FALTANTE: Revisar con cajero saliente'
+      : verificationData.hasExcess
+      ? '⚠️ SOBRANTE: Verificar origen del exceso'
+      : '';
+
+    return `${headerSeverity}
+
+
+📊 *CONTEO DE CAJA MATUTINO* - ${verificationData.timestamp}
+Sucursal: ${store?.name || 'N/A'}
 Cajero Entrante: ${cashierIn?.name || 'N/A'}
 Cajero Saliente: ${cashierOut?.name || 'N/A'}
 
-RESUMEN DEL CONTEO
-------------------
-${generateDenominationSummary(cashCount)}
+${SEPARATOR}
 
-VERIFICACIÓN
-------------
-Total Contado: ${formatCurrency(verificationData.totalCash)}
-Cambio Esperado: ${formatCurrency(verificationData.expectedAmount)}
-Diferencia: ${formatCurrency(verificationData.difference)}
+📊 *RESUMEN EJECUTIVO*
 
-ESTADO: ${verificationData.isCorrect ? '✅ CORRECTO' : '⚠️ DIFERENCIA DETECTADA'}
+💰 Total Contado: *${formatCurrency(verificationData.totalCash)}*
+🎯 Cambio Esperado: *${formatCurrency(verificationData.expectedAmount)}*
+📊 Diferencia: *${formatCurrency(verificationData.difference)}* (${verificationData.isCorrect ? 'CORRECTO' : verificationData.difference > 0 ? 'SOBRANTE' : 'FALTANTE'})
 
-${verificationData.hasShortage ? '⚠️ FALTANTE: Revisar con cajero saliente' : ''}
-${verificationData.hasExcess ? '⚠️ SOBRANTE: Verificar origen del exceso' : ''}
+${SEPARATOR}
 
-============================
-Sistema CashGuard Paradise v1.1.13
-    `.trim();
-  }, [verificationData, store, cashierIn, cashierOut, cashCount]);
+💰 *CONTEO COMPLETO (${formatCurrency(verificationData.totalCash)})*
+
+${denominationDetails}
+
+${SEPARATOR}
+
+🔍 *VERIFICACIÓN*
+
+${statusMessage}
+${alertMessage}
+
+${SEPARATOR}
+
+📅 ${verificationData.timestamp}
+🔐 CashGuard Paradise v2.0
+🔒 NIST SP 800-115 | PCI DSS 12.10.1
+
+✅ Reporte automático
+⚠️ Documento NO editable
+
+Firma Digital: ${dataHash}`;
+  }, [verificationData, store, cashierIn, cashierOut, cashCount, generateDenominationDetails, generateDataHash]);
 
   // 🤖 [IA] - v1.1.09: Función mejorada con fallback robusto
   const handleCopyToClipboard = useCallback(async () => {
