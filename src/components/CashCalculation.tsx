@@ -702,7 +702,8 @@ ${WHATSAPP_SEPARATOR}
 ${WHATSAPP_SEPARATOR}
 💳 ELECTRÓNICO
 ${WHATSAPP_SEPARATOR}
-${electronicDetailsDesglosed}                     ────────
+${electronicDetailsDesglosed}
+                     ────────
 Total:               *${formatCurrency(calculationData?.totalElectronic || 0)}*
 ${WHATSAPP_SEPARATOR}
 
