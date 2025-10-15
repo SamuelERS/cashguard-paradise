@@ -125,6 +125,12 @@ const InstructionRuleComponent: React.FC<InstructionRuleProps> = ({
         // Agregar clase para revelación cuando no esté oculto
         visualState !== 'hidden' && "instruction-rule-revealed"
       )}
+      initial={{
+        // 🤖 [IA] - v2.4.1: Estado inicial inmediato para primer item
+        // Previene delay de aparición - primer item visible instantáneamente
+        opacity: visualState === 'hidden' ? 0.5 : 1,
+        scale: visualState === 'hidden' ? 0.95 : 1
+      }}
       animate={
         visualState === 'hidden'
           ? { // ESTADO OCULTO - TRANSICIÓN SUAVE

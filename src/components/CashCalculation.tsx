@@ -72,8 +72,8 @@ interface CashCalculationProps {
   onComplete: () => void;
 }
 
-// 🤖 [IA] - v1.3.6W: Separador optimizado 16 caracteres (sin horizontal scroll en WhatsApp mobile)
-const WHATSAPP_SEPARATOR = '━━━━━━━━━━━━━━━━'; // 16 caracteres (reducido desde 20)
+// 🤖 [IA] - v2.4.1b: Separador optimizado 12 caracteres (más corto para WhatsApp mobile)
+const WHATSAPP_SEPARATOR = '━━━━━━━━━━━━'; // 12 caracteres (reducido desde 16)
 
 const CashCalculation = ({
   storeId,
@@ -762,7 +762,7 @@ Firma Digital: ${dataHash}`;
   // 🤖 [IA] - v1.4.0 FASE 5: expenses NO incluido en deps porque generateExpensesSection ya lo captura
 
   // 🤖 [IA] - v2.4.1: Handler inteligente con detección de plataforma + copia automática
-  // Propuesta C: Smart Copy + No abre ventanas en desktop + Mantiene bloqueo anti-fraude
+  // v2.4.1b: Abre modal de instrucciones inmediatamente en desktop (sin toast automático)
   const handleWhatsAppSend = useCallback(async () => {
     try {
       if (!calculationData || !store || !cashier || !witness) {
@@ -803,29 +803,14 @@ Firma Digital: ${dataHash}`;
           duration: 8000
         });
       } else {
-        // DESKTOP: NO abrir ventana nueva, solo copiar + instrucciones
+        // DESKTOP: Abrir modal de instrucciones inmediatamente (sin toast)
         setWhatsappOpened(true);
-        
-        const isMac = /Mac/i.test(navigator.userAgent);
-        const shortcut = isMac ? 'Cmd+V' : 'Ctrl+V';
-        
-        toast.success('📋 Reporte copiado al portapapeles', {
-          description: `Vaya a su WhatsApp Web (ya abierto) y pegue (${shortcut}) en el chat de gerencia`,
-          duration: 15000,
-          action: {
-            label: '¿Cómo enviar?',
-            onClick: () => setShowWhatsAppInstructions(true)
-          }
-        });
+        setShowWhatsAppInstructions(true); // ⭐ Abrir modal directo
       }
       
-      // 🎯 PASO 3: Auto-confirmar después de 15 segundos (timeout de seguridad)
-      setTimeout(() => {
-        if (!reportSent) {
-          setReportSent(true);
-          toast.success('✅ Reporte marcado como enviado');
-        }
-      }, 15000);
+      // 🤖 [IA] - v2.4.1b: Auto-confirmación ELIMINADA
+      // Usuario DEBE confirmar manualmente con botón "Ya lo envié" del modal
+      // Esto garantiza que el reporte fue enviado realmente
       
     } catch (error) {
       toast.error("❌ Error al procesar reporte", {
@@ -1201,11 +1186,11 @@ Firma Digital: ${dataHash}`;
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-[clamp(0.5rem,2vw,0.75rem)] lg:max-w-2xl mx-auto">
                 <ConstructiveActionButton
                   onClick={handleWhatsAppSend}
-                  disabled={reportSent}
+                  disabled={false}
                   aria-label="Enviar reporte por WhatsApp"
                 >
                   <Share />
-                  {reportSent ? 'Reporte Enviado' : whatsappOpened ? 'Reenviar WhatsApp' : 'Enviar WhatsApp'}
+                  {reportSent ? '✅ Reporte Enviado' : whatsappOpened ? 'Reenviar WhatsApp' : 'Enviar WhatsApp'}
                 </ConstructiveActionButton>
 
                 {/* 🤖 [IA] - v2.4.1: Botón Copiar OCULTO (redundante con copia automática)
@@ -1231,26 +1216,7 @@ Firma Digital: ${dataHash}`;
                   Finalizar
                 </PrimaryActionButton>
               </div>
-
-              {/* 🤖 [IA] - v1.3.7: Botón de confirmación después de abrir WhatsApp */}
-              {whatsappOpened && !reportSent && (
-                <div className="mt-[clamp(1rem,4vw,1.5rem)] p-[clamp(1rem,4vw,1.5rem)] rounded-[clamp(0.5rem,2vw,0.75rem)]" style={{
-                  background: 'rgba(0, 186, 124, 0.1)',
-                  border: '1px solid rgba(0, 186, 124, 0.3)'
-                }}>
-                  <p className="text-[clamp(0.875rem,3.5vw,1rem)] mb-3 text-center" style={{ color: '#8899a6' }}>
-                    ¿Ya envió el reporte por WhatsApp?
-                  </p>
-                  <ConstructiveActionButton
-                    onClick={handleConfirmSent}
-                    className="w-full"
-                    aria-label="Confirmar envío de reporte"
-                  >
-                    <CheckCircle />
-                    Sí, ya envié el reporte
-                  </ConstructiveActionButton>
-                </div>
-              )}
+              {/* 🤖 [IA] - v2.4.1b: Botón de confirmación eliminado (redundante con modal) */}
             </div>
           </div>
 
@@ -1442,7 +1408,7 @@ Firma Digital: ${dataHash}`;
               <Button
                 variant="ghost"
                 onClick={() => setShowWhatsAppInstructions(false)}
-                className="flex-1"
+                className="flex-1 h-fluid-3xl"
               >
                 Cerrar
               </Button>

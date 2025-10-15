@@ -22,7 +22,7 @@ export const phase2PreparationInstructions: Instruction[] = [
   {
     id: 'documentos',
     icon: 'FileText',
-    title: 'Incluye Todos los Documentos',
+    title: 'Envía Todos los Documentos',
     description: 'Facturas, gastos, cierres POS y notificaciones',
     minReviewTimeMs: 0
   }

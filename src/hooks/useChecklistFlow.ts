@@ -19,7 +19,8 @@
  * ✨ CAMBIO v2.4.1:
  * - Reducido de 4 a 3 items (eliminado 'entendido' redundante)
  * - IDs actualizados: bolsaPreparada, efectivo, documentos
- * - Flujo optimizado: Preparar bolsa → Separar efectivo → Incluir documentos
+ * - Flujo optimizado: Preparar bolsa → Separar efectivo → Enviar documentos
+ * - Primer item habilitado inmediatamente (sin delay de 2s)
  *
  * @example
  * ```tsx
@@ -83,7 +84,7 @@ const initialCheckedState: ChecklistItems = {
 };
 
 const initialEnabledState: EnabledItems = {
-  bolsaPreparada: false,
+  bolsaPreparada: true,   // 🤖 [IA] - v2.4.1: Habilitado desde inicio (sin delay)
   efectivo: false,
   documentos: false
 };
@@ -100,19 +101,13 @@ export const useChecklistFlow = () => {
   const [hiddenItems, setHiddenItems] = useState<HiddenItems>(initialHiddenState);
   const { createTimeoutWithCleanup } = useTimingConfig();
 
-  // 🤖 [IA] - Inicializar flujo de checklist con revelación progresiva
+  // 🤖 [IA] - v2.4.1: Inicializar flujo de checklist con primer item habilitado inmediatamente
   const initializeChecklist = useCallback(() => {
     setCheckedItems(initialCheckedState);
-    setEnabledItems(initialEnabledState);
+    setEnabledItems(initialEnabledState);  // bolsaPreparada ya está en true
     setHiddenItems(initialHiddenState);
-
-    // Activar primer item después de 2s
-    const cleanup = createTimeoutWithCleanup(() => {
-      setEnabledItems(prev => ({ ...prev, bolsaPreparada: true }));
-    }, 'transition', 'checklist_init', 2000);
-
-    return cleanup;
-  }, [createTimeoutWithCleanup]);
+    // 🤖 [IA] - v2.4.1: Eliminado timeout de 2s - primer item habilitado desde estado inicial
+  }, []);
 
   // 🤖 [IA] - v2.4.1: FLAT TIMEOUT PATTERN - Progresión BolsaPreparada → Efectivo (600ms reveal)
   useEffect(() => {
