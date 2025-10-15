@@ -749,7 +749,7 @@ ${denominationDetails}
 ${WHATSAPP_SEPARATOR}
 
 📅 ${calculationData?.timestamp || ''}
-🔐 CashGuard Paradise v2.5
+🔐 CashGuard Paradise v2.6
 🔒 NIST SP 800-115 | PCI DSS 12.10.1
 
 ✅ Reporte automático

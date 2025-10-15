@@ -1,3 +1,29 @@
+### v2.6 - Sistema Inteligente WhatsApp + Optimización UX Final [15 OCT 2025 ~04:41 PM] ✅
+**REFINAMIENTO COMPLETO:** Mejoras finales al sistema WhatsApp v2.4.1 basadas en feedback de usuario. Modal directo, botones parejos, sin auto-desbloqueo, separadores optimizados.
+
+**Cambios Implementados:**
+- ✅ **Modal directo:** Abre inmediatamente al presionar "Enviar WhatsApp" (sin toast intermedio)
+- ✅ **Botón gigante eliminado:** Solo el modal tiene botón "Ya lo envié" (sin redundancia)
+- ✅ **Auto-desbloqueo eliminado:** Resultados solo se desbloquean con confirmación manual
+- ✅ **Separadores optimizados:** Reducidos de 16 a 12 caracteres (mejor en móvil)
+- ✅ **Botón siempre habilitado:** Permite reenviar después de confirmar (con checkmark ✅)
+- ✅ **Botones parejos:** Ambos usan `h-fluid-3xl` estándar (48px-72px responsive)
+- ✅ **Badge actualizado:** v2.5 → v2.6 en pantalla principal y reportes
+
+**Archivos Modificados:**
+- `CashCalculation.tsx`: Handler WhatsApp, botones, separadores, versión reporte
+- `MorningVerification.tsx`: Versión reporte actualizada
+- `OperationSelector.tsx`: Badge v2.6 actualizado
+- `README.md`: Versión header actualizada
+- `CLAUDE.md`: Nueva entrada v2.6
+
+**Métricas:**
+- Código limpio: -22 líneas eliminadas
+- TypeScript: 0 errors ✅
+- Cumplimiento REGLAS_DE_LA_CASA.md: 100% ✅
+
+---
+
 ### v2.4.1 - Sistema Inteligente WhatsApp + Optimización UX [15 OCT 2025 ~04:00 PM] ✅
 **MEJORA CRÍTICA ENVÍO WHATSAPP:** Sistema inteligente multi-plataforma que detecta móvil vs desktop, copia automáticamente, NO abre ventanas molestas en desktop, respeta WhatsApp Web ya abierto, y mantiene seguridad anti-fraude intacta.
 
