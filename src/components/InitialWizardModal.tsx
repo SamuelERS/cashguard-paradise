@@ -195,9 +195,10 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
   }, []);
 
   // 🤖 [IA] - v1.4.0: Calcular progreso basado en tareas completadas (6 pasos)
+  // 🤖 [IA] - v2.4.1: Protocolo optimizado (4 reglas: Personas + WhatsApp/Calc + Gastos + Reinicio)
   const totalTasks = 6; // 🤖 [IA] - v1.4.0: 6 pasos del wizard
   const completedTasks = [
-    isFlowCompleted(),                         // Paso 1: Protocolo completado
+    isFlowCompleted(),                         // Paso 1: Protocolo completado (4 reglas optimizadas)
     wizardData.selectedStore !== '',          // Paso 2: Sucursal seleccionada
     wizardData.selectedCashier !== '',        // Paso 3: Cajero seleccionado
     wizardData.selectedWitness !== '',        // Paso 4: Testigo seleccionado
