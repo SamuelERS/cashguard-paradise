@@ -160,7 +160,9 @@ export function MorningVerification({
     return `${headerSeverity}
 
 
-📊 *CONTEO DE CAJA MATUTINO* - ${verificationData.timestamp}
+📊 *CONTEO DE CAJA MATUTINO*
+${verificationData.timestamp}
+
 Sucursal: ${store?.name || 'N/A'}
 Cajero Entrante: ${cashierIn?.name || 'N/A'}
 Cajero Saliente: ${cashierOut?.name || 'N/A'}

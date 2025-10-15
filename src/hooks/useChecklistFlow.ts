@@ -99,6 +99,7 @@ export const useChecklistFlow = () => {
   const [checkedItems, setCheckedItems] = useState<ChecklistItems>(initialCheckedState);
   const [enabledItems, setEnabledItems] = useState<EnabledItems>(initialEnabledState);
   const [hiddenItems, setHiddenItems] = useState<HiddenItems>(initialHiddenState);
+  const [isFlowComplete, setIsFlowComplete] = useState(false); // 🤖 [IA] - v2.6: Control de completitud con delay
   const { createTimeoutWithCleanup } = useTimingConfig();
 
   // 🤖 [IA] - v2.4.1: Inicializar flujo de checklist con primer item habilitado inmediatamente
@@ -106,6 +107,7 @@ export const useChecklistFlow = () => {
     setCheckedItems(initialCheckedState);
     setEnabledItems(initialEnabledState);  // bolsaPreparada ya está en true
     setHiddenItems(initialHiddenState);
+    setIsFlowComplete(false); // 🤖 [IA] - v2.6: Reset completitud
     // 🤖 [IA] - v2.4.1: Eliminado timeout de 2s - primer item habilitado desde estado inicial
   }, []);
 
@@ -149,6 +151,24 @@ export const useChecklistFlow = () => {
     }
   }, [checkedItems.efectivo, checkedItems.bolsaPreparada, hiddenItems.documentos, enabledItems.documentos, createTimeoutWithCleanup]);
 
+  // 🤖 [IA] - v2.6: Delay de 3s después de marcar último item (consistente con protocolo inicial)
+  useEffect(() => {
+    const allChecked = Object.values(checkedItems).every(checked => checked);
+    
+    if (allChecked && !isFlowComplete) {
+      // Delay de 3s para asegurar que usuario revise antes de continuar
+      const cleanup = createTimeoutWithCleanup(() => {
+        setIsFlowComplete(true);
+      }, 'transition', 'checklist_completion_delay', 3000);
+      return cleanup;
+    }
+    
+    // Reset completitud si usuario desmarca algún item
+    if (!allChecked && isFlowComplete) {
+      setIsFlowComplete(false);
+    }
+  }, [checkedItems, isFlowComplete, createTimeoutWithCleanup]);
+
   // 🤖 [IA] - v2.4.1: Eliminadas progresiones de 4to item (ahora solo 3 items)
 
   // 🤖 [IA] - v1.2.45: Manejar cambio de estado de checkbox (SIMPLIFICADO - sin nested timeouts)
@@ -159,10 +179,10 @@ export const useChecklistFlow = () => {
     // ✅ Progresión automática manejada por useEffect independientes arriba
   }, [enabledItems]);
 
-  // 🤖 [IA] - Verificar si todos los items están completos
+  // 🤖 [IA] - v2.6: Verificar si todos los items están completos (con delay de 3s)
   const isChecklistComplete = useCallback(() => {
-    return Object.values(checkedItems).every(checked => checked);
-  }, [checkedItems]);
+    return isFlowComplete;
+  }, [isFlowComplete]);
 
   // 🤖 [IA] - Obtener estado visual de un item con revelación progresiva
   const getItemClassName = useCallback((item: keyof ChecklistItems) => {
