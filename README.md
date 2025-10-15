@@ -1,7 +1,7 @@
 # 💰 CashGuard Paradise - Progressive Web App
 
 > Sistema profesional de conteo y gestión de efectivo desarrollado por Acuarios Paradise
-> **Versión:** v2.4 | **Estado:** ✅ Producción
+> **Versión:** v2.4.1 | **Estado:** ✅ Producción
 > **Coverage:** 34% | **Tests:** 535/543 passing (98.5%) | **Matemáticas:** 156/156 (100%) | **CI:** 🟢 Verde
 
 ---
@@ -14,17 +14,28 @@
 - Resumen automático con totales y confirmación
 - Instrucciones obligatorias anti-fraude
 
+### 📱 Sistema Inteligente WhatsApp (v2.4.1) ⭐ NUEVO
+- **Detección automática** móvil vs desktop
+- **Copia automática** al portapapeles (con fallback)
+- **Móvil:** Abre app nativa WhatsApp directamente
+- **Desktop:** NO abre ventanas nuevas, respeta WhatsApp Web ya abierto
+- **Modal de instrucciones** paso a paso con diseño glass morphism
+- **Múltiples reenvíos** permitidos (botón "Reenviar WhatsApp")
+- **Seguridad anti-fraude** mantenida intacta
+
 ### 🎨 Interfaz Profesional
 - Progressive Web App (instalable en cualquier dispositivo)
 - Diseño responsive (móvil, tablet, desktop)
 - Animaciones fluidas con Framer Motion
 - Glass Morphism UI con efectos premium
+- Grid adaptativo 2 columnas (botones más grandes)
 
 ### 🔒 Validaciones Robustas
 - Validación de input por tipo (integer, decimal, currency)
 - Navegación inteligente con Enter key
 - Focus management automático
 - Sistema anti-error en confirmaciones
+- Bloqueo de resultados hasta envío confirmado
 
 ### ⚡ Performance
 - Carga < 3 segundos
@@ -558,19 +569,25 @@ Gracias a los equipos de:
 ## 📊 Estado Último Update
 
 ```
-Fecha:          05 Octubre 2025 ~13:35 PM
-Tests:          561/561 passing (100%)
-Matemáticas:    174/174 (TIER 0-4, 99.9% confianza)
+Fecha:          15 Octubre 2025 ~04:00 PM
+Versión:        v2.4.1
+Tests:          535/543 passing (98.5%)
+Matemáticas:    156/156 (TIER 0-4, 99.9% confianza)
 Coverage:       34% (Branches: 61%)
 CI Status:      🟢 Verde
-Último Commit:  fix: Complete FASE 2 TIER 1-4 matemáticas (86 tests + 10,900 validaciones)
-Próximo Hito:   Fase 3: Performance Testing
+Último Commit:  feat(v2.4.1): Sistema Inteligente WhatsApp + Optimización UX
+Próximo Hito:   Testing y validación en producción
 ```
 
-**Últimos commits:**
+**Últimos cambios v2.4.1:**
 ```
-1a989e9 - fix: Complete GuidedInstructionsModal timeout hotfix (2 missing timeouts)
-9de5cb8 - feat: Add useInputValidation integration tests + ESLint v9 migration
+✅ Sistema inteligente WhatsApp (detección móvil/desktop)
+✅ Copia automática al portapapeles
+✅ Modal de instrucciones paso a paso
+✅ Botón "Copiar" oculto (redundante)
+✅ Múltiples reenvíos permitidos
+✅ Bug fix Phase2 modal (IDs actualizados)
+✅ Optimización instrucciones (4→3 items)
 ```
 
 ---
