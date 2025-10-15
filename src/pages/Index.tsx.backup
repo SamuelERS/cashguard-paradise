@@ -1,4 +1,4 @@
-// 🤖 [IA] - v1.4.0 - Integración Sistema Gastos de Caja
+// 🤖 [IA] - v1.1.16 - Fix teclado numérico en PWA standalone mode
 import { useState, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import CashCounter from "@/components/CashCounter";
@@ -7,13 +7,12 @@ import { OperationSelector } from "@/components/operation-selector/OperationSele
 import { MorningCountWizard } from "@/components/morning-count/MorningCountWizard";
 import { useOperationMode } from "@/hooks/useOperationMode";
 import { OperationMode } from "@/types/operation-mode";
-import { DailyExpense } from '@/types/expenses'; // 🤖 [IA] - v1.4.0: Tipos gastos
 
 const Index = () => {
   // 🤖 [IA] - v1.0.81 - Hook para manejar el modo de operación
   const { currentMode, selectMode, resetMode } = useOperationMode();
   
-  // 🤖 [IA] - v1.4.0 - Estado para wizard y datos iniciales (con gastos)
+  // 🤖 [IA] - v1.0.3 - Estado para wizard y datos iniciales
   const [showWizard, setShowWizard] = useState(false);
   const [showMorningWizard, setShowMorningWizard] = useState(false);
   const [showCashCounter, setShowCashCounter] = useState(false);
@@ -22,7 +21,6 @@ const Index = () => {
     selectedCashier: string;
     selectedWitness: string;
     expectedSales: string;
-    dailyExpenses: DailyExpense[]; // 🤖 [IA] - v1.4.0: Gastos del día
   } | null>(null);
 
   // 🤖 [IA] - v1.2.23: OPERATION-MODAL-CONTAINMENT - Prevención de selección de texto y scroll en background
@@ -50,13 +48,8 @@ const Index = () => {
     selectedCashier: string;
     selectedWitness: string;
     expectedSales: string;
-    dailyExpenses?: DailyExpense[]; // 🤖 [IA] - v1.4.0: Gastos del día (opcional para MorningCountWizard)
   }) => {
-    // 🤖 [IA] - v1.4.0: Asegurar que dailyExpenses siempre sea array
-    setInitialData({
-      ...data,
-      dailyExpenses: data.dailyExpenses || []
-    });
+    setInitialData(data);
     setShowWizard(false);
     setShowMorningWizard(false);
     setShowCashCounter(true);
@@ -117,7 +110,6 @@ const Index = () => {
         initialCashier={initialData.selectedCashier}
         initialWitness={initialData.selectedWitness}
         initialExpectedSales={initialData.expectedSales}
-        initialDailyExpenses={initialData.dailyExpenses} // 🤖 [IA] - v1.4.0: Gastos del día
         onBack={handleBackFromCounter}
         onFlowCancel={handleBackFromCounter} // 🤖 [IA] - SAFE-RETURN: Navegación segura en cancelación
       />

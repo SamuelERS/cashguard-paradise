@@ -5,7 +5,8 @@
 import { useState, useEffect, useCallback } from "react";
 // 🤖 [IA] - v1.3.6Z: Framer Motion removido (GPU compositing bug iOS Safari causa pantalla congelada Phase 3)
 // 🤖 [IA] - v1.3.7: Agregado Lock icon para bloqueo de resultados
-import { Calculator, AlertTriangle, CheckCircle, Share, Download, Copy, Lock } from "lucide-react";
+// 🤖 [IA] - v2.4.1: Agregado MessageSquare para modal de instrucciones WhatsApp
+import { Calculator, AlertTriangle, CheckCircle, Share, Download, Copy, Lock, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 // 🤖 [IA] - v1.1.08: Removidos Card components para coherencia con glass morphism
 // 🤖 [IA] - v1.1.08: Alert components removidos para coherencia con glass morphism
@@ -17,6 +18,7 @@ import { PrimaryActionButton } from "@/components/ui/primary-action-button"; // 
 import { NeutralActionButton } from "@/components/ui/neutral-action-button"; // 🤖 [IA] - v2.0.0: Botón de acción neutral estándar
 import { ConstructiveActionButton } from '@/components/shared/ConstructiveActionButton'; // 🤖 [IA] - v2.0.0: Botón de acción constructiva estándar
 import { ConfirmationModal } from "@/components/ui/confirmation-modal"; // 🤖 [IA] - v1.2.24: Modal de confirmación para Finalizar
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog"; // 🤖 [IA] - v2.4.1: Modal de instrucciones WhatsApp
 import { calculateCashTotal, calculateChange50, formatCurrency, generateDenominationSummary } from "@/utils/calculations";
 import { copyToClipboard } from "@/utils/clipboard"; // 🤖 [IA] - v1.1.09
 import { toast } from "sonner"; // 🤖 [IA] - v1.1.15 - Migrated to Sonner for consistency
@@ -24,14 +26,20 @@ import { CashCount, ElectronicPayments } from "@/types/cash";
 import { PhaseState, DeliveryCalculation } from "@/types/phases";
 // 🤖 [IA] - v1.3.6: MÓDULO 3 - Import tipos para sección anomalías
 import type { VerificationBehavior, VerificationAttempt } from "@/types/verification";
+// 🤖 [IA] - v1.4.0 FASE 5: Import tipos y constantes para gastos
+import { DailyExpense, EXPENSE_CATEGORY_EMOJI, EXPENSE_CATEGORY_LABEL } from '@/types/expenses';
 import { getStoreById, getEmployeeById } from "@/data/paradise";
 import { DenominationsList } from "@/components/cash-calculation/DenominationsList"; // 🤖 [IA] - v1.0.0: Componente extraído
 
-// 🤖 [IA] - v1.2.22: TypeScript interface for calculation results
+// 🤖 [IA] - v2.4.2: TypeScript interface actualizada con nueva lógica de ventas
 interface CalculationData {
-  totalCash: number;
-  totalElectronic: number;
-  totalGeneral: number;
+  totalCash: number; // Efectivo total contado (incluye fondo $50)
+  totalElectronic: number; // Pagos electrónicos
+  salesCash: number; // 🤖 [IA] - v2.4.2: Efectivo de ventas (totalCash - $50 fondo)
+  totalGeneral: number; // 🤖 [IA] - v2.4.2: Total ventas (salesCash + electronic)
+  totalExpenses: number; // 🤖 [IA] - v1.4.0 FASE 5: Total gastos
+  totalWithExpenses: number; // 🤖 [IA] - v2.4.2: Ventas + Gastos (para comparar con SICAR Entradas)
+  totalAdjusted?: number; // 🤖 [IA] - v2.4.2: DEPRECATED - Mantener para compatibilidad
   difference: number;
   changeResult: {
     change: Partial<CashCount>;
@@ -57,14 +65,15 @@ interface CashCalculationProps {
   expectedSales: number;
   cashCount: CashCount;
   electronicPayments: ElectronicPayments;
+  expenses?: DailyExpense[]; // 🤖 [IA] - v1.4.0 FASE 5: Gastos del día
   deliveryCalculation?: DeliveryCalculation;
   phaseState?: PhaseState;
   onBack: () => void;
   onComplete: () => void;
 }
 
-// 🤖 [IA] - v1.3.6W: Separador optimizado 16 caracteres (sin horizontal scroll en WhatsApp mobile)
-const WHATSAPP_SEPARATOR = '━━━━━━━━━━━━━━━━'; // 16 caracteres (reducido desde 20)
+// 🤖 [IA] - v2.4.1b: Separador optimizado 12 caracteres (más corto para WhatsApp mobile)
+const WHATSAPP_SEPARATOR = '━━━━━━━━━━━━'; // 12 caracteres (reducido desde 16)
 
 const CashCalculation = ({
   storeId,
@@ -73,6 +82,7 @@ const CashCalculation = ({
   expectedSales,
   cashCount,
   electronicPayments,
+  expenses = [], // 🤖 [IA] - v1.4.0 FASE 5: Default array vacío
   deliveryCalculation,
   phaseState,
   onBack,
@@ -83,9 +93,11 @@ const CashCalculation = ({
   const [showFinishConfirmation, setShowFinishConfirmation] = useState(false); // 🤖 [IA] - v1.2.24: Estado para modal de confirmación
 
   // 🤖 [IA] - v1.3.7: Estados confirmación explícita WhatsApp (Propuesta C Híbrida v2.1)
+  // 🤖 [IA] - v2.4.1: Agregado modal de instrucciones para desktop
   const [reportSent, setReportSent] = useState(false);
   const [whatsappOpened, setWhatsappOpened] = useState(false);
   const [popupBlocked, setPopupBlocked] = useState(false);
+  const [showWhatsAppInstructions, setShowWhatsAppInstructions] = useState(false);
 
   // 🤖 [IA] - v1.3.6Z: FIX iOS Safari - Cleanup defensivo de modal state
   // Garantiza que modal state se resetea al desmontar, previene race conditions en lifecycle iOS
@@ -102,15 +114,30 @@ const CashCalculation = ({
   const performCalculation = useCallback(() => {
     const totalCash = calculateCashTotal(cashCount);
     const totalElectronic = Object.values(electronicPayments).reduce((sum, val) => sum + val, 0);
-    const totalGeneral = totalCash + totalElectronic;
-    const difference = totalGeneral - expectedSales;
+    
+    // 🤖 [IA] - v2.4.2: FIX CRÍTICO - Restar fondo de $50 del efectivo para obtener ventas reales
+    const CHANGE_FUND = 50.00;
+    const salesCash = totalCash - CHANGE_FUND;
+    const totalGeneral = salesCash + totalElectronic;
+    
+    // 🤖 [IA] - v1.4.0 FASE 5: Calcular total gastos
+    const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+    
+    // 🤖 [IA] - v2.4.2: Total con gastos = ventas + gastos (para comparar con SICAR Entradas)
+    const totalWithExpenses = totalGeneral + totalExpenses;
+    
+    // 🤖 [IA] - v2.4.2: Diferencia = (Ventas + Gastos) - SICAR Entradas
+    const difference = totalWithExpenses - expectedSales;
     
     const changeResult = calculateChange50(cashCount);
     
     const data = {
       totalCash,
       totalElectronic,
-      totalGeneral,
+      salesCash, // 🤖 [IA] - v2.4.2: Efectivo de ventas (sin fondo)
+      totalGeneral, // 🤖 [IA] - v2.4.2: Total ventas (sin fondo, sin gastos)
+      totalExpenses, // 🤖 [IA] - v1.4.0 FASE 5
+      totalWithExpenses, // 🤖 [IA] - v2.4.2: Ventas + Gastos (para comparar con SICAR)
       difference,
       changeResult,
       hasAlert: difference < -3.00,
@@ -126,8 +153,8 @@ const CashCalculation = ({
     };
     
     setCalculationData(data);
-    setIsCalculated(true);
-  }, [cashCount, electronicPayments, expectedSales]);
+    setCalculationData(data);
+  }, [cashCount, electronicPayments, expectedSales, expenses]); // 🤖 [IA] - v1.4.0 FASE 5: expenses agregado
 
   useEffect(() => {
     if (!isCalculated) {
@@ -418,10 +445,6 @@ ${alerts}`;
 📦 *LO QUE RECIBES (${formatCurrency(amountToDeliver)})*
 
 ${checklistContent}
-
-✅ Recibido: $________
-Hora: __:__  Firma: ________
-
 `;
   };
 
@@ -545,6 +568,36 @@ ${videoTimestamp}
 ${alerts}`;
   };
 
+  // 🤖 [IA] - v1.4.0 FASE 5: Generar sección de gastos del día
+  const generateExpensesSection = useCallback(() => {
+    if (!expenses || expenses.length === 0) {
+      return ''; // No mostrar sección si no hay gastos
+    }
+
+    const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
+    
+    const expensesList = expenses.map((expense, index) => {
+      const categoryEmoji = EXPENSE_CATEGORY_EMOJI[expense.category];
+      const categoryLabel = EXPENSE_CATEGORY_LABEL[expense.category];
+      const invoiceStatus = expense.hasInvoice ? '✓ Con factura' : '✗ Sin factura';
+      
+      return `${index + 1}. ${categoryEmoji} ${expense.concept}
+   💵 ${formatCurrency(expense.amount)} | ${invoiceStatus}
+   📂 ${categoryLabel}`;
+    }).join('\n\n');
+
+    return `
+${WHATSAPP_SEPARATOR}
+
+💸 *GASTOS DEL DÍA*
+
+${expensesList}
+
+💰 *Total Gastos:* ${formatCurrency(totalExpenses)}
+⚠️ Este monto se restó del total general
+`;
+  }, [expenses]);
+
   const generateCompleteReport = useCallback(() => {
     validatePhaseCompletion();
 
@@ -626,7 +679,9 @@ ${WHATSAPP_SEPARATOR}
     return `${headerSeverity}
 
 
-📊 *CORTE DE CAJA* - ${calculationData?.timestamp || ''}
+📊 *CORTE DE CAJA*
+${calculationData?.timestamp || ''}
+
 Sucursal: ${store?.name}
 Cajero: ${cashier?.name}
 Testigo: ${witness?.name}
@@ -635,17 +690,59 @@ ${WHATSAPP_SEPARATOR}
 
 📊 *RESUMEN EJECUTIVO*
 
-💰 Efectivo Contado: *${formatCurrency(calculationData?.totalCash || 0)}*
+${WHATSAPP_SEPARATOR}
+💰 EFECTIVO FÍSICO
+${WHATSAPP_SEPARATOR}
+Contado total:       *${formatCurrency(calculationData?.totalCash || 0)}*
+Menos fondo:         -$50.00
+                     ────────
+Ventas efectivo:     *${formatCurrency(calculationData?.salesCash || 0)}*
+${WHATSAPP_SEPARATOR}
 
+${WHATSAPP_SEPARATOR}
+💳 ELECTRÓNICO
+${WHATSAPP_SEPARATOR}
 ${electronicDetailsDesglosed}
+                     ────────
+Total:               *${formatCurrency(calculationData?.totalElectronic || 0)}*
+${WHATSAPP_SEPARATOR}
 
-📦 *Entregado a Gerencia:* ${formatCurrency(deliveryCalculation?.amountToDeliver || 0)}
-🏢 *Quedó en Caja:* ${phaseState?.shouldSkipPhase2 ? formatCurrency(calculationData?.totalCash || 0) : '$50.00'}
+${WHATSAPP_SEPARATOR}
+📦 DIVISIÓN EFECTIVO
+${WHATSAPP_SEPARATOR}
+Entregado:           *${formatCurrency(deliveryCalculation?.amountToDeliver || 0)}*
+Quedó (fondo):       *${phaseState?.shouldSkipPhase2 ? formatCurrency(calculationData?.totalCash || 0) : formatCurrency(deliveryCalculation?.amountRemaining ?? 50)}*
+                     ────────
+Suma:                *${formatCurrency(calculationData?.totalCash || 0)}* ✓
+${WHATSAPP_SEPARATOR}
 
-💼 *Total Día:* ${formatCurrency(calculationData?.totalGeneral || 0)}
-🎯 *SICAR Esperado:* ${formatCurrency(expectedSales)}
-${(calculationData?.difference || 0) >= 0 ? '📈' : '📉'} *Diferencia:* ${formatCurrency(calculationData?.difference || 0)} (${(calculationData?.difference || 0) >= 0 ? 'SOBRANTE' : 'FALTANTE'})
-${deliveryChecklistSection}${remainingChecklistSection}${fullAlertsSection}${verificationSection}
+${WHATSAPP_SEPARATOR}
+💼 VENTAS
+${WHATSAPP_SEPARATOR}
+Efectivo:            ${formatCurrency(calculationData?.salesCash || 0)}
+Electrónico:         ${formatCurrency(calculationData?.totalElectronic || 0)}
+                     ────────
+Total:               *${formatCurrency(calculationData?.totalGeneral || 0)}*
+${WHATSAPP_SEPARATOR}
+${(calculationData?.totalExpenses || 0) > 0 ? `
+${WHATSAPP_SEPARATOR}
+💸 GASTOS
+${WHATSAPP_SEPARATOR}
+Operativos:          +${formatCurrency(calculationData?.totalExpenses || 0)}
+                     ────────
+Ventas + Gastos:     *${formatCurrency(calculationData?.totalWithExpenses || 0)}*
+${WHATSAPP_SEPARATOR}
+` : ''}
+${WHATSAPP_SEPARATOR}
+🎯 SICAR
+${WHATSAPP_SEPARATOR}
+Calculado:           ${formatCurrency((calculationData?.totalExpenses || 0) > 0 ? (calculationData?.totalWithExpenses || 0) : (calculationData?.totalGeneral || 0))}
+Esperado:            ${formatCurrency(expectedSales)}
+                     ────────
+${(calculationData?.difference || 0) >= 0 ? '📈' : '📉'} *Diferencia:*        *${formatCurrency(Math.abs(calculationData?.difference || 0))}*
+                     *(${(calculationData?.difference || 0) >= 0 ? 'SOBRANTE' : 'FALTANTE'})*
+${WHATSAPP_SEPARATOR}
+${deliveryChecklistSection}${remainingChecklistSection}${generateExpensesSection()}${fullAlertsSection}${verificationSection}
 ${WHATSAPP_SEPARATOR}
 
 💰 *CONTEO COMPLETO (${formatCurrency(calculationData?.totalCash || 0)})*
@@ -655,7 +752,7 @@ ${denominationDetails}
 ${WHATSAPP_SEPARATOR}
 
 📅 ${calculationData?.timestamp || ''}
-🔐 CashGuard Paradise v1.3.6Y
+🔐 CashGuard Paradise v2.6
 🔒 NIST SP 800-115 | PCI DSS 12.10.1
 
 ✅ Reporte automático
@@ -664,10 +761,12 @@ ${WHATSAPP_SEPARATOR}
 Firma Digital: ${dataHash}`;
   }, [calculationData, electronicPayments, deliveryCalculation, store, cashier, witness, phaseState, expectedSales,
       validatePhaseCompletion, generateDenominationDetails, generateDataHash, generateCriticalAlertsBlock,
-      generateWarningAlertsBlock, generateDeliveryChecklistSection, generateRemainingChecklistSection]);
+      generateWarningAlertsBlock, generateDeliveryChecklistSection, generateRemainingChecklistSection, generateExpensesSection]);
+  // 🤖 [IA] - v1.4.0 FASE 5: expenses NO incluido en deps porque generateExpensesSection ya lo captura
 
-  // 🤖 [IA] - v1.3.7: Handler con confirmación explícita + detección pop-ups bloqueados
-  const handleWhatsAppSend = useCallback(() => {
+  // 🤖 [IA] - v2.4.1: Handler inteligente con detección de plataforma + copia automática
+  // v2.4.1b: Abre modal de instrucciones inmediatamente en desktop (sin toast automático)
+  const handleWhatsAppSend = useCallback(async () => {
     try {
       if (!calculationData || !store || !cashier || !witness) {
         toast.error("❌ Error", {
@@ -677,45 +776,54 @@ Firma Digital: ${dataHash}`;
       }
 
       const report = generateCompleteReport();
-      const encodedReport = encodeURIComponent(report);
-      const whatsappUrl = `https://api.whatsapp.com/send?text=${encodedReport}`;
-
-      // Intentar abrir WhatsApp
-      const windowRef = window.open(whatsappUrl, '_blank');
-
-      // Detectar bloqueo de pop-ups
-      if (!windowRef || windowRef.closed || typeof windowRef.closed === 'undefined') {
-        setPopupBlocked(true);
-        toast.error('⚠️ Habilite pop-ups para enviar por WhatsApp', {
-          duration: 6000,
-          action: {
-            label: 'Copiar en su lugar',
-            onClick: () => handleCopyToClipboard()
-          }
-        });
-        return;
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      
+      // 🎯 PASO 1: Copiar automáticamente al portapapeles
+      try {
+        await navigator.clipboard.writeText(report);
+      } catch (clipboardError) {
+        // Fallback si clipboard API falla
+        console.warn('Clipboard API failed, using fallback');
+        const textArea = document.createElement('textarea');
+        textArea.value = report;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
       }
-
-      // WhatsApp abierto exitosamente → Esperar confirmación
-      setWhatsappOpened(true);
-      toast.info('📱 Confirme cuando haya enviado el reporte', { duration: 10000 });
-
-      // Auto-confirmar después de 10 segundos (timeout de seguridad)
-      setTimeout(() => {
-        if (!reportSent) {
-          setReportSent(true);
-          toast.success('✅ Reporte marcado como enviado');
-        }
-      }, 10000);
+      
+      // 🎯 PASO 2: Comportamiento según plataforma
+      if (isMobile) {
+        // MÓVIL: Abrir app nativa de WhatsApp
+        const encodedReport = encodeURIComponent(report);
+        window.location.href = `whatsapp://send?text=${encodedReport}`;
+        
+        setWhatsappOpened(true);
+        toast.success('📱 WhatsApp abierto con reporte copiado', {
+          description: 'Si no se abrió, pegue el reporte manualmente',
+          duration: 8000
+        });
+      } else {
+        // DESKTOP: Abrir modal de instrucciones inmediatamente (sin toast)
+        setWhatsappOpened(true);
+        setShowWhatsAppInstructions(true); // ⭐ Abrir modal directo
+      }
+      
+      // 🤖 [IA] - v2.4.1b: Auto-confirmación ELIMINADA
+      // Usuario DEBE confirmar manualmente con botón "Ya lo envié" del modal
+      // Esto garantiza que el reporte fue enviado realmente
+      
     } catch (error) {
-      toast.error("❌ Error al generar reporte", {
+      toast.error("❌ Error al procesar reporte", {
         description: error instanceof Error ? error.message : "Error desconocido"
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [calculationData, store, cashier, witness, reportSent]);
-  // generateCompleteReport y handleCopyToClipboard son funciones estables definidas en el componente
-  // Incluirlas causaría re-creación innecesaria del callback en cada render
+  // generateCompleteReport es función estable definida en el componente
+  // Incluirla causaría re-creación innecesaria del callback en cada render
 
   // 🤖 [IA] - v1.3.7: Handler confirmación explícita usuario
   const handleConfirmSent = useCallback(() => {
@@ -938,9 +1046,21 @@ Firma Digital: ${dataHash}`;
               </h3>
               <div className="space-y-[clamp(0.75rem,3vw,1rem)]">
                 <div className="flex justify-between">
-                  <span className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#8899a6' }}>Efectivo:</span>
+                  <span className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#8899a6' }}>Efectivo Contado:</span>
                   <span className="font-bold text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#e1e8ed' }}>
                     {formatCurrency(calculationData?.totalCash || 0)}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-[clamp(0.75rem,3vw,0.875rem)]" style={{ color: '#8899a6' }}>  (Incluye fondo $50)</span>
+                  <span className="text-[clamp(0.75rem,3vw,0.875rem)]" style={{ color: '#8899a6' }}>
+                    -$50.00
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#8899a6' }}>Efectivo Ventas:</span>
+                  <span className="font-bold text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#e1e8ed' }}>
+                    {formatCurrency(calculationData?.salesCash || 0)}
                   </span>
                 </div>
                 <div className="flex justify-between">
@@ -951,14 +1071,30 @@ Firma Digital: ${dataHash}`;
                 </div>
                 <div className="border-t border-gray-700 pt-3">
                   <div className="flex justify-between text-[clamp(1rem,4vw,1.125rem)] font-bold">
-                    <span style={{ color: '#8899a6' }}>Total General:</span>
+                    <span style={{ color: '#8899a6' }}>Total Ventas:</span>
                     <span style={{ color: '#0a84ff' }}>
                       {formatCurrency(calculationData?.totalGeneral || 0)}
                     </span>
                   </div>
                 </div>
+                {(calculationData?.totalExpenses || 0) > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#8899a6' }}>Gastos:</span>
+                    <span className="font-bold text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#ff9f0a' }}>
+                      +{formatCurrency(calculationData?.totalExpenses || 0)}
+                    </span>
+                  </div>
+                )}
+                {(calculationData?.totalExpenses || 0) > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#8899a6' }}>Ventas + Gastos:</span>
+                    <span className="font-bold text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#e1e8ed' }}>
+                      {formatCurrency(calculationData?.totalWithExpenses || 0)}
+                    </span>
+                  </div>
+                )}
                 <div className="flex justify-between">
-                  <span className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#8899a6' }}>Venta Esperada:</span>
+                  <span className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#8899a6' }}>SICAR Entradas:</span>
                   <span className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#8899a6' }}>
                     {formatCurrency(expectedSales)}
                   </span>
@@ -1049,24 +1185,29 @@ Firma Digital: ${dataHash}`;
               </p>
 
               {/* Botones de acción */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[clamp(0.5rem,2vw,0.75rem)] lg:max-w-3xl mx-auto">
+              {/* 🤖 [IA] - v2.4.1: Grid adaptativo - 2 columnas si Copiar oculto, 3 si visible */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-[clamp(0.5rem,2vw,0.75rem)] lg:max-w-2xl mx-auto">
                 <ConstructiveActionButton
                   onClick={handleWhatsAppSend}
-                  disabled={reportSent || whatsappOpened}
+                  disabled={false}
                   aria-label="Enviar reporte por WhatsApp"
                 >
                   <Share />
-                  {reportSent ? 'Reporte Enviado' : whatsappOpened ? 'WhatsApp Abierto...' : 'Enviar WhatsApp'}
+                  {reportSent ? '✅ Reporte Enviado' : whatsappOpened ? 'Reenviar WhatsApp' : 'Enviar WhatsApp'}
                 </ConstructiveActionButton>
 
-                <NeutralActionButton
+                {/* 🤖 [IA] - v2.4.1: Botón Copiar OCULTO (redundante con copia automática)
+                    ⚠️ REACTIVACIÓN: Descomentar este bloque si se necesita botón manual de copia
+                    Casos de uso: Debugging, usuarios que prefieren control manual, fallback si clipboard API falla
+                */}
+                {/* <NeutralActionButton
                   onClick={handleCopyToClipboard}
-                  disabled={!reportSent && !popupBlocked}
-                  aria-label="Copiar reporte"
+                  disabled={false}
+                  aria-label="Copiar reporte manualmente"
                 >
                   <Copy />
                   Copiar
-                </NeutralActionButton>
+                </NeutralActionButton> */}
 
                 <PrimaryActionButton
                   onClick={() => setShowFinishConfirmation(true)}
@@ -1078,26 +1219,7 @@ Firma Digital: ${dataHash}`;
                   Finalizar
                 </PrimaryActionButton>
               </div>
-
-              {/* 🤖 [IA] - v1.3.7: Botón de confirmación después de abrir WhatsApp */}
-              {whatsappOpened && !reportSent && (
-                <div className="mt-[clamp(1rem,4vw,1.5rem)] p-[clamp(1rem,4vw,1.5rem)] rounded-[clamp(0.5rem,2vw,0.75rem)]" style={{
-                  background: 'rgba(0, 186, 124, 0.1)',
-                  border: '1px solid rgba(0, 186, 124, 0.3)'
-                }}>
-                  <p className="text-[clamp(0.875rem,3.5vw,1rem)] mb-3 text-center" style={{ color: '#8899a6' }}>
-                    ¿Ya envió el reporte por WhatsApp?
-                  </p>
-                  <ConstructiveActionButton
-                    onClick={handleConfirmSent}
-                    className="w-full"
-                    aria-label="Confirmar envío de reporte"
-                  >
-                    <CheckCircle />
-                    Sí, ya envié el reporte
-                  </ConstructiveActionButton>
-                </div>
-              )}
+              {/* 🤖 [IA] - v2.4.1b: Botón de confirmación eliminado (redundante con modal) */}
             </div>
           </div>
 
@@ -1119,7 +1241,7 @@ Firma Digital: ${dataHash}`;
             </div>
           )}
 
-          {/* 🤖 [IA] - v1.3.7: Banner pop-up bloqueado */}
+          {/* 🤖 [IA] - v2.4.1: Banner pop-up bloqueado - Actualizado sin referencia a botón Copiar */}
           {popupBlocked && !reportSent && (
             <div className="p-[clamp(0.75rem,3vw,1rem)] rounded-[clamp(0.5rem,2vw,0.75rem)] mb-[clamp(1rem,4vw,1.5rem)] flex items-start gap-3" style={{
               background: 'rgba(255, 69, 58, 0.1)',
@@ -1131,7 +1253,7 @@ Firma Digital: ${dataHash}`;
                   🚫 Pop-ups Bloqueados
                 </p>
                 <p className="text-[clamp(0.75rem,3vw,0.875rem)] mt-1" style={{ color: '#8899a6' }}>
-                  Su navegador bloqueó la apertura de WhatsApp. Use el botón "Copiar" para enviar el reporte manualmente.
+                  Su navegador bloqueó la apertura de WhatsApp. El reporte ya está copiado - vaya a WhatsApp Web y péguelo manualmente.
                 </p>
               </div>
             </div>
@@ -1154,6 +1276,159 @@ Firma Digital: ${dataHash}`;
         }}
         onCancel={() => setShowFinishConfirmation(false)}
       />
+
+      {/* 🤖 [IA] - v2.4.1: Modal de instrucciones para envío WhatsApp en desktop */}
+      <Dialog open={showWhatsAppInstructions} onOpenChange={setShowWhatsAppInstructions}>
+        <DialogContent className="glass-morphism-panel max-w-md p-0">
+          <DialogTitle className="sr-only">
+            Instrucciones para enviar reporte por WhatsApp
+          </DialogTitle>
+          <DialogDescription className="sr-only">
+            Pasos detallados para enviar el reporte copiado a WhatsApp Web
+          </DialogDescription>
+
+          <div className="p-fluid-lg space-y-fluid-lg">
+            {/* Header */}
+            <div className="flex items-center gap-fluid-md">
+              <MessageSquare
+                className="flex-shrink-0 w-[clamp(1.5rem,6vw,2rem)] h-[clamp(1.5rem,6vw,2rem)]"
+                style={{ color: '#00ba7c' }}
+                aria-label="Icono de WhatsApp"
+              />
+              <div className="flex flex-col">
+                <h2 className="font-bold text-[clamp(1.125rem,5vw,1.375rem)] text-[#e1e8ed] leading-tight">
+                  Cómo enviar el reporte
+                </h2>
+                <p className="text-[clamp(0.625rem,2.5vw,0.75rem)] text-[#8899a6] mt-[clamp(0.125rem,0.5vw,0.25rem)]">
+                  Siga estos pasos para enviar por WhatsApp Web
+                </p>
+              </div>
+            </div>
+
+            {/* Pasos */}
+            <div className="space-y-[clamp(0.75rem,3vw,1rem)]">
+              {/* Paso 1 */}
+              <div className="flex items-start gap-[clamp(0.5rem,2vw,0.75rem)]">
+                <div 
+                  className="w-[clamp(1.75rem,7vw,2rem)] h-[clamp(1.75rem,7vw,2rem)] rounded-full flex items-center justify-center flex-shrink-0"
+                  style={{
+                    background: 'rgba(0, 186, 124, 0.2)',
+                    border: '1px solid rgba(0, 186, 124, 0.3)'
+                  }}
+                >
+                  <span className="text-[clamp(0.875rem,3.5vw,1rem)] font-bold" style={{ color: '#00ba7c' }}>1</span>
+                </div>
+                <div>
+                  <p className="font-medium text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#e1e8ed' }}>
+                    Vaya a su WhatsApp Web
+                  </p>
+                  <p className="text-[clamp(0.75rem,3vw,0.875rem)] mt-1" style={{ color: '#8899a6' }}>
+                    Debe estar ya abierto según el protocolo
+                  </p>
+                </div>
+              </div>
+
+              {/* Paso 2 */}
+              <div className="flex items-start gap-[clamp(0.5rem,2vw,0.75rem)]">
+                <div 
+                  className="w-[clamp(1.75rem,7vw,2rem)] h-[clamp(1.75rem,7vw,2rem)] rounded-full flex items-center justify-center flex-shrink-0"
+                  style={{
+                    background: 'rgba(0, 186, 124, 0.2)',
+                    border: '1px solid rgba(0, 186, 124, 0.3)'
+                  }}
+                >
+                  <span className="text-[clamp(0.875rem,3.5vw,1rem)] font-bold" style={{ color: '#00ba7c' }}>2</span>
+                </div>
+                <div>
+                  <p className="font-medium text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#e1e8ed' }}>
+                    Seleccione el chat de gerencia
+                  </p>
+                  <p className="text-[clamp(0.75rem,3vw,0.875rem)] mt-1" style={{ color: '#8899a6' }}>
+                    O el grupo correspondiente para reportes
+                  </p>
+                </div>
+              </div>
+
+              {/* Paso 3 */}
+              <div className="flex items-start gap-[clamp(0.5rem,2vw,0.75rem)]">
+                <div 
+                  className="w-[clamp(1.75rem,7vw,2rem)] h-[clamp(1.75rem,7vw,2rem)] rounded-full flex items-center justify-center flex-shrink-0"
+                  style={{
+                    background: 'rgba(0, 186, 124, 0.2)',
+                    border: '1px solid rgba(0, 186, 124, 0.3)'
+                  }}
+                >
+                  <span className="text-[clamp(0.875rem,3.5vw,1rem)] font-bold" style={{ color: '#00ba7c' }}>3</span>
+                </div>
+                <div>
+                  <p className="font-medium text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#e1e8ed' }}>
+                    Pegue el reporte
+                  </p>
+                  <p className="text-[clamp(0.75rem,3vw,0.875rem)] mt-1" style={{ color: '#8899a6' }}>
+                    Presione {/Mac/i.test(navigator.userAgent) ? 'Cmd+V' : 'Ctrl+V'} en el campo de mensaje
+                  </p>
+                </div>
+              </div>
+
+              {/* Paso 4 */}
+              <div className="flex items-start gap-[clamp(0.5rem,2vw,0.75rem)]">
+                <div 
+                  className="w-[clamp(1.75rem,7vw,2rem)] h-[clamp(1.75rem,7vw,2rem)] rounded-full flex items-center justify-center flex-shrink-0"
+                  style={{
+                    background: 'rgba(0, 186, 124, 0.2)',
+                    border: '1px solid rgba(0, 186, 124, 0.3)'
+                  }}
+                >
+                  <span className="text-[clamp(0.875rem,3.5vw,1rem)] font-bold" style={{ color: '#00ba7c' }}>4</span>
+                </div>
+                <div>
+                  <p className="font-medium text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#e1e8ed' }}>
+                    Envíe el mensaje
+                  </p>
+                  <p className="text-[clamp(0.75rem,3vw,0.875rem)] mt-1" style={{ color: '#8899a6' }}>
+                    Presione Enter para enviar el reporte
+                  </p>
+                </div>
+              </div>
+
+              {/* Banner de confirmación */}
+              <div 
+                className="p-[clamp(0.75rem,3vw,1rem)] rounded-[clamp(0.5rem,2vw,0.75rem)] flex items-center gap-[clamp(0.5rem,2vw,0.75rem)]"
+                style={{
+                  background: 'rgba(0, 186, 124, 0.1)',
+                  border: '1px solid rgba(0, 186, 124, 0.3)'
+                }}
+              >
+                <CheckCircle className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)] flex-shrink-0" style={{ color: '#00ba7c' }} />
+                <p className="text-[clamp(0.75rem,3vw,0.875rem)]" style={{ color: '#00ba7c' }}>
+                  El reporte ya está copiado en su portapapeles
+                </p>
+              </div>
+            </div>
+
+            {/* Botones */}
+            <div className="flex gap-[clamp(0.5rem,2vw,0.75rem)] pt-fluid-md border-t border-slate-600">
+              <Button
+                variant="ghost"
+                onClick={() => setShowWhatsAppInstructions(false)}
+                className="flex-1 h-fluid-3xl"
+              >
+                Cerrar
+              </Button>
+              <ConstructiveActionButton
+                onClick={() => {
+                  setShowWhatsAppInstructions(false);
+                  handleConfirmSent();
+                }}
+                className="flex-1"
+              >
+                <CheckCircle className="w-4 h-4" />
+                Ya lo envié
+              </ConstructiveActionButton>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

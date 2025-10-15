@@ -1,6 +1,7 @@
 // [IA] - Arquitectura Guiada Basada en Datos v1.0 - InitialWizardFlow Configuration
 // 🤖 [IA] - v1.2.38: Agregados iconos para Morning Count Protocol
 // 🤖 [IA] - v1.2.41L: Coherencia iconográfica - RotateCcw y Users para Evening Cut
+// 🤖 [IA] - v2.4.1: Agregado FileText para nuevo punto de Gastos
 import {
   AlertTriangle,
   Shield,
@@ -10,7 +11,8 @@ import {
   Calculator,     // 🧮 No calculadoras (Morning + Evening)
   BellRing,       // 🔔 Reporte anomalías (Morning)
   RefreshCw,      // ↻ Repiten desde cero (Evening) - v1.2.41W
-  Users           // 👥 Cajero y Testigo Presentes (Evening)
+  Users,          // 👥 Cajero y Testigo Presentes (Evening)
+  FileText        // 📄 Documentación de gastos (Evening) - v2.4.1
 } from 'lucide-react';
 
 export interface ProtocolRule {
@@ -44,6 +46,7 @@ export interface RulesFlowState {
 
 // 🤖 [IA] - EVENING CUT PROTOCOL - Protocolo para corte nocturno (InitialWizardModal)
 // 🤖 [IA] - v1.2.41W: Coherencia iconográfica (MessageSquare + RefreshCw)
+// 🤖 [IA] - v2.4.1: Fusión WhatsApp+Calculadoras + nuevo punto Gastos (4 reglas optimizadas)
 const protocolRules: ProtocolRule[] = [
   {
     id: 'activeSystem',
@@ -58,10 +61,10 @@ const protocolRules: ProtocolRule[] = [
     severity: 'critical'
   },
   {
-    id: 'differentCashier',
-    title: 'Abran WhatsApp Web',
-    subtitle: 'Mantener comunicación activa durante el conteo',
-    Icon: MessageSquare,  // 📱 v1.2.41W: WhatsApp Web (interfaz cuadrada)
+    id: 'communicationTools',
+    title: 'WhatsApp Web + Sin Calculadoras',
+    subtitle: 'Solo WhatsApp abierto. Cálculos únicamente en la app',
+    Icon: MessageSquare,  // 📱 v2.4.1: Fusión comunicación + herramientas
     colors: {
       text: 'text-red-500',
       border: 'border-l-red-500',
@@ -70,16 +73,16 @@ const protocolRules: ProtocolRule[] = [
     severity: 'critical'
   },
   {
-    id: 'singleCount',
-    title: 'No Usar Calculadoras',
-    subtitle: 'Cálculos únicamente en la aplicación',
-    Icon: Calculator,  // 🧮 Restricción: No herramientas externas
+    id: 'expensesReady',
+    title: 'Preparar Facturas y Reportes de Gastos',
+    subtitle: 'Tener documentación de gastos lista antes de iniciar',
+    Icon: FileText,  // 📄 v2.4.1: Documentación de gastos
     colors: {
-      text: 'text-red-500',
-      border: 'border-l-red-500',
-      glow: 'shadow-red-500/20'
+      text: 'text-orange-400',
+      border: 'border-l-orange-400',
+      glow: 'shadow-orange-400/20'
     },
-    severity: 'critical'
+    severity: 'warning'
   },
   {
     id: 'noDevices',

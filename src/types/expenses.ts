@@ -174,12 +174,14 @@ export interface DailyExpense {
  * const invalid: ExpenseCategory = 'invalid';      // ❌ Error TypeScript
  * ```
  */
+// 🤖 [IA] - v2.5: Categorías personalizadas Paradise Acuarios
 export type ExpenseCategory =
-  | 'operational'  // ⚙️ Gastos operacionales generales (reparaciones, mantenimiento)
-  | 'supplies'     // 🧹 Suministros e insumos (limpieza, oficina, consumibles)
-  | 'transport'    // 🚗 Transporte y logística (gasolina, taxi, fletes urgentes)
-  | 'services'     // 🔧 Servicios externos (técnicos, consultorías, outsourcing)
-  | 'other';       // 📋 Otros gastos no clasificables en categorías anteriores
+  | 'employees'        // 💰 Empleados (pagos, adelantos, semanales)
+  | 'supplies'         // 📦 Insumos Operativos (bolsas, materiales despacho)
+  | 'maintenance'      // 🔧 Mantenimiento (ferretería, reparaciones)
+  | 'shipping'         // 🚚 Envíos (encomendistas, delivery)
+  | 'small_purchases'  // 🛒 Compras Menores (proveedores pequeños)
+  | 'other';           // 📋 Otros (imprevistos varios)
 
 /**
  * Type guard para validar si un objeto desconocido es un DailyExpense válido en runtime.
@@ -243,11 +245,13 @@ export function isDailyExpense(obj: unknown): obj is DailyExpense {
   if (typeof expense.timestamp !== 'string') return false;
 
   // Validación nivel 3: Verificar que category es uno de los valores válidos
+  // 🤖 [IA] - v2.5: Categorías actualizadas Paradise Acuarios
   const validCategories: ExpenseCategory[] = [
-    'operational',
+    'employees',
     'supplies',
-    'transport',
-    'services',
+    'maintenance',
+    'shipping',
+    'small_purchases',
     'other'
   ];
   if (!validCategories.includes(expense.category as ExpenseCategory)) {
@@ -324,16 +328,17 @@ export const EXPENSE_VALIDATION = {
  * - **Reporte WhatsApp:** Agrupación visual de gastos por categoría
  * - **Alertas visuales:** Identificación rápida de tipo de gasto
  *
- * **Selección de Emojis:**
- * - ⚙️ `operational`: Representa procesos y mantenimiento general
- * - 🧹 `supplies`: Suministros de limpieza (uso más común)
- * - 🚗 `transport`: Vehículos y logística
- * - 🔧 `services`: Herramientas y servicios técnicos
+ * **Selección de Emojis (v2.5 - Paradise Acuarios):**
+ * - 💰 `employees`: Pagos y adelantos a empleados
+ * - 📦 `supplies`: Insumos operativos (bolsas, materiales)
+ * - 🔧 `maintenance`: Mantenimiento y ferretería
+ * - 🚚 `shipping`: Envíos y encomendistas
+ * - 🛒 `small_purchases`: Compras menores a proveedores
  * - 📋 `other`: Clipboard genérico para misceláneos
  *
  * @example
  * ```typescript
- * const emoji = EXPENSE_CATEGORY_EMOJI['supplies']; // "🧹"
+ * const emoji = EXPENSE_CATEGORY_EMOJI['supplies']; // "📦"
  *
  * // En componente React:
  * <Select>
@@ -345,11 +350,13 @@ export const EXPENSE_VALIDATION = {
  * </Select>
  * ```
  */
+// 🤖 [IA] - v2.5: Emojis actualizados Paradise Acuarios
 export const EXPENSE_CATEGORY_EMOJI: Record<ExpenseCategory, string> = {
-  operational: '⚙️',
-  supplies: '🧹',
-  transport: '🚗',
-  services: '🔧',
+  employees: '💰',
+  supplies: '📦',
+  maintenance: '🔧',
+  shipping: '🚚',
+  small_purchases: '🛒',
   other: '📋',
 } as const;
 
@@ -359,8 +366,8 @@ export const EXPENSE_CATEGORY_EMOJI: Record<ExpenseCategory, string> = {
  * @remarks
  * Labels diseñados para:
  * - **Claridad:** Nombres descriptivos que usuarios finales entienden inmediatamente
- * - **Brevedad:** Máximo 12 caracteres para caber en UI móvil
- * - **Consistencia:** Singular (no plurales) para uniformidad
+ * - **Brevedad:** Máximo 18 caracteres para caber en UI móvil
+ * - **Especificidad:** Adaptados a operaciones Paradise Acuarios
  *
  * **Uso en Componentes:**
  * ```tsx
@@ -373,25 +380,28 @@ export const EXPENSE_CATEGORY_EMOJI: Record<ExpenseCategory, string> = {
  * </Select>
  * ```
  *
- * **Resultado Visual:**
+ * **Resultado Visual (v2.5):**
  * ```
- * ⚙️ Operacional
- * 🧹 Suministros
- * 🚗 Transporte
- * 🔧 Servicios
+ * 💰 Empleados
+ * 📦 Insumos Operativos
+ * 🔧 Mantenimiento
+ * 🚚 Envíos
+ * 🛒 Compras Menores
  * 📋 Otros
  * ```
  *
  * @example
  * ```typescript
- * const label = EXPENSE_CATEGORY_LABEL['supplies']; // "Suministros"
+ * const label = EXPENSE_CATEGORY_LABEL['supplies']; // "Insumos Operativos"
  * ```
  */
+// 🤖 [IA] - v2.5: Labels actualizados Paradise Acuarios
 export const EXPENSE_CATEGORY_LABEL: Record<ExpenseCategory, string> = {
-  operational: 'Operacional',
-  supplies: 'Suministros',
-  transport: 'Transporte',
-  services: 'Servicios',
+  employees: 'Empleados',
+  supplies: 'Insumos Operativos',
+  maintenance: 'Mantenimiento',
+  shipping: 'Envíos',
+  small_purchases: 'Compras Menores',
   other: 'Otros',
 } as const;
 
