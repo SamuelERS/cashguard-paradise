@@ -27,7 +27,7 @@ Este README es la **guía maestra** del sistema de documentación técnica de Ca
 
 ---
 
-## 📊 Métricas del Sistema de Documentación
+## 📊 Métricas del Sistema de Documentación.
 
 ```
 📁 Total archivos markdown: 95+
