@@ -1,7 +1,7 @@
-// 🤖 [IA] - v2.0: MEJORA REPORTE - Formato profesional alineado con reporte nocturno
+// 🤖 [IA] - v2.7: Versión footer reporte actualizada v2.6→v2.7 (consistencia badge OperationSelector)
+// Previous: v2.0 - MEJORA REPORTE - Formato profesional alineado con reporte nocturno
 // Previous: v1.3.7 - ANTI-FRAUDE - Confirmación explícita envío WhatsApp ANTES de revelar resultados
 // Previous: v1.1.13 - Mejora visual del detalle de denominaciones con tabla estructurada
-// Previous: v1.2.43 - Fix scroll congelado: Clase .morning-verification-container agregada
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Sunrise, CheckCircle, AlertTriangle, Download, Share, ArrowLeft, Copy, FileText, Lock } from 'lucide-react';
@@ -191,7 +191,7 @@ ${alertMessage}
 ${SEPARATOR}
 
 📅 ${verificationData.timestamp}
-🔐 CashGuard Paradise v2.6
+🔐 CashGuard Paradise v2.7
 🔒 NIST SP 800-115 | PCI DSS 12.10.1
 
 ✅ Reporte automático

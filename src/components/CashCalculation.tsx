@@ -1,7 +1,7 @@
-// 🤖 [IA] - v1.3.6AD2: FIX BUG DIFERENCIA VUELTO - Usar amountRemaining ?? 50 en reporte (monto ajustado post-verificación)
+// 🤖 [IA] - v2.7: Versión footer reporte actualizada v2.6→v2.7 (consistencia badge OperationSelector)
+// Previous: v1.3.6AD2 - FIX BUG DIFERENCIA VUELTO - Usar amountRemaining ?? 50 en reporte
 // Previous: v1.3.7 - ANTI-FRAUDE - Confirmación explícita envío WhatsApp ANTES de revelar resultados
-// Previous: v1.3.6AD - FIX MÉTRICA CRÍTICA - totalDenoms usa verificationSteps.length (denominaciones verificadas)
-// Previous: v1.3.6AB - FIX ROOT CAUSE REAL - Clase .cash-calculation-container agregada (patrón v1.2.41A9)
+// Previous: v1.3.6AD - FIX MÉTRICA CRÍTICA - totalDenoms usa verificationSteps.length
 import { useState, useEffect, useCallback } from "react";
 // 🤖 [IA] - v1.3.6Z: Framer Motion removido (GPU compositing bug iOS Safari causa pantalla congelada Phase 3)
 // 🤖 [IA] - v1.3.7: Agregado Lock icon para bloqueo de resultados
@@ -752,7 +752,7 @@ ${denominationDetails}
 ${WHATSAPP_SEPARATOR}
 
 📅 ${calculationData?.timestamp || ''}
-🔐 CashGuard Paradise v2.6
+🔐 CashGuard Paradise v2.7
 🔒 NIST SP 800-115 | PCI DSS 12.10.1
 
 ✅ Reporte automático
