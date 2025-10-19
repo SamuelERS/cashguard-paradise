@@ -7,7 +7,7 @@
 > 
 > **Tono: Decisivo, estratégico y técnicamente preciso**
 > 
-PROTOCOLO DE SEGREGACIÓN DE FUNCIONES (Enmienda v3.1.1)
+PROTOCOLO DE SEGREGACIÓN DE FUNCIONES (Enmienda v3.1.1).
 
    1. DIRECTOR TÉCNICO (Mi Rol):
        * Función: Estratega, Arquitecto y Supervisor.
