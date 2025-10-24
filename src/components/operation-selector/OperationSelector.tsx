@@ -1,4 +1,6 @@
-// 🤖 [IA] - v2.7: Badge versión actualizado (fix orden modal Phase 2 preparación)
+// 🤖 [IA] - v2.8.1: Badge versión actualizado (refinamiento UX botón WhatsApp)
+// Previous: v2.8 - Badge versión actualizado (sistema WhatsApp inteligente aplicado a Apertura)
+// Previous: v2.7 - Badge versión actualizado (fix orden modal Phase 2 preparación)
 // Previous: v2.6 - Badge versión actualizado (sistema inteligente WhatsApp + optimización UX)
 // Previous: v2.5 - Badge versión actualizado (formato tabla compacto + fix fondo $50 + SICAR)
 import { motion } from 'framer-motion';
@@ -77,7 +79,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
               }}>
                 Seleccione Operación
               </h1>
-              {/* 🤖 [IA] - v2.7: Badge versión actualizado (fix orden modal Phase 2 preparación) */}
+              {/* 🤖 [IA] - v2.8.1: Refinamiento UX WhatsApp (botón siempre activo + eliminado redundante) */}
               <span className="px-3 py-1 rounded-full text-xs font-semibold shadow-lg" style={{
                 background: 'linear-gradient(135deg, #d4af37 0%, #aa8c2d 100%)',
                 color: '#1a1a1a',
@@ -85,7 +87,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
                 boxShadow: '0 4px 6px rgba(212, 175, 55, 0.4)',
                 border: '1px solid rgba(255, 215, 0, 0.3)'
               }}>
-                v2.7
+                v2.8.1
               </span>
             </div>
           </div>

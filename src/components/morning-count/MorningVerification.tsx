@@ -1,12 +1,24 @@
-// 🤖 [IA] - v2.7: Versión footer reporte actualizada v2.6→v2.7 (consistencia badge OperationSelector)
+// 🤖 [IA] - v2.8.1: Refinamiento UX WhatsApp (botón siempre activo + eliminado botón redundante)
+// Previous: v2.8 - Sistema WhatsApp inteligente aplicado (modal instrucciones + detección plataforma)
+// Previous: v2.7 - Versión footer reporte actualizada v2.6→v2.7 (consistencia badge OperationSelector)
 // Previous: v2.0 - MEJORA REPORTE - Formato profesional alineado con reporte nocturno
 // Previous: v1.3.7 - ANTI-FRAUDE - Confirmación explícita envío WhatsApp ANTES de revelar resultados
 // Previous: v1.1.13 - Mejora visual del detalle de denominaciones con tabla estructurada
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Sunrise, CheckCircle, AlertTriangle, Download, Share, ArrowLeft, Copy, FileText, Lock } from 'lucide-react';
+import { Sunrise, CheckCircle, AlertTriangle, Download, Share, ArrowLeft, Copy, FileText, Lock, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { 
+  AlertDialog, 
+  AlertDialogContent, 
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction
+} from "@/components/ui/alert-dialog"; // 🤖 [IA] - v2.8: Modal instrucciones WhatsApp desktop
 import { calculateCashTotal, formatCurrency, generateDenominationSummary } from '@/utils/calculations';
 import { copyToClipboard } from '@/utils/clipboard'; // 🤖 [IA] - v1.1.09
 import { CashCount } from '@/types/cash';
@@ -46,6 +58,9 @@ export function MorningVerification({
   const [reportSent, setReportSent] = useState(false);
   const [whatsappOpened, setWhatsappOpened] = useState(false);
   const [popupBlocked, setPopupBlocked] = useState(false);
+
+  // 🤖 [IA] - v2.8: Estado modal instrucciones WhatsApp (desktop-only)
+  const [showWhatsAppInstructions, setShowWhatsAppInstructions] = useState(false);
 
   const store = getStoreById(storeId);
   const cashierIn = getEmployeeById(cashierId);
@@ -216,48 +231,90 @@ Firma Digital: ${dataHash}`;
     }
   }, [generateReport]);
 
-  // 🤖 [IA] - v1.3.7: Handler con confirmación explícita + detección pop-ups bloqueados
-  const handleWhatsAppSend = useCallback(() => {
+  // 🤖 [IA] - v2.8: Handler inteligente con detección plataforma + copia automática + validación
+  const handleWhatsAppSend = useCallback(async () => {
     try {
-      const report = generateReport();
-      const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(report)}`;
-
-      // Intentar abrir WhatsApp
-      const windowRef = window.open(whatsappUrl, '_blank');
-
-      // Detectar bloqueo de pop-ups
-      if (!windowRef || windowRef.closed || typeof windowRef.closed === 'undefined') {
-        setPopupBlocked(true);
-        toast.error('⚠️ Habilite pop-ups para enviar por WhatsApp', {
-          duration: 6000,
-          action: {
-            label: 'Copiar en su lugar',
-            onClick: () => handleCopyToClipboard()
-          }
+      // ✅ VALIDACIÓN: Verificar datos completos antes de generar reporte
+      if (!store || !cashierIn || !cashierOut) {
+        toast.error("❌ Error", {
+          description: "Faltan datos necesarios para generar el reporte"
         });
         return;
       }
 
-      // WhatsApp abierto exitosamente → Esperar confirmación
-      setWhatsappOpened(true);
-      toast.info('📱 Confirme cuando haya enviado el reporte', { duration: 10000 });
+      const report = generateReport();
+      const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(report)}`;
 
-      // Auto-confirmar después de 10 segundos (timeout de seguridad)
-      setTimeout(() => {
-        if (!reportSent) {
-          setReportSent(true);
-          toast.success('✅ Reporte marcado como enviado');
+      // ✅ PASO 1: Detección inteligente de plataforma
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+      // ✅ PASO 2: Copia automática al portapapeles (con fallback robusto)
+      try {
+        await navigator.clipboard.writeText(report);
+      } catch (clipboardError) {
+        // Fallback para navegadores antiguos o permisos denegados
+        console.warn('Clipboard API falló, usando fallback:', clipboardError);
+        const textArea = document.createElement('textarea');
+        textArea.value = report;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try {
+          document.execCommand('copy');
+        } catch (execError) {
+          console.error('Fallback copy también falló:', execError);
         }
-      }, 10000);
-    } catch (error) {
-      toast.error('Error al generar el reporte');
-    }
-  }, [reportSent, generateReport, handleCopyToClipboard]);
+        document.body.removeChild(textArea);
+      }
 
-  // 🤖 [IA] - v1.3.7: Handler confirmación explícita usuario
+      if (isMobile) {
+        // MÓVIL: Abre app nativa WhatsApp
+        const windowRef = window.open(whatsappUrl, '_blank');
+
+        // Detectar bloqueo de pop-ups
+        if (!windowRef || windowRef.closed || typeof windowRef.closed === 'undefined') {
+          setPopupBlocked(true);
+          toast.error('⚠️ Habilite pop-ups para enviar por WhatsApp', {
+            duration: 6000,
+            action: {
+              label: 'Copiar en su lugar',
+              onClick: () => handleCopyToClipboard()
+            }
+          });
+          return;
+        }
+
+        // WhatsApp abierto exitosamente → Esperar confirmación MANUAL
+        setWhatsappOpened(true);
+        toast.success('📱 WhatsApp abierto', {
+          description: 'El reporte está copiado en su portapapeles',
+          duration: 8000
+        });
+
+        // ✅ NO HAY auto-timeout - Usuario DEBE confirmar manualmente
+      } else {
+        // ✅ DESKTOP: Abrir modal instrucciones (NO abre WhatsApp Web, NO toast redundante)
+        setWhatsappOpened(true);
+        setShowWhatsAppInstructions(true);
+
+        // ✅ NO HAY auto-timeout - Usuario DEBE confirmar manualmente con botón "Ya lo envié"
+      }
+    } catch (error) {
+      console.error('Error al procesar reporte WhatsApp:', error);
+      toast.error('❌ Error al procesar reporte', {
+        description: 'Por favor intente nuevamente'
+      });
+    }
+  }, [store, cashierIn, cashierOut, reportSent, generateReport]);
+
+  // 🤖 [IA] - v2.8: Handler confirmación explícita usuario (actualizado para cerrar modal instrucciones)
   const handleConfirmSent = useCallback(() => {
     setReportSent(true);
     setWhatsappOpened(false);
+    setShowWhatsAppInstructions(false); // Cierra modal instrucciones
     toast.success('✅ Reporte confirmado como enviado');
   }, []);
   
@@ -641,13 +698,14 @@ Firma Digital: ${dataHash}`;
 
               {/* Botones de acción en grid - 🤖 [IA] - v1.3.7: Handlers actualizados + disabled states */}
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3 lg:max-w-3xl mx-auto">
+                {/* 🤖 [IA] - v2.8.1: Botón siempre activo hasta confirmación final (usuario puede reenviar) */}
                 <Button
                   onClick={handleWhatsAppSend}
-                  disabled={reportSent || whatsappOpened}
+                  disabled={reportSent}
                   className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold hover:scale-105 transform transition-all duration-300 text-xs sm:text-sm px-2 py-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                 >
                   <Share className="w-4 h-4 mr-2" />
-                  {reportSent ? 'Reporte Enviado' : whatsappOpened ? 'WhatsApp Abierto...' : 'WhatsApp'}
+                  {reportSent ? 'Reporte Enviado ✅' : 'WhatsApp'}
                 </Button>
 
                 <Button
@@ -706,6 +764,165 @@ Firma Digital: ${dataHash}`;
         </motion.div>
       </motion.div>
       </div>
+
+      {/* 🤖 [IA] - v2.8: Modal Instrucciones WhatsApp (desktop-only) */}
+      <AlertDialog open={showWhatsAppInstructions} onOpenChange={setShowWhatsAppInstructions}>
+      <AlertDialogContent
+        className="max-w-md"
+        style={{
+          background: 'rgba(36, 36, 36, 0.6)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          border: '1px solid rgba(255, 255, 255, 0.15)',
+          borderRadius: '12px'
+        }}
+      >
+        <AlertDialogHeader>
+          <AlertDialogTitle className="flex items-center gap-2 text-white">
+            <MessageSquare className="w-5 h-5 text-[#25D366]" />
+            ¿Cómo enviar por WhatsApp?
+          </AlertDialogTitle>
+          <AlertDialogDescription className="text-gray-300">
+            Sigue estos pasos para enviar el reporte por WhatsApp Web
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+
+        {/* Banner "Reporte Copiado" */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-4 p-3 rounded-lg"
+          style={{
+            background: 'rgba(34, 197, 94, 0.15)',
+            border: '1px solid rgba(34, 197, 94, 0.3)'
+          }}
+        >
+          <div className="flex items-center gap-2 text-sm text-green-400">
+            <CheckCircle className="w-4 h-4" />
+            <span className="font-medium">Reporte copiado al portapapeles</span>
+          </div>
+        </motion.div>
+
+        {/* Pasos numerados */}
+        <div className="space-y-3 mb-6">
+          {/* Paso 1 */}
+          <div className="flex gap-3">
+            <div
+              className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
+              style={{
+                background: 'linear-gradient(135deg, #f4a52a 0%, #ffb84d 100%)',
+                color: '#1a1a1a'
+              }}
+            >
+              1
+            </div>
+            <div className="flex-1 pt-0.5">
+              <p className="text-sm text-gray-200">
+                <span className="font-medium text-white">Abra WhatsApp Web</span>
+                <br />
+                <span className="text-gray-400 text-xs">
+                  Vaya a{' '}
+                  <code className="px-1 py-0.5 rounded bg-gray-800 text-green-400">
+                    web.whatsapp.com
+                  </code>{' '}
+                  en su navegador
+                </span>
+              </p>
+            </div>
+          </div>
+
+          {/* Paso 2 */}
+          <div className="flex gap-3">
+            <div
+              className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
+              style={{
+                background: 'linear-gradient(135deg, #f4a52a 0%, #ffb84d 100%)',
+                color: '#1a1a1a'
+              }}
+            >
+              2
+            </div>
+            <div className="flex-1 pt-0.5">
+              <p className="text-sm text-gray-200">
+                <span className="font-medium text-white">Seleccione el contacto</span>
+                <br />
+                <span className="text-gray-400 text-xs">
+                  Busque el chat de su supervisor o grupo
+                </span>
+              </p>
+            </div>
+          </div>
+
+          {/* Paso 3 */}
+          <div className="flex gap-3">
+            <div
+              className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
+              style={{
+                background: 'linear-gradient(135deg, #f4a52a 0%, #ffb84d 100%)',
+                color: '#1a1a1a'
+              }}
+            >
+              3
+            </div>
+            <div className="flex-1 pt-0.5">
+              <p className="text-sm text-gray-200">
+                <span className="font-medium text-white">Pegue el reporte</span>
+                <br />
+                <span className="text-gray-400 text-xs">
+                  Presione{' '}
+                  <code className="px-1 py-0.5 rounded bg-gray-800 text-blue-400">
+                    {/Mac|iPhone|iPod|iPad/i.test(navigator.userAgent) ? 'Cmd+V' : 'Ctrl+V'}
+                  </code>{' '}
+                  en el campo de mensaje
+                </span>
+              </p>
+            </div>
+          </div>
+
+          {/* Paso 4 */}
+          <div className="flex gap-3">
+            <div
+              className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
+              style={{
+                background: 'linear-gradient(135deg, #f4a52a 0%, #ffb84d 100%)',
+                color: '#1a1a1a'
+              }}
+            >
+              4
+            </div>
+            <div className="flex-1 pt-0.5">
+              <p className="text-sm text-gray-200">
+                <span className="font-medium text-white">Envíe el mensaje</span>
+                <br />
+                <span className="text-gray-400 text-xs">
+                  Haga clic en el botón de enviar y regrese aquí para confirmar
+                </span>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+          <AlertDialogCancel
+            onClick={() => setShowWhatsAppInstructions(false)}
+            style={{
+              background: 'rgba(255, 255, 255, 0.1)',
+              color: '#e1e8ed',
+              border: '1px solid rgba(255, 255, 255, 0.15)'
+            }}
+          >
+            Cerrar
+          </AlertDialogCancel>
+          <AlertDialogAction
+            onClick={handleConfirmSent}
+            className="bg-gradient-to-r from-[#f4a52a] to-[#ffb84d] text-[#1a1a1a] font-semibold hover:opacity-90"
+          >
+            <CheckCircle className="w-4 h-4 mr-2" />
+            Ya lo envié
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
     </div>
   );
 }
