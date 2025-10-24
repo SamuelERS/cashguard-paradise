@@ -5,6 +5,7 @@ import CashCounter from "@/components/CashCounter";
 import InitialWizardModal from "@/components/InitialWizardModal";
 import { OperationSelector } from "@/components/operation-selector/OperationSelector";
 import { MorningCountWizard } from "@/components/morning-count/MorningCountWizard";
+import { DeliveryDashboardWrapper } from "@/components/deliveries/DeliveryDashboardWrapper";
 import { useOperationMode } from "@/hooks/useOperationMode";
 import { OperationMode } from "@/types/operation-mode";
 import { DailyExpense } from '@/types/expenses'; // 🤖 [IA] - v1.4.0: Tipos gastos
@@ -68,14 +69,15 @@ const Index = () => {
     resetMode(); // 🤖 [IA] - v1.0.81 - Resetear modo al volver
   };
 
-  // 🤖 [IA] - v1.0.81 - Manejar selección de modo
+  // 🤖 [IA] - v1.0.82 - Manejar selección de modo (incluye DELIVERY_VIEW)
   const handleModeSelection = (mode: OperationMode) => {
     selectMode(mode);
     if (mode === OperationMode.CASH_CUT) {
       setShowWizard(true);
-    } else {
+    } else if (mode === OperationMode.CASH_COUNT) {
       setShowMorningWizard(true);
     }
+    // DELIVERY_VIEW no requiere wizard, se maneja directamente en el render
   };
 
   // 🤖 [IA] - v1.0.88 - Mostrar OperationSelector si no hay modo O si hay wizard abierto
@@ -107,6 +109,11 @@ const Index = () => {
         </AnimatePresence>
       </>
     );
+  }
+
+  // 🤖 [IA] - v1.0.82 - Renderizar DeliveryDashboardWrapper si modo es DELIVERY_VIEW
+  if (currentMode === OperationMode.DELIVERY_VIEW) {
+    return <DeliveryDashboardWrapper requirePin={true} />;
   }
 
   if (showCashCounter && initialData) {
