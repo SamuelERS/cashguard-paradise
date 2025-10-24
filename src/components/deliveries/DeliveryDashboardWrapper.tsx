@@ -1,8 +1,10 @@
-// 🤖 [IA] - v1.0.1 - Wrapper para DeliveryDashboard con validación PIN y navegación
+// 🤖 [IA] - v1.0.2 - Wrapper para DeliveryDashboard con validación PIN y navegación
+// Previous: v1.0.1 - Agregada persistencia lockout con localStorage
 // Previous: v1.0.0 - Implementación inicial sin persistencia lockout
 import { useState, useEffect } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useOperationMode } from '@/hooks/useOperationMode';
 import { DeliveryDashboard } from './DeliveryDashboard';
 import { PinModal } from '../ui/pin-modal';
 import { Button } from '../ui/button';
@@ -68,6 +70,7 @@ export function DeliveryDashboardWrapper({
   requirePin = true
 }: DeliveryDashboardWrapperProps) {
   const navigate = useNavigate();
+  const { resetMode } = useOperationMode();
   const [isPinValidated, setIsPinValidated] = useState(!requirePin);
   const [failedAttempts, setFailedAttempts] = useState(0);
   const [isLocked, setIsLocked] = useState(false);
@@ -122,7 +125,11 @@ export function DeliveryDashboardWrapper({
   };
 
   const handleGoBack = () => {
-    console.log('[DEBUG] PIN cancelled/back button clicked, navigating to home');
+    console.log('[DEBUG] Back button clicked, resetting operation mode and navigating to home');
+    
+    // 🔄 CRITICAL: Reset operation mode to show OperationSelector
+    resetMode();
+    
     try {
       navigate('/');
     } catch (error) {
