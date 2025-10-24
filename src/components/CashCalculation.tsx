@@ -1,7 +1,7 @@
-// 🤖 [IA] - v2.7: Versión footer reporte actualizada v2.6→v2.7 (consistencia badge OperationSelector)
+// 🤖 [IA] - v3.0: VERSION 3.0 DELIVERY CONTROL - FASE 3 Integración DeliveryManager
+// Previous: v2.7 - Versión footer reporte actualizada v2.6→v2.7 (consistencia badge OperationSelector)
 // Previous: v1.3.6AD2 - FIX BUG DIFERENCIA VUELTO - Usar amountRemaining ?? 50 en reporte
 // Previous: v1.3.7 - ANTI-FRAUDE - Confirmación explícita envío WhatsApp ANTES de revelar resultados
-// Previous: v1.3.6AD - FIX MÉTRICA CRÍTICA - totalDenoms usa verificationSteps.length
 import { useState, useEffect, useCallback } from "react";
 // 🤖 [IA] - v1.3.6Z: Framer Motion removido (GPU compositing bug iOS Safari causa pantalla congelada Phase 3)
 // 🤖 [IA] - v1.3.7: Agregado Lock icon para bloqueo de resultados
@@ -30,6 +30,8 @@ import type { VerificationBehavior, VerificationAttempt } from "@/types/verifica
 import { DailyExpense, EXPENSE_CATEGORY_EMOJI, EXPENSE_CATEGORY_LABEL } from '@/types/expenses';
 import { getStoreById, getEmployeeById } from "@/data/paradise";
 import { DenominationsList } from "@/components/cash-calculation/DenominationsList"; // 🤖 [IA] - v1.0.0: Componente extraído
+// 🤖 [IA] - v3.0 FASE 3: Import DeliveryManager component
+import { DeliveryManager } from "@/components/deliveries/DeliveryManager";
 
 // 🤖 [IA] - v2.4.2: TypeScript interface actualizada con nueva lógica de ventas
 interface CalculationData {
@@ -1111,6 +1113,24 @@ Firma Digital: ${dataHash}`;
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* 🤖 [IA] - v3.0 FASE 3: Deliveries COD Section */}
+          <div style={{
+            background: 'rgba(36, 36, 36, 0.4)',
+            backdropFilter: `blur(clamp(12px, 4vw, 20px))`,
+            WebkitBackdropFilter: `blur(clamp(12px, 4vw, 20px))`,
+            border: '1px solid rgba(255, 255, 255, 0.15)',
+            borderRadius: `clamp(8px, 3vw, 16px)`,
+            padding: `clamp(1rem, 5vw, 1.5rem)`
+          }}>
+            <h3 className="text-[clamp(1rem,4.5vw,1.25rem)] font-bold mb-[clamp(0.75rem,3vw,1rem)]" style={{ color: '#e1e8ed' }}>
+              📦 Deliveries Pendientes (COD)
+            </h3>
+            <p className="text-[clamp(0.75rem,3vw,0.875rem)] mb-[clamp(1rem,4vw,1.5rem)]" style={{ color: '#8899a6' }}>
+              Gestiona entregas pendientes que deben restarse del efectivo esperado
+            </p>
+            <DeliveryManager />
           </div>
 
           {/* Cambio para Mañana - 🤖 [IA] - v1.1.08: Glass morphism */}
