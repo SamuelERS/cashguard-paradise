@@ -1,4 +1,5 @@
-// 🤖 [IA] - v2.8.1: Badge versión actualizado (refinamiento UX botón WhatsApp)
+// 🤖 [IA] - v3.0.0: FASE 9 - Vista Deliveries Pendientes en Home Screen
+// Previous: v2.8.1 - Badge versión actualizado (refinamiento UX botón WhatsApp)
 // Previous: v2.8 - Badge versión actualizado (sistema WhatsApp inteligente aplicado a Apertura)
 // Previous: v2.7 - Badge versión actualizado (fix orden modal Phase 2 preparación)
 // Previous: v2.6 - Badge versión actualizado (sistema inteligente WhatsApp + optimización UX)
@@ -80,15 +81,15 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
               }}>
                 Seleccione Operación
               </h1>
-              {/* 🤖 [IA] - v2.8.1: Refinamiento UX WhatsApp (botón siempre activo + eliminado redundante) */}
+              {/* 🤖 [IA] - v3.0.0: FASE 9 - Vista Deliveries Pendientes en Home Screen */}
               <span className="px-3 py-1 rounded-full text-xs font-semibold shadow-lg" style={{
                 background: 'linear-gradient(135deg, #d4af37 0%, #aa8c2d 100%)',
                 color: '#1a1a1a',
-                textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)',
+                fontSize: `clamp(0.625rem, 2.5vw, 0.75rem)`,
                 boxShadow: '0 4px 6px rgba(212, 175, 55, 0.4)',
                 border: '1px solid rgba(255, 215, 0, 0.3)'
               }}>
-                v2.8.1
+                v3.0.0
               </span>
             </div>
           </div>

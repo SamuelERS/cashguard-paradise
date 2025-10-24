@@ -157,11 +157,17 @@ export function DeliveryDashboardWrapper({
   return (
     <div className="min-h-screen relative p-4">
       {/* Breadcrumb de navegación */}
-      <div className="mb-4">
+      <div className="mb-4 relative z-50">
         <Button 
           variant="ghost" 
-          onClick={handleGoBack}
-          className="flex items-center gap-2 hover:bg-white/10"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('[DEBUG] Button clicked, calling handleGoBack');
+            handleGoBack();
+          }}
+          className="flex items-center gap-2 hover:bg-white/10 cursor-pointer"
+          type="button"
         >
           <ArrowLeft className="w-4 h-4" />
           Volver a Operaciones
