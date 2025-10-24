@@ -32,6 +32,9 @@ import { getStoreById, getEmployeeById } from "@/data/paradise";
 import { DenominationsList } from "@/components/cash-calculation/DenominationsList"; // 🤖 [IA] - v1.0.0: Componente extraído
 // 🤖 [IA] - v3.0 FASE 3: Import DeliveryManager component
 import { DeliveryManager } from "@/components/deliveries/DeliveryManager";
+// 🤖 [IA] - v3.0 FASE 4: Import useDeliveries hook y funciones de ajuste SICAR
+import { useDeliveries } from "@/hooks/useDeliveries";
+import { calculateSicarAdjusted, formatDeliveriesForWhatsApp, formatSicarAdjustment } from "@/utils/sicarAdjustment";
 
 // 🤖 [IA] - v2.4.2: TypeScript interface actualizada con nueva lógica de ventas
 interface CalculationData {
@@ -101,6 +104,9 @@ const CashCalculation = ({
   const [popupBlocked, setPopupBlocked] = useState(false);
   const [showWhatsAppInstructions, setShowWhatsAppInstructions] = useState(false);
 
+  // 🤖 [IA] - v3.0 FASE 4: Hook para acceder a deliveries pendientes
+  const { pending: pendingDeliveries } = useDeliveries();
+
   // 🤖 [IA] - v1.3.6Z: FIX iOS Safari - Cleanup defensivo de modal state
   // Garantiza que modal state se resetea al desmontar, previene race conditions en lifecycle iOS
   useEffect(() => {
@@ -128,8 +134,12 @@ const CashCalculation = ({
     // 🤖 [IA] - v2.4.2: Total con gastos = ventas + gastos (para comparar con SICAR Entradas)
     const totalWithExpenses = totalGeneral + totalExpenses;
     
-    // 🤖 [IA] - v2.4.2: Diferencia = (Ventas + Gastos) - SICAR Entradas
-    const difference = totalWithExpenses - expectedSales;
+    // 🤖 [IA] - v3.0 FASE 4: Ajustar SICAR restando deliveries pendientes
+    // Elimina workaround contable de registrar envíos como "efectivo" + "gasto" ficticio
+    const sicarAdjustment = calculateSicarAdjusted(expectedSales, pendingDeliveries);
+    
+    // 🤖 [IA] - v3.0 FASE 4: Diferencia = (Ventas + Gastos) - SICAR Ajustado (con deliveries restados)
+    const difference = totalWithExpenses - sicarAdjustment.adjustedExpected;
     
     const changeResult = calculateChange50(cashCount);
     
@@ -156,7 +166,7 @@ const CashCalculation = ({
     
     setCalculationData(data);
     setCalculationData(data);
-  }, [cashCount, electronicPayments, expectedSales, expenses]); // 🤖 [IA] - v1.4.0 FASE 5: expenses agregado
+  }, [cashCount, electronicPayments, expectedSales, expenses, pendingDeliveries]); // 🤖 [IA] - v3.0 FASE 4: pendingDeliveries agregado
 
   useEffect(() => {
     if (!isCalculated) {
@@ -643,6 +653,11 @@ ${WHATSAPP_SEPARATOR}
 ${criticalAlertsBlock}${criticalAlertsBlock && warningAlertsBlock ? '\n\n' : ''}${warningAlertsBlock}
 ` : '';
 
+    // 🤖 [IA] - v3.0 FASE 4: Calcular ajuste SICAR para reporte
+    const sicarAdjustment = calculateSicarAdjusted(expectedSales, pendingDeliveries);
+    const deliveriesSectionWhatsApp = formatDeliveriesForWhatsApp(sicarAdjustment, WHATSAPP_SEPARATOR);
+    const sicarAdjustmentText = formatSicarAdjustment(sicarAdjustment);
+
     // 🤖 [IA] - v1.3.6V: FIX #2 y #3 - Secciones de checklists
     const deliveryChecklistSection = generateDeliveryChecklistSection();
     const remainingChecklistSection = generateRemainingChecklistSection();
@@ -739,12 +754,14 @@ ${WHATSAPP_SEPARATOR}
 🎯 SICAR
 ${WHATSAPP_SEPARATOR}
 Calculado:           ${formatCurrency((calculationData?.totalExpenses || 0) > 0 ? (calculationData?.totalWithExpenses || 0) : (calculationData?.totalGeneral || 0))}
-Esperado:            ${formatCurrency(expectedSales)}
+${sicarAdjustment.pendingDeliveriesCount > 0 ? `
+${sicarAdjustmentText}
+` : `Esperado:            ${formatCurrency(expectedSales)}`}
                      ────────
 ${(calculationData?.difference || 0) >= 0 ? '📈' : '📉'} *Diferencia:*        *${formatCurrency(Math.abs(calculationData?.difference || 0))}*
                      *(${(calculationData?.difference || 0) >= 0 ? 'SOBRANTE' : 'FALTANTE'})*
 ${WHATSAPP_SEPARATOR}
-${deliveryChecklistSection}${remainingChecklistSection}${generateExpensesSection()}${fullAlertsSection}${verificationSection}
+${deliveriesSectionWhatsApp}${deliveryChecklistSection}${remainingChecklistSection}${generateExpensesSection()}${fullAlertsSection}${verificationSection}
 ${WHATSAPP_SEPARATOR}
 
 💰 *CONTEO COMPLETO (${formatCurrency(calculationData?.totalCash || 0)})*
@@ -761,9 +778,10 @@ ${WHATSAPP_SEPARATOR}
 ⚠️ Documento NO editable
 
 Firma Digital: ${dataHash}`;
-  }, [calculationData, electronicPayments, deliveryCalculation, store, cashier, witness, phaseState, expectedSales,
+  }, [calculationData, electronicPayments, deliveryCalculation, store, cashier, witness, phaseState, expectedSales, pendingDeliveries,
       validatePhaseCompletion, generateDenominationDetails, generateDataHash, generateCriticalAlertsBlock,
       generateWarningAlertsBlock, generateDeliveryChecklistSection, generateRemainingChecklistSection, generateExpensesSection]);
+  // 🤖 [IA] - v3.0 FASE 4: pendingDeliveries agregado para ajuste SICAR
   // 🤖 [IA] - v1.4.0 FASE 5: expenses NO incluido en deps porque generateExpensesSection ya lo captura
 
   // 🤖 [IA] - v2.4.1: Handler inteligente con detección de plataforma + copia automática
