@@ -8,7 +8,8 @@ import { toast } from 'sonner';
 
 // PIN ejemplo: "1234" → hash SHA-256
 // Para generar: echo -n "1234" | shasum -a 256
-const SUPERVISOR_PIN_HASH = 'a883dafc480d466ee04e0d6da986bd78eb1fdd2178d04693723da3a8f95d42f4';
+// Hash verificado con openssl: echo -n "1234" | openssl dgst -sha256
+const SUPERVISOR_PIN_HASH = '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4';
 
 interface PinModalProps {
   isOpen: boolean;
