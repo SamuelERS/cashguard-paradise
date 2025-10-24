@@ -194,7 +194,7 @@ export function DeliveryManager() {
     }
   };
 
-  const handleCancel Delivery = (id: string, customerName: string) => {
+  const handleCancelDelivery = (id: string, customerName: string) => {
     const reason = prompt(`Razón de cancelación para ${customerName}:`);
     if (!reason) return;
 
@@ -394,7 +394,7 @@ export function DeliveryManager() {
                 <CardFooter className="flex justify-end gap-3">
                   <Button
                     type="button"
-                    variant="outline"
+                    variant="secondary"
                     onClick={handleCancel}
                     className="border-[rgba(255,255,255,0.15)]"
                   >
@@ -493,7 +493,7 @@ export function DeliveryManager() {
 
                       <Button
                         size="sm"
-                        variant="outline"
+                        variant="secondary"
                         onClick={() => handleCancelDelivery(delivery.id, delivery.customerName)}
                         className="border-[rgba(255,255,255,0.15)] hover:bg-[rgba(255,255,255,0.05)]"
                       >
@@ -503,9 +503,9 @@ export function DeliveryManager() {
 
                       <Button
                         size="sm"
-                        variant="outline"
+                        variant="destructive"
                         onClick={() => handleRejectDelivery(delivery.id, delivery.customerName)}
-                        className="border-[rgba(255,255,255,0.15)] hover:bg-[rgba(255,255,255,0.05)]"
+                        className="hover:opacity-90"
                       >
                         <Ban className="mr-2 h-4 w-4" />
                         Rechazar
