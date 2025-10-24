@@ -1,7 +1,8 @@
-// 🤖 [IA] - v1.0.81 - Tipos para modos de operación del sistema
+// 🤖 [IA] - v1.0.82 - Tipos para modos de operación del sistema
 export enum OperationMode {
-  CASH_COUNT = 'cash_count',  // Conteo de caja matutino (inicio de turno)
-  CASH_CUT = 'cash_cut'       // Corte de caja nocturno (fin de turno)
+  CASH_COUNT = 'cash_count',      // Conteo de caja matutino (inicio de turno)
+  CASH_CUT = 'cash_cut',          // Corte de caja nocturno (fin de turno)
+  DELIVERY_VIEW = 'delivery_view' // Vista deliveries pendientes (acceso directo)
 }
 
 export interface OperationModeInfo {
@@ -39,5 +40,16 @@ export const OPERATION_MODES: Record<OperationMode, OperationModeInfo> = {
     requiresExpectedSales: true,
     requiresPhase2: true,
     targetAmount: 50 // Dejar $50 para el siguiente turno
+  },
+  [OperationMode.DELIVERY_VIEW]: {
+    mode: OperationMode.DELIVERY_VIEW,
+    title: 'Deliveries Pendientes',
+    subtitle: 'COD',
+    description: 'Consulta envíos pendientes de cobro',
+    icon: 'package',
+    buttonText: 'Ver Deliveries',
+    requiresExpectedSales: false,
+    requiresPhase2: false,
+    targetAmount: 0 // No aplica para vista de deliveries
   }
 };

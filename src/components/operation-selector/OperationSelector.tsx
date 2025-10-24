@@ -1,10 +1,11 @@
-// 🤖 [IA] - v2.8.1: Badge versión actualizado (refinamiento UX botón WhatsApp)
+// 🤖 [IA] - v3.0.0: FASE 9 - Vista Deliveries Pendientes en Home Screen
+// Previous: v2.8.1 - Badge versión actualizado (refinamiento UX botón WhatsApp)
 // Previous: v2.8 - Badge versión actualizado (sistema WhatsApp inteligente aplicado a Apertura)
 // Previous: v2.7 - Badge versión actualizado (fix orden modal Phase 2 preparación)
 // Previous: v2.6 - Badge versión actualizado (sistema inteligente WhatsApp + optimización UX)
 // Previous: v2.5 - Badge versión actualizado (formato tabla compacto + fix fondo $50 + SICAR)
 import { motion } from 'framer-motion';
-import { Sunrise, Moon, ArrowRight, Calculator, Fish, Heart } from 'lucide-react';
+import { Sunrise, Moon, Package, ArrowRight, Calculator, Fish, Heart } from 'lucide-react';
 // 🤖 [IA] - v1.2.24 - FloatingParticles eliminado para mejorar rendimiento
 import { OperationMode, OPERATION_MODES } from '@/types/operation-mode';
 import { AppFooter } from '@/components/AppFooter';
@@ -16,6 +17,7 @@ interface OperationSelectorProps {
 export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
   const cashCount = OPERATION_MODES[OperationMode.CASH_COUNT];
   const cashCut = OPERATION_MODES[OperationMode.CASH_CUT];
+  const deliveryView = OPERATION_MODES[OperationMode.DELIVERY_VIEW];
   
   // 🤖 [IA] - v1.2.11 - Detección de viewport y escala proporcional
   const viewportScale = typeof window !== 'undefined' ? Math.min(window.innerWidth / 430, 1) : 1;
@@ -79,15 +81,15 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
               }}>
                 Seleccione Operación
               </h1>
-              {/* 🤖 [IA] - v2.8.1: Refinamiento UX WhatsApp (botón siempre activo + eliminado redundante) */}
+              {/* 🤖 [IA] - v3.0.0: FASE 9 - Vista Deliveries Pendientes en Home Screen */}
               <span className="px-3 py-1 rounded-full text-xs font-semibold shadow-lg" style={{
                 background: 'linear-gradient(135deg, #d4af37 0%, #aa8c2d 100%)',
                 color: '#1a1a1a',
-                textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)',
+                fontSize: `clamp(0.625rem, 2.5vw, 0.75rem)`,
                 boxShadow: '0 4px 6px rgba(212, 175, 55, 0.4)',
                 border: '1px solid rgba(255, 215, 0, 0.3)'
               }}>
-                v2.8.1
+                v3.0.0
               </span>
             </div>
           </div>
@@ -99,8 +101,8 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
           </p>
         </motion.div>
 
-        {/* Contenedor de las dos opciones */}
-        <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+        {/* Contenedor de las tres opciones */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {/* Card de Conteo de Caja (Mañana) */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -331,6 +333,122 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
               <ArrowRight 
                 className="w-5 h-5 group-hover:translate-x-1 transition-transform"
                 style={{ color: '#0a84ff' }}
+              />
+            </div>
+          </motion.div>
+
+          {/* Card de Deliveries Pendientes (NUEVA) */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            whileHover={{ scale: 1.02 }}
+            onClick={() => onSelectMode(OperationMode.DELIVERY_VIEW)}
+            className="cursor-pointer group"
+            style={{
+              background: 'rgba(36, 36, 36, 0.4)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              borderRadius: '16px',
+              padding: `clamp(20px, ${32 * viewportScale}px, 32px)`,
+              boxShadow: '0 4px 24px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+            }}
+          >
+            {/* Ícono y badge */}
+            <div className="flex items-start justify-between mb-6">
+              <Package 
+                style={{
+                  width: `clamp(48px, 12vw, 64px)`,
+                  height: `clamp(48px, 12vw, 64px)`,
+                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text'
+                }}
+              />
+              <span 
+                className="rounded-full font-semibold"
+                style={{
+                  padding: `${Math.round(4 * viewportScale)}px ${Math.round(12 * viewportScale)}px`,
+                  fontSize: `clamp(0.625rem, 2.5vw, 0.75rem)`,
+                  background: 'rgba(16, 185, 129, 0.2)',
+                  border: '1px solid rgba(16, 185, 129, 0.4)',
+                  color: '#10b981'
+                }}
+              >
+                {deliveryView.subtitle}
+              </span>
+            </div>
+
+            {/* Título y descripción */}
+            <h3 className="font-bold mb-3" style={{
+              fontSize: `clamp(1.25rem, 5vw, 1.5rem)`,
+              color: '#e1e8ed'
+            }}>
+              {deliveryView.title}
+            </h3>
+            <p className="mb-6" style={{
+              fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
+              color: '#8899a6'
+            }}>
+              {deliveryView.description}
+            </p>
+
+            {/* Características */}
+            <div className="mb-6" style={{ display: 'flex', flexDirection: 'column', gap: `clamp(6px, 1.5vw, 8px)` }}>
+              <div className="flex items-center" style={{ gap: `clamp(6px, 1.5vw, 8px)` }}>
+                <div className="rounded-full" style={{
+                  width: `clamp(5px, 1.5vw, 6px)`,
+                  height: `clamp(5px, 1.5vw, 6px)`,
+                  background: '#10b981'
+                }} />
+                <span style={{
+                  fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
+                  color: '#8899a6'
+                }}>
+                  Vista completa de envíos activos
+                </span>
+              </div>
+              <div className="flex items-center" style={{ gap: `clamp(6px, 1.5vw, 8px)` }}>
+                <div className="rounded-full" style={{
+                  width: `clamp(5px, 1.5vw, 6px)`,
+                  height: `clamp(5px, 1.5vw, 6px)`,
+                  background: '#10b981'
+                }} />
+                <span style={{
+                  fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
+                  color: '#8899a6'
+                }}>
+                  Actualizar estados (pagado/cancelado)
+                </span>
+              </div>
+              <div className="flex items-center" style={{ gap: `clamp(6px, 1.5vw, 8px)` }}>
+                <div className="rounded-full" style={{
+                  width: `clamp(5px, 1.5vw, 6px)`,
+                  height: `clamp(5px, 1.5vw, 6px)`,
+                  background: '#10b981'
+                }} />
+                <span style={{
+                  fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
+                  color: '#8899a6'
+                }}>
+                  Alertas automáticas de antigüedad
+                </span>
+              </div>
+            </div>
+
+            {/* Botón de acción */}
+            <div className="flex items-center justify-between">
+              <span className="font-medium" style={{
+                fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
+                color: '#10b981'
+              }}>
+                Comenzar
+              </span>
+              <ArrowRight 
+                className="w-5 h-5 group-hover:translate-x-1 transition-transform"
+                style={{ color: '#10b981' }}
               />
             </div>
           </motion.div>

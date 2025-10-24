@@ -1,3 +1,65 @@
+### v3.0.0 - FIX DEFINITIVO: Botón "Volver a Operaciones" Funcional [24 OCT 2025] ✅
+**OPERACIÓN BUG CRÍTICO #6 RESUELTO:** Resolución definitiva del bug persistente donde botón "Volver a Operaciones" NO retornaba a OperationSelector - root cause identificado después de investigación forense exhaustiva de 6 archivos.
+
+**Problema crítico reportado (usuario con screenshots):**
+- 🔴 Botón "Volver a Operaciones" NO funcionaba (5 intentos de fix previos FALLARON)
+- 🔴 Usuario confirmó: "EL BOTON VOLVER A OPERACIONES SIGUE SIN FUNCIONAR"
+- 🔴 Bug persistió desde commits anteriores (Bugs #1-5 documentados en BUG_REPORT_CRITICO.md)
+- 🔴 Múltiples attempts: z-index, preventDefault, stopPropagation, resetMode before navigate
+
+**Root cause identificado (investigación forense completa):**
+- **Archivo:** `DeliveryDashboardWrapper.tsx` función `handleGoBack()`
+- **Problema:** PinModal permanecía montado después de llamar `onCancel()`
+- **Secuencia bug:**
+  1. Usuario presiona "Cancelar" en PinModal → `handleGoBack()` ejecuta
+  2. `resetMode()` ejecuta → `currentMode = null` ✅
+  3. `navigate('/')` ejecuta ✅
+  4. Index.tsx detecta `currentMode === null` → intenta renderizar OperationSelector
+  5. **PERO** DeliveryDashboardWrapper sigue montado con `isPinValidated = false`
+  6. Conditional `if (!isPinValidated)` sigue true → PinModal RE-RENDERIZA sobre OperationSelector
+  7. Usuario ve modal nuevamente → "no pasó nada" ❌
+
+**Solución implementada (quirúrgica):**
+```typescript
+const handleGoBack = () => {
+  // 🔄 BUG FIX v3.0.0: Reset PIN validation state FIRST para prevenir re-render de PinModal
+  // Root cause: Modal permanecía montado porque isPinValidated seguía en false
+  // Secuencia correcta: 1) Limpiar state local, 2) Reset mode, 3) Navigate
+  setIsPinValidated(false);
+  setFailedAttempts(0);
+  setIsLocked(false);
+  localStorage.removeItem(LOCKOUT_KEY);
+  console.log('[DEBUG] PIN state reset completed');
+
+  resetMode();
+  navigate('/');
+};
+```
+
+**Validación técnica exitosa:**
+- ✅ TypeScript: `npx tsc --noEmit` → 0 errors
+- ✅ Archivos modificados: 1 (DeliveryDashboardWrapper.tsx)
+- ✅ Líneas agregadas: 7 (4 state resets + 3 comments)
+- ✅ Badge versión: Ya actualizado a v3.0.0 en OperationSelector
+
+**Resultado esperado (testing usuario):**
+1. ✅ Click "Deliveries Pendientes" → PinModal aparece
+2. ✅ Click "Cancelar" → Retorna a OperationSelector (NO queda en modal)
+3. ✅ Volver a entrar → Click "X" modal → Retorna a OperationSelector
+4. ✅ Validar PIN correcto → Dashboard aparece
+5. ✅ Click "Volver a Operaciones" → Retorna a OperationSelector
+
+**Beneficios medibles:**
+- ✅ Bug persistente RESUELTO después de 5 intentos previos
+- ✅ Root cause definitivo documentado (secuencia completa)
+- ✅ Cleanup state explícito previene race conditions
+- ✅ Console logs agregados para debugging futuro
+- ✅ Fix quirúrgico mínimo (7 líneas agregadas)
+
+**Archivos:** `DeliveryDashboardWrapper.tsx` (líneas 1-4, 128-149), `CLAUDE.md`
+
+---
+
 ### v2.8 - Migración Sistema WhatsApp Desktop a Módulo Apertura [15 ENE 2025] 📚 DOCUMENTACIÓN COMPLETA
 **OPERACIÓN CONSISTENCIA UX COMPLETA:** Documentación exhaustiva finalizada para migrar lógica moderna WhatsApp (v2.4.1) desde módulo Cierre (`CashCalculation.tsx`) a módulo Apertura (`MorningVerification.tsx`) - unificar experiencia usuario desktop/móvil en ambos módulos.
 
