@@ -1,4 +1,5 @@
-// 🤖 [IA] - v1.0.2 - Wrapper para DeliveryDashboard con validación PIN y navegación
+// 🤖 [IA] - v3.0.0 - FIX DEFINITIVO: Reset completo de state antes de navegar (Bug #6 resuelto)
+// Previous: v1.0.2 - Wrapper para DeliveryDashboard con validación PIN y navegación
 // Previous: v1.0.1 - Agregada persistencia lockout con localStorage
 // Previous: v1.0.0 - Implementación inicial sin persistencia lockout
 import { useState, useEffect } from 'react';
@@ -126,10 +127,19 @@ export function DeliveryDashboardWrapper({
 
   const handleGoBack = () => {
     console.log('[DEBUG] Back button clicked, resetting operation mode and navigating to home');
-    
+
+    // 🔄 BUG FIX v3.0.0: Reset PIN validation state FIRST para prevenir re-render de PinModal
+    // Root cause: Modal permanecía montado porque isPinValidated seguía en false
+    // Secuencia correcta: 1) Limpiar state local, 2) Reset mode, 3) Navigate
+    setIsPinValidated(false);
+    setFailedAttempts(0);
+    setIsLocked(false);
+    localStorage.removeItem(LOCKOUT_KEY);
+    console.log('[DEBUG] PIN state reset completed');
+
     // 🔄 CRITICAL: Reset operation mode to show OperationSelector
     resetMode();
-    
+
     try {
       navigate('/');
     } catch (error) {
