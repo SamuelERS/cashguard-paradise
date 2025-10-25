@@ -1,7 +1,8 @@
-// 🤖 [IA] - v1.0.0 - Modal de validación PIN para acceso supervisor
+// 🤖 [IA] - v1.0.1 - Modal de validación PIN con botones estandarizados (ConstructiveActionButton/DestructiveActionButton)
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './dialog';
-import { Button } from './button';
+import { ConstructiveActionButton } from '@/components/shared/ConstructiveActionButton';
+import { DestructiveActionButton } from '@/components/shared/DestructiveActionButton';
 import { Input } from './input';
 import { Lock, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
@@ -90,13 +91,12 @@ export function PinModal({
             <p className="text-sm text-muted-foreground mt-2">
               Demasiados intentos fallidos. Reintente en 5 minutos.
             </p>
-            <Button 
-              variant="secondary" 
+            <DestructiveActionButton
               onClick={onCancel}
               className="mt-6"
             >
               Volver
-            </Button>
+            </DestructiveActionButton>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -126,22 +126,21 @@ export function PinModal({
             </div>
 
             <div className="flex gap-2">
-              <Button 
-                type="button" 
-                variant="secondary" 
-                onClick={onCancel} 
+              <DestructiveActionButton
+                type="button"
+                onClick={onCancel}
                 className="flex-1"
                 disabled={isValidating}
               >
                 Cancelar
-              </Button>
-              <Button 
-                type="submit" 
-                disabled={pin.length < 4 || isValidating} 
+              </DestructiveActionButton>
+              <ConstructiveActionButton
+                type="submit"
+                disabled={pin.length < 4 || isValidating}
                 className="flex-1"
               >
                 {isValidating ? 'Validando...' : 'Validar'}
-              </Button>
+              </ConstructiveActionButton>
             </div>
 
             <p className="text-xs text-muted-foreground text-center mt-4">
