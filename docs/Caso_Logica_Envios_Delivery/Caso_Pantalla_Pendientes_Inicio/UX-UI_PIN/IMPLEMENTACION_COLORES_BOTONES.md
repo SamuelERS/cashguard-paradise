@@ -331,6 +331,40 @@ Este cambio alinea el PIN Modal con otros componentes del sistema que siguen el 
 
 ---
 
+## ⚠️ BUG CRÍTICO IDENTIFICADO Y RESUELTO
+
+**Versión:** v1.1.1
+**Fecha:** 24 Oct 2025
+**Gravedad:** 🔴 CRÍTICA
+
+### Problema Detectado Post-Implementación
+Después de implementar los cambios de colores (v1.0.1), el usuario reportó que el **botón "Cancelar" no funcionaba** al hacer clic. A pesar de que el botón se renderizaba correctamente con las clases CSS correctas y el handler `onClick` ejecutaba, el modal permanecía abierto.
+
+### Root Cause
+El componente `AlertDialog` estaba configurado como controlled component (`open={isOpen}`) pero le faltaba el prop `onOpenChange` necesario para comunicar cambios de estado al componente padre.
+
+### Solución Aplicada
+Se agregó el handler `onOpenChange` al componente `AlertDialog` con guardas de seguridad apropiadas:
+
+```typescript
+<AlertDialog open={isOpen} onOpenChange={(open) => {
+  if (!open && !isValidating && !isLocked) {
+    onCancel();
+  }
+}}>
+```
+
+### Documentación Completa
+Ver archivo completo con análisis técnico detallado:
+- **[BUG_FIX_BOTON_CANCELAR.md](./BUG_FIX_BOTON_CANCELAR.md)**
+
+### Versión Final
+- **v1.0.1**: Corrección de colores de botones ✅
+- **v1.1.0**: Migración completa a AlertDialog + UX/UI consistency ✅
+- **v1.1.1**: Fix crítico botón Cancelar funcional ✅
+
+---
+
 ## 🏠 CUMPLIMIENTO FILOSOFÍA PARADISE
 
 > "Herramientas profesionales de tope de gama con valores cristianos"

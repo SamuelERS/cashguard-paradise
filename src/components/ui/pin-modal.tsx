@@ -1,6 +1,13 @@
-// 🤖 [IA] - v1.0.1 - Modal de validación PIN con botones estandarizados (ConstructiveActionButton/DestructiveActionButton)
+// 🤖 [IA] - v1.1.1 - FIX CRÍTICO: Botón Cancelar funcional + Modal consistente con sistema UX/UI
+// Previous: v1.1.0 - Modal de validación PIN 100% consistente con sistema UX/UI (AlertDialog + responsive clamp + iOS fix)
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from './dialog';
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+} from './alert-dialog';
 import { ConstructiveActionButton } from '@/components/shared/ConstructiveActionButton';
 import { DestructiveActionButton } from '@/components/shared/DestructiveActionButton';
 import { Input } from './input';
@@ -75,33 +82,58 @@ export function PinModal({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={() => !isValidating && onCancel()}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Lock className="w-5 h-5 text-blue-500" />
+    <AlertDialog open={isOpen} onOpenChange={(open) => {
+      // 🤖 [IA] - v1.1.1: FIX CRÍTICO - onOpenChange handler para cerrar modal con botón Cancelar
+      // Root cause: Sin este prop, AlertDialog no puede comunicar su intención de cerrarse
+      // Solo cerrar si no está validando ni bloqueado (seguridad anti-fraude)
+      if (!open && !isValidating && !isLocked) {
+        onCancel();
+      }
+    }}>
+      <AlertDialogContent
+        className="sm:max-w-md"
+        style={{
+          maxWidth: "min(calc(100vw - 2rem), 32rem)",
+          pointerEvents: 'auto',
+          touchAction: 'auto'
+        }}
+        onEscapeKeyDown={(e) => {
+          // Prevenir ESC cuando validando o bloqueado
+          if (isValidating || isLocked) {
+            e.preventDefault();
+          } else {
+            onCancel();
+          }
+        }}
+      >
+        <AlertDialogHeader>
+          <AlertDialogTitle className="text-[clamp(1rem,4.5vw,1.25rem)] font-bold flex items-center justify-center gap-[clamp(0.5rem,2vw,0.75rem)]">
+            <Lock className="w-[clamp(1.25rem,5vw,1.5rem)] h-[clamp(1.25rem,5vw,1.5rem)] text-blue-500" />
             PIN Supervisor Requerido
-          </DialogTitle>
-        </DialogHeader>
+          </AlertDialogTitle>
+          <AlertDialogDescription className="sr-only">
+            Ingrese el PIN de supervisor para acceder a información financiera sensible
+          </AlertDialogDescription>
+        </AlertDialogHeader>
 
         {isLocked ? (
           <div className="text-center py-8">
-            <AlertCircle className="w-12 h-12 mx-auto mb-4 text-red-500" />
-            <p className="text-red-500 font-semibold text-lg">Acceso bloqueado</p>
-            <p className="text-sm text-muted-foreground mt-2">
+            <AlertCircle className="w-[clamp(2.5rem,10vw,3rem)] h-[clamp(2.5rem,10vw,3rem)] mx-auto mb-[clamp(1rem,4vw,1.5rem)] text-red-500" />
+            <p className="text-red-500 font-semibold text-[clamp(1rem,4.5vw,1.125rem)]">Acceso bloqueado</p>
+            <p className="text-[clamp(0.875rem,3.5vw,1rem)] text-muted-foreground mt-[clamp(0.5rem,2vw,0.75rem)]">
               Demasiados intentos fallidos. Reintente en 5 minutos.
             </p>
             <DestructiveActionButton
               onClick={onCancel}
-              className="mt-6"
+              className="mt-[clamp(1.5rem,6vw,2rem)] h-[clamp(2.5rem,10vw,3rem)] px-[clamp(1rem,4vw,1.5rem)]"
             >
               Volver
             </DestructiveActionButton>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-fluid-lg">
             <div>
-              <label htmlFor="pin-input" className="text-sm font-medium mb-2 block">
+              <label htmlFor="pin-input" className="text-[clamp(0.875rem,3.5vw,1rem)] font-medium mb-[clamp(0.5rem,2vw,0.75rem)] block">
                 Ingrese PIN de supervisor
               </label>
               <Input
@@ -115,21 +147,21 @@ export function PinModal({
                 maxLength={6}
                 autoFocus
                 disabled={isValidating}
-                className="text-center text-lg tracking-widest"
+                className="text-center text-[clamp(1rem,4vw,1.125rem)] tracking-widest h-[clamp(2.5rem,10vw,3rem)]"
               />
               {attempts > 0 && (
-                <p className="text-sm text-red-500 mt-2 flex items-center gap-1">
-                  <AlertCircle className="w-4 h-4" />
+                <p className="text-[clamp(0.875rem,3.5vw,1rem)] text-red-500 mt-[clamp(0.5rem,2vw,0.75rem)] flex items-center gap-[clamp(0.25rem,1vw,0.5rem)]">
+                  <AlertCircle className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)]" />
                   Intentos restantes: {maxAttempts - attempts}
                 </p>
               )}
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex gap-[clamp(0.75rem,3vw,1rem)]">
               <DestructiveActionButton
                 type="button"
                 onClick={onCancel}
-                className="flex-1"
+                className="flex-1 h-[clamp(2.5rem,10vw,3rem)] px-[clamp(1rem,4vw,1.5rem)]"
                 disabled={isValidating}
               >
                 Cancelar
@@ -137,18 +169,18 @@ export function PinModal({
               <ConstructiveActionButton
                 type="submit"
                 disabled={pin.length < 4 || isValidating}
-                className="flex-1"
+                className="flex-1 h-[clamp(2.5rem,10vw,3rem)] px-[clamp(1rem,4vw,1.5rem)]"
               >
                 {isValidating ? 'Validando...' : 'Validar'}
               </ConstructiveActionButton>
             </div>
 
-            <p className="text-xs text-muted-foreground text-center mt-4">
+            <p className="text-[clamp(0.75rem,3vw,0.875rem)] text-muted-foreground text-center mt-[clamp(1rem,4vw,1.5rem)]">
               El PIN es requerido para acceder a información financiera sensible
             </p>
           </form>
         )}
-      </DialogContent>
-    </Dialog>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }
