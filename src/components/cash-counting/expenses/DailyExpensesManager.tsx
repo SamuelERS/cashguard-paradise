@@ -1,14 +1,13 @@
-// 🤖 [IA] - v1.4.0 FASE 2: Componente UI Sistema Gastos de Caja
+// 🤖 [IA] - v2.6.0 Phase 2G: Componente UI Sistema Gastos de Caja (Refactorizado)
+// Fase 2G - Auditoría "Cimientos de Cristal" - Lógica extraída a useExpensesManager hook
 // Componente para registrar gastos operacionales ANTES del conteo
 // Integración: Wizard Phase 1 Step 5.5 (OPCIONAL - puede omitirse)
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React from 'react';
 import { Plus, Edit2, Trash2, DollarSign, Receipt } from 'lucide-react';
-import { toast } from 'sonner';
 import {
   DailyExpense,
   ExpenseCategory,
-  isDailyExpense,
   EXPENSE_VALIDATION,
   EXPENSE_CATEGORY_EMOJI,
   EXPENSE_CATEGORY_LABEL,
@@ -18,6 +17,11 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
+import { useExpensesManager } from '@/hooks/useExpensesManager';
+
+// ============================================================================
+// TIPOS E INTERFACES
+// ============================================================================
 
 /**
  * Props para DailyExpensesManager
@@ -33,6 +37,10 @@ interface DailyExpensesManagerProps {
   /** Límite máximo de gastos permitidos */
   maxExpenses?: number;
 }
+
+// ============================================================================
+// COMPONENTE
+// ============================================================================
 
 /**
  * Componente para gestionar gastos del día
@@ -55,227 +63,41 @@ export const DailyExpensesManager: React.FC<DailyExpensesManagerProps> = ({
   disabled = false,
   maxExpenses = 10,
 }) => {
-  // ==================== STATE MANAGEMENT ====================
-
-  /** Lista interna de gastos */
-  const [expenses, setExpenses] = useState<DailyExpense[]>(externalExpenses);
-
-  /** Modo agregar/editar activo */
-  const [isAdding, setIsAdding] = useState(false);
-
-  /** ID del gasto en edición (null si agregando nuevo) */
-  const [editingId, setEditingId] = useState<string | null>(null);
-
-  /** Datos del formulario */
-  const [formData, setFormData] = useState<Partial<DailyExpense>>({
-    concept: '',
-    amount: undefined,
-    category: undefined,
-    hasInvoice: false,
+  // 🤖 [IA] - v2.6.0: Lógica extraída a useExpensesManager hook
+  const {
+    // Estado
+    expenses,
+    isAdding,
+    editingId,
+    formData,
+    amountInput,
+    errors,
+    // Cálculos
+    formattedTotal,
+    canAddMore,
+    isFormValid,
+    // Handlers del formulario
+    setFormConcept,
+    setFormAmount,
+    setFormCategory,
+    setFormHasInvoice,
+    handleAmountBlur,
+    // Acciones CRUD
+    openAddForm,
+    handleAddExpense,
+    handleEditExpense,
+    handleUpdateExpense,
+    handleDeleteExpense,
+    handleCancel,
+  } = useExpensesManager({
+    initialExpenses: externalExpenses,
+    onExpensesChange,
+    maxExpenses,
   });
 
-  /** 🤖 [IA] - v2.3: Input temporal para permitir "44." mientras usuario escribe */
-  const [amountInput, setAmountInput] = useState<string>('');
-
-  /** Errores de validación */
-  const [errors, setErrors] = useState<Record<string, string>>({});
-
-  // ==================== SYNC EXTERNAL EXPENSES ====================
-
-  /**
-   * Sincronizar gastos externos con estado interno
-   */
-  useEffect(() => {
-    setExpenses(externalExpenses);
-  }, [externalExpenses]);
-
-  // ==================== HELPER FUNCTIONS ====================
-
-  /**
-   * Calcular total de gastos
-   */
-  const calculateTotal = useCallback((): string => {
-    const total = expenses.reduce((sum, e) => sum + e.amount, 0);
-    return total.toFixed(2);
-  }, [expenses]);
-
-  /**
-   * Validar si se puede agregar más gastos
-   */
-  const canAddExpense = useCallback((): boolean => {
-    if (expenses.length >= maxExpenses) {
-      toast.error(`⚠️ Máximo ${maxExpenses} gastos permitidos`);
-      return false;
-    }
-    return true;
-  }, [expenses.length, maxExpenses]);
-
-  /**
-   * Validar formulario
-   */
-  const validateForm = useCallback((): { isValid: boolean; errors: Record<string, string> } => {
-    const newErrors: Record<string, string> = {};
-
-    // Validar concept
-    const concept = formData.concept?.trim() || '';
-    if (concept.length < EXPENSE_VALIDATION.MIN_CONCEPT_LENGTH) {
-      newErrors.concept = `Mínimo ${EXPENSE_VALIDATION.MIN_CONCEPT_LENGTH} caracteres`;
-    } else if (concept.length > EXPENSE_VALIDATION.MAX_CONCEPT_LENGTH) {
-      newErrors.concept = `Máximo ${EXPENSE_VALIDATION.MAX_CONCEPT_LENGTH} caracteres`;
-    }
-
-    // Validar amount
-    if (!formData.amount || formData.amount < EXPENSE_VALIDATION.MIN_AMOUNT) {
-      newErrors.amount = `Mínimo $${EXPENSE_VALIDATION.MIN_AMOUNT.toFixed(2)}`;
-    } else if (formData.amount > EXPENSE_VALIDATION.MAX_AMOUNT) {
-      newErrors.amount = `Máximo $${EXPENSE_VALIDATION.MAX_AMOUNT.toFixed(2)}`;
-    } else {
-      // Validar máximo 2 decimales
-      const decimals = (formData.amount.toString().split('.')[1] || '').length;
-      if (decimals > EXPENSE_VALIDATION.DECIMAL_PLACES) {
-        newErrors.amount = 'Máximo 2 decimales';
-      }
-    }
-
-    // Validar category
-    if (!formData.category) {
-      newErrors.category = 'Seleccione una categoría';
-    }
-
-    return {
-      isValid: Object.keys(newErrors).length === 0,
-      errors: newErrors,
-    };
-  }, [formData]);
-
-  /**
-   * Resetear formulario
-   */
-  const resetForm = useCallback(() => {
-    setFormData({
-      concept: '',
-      amount: undefined,
-      category: undefined,
-      hasInvoice: false,
-    });
-    setAmountInput(''); // 🤖 [IA] - v2.3: Limpiar input temporal
-    setEditingId(null);
-    setIsAdding(false);
-    setErrors({});
-  }, []);
-
-  // ==================== EVENT HANDLERS ====================
-
-  /**
-   * Handler: Agregar gasto
-   */
-  const handleAddExpense = useCallback(() => {
-    if (!canAddExpense()) return;
-
-    const validation = validateForm();
-    if (!validation.isValid) {
-      setErrors(validation.errors);
-      toast.error('❌ Corrige los errores del formulario');
-      return;
-    }
-
-    // Crear nuevo gasto
-    const newExpense: DailyExpense = {
-      id: crypto.randomUUID(),
-      concept: formData.concept!.trim(),
-      amount: formData.amount!,
-      category: formData.category!,
-      hasInvoice: formData.hasInvoice || false,
-      timestamp: new Date().toISOString(),
-    };
-
-    // Validar con type guard
-    if (!isDailyExpense(newExpense)) {
-      toast.error('❌ Error al crear gasto (validación falló)');
-      console.error('[DailyExpensesManager] isDailyExpense() failed:', newExpense);
-      return;
-    }
-
-    // Actualizar lista
-    const newExpenses = [...expenses, newExpense];
-    setExpenses(newExpenses);
-    onExpensesChange(newExpenses);
-
-    // Feedback + reset
-    toast.success(`✅ Gasto registrado: ${newExpense.concept}`);
-    resetForm();
-  }, [canAddExpense, validateForm, formData, expenses, onExpensesChange, resetForm]);
-
-  /**
-   * Handler: Editar gasto (cargar en formulario)
-   */
-  const handleEditExpense = useCallback((expense: DailyExpense) => {
-    setFormData({
-      concept: expense.concept,
-      amount: expense.amount,
-      category: expense.category,
-      hasInvoice: expense.hasInvoice,
-    });
-    setAmountInput(expense.amount.toString()); // 🤖 [IA] - v2.3: Sincronizar input temporal
-    setEditingId(expense.id);
-    setIsAdding(true);
-    setErrors({});
-  }, []);
-
-  /**
-   * Handler: Actualizar gasto
-   */
-  const handleUpdateExpense = useCallback(() => {
-    const validation = validateForm();
-    if (!validation.isValid) {
-      setErrors(validation.errors);
-      toast.error('❌ Corrige los errores del formulario');
-      return;
-    }
-
-    // Mapear y actualizar
-    const updatedExpenses = expenses.map((e) =>
-      e.id === editingId
-        ? {
-            ...e,
-            concept: formData.concept!.trim(),
-            amount: formData.amount!,
-            category: formData.category!,
-            hasInvoice: formData.hasInvoice || false,
-            // Preservar id + timestamp original
-          }
-        : e
-    );
-
-    setExpenses(updatedExpenses);
-    onExpensesChange(updatedExpenses);
-
-    // Feedback + reset
-    toast.success('✅ Gasto actualizado');
-    resetForm();
-  }, [validateForm, formData, expenses, editingId, onExpensesChange, resetForm]);
-
-  /**
-   * Handler: Eliminar gasto
-   */
-  const handleDeleteExpense = useCallback((id: string, concept: string) => {
-    const filteredExpenses = expenses.filter((e) => e.id !== id);
-    setExpenses(filteredExpenses);
-    onExpensesChange(filteredExpenses);
-    toast.success(`🗑️ Gasto eliminado: ${concept}`);
-  }, [expenses, onExpensesChange]);
-
-  /**
-   * Handler: Cancelar agregar/editar
-   */
-  const handleCancel = useCallback(() => {
-    resetForm();
-  }, [resetForm]);
-
-  // ==================== RENDER ====================
-
-  const totalExpenses = calculateTotal();
-  const isFormValid = validateForm().isValid;
+  // ============================================================================
+  // RENDER
+  // ============================================================================
 
   return (
     <div className="w-full space-y-4">
@@ -286,18 +108,14 @@ export const DailyExpensesManager: React.FC<DailyExpensesManagerProps> = ({
           <h3 className="text-lg font-semibold text-[#e1e8ed]">
             Gastos del Día
             {expenses.length > 0 && (
-              <span className="ml-2 text-[#8899a6]">(${totalExpenses})</span>
+              <span className="ml-2 text-[#8899a6]">(${formattedTotal})</span>
             )}
           </h3>
         </div>
 
-        {!isAdding && !disabled && expenses.length > 0 && (
+        {!isAdding && !disabled && expenses.length > 0 && canAddMore && (
           <Button
-            onClick={() => {
-              if (canAddExpense()) {
-                setIsAdding(true);
-              }
-            }}
+            onClick={openAddForm}
             size="sm"
             className="bg-[#0a84ff] hover:bg-[#0070dd] text-white"
           >
@@ -321,7 +139,7 @@ export const DailyExpensesManager: React.FC<DailyExpensesManagerProps> = ({
             </label>
             <Input
               value={formData.concept || ''}
-              onChange={(e) => setFormData({ ...formData, concept: e.target.value })}
+              onChange={(e) => setFormConcept(e.target.value)}
               placeholder="Ej: Reparación bomba de agua"
               maxLength={EXPENSE_VALIDATION.MAX_CONCEPT_LENGTH}
               disabled={disabled}
@@ -345,42 +163,8 @@ export const DailyExpensesManager: React.FC<DailyExpensesManagerProps> = ({
               type="text"
               inputMode="decimal"
               value={amountInput}
-              onChange={(e) => {
-                // 🤖 [IA] - v2.3: Normalizar comas a puntos para universalidad
-                let rawValue = e.target.value;
-                
-                // Permitir solo números, punto, coma
-                rawValue = rawValue.replace(/[^0-9.,]/g, '');
-                
-                // Reemplazar TODAS las comas por puntos
-                rawValue = rawValue.replace(/,/g, '.');
-                
-                // Permitir solo UN punto decimal
-                const parts = rawValue.split('.');
-                if (parts.length > 2) {
-                  rawValue = parts[0] + '.' + parts.slice(1).join('');
-                }
-                
-                // Actualizar input temporal (permite "44." mientras escribe)
-                setAmountInput(rawValue);
-                
-                // Convertir a número para validación
-                if (rawValue === '' || rawValue === '.') {
-                  setFormData({ ...formData, amount: undefined });
-                } else {
-                  const numericValue = parseFloat(rawValue);
-                  setFormData({ 
-                    ...formData, 
-                    amount: isNaN(numericValue) ? undefined : numericValue 
-                  });
-                }
-              }}
-              onBlur={() => {
-                // 🤖 [IA] - v2.3: Al perder focus, formatear correctamente
-                if (formData.amount !== undefined) {
-                  setAmountInput(formData.amount.toString());
-                }
-              }}
+              onChange={(e) => setFormAmount(e.target.value)}
+              onBlur={handleAmountBlur}
               placeholder="0.00"
               disabled={disabled}
               className="bg-[rgba(20,20,20,0.8)] border-[rgba(255,255,255,0.15)] text-[#e1e8ed]"
@@ -400,7 +184,7 @@ export const DailyExpensesManager: React.FC<DailyExpensesManagerProps> = ({
             </label>
             <select
               value={formData.category || ''}
-              onChange={(e) => setFormData({ ...formData, category: e.target.value as ExpenseCategory })}
+              onChange={(e) => setFormCategory(e.target.value as ExpenseCategory)}
               disabled={disabled}
               className="w-full px-3 py-2 rounded-md bg-[rgba(20,20,20,0.8)] border border-[rgba(255,255,255,0.15)] text-[#e1e8ed] focus:outline-none focus:ring-2 focus:ring-[#0a84ff]"
             >
@@ -420,7 +204,7 @@ export const DailyExpensesManager: React.FC<DailyExpensesManagerProps> = ({
           <div className="flex items-center gap-2">
             <Checkbox
               checked={formData.hasInvoice || false}
-              onCheckedChange={(checked) => setFormData({ ...formData, hasInvoice: checked as boolean })}
+              onCheckedChange={(checked) => setFormHasInvoice(checked as boolean)}
               disabled={disabled}
             />
             <label className="text-sm text-[#8899a6] cursor-pointer select-none">
@@ -429,7 +213,7 @@ export const DailyExpensesManager: React.FC<DailyExpensesManagerProps> = ({
             </label>
           </div>
 
-          {/* Botones - 🤖 [IA] - v2.5: Fix alineación responsive móvil + vertical center */}
+          {/* Botones */}
           <div className="flex items-center gap-[clamp(0.5rem,2vw,0.75rem)] w-full">
             <Button
               onClick={handleCancel}
@@ -460,7 +244,7 @@ export const DailyExpensesManager: React.FC<DailyExpensesManagerProps> = ({
         </Card>
       )}
 
-      {/* LISTA DE GASTOS */}
+      {/* LISTA VACÍA */}
       {expenses.length === 0 && !isAdding && (
         <Card className="p-8 text-center bg-[rgba(36,36,36,0.6)] backdrop-blur-xl border-[rgba(255,255,255,0.15)]">
           <DollarSign className="h-16 w-16 mx-auto mb-4 text-[#657786]" />
@@ -470,13 +254,9 @@ export const DailyExpensesManager: React.FC<DailyExpensesManagerProps> = ({
           <p className="text-sm text-[#657786] mb-4">
             Los gastos se restarán del total general
           </p>
-          {!disabled && (
+          {!disabled && canAddMore && (
             <Button
-              onClick={() => {
-                if (canAddExpense()) {
-                  setIsAdding(true);
-                }
-              }}
+              onClick={openAddForm}
               className="bg-[#0a84ff] hover:bg-[#0070dd] text-white"
             >
               <Plus className="h-4 w-4 mr-2" />
@@ -486,6 +266,7 @@ export const DailyExpensesManager: React.FC<DailyExpensesManagerProps> = ({
         </Card>
       )}
 
+      {/* LISTA DE GASTOS */}
       {expenses.length > 0 && (
         <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
           {expenses.map((expense) => (
@@ -565,7 +346,7 @@ export const DailyExpensesManager: React.FC<DailyExpensesManagerProps> = ({
           <div className="flex items-center justify-between">
             <div className="space-y-1">
               <h4 className="text-base font-bold text-[#e1e8ed]">
-                📊 Total Gastos: <span className="text-[#0a84ff]">${totalExpenses}</span>
+                📊 Total Gastos: <span className="text-[#0a84ff]">${formattedTotal}</span>
               </h4>
               <p className="text-xs text-[#657786]">
                 Este monto se restará del total general
