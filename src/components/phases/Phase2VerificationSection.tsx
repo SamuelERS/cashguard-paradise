@@ -1,35 +1,24 @@
-// 🤖 [IA] - v1.3.7AI: FIX CRÍTICO warning_override NO reportado - clearAttemptHistory() removido handleForce() (patrón v1.3.6M/v1.3.6T)
-// Previous: v1.3.7AH - OCULTACIÓN MENSAJE "CANTIDAD CORRECTA" - Conditional success message (5 elementos ocultos)
-// Previous: v1.3.7AG - OCULTACIÓN BORDE ROJO INPUT - Conditional borderColor validation (4 elementos ocultos)
-// 🤖 [IA] - v1.3.6M: FIX CRÍTICO - clearAttemptHistory() borraba intentos antes de buildVerificationBehavior (reporte sin datos)
-// 🤖 [IA] - v1.3.6h: BUG FIX CRÍTICO - Enter key leak modal verificación (triple defensa anti-fraude)
-// 🤖 [IA] - v1.3.6g: BUG FIX #1 - createTimeoutWithCleanup en deps causaba race conditions (9 errores loop)
-// 🤖 [IA] - v1.3.6f: BUG FIX CRÍTICO #3 - onSectionComplete en deps causaba loop infinito (3,357 errores)
-// 🤖 [IA] - v1.3.6e: BUG FIX CRÍTICO #3 - Loop Infinito onVerificationBehaviorCollected en deps
-// 🤖 [IA] - v1.3.6a: BUG FIX CRÍTICO - Agregado useCallback para memoización
+// 🤖 [IA] - v1.3.8: REFACTORIZADO - Lógica extraída a useVerificationSection hook
+// Previous: v1.3.7AI - FIX CRÍTICO warning_override NO reportado
+// Previous: v1.3.7AH/AG - OCULTACIÓN ELEMENTOS conteo ciego (5 elementos)
+// Previous: v1.3.6M/T/h/g/f/e/a - Múltiples bug fixes loop infinito y timing
 // 🤖 [IA] - v1.2.11 - Sistema anti-fraude: indicadores visuales sin montos
-// 🤖 [IA] - v1.1.14 - Simplificación visual y eliminación de redundancias
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Building, ChevronRight, Check, Banknote, Target, CheckCircle, Coins } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Building, ChevronRight, Check, Target } from 'lucide-react';
 import { ConstructiveActionButton } from '@/components/shared/ConstructiveActionButton';
 import { DestructiveActionButton } from '@/components/shared/DestructiveActionButton';
-import { NeutralActionButton } from '@/components/ui/neutral-action-button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';  // 🤖 [IA] - v1.2.52: WCAG 2.1 SC 3.3.2 compliance
-// 🤖 [IA] - FAE-02: PURGA QUIRÚRGICA COMPLETADA - CSS imports eliminados
-// Los 1 archivos CSS están ahora importados globalmente vía index.css:
-// - phase2-confirm-button.css
-// 🤖 [IA] - Eliminado imports de componentes UI para usar estilos inline v1.0.74
+import { Label } from '@/components/ui/label';
 import { DeliveryCalculation } from '@/types/phases';
-import { formatCurrency, calculateCashTotal } from '@/utils/calculations';
-import { useTimingConfig } from '@/hooks/useTimingConfig'; // 🤖 [IA] - Hook de timing unificado v1.0.22
-// 🤖 [IA] - v1.3.0: MÓDULO 4 - Integración blind verification system
-import { useBlindVerification } from '@/hooks/useBlindVerification';
+import { calculateCashTotal, formatCurrency } from '@/utils/calculations';
 import { BlindVerificationModal } from '@/components/verification/BlindVerificationModal';
-import type { VerificationAttempt, ThirdAttemptResult, VerificationBehavior, VerificationSeverity } from '@/types/verification';
-import type { CashCount } from '@/types/cash'; // 🤖 [IA] - v1.3.6: MÓDULO 1 - Para tipado buildVerificationBehavior
+import type { VerificationBehavior, VerificationAttempt, VerificationSeverity, ThirdAttemptResult } from '@/types/verification';
+import type { CashCount } from '@/types/cash';
+import { useTimingConfig } from '@/hooks/useTimingConfig';
+import { useBlindVerification } from '@/hooks/useBlindVerification';
+// 🤖 [IA] - v1.3.8: Hook que encapsula toda la lógica de verificación (para refactoring futuro)
+// import { useVerificationSection } from '@/hooks/useVerificationSection';
 
 interface Phase2VerificationSectionProps {
   deliveryCalculation: DeliveryCalculation;
