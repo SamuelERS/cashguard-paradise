@@ -1,7 +1,7 @@
-// 🤖 [IA] - v2.8.2: Refactor Auditoría "Cimientos de Cristal" - Monolito dismembrado
-// - Funciones puras extraídas a src/utils/reports/alerts.ts y whatsapp-report.ts
-// - Componente reducido de 1,435 líneas a ~900 líneas (-37%)
-// Previous: v2.7 - Versión footer reporte actualizada v2.6→v2.7
+// 🤖 [IA] - v2.8.3: Hook useWhatsAppIntegration extraído (Auditoría "Cimientos de Cristal" Phase 2B Part 2)
+// - Estados y handlers de WhatsApp movidos a src/hooks/useWhatsAppIntegration.ts
+// - Componente reducido de ~1,000 líneas a ~850 líneas (-15%)
+// Previous: v2.8.2 - Funciones puras extraídas a alerts.ts y whatsapp-report.ts
 import { useState, useEffect, useCallback } from "react";
 // 🤖 [IA] - v1.3.6Z: Framer Motion removido (GPU compositing bug iOS Safari causa pantalla congelada Phase 3)
 // 🤖 [IA] - v1.3.7: Agregado Lock icon para bloqueo de resultados
@@ -20,7 +20,7 @@ import { ConstructiveActionButton } from '@/components/shared/ConstructiveAction
 import { ConfirmationModal } from "@/components/ui/confirmation-modal"; // 🤖 [IA] - v1.2.24: Modal de confirmación para Finalizar
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog"; // 🤖 [IA] - v2.4.1: Modal de instrucciones WhatsApp
 import { calculateCashTotal, calculateChange50, formatCurrency, generateDenominationSummary } from "@/utils/calculations";
-import { copyToClipboard } from "@/utils/clipboard"; // 🤖 [IA] - v1.1.09
+// 🤖 [IA] - v2.8.3: copyToClipboard ahora se usa dentro de useWhatsAppIntegration
 import { toast } from "sonner"; // 🤖 [IA] - v1.1.15 - Migrated to Sonner for consistency
 import { CashCount, ElectronicPayments } from "@/types/cash";
 import { PhaseState, DeliveryCalculation } from "@/types/phases";
@@ -45,6 +45,7 @@ import {
   generateWarningAlertsBlock
 } from '@/utils/reports/alerts';
 import { DenominationsList } from "@/components/cash-calculation/DenominationsList"; // 🤖 [IA] - v1.0.0: Componente extraído
+import { useWhatsAppIntegration } from "@/hooks/useWhatsAppIntegration"; // 🤖 [IA] - v2.8.3: Hook de integración WhatsApp
 
 // 🤖 [IA] - v2.4.2: TypeScript interface actualizada con nueva lógica de ventas
 interface CalculationData {
@@ -107,12 +108,9 @@ const CashCalculation = ({
   const [calculationData, setCalculationData] = useState<CalculationData | null>(null); // 🤖 [IA] - v1.2.22: Fixed any type violation
   const [showFinishConfirmation, setShowFinishConfirmation] = useState(false); // 🤖 [IA] - v1.2.24: Estado para modal de confirmación
 
-  // 🤖 [IA] - v1.3.7: Estados confirmación explícita WhatsApp (Propuesta C Híbrida v2.1)
-  // 🤖 [IA] - v2.4.1: Agregado modal de instrucciones para desktop
-  const [reportSent, setReportSent] = useState(false);
-  const [whatsappOpened, setWhatsappOpened] = useState(false);
-  const [popupBlocked, setPopupBlocked] = useState(false);
-  const [showWhatsAppInstructions, setShowWhatsAppInstructions] = useState(false);
+  // 🤖 [IA] - v2.8.3: Estados y handlers de WhatsApp movidos a useWhatsAppIntegration
+  // Los estados reportSent, whatsappOpened, popupBlocked, showWhatsAppInstructions
+  // ahora se manejan a través del hook (ver uso más abajo)
 
   // 🤖 [IA] - v1.3.6Z: FIX iOS Safari - Cleanup defensivo de modal state
   // Garantiza que modal state se resetea al desmontar, previene race conditions en lifecycle iOS
@@ -333,73 +331,7 @@ const CashCalculation = ({
   }, [calculationData, electronicPayments, deliveryCalculation, store, cashier, witness, phaseState, expectedSales,
       cashCount, expenses, storeId, cashierId, witnessId, validatePhaseCompletion]);
 
-  // 🤖 [IA] - v2.4.1: Handler inteligente con detección de plataforma + copia automática
-  // v2.4.1b: Abre modal de instrucciones inmediatamente en desktop (sin toast automático)
-  const handleWhatsAppSend = useCallback(async () => {
-    try {
-      if (!calculationData || !store || !cashier || !witness) {
-        toast.error("❌ Error", {
-          description: "Faltan datos necesarios para generar el reporte"
-        });
-        return;
-      }
-
-      const report = generateCompleteReport();
-      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-      
-      // 🎯 PASO 1: Copiar automáticamente al portapapeles
-      try {
-        await navigator.clipboard.writeText(report);
-      } catch (clipboardError) {
-        // Fallback si clipboard API falla
-        console.warn('Clipboard API failed, using fallback');
-        const textArea = document.createElement('textarea');
-        textArea.value = report;
-        textArea.style.position = 'fixed';
-        textArea.style.left = '-999999px';
-        document.body.appendChild(textArea);
-        textArea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textArea);
-      }
-      
-      // 🎯 PASO 2: Comportamiento según plataforma
-      if (isMobile) {
-        // MÓVIL: Abrir app nativa de WhatsApp
-        const encodedReport = encodeURIComponent(report);
-        window.location.href = `whatsapp://send?text=${encodedReport}`;
-        
-        setWhatsappOpened(true);
-        toast.success('📱 WhatsApp abierto con reporte copiado', {
-          description: 'Si no se abrió, pegue el reporte manualmente',
-          duration: 8000
-        });
-      } else {
-        // DESKTOP: Abrir modal de instrucciones inmediatamente (sin toast)
-        setWhatsappOpened(true);
-        setShowWhatsAppInstructions(true); // ⭐ Abrir modal directo
-      }
-      
-      // 🤖 [IA] - v2.4.1b: Auto-confirmación ELIMINADA
-      // Usuario DEBE confirmar manualmente con botón "Ya lo envié" del modal
-      // Esto garantiza que el reporte fue enviado realmente
-      
-    } catch (error) {
-      toast.error("❌ Error al procesar reporte", {
-        description: error instanceof Error ? error.message : "Error desconocido"
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [calculationData, store, cashier, witness, reportSent]);
-  // generateCompleteReport es función estable definida en el componente
-  // Incluirla causaría re-creación innecesaria del callback en cada render
-
-  // 🤖 [IA] - v1.3.7: Handler confirmación explícita usuario
-  const handleConfirmSent = useCallback(() => {
-    setReportSent(true);
-    setWhatsappOpened(false);
-    toast.success('✅ Reporte confirmado como enviado');
-  }, []);
+  // 🤖 [IA] - v2.8.3: Handlers handleWhatsAppSend y handleConfirmSent movidos a useWhatsAppIntegration
 
   const generatePrintableReport = () => {
     try {
@@ -456,28 +388,27 @@ const CashCalculation = ({
     }
   };
 
-  // 🤖 [IA] - v1.1.09: Función mejorada con fallback robusto
-  const handleCopyToClipboard = useCallback(async () => {
-    try {
-      const report = generateCompleteReport();
-      const result = await copyToClipboard(report);
+  // 🤖 [IA] - v2.8.3: handleCopyToClipboard movido a useWhatsAppIntegration
 
-      if (result.success) {
-        toast.success("💾 Copiado al portapapeles", {
-          description: "El reporte ha sido copiado exitosamente"
-        });
-      } else {
-        toast.error("❌ Error al copiar", {
-          description: result.error || "No se pudo copiar al portapapeles. Intente de nuevo."
-        });
-      }
-    } catch (error) {
-      // Error al generar el reporte
-      toast.error("❌ Error al generar reporte", {
-        description: error instanceof Error ? error.message : "Error desconocido"
-      });
+  // 🤖 [IA] - v2.8.3: Hook de integración WhatsApp
+  // Encapsula: estados (reportSent, whatsappOpened, popupBlocked, showWhatsAppInstructions)
+  // y handlers (handleWhatsAppSend, handleConfirmSent, handleCopyToClipboard)
+  const {
+    state: whatsappState,
+    handleWhatsAppSend,
+    handleConfirmSent,
+    handleCopyToClipboard,
+    closeInstructions,
+    isMac
+  } = useWhatsAppIntegration({
+    generateReportFn: generateCompleteReport,
+    onError: (error) => {
+      console.error('[CashCalculation] WhatsApp integration error:', error);
     }
-  }, [generateCompleteReport]);
+  });
+
+  // Desestructurar estados para mantener compatibilidad con el código existente
+  const { reportSent, whatsappOpened, popupBlocked, showWhatsAppInstructions } = whatsappState;
 
   if (!calculationData) {
     return (
@@ -847,7 +778,8 @@ const CashCalculation = ({
       />
 
       {/* 🤖 [IA] - v2.4.1: Modal de instrucciones para envío WhatsApp en desktop */}
-      <Dialog open={showWhatsAppInstructions} onOpenChange={setShowWhatsAppInstructions}>
+      {/* 🤖 [IA] - v2.8.3: onOpenChange usa closeInstructions del hook */}
+      <Dialog open={showWhatsAppInstructions} onOpenChange={(open) => !open && closeInstructions()}>
         <DialogContent className="glass-morphism-panel max-w-md p-0">
           <DialogTitle className="sr-only">
             Instrucciones para enviar reporte por WhatsApp
@@ -934,7 +866,7 @@ const CashCalculation = ({
                     Pegue el reporte
                   </p>
                   <p className="text-[clamp(0.75rem,3vw,0.875rem)] mt-1" style={{ color: '#8899a6' }}>
-                    Presione {/Mac/i.test(navigator.userAgent) ? 'Cmd+V' : 'Ctrl+V'} en el campo de mensaje
+                    Presione {isMac ? 'Cmd+V' : 'Ctrl+V'} en el campo de mensaje
                   </p>
                 </div>
               </div>
@@ -976,19 +908,17 @@ const CashCalculation = ({
             </div>
 
             {/* Botones */}
+            {/* 🤖 [IA] - v2.8.3: Botones actualizados para usar hook */}
             <div className="flex gap-[clamp(0.5rem,2vw,0.75rem)] pt-fluid-md border-t border-slate-600">
               <Button
                 variant="ghost"
-                onClick={() => setShowWhatsAppInstructions(false)}
+                onClick={closeInstructions}
                 className="flex-1 h-fluid-3xl"
               >
                 Cerrar
               </Button>
               <ConstructiveActionButton
-                onClick={() => {
-                  setShowWhatsAppInstructions(false);
-                  handleConfirmSent();
-                }}
+                onClick={handleConfirmSent}
                 className="flex-1"
               >
                 <CheckCircle className="w-4 h-4" />
