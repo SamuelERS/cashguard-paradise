@@ -1,4 +1,5 @@
-// 🤖 [IA] - v2.8.1: Refinamiento UX WhatsApp (botón siempre activo + eliminado botón redundante)
+// 🤖 [IA] - v2.8.2: Tipado estricto - eliminación de 3 tipos 'any' (Auditoría Cimientos de Cristal)
+// Previous: v2.8.1 - Refinamiento UX WhatsApp (botón siempre activo + eliminado botón redundante)
 // Previous: v2.8 - Sistema WhatsApp inteligente aplicado (modal instrucciones + detección plataforma)
 // Previous: v2.7 - Versión footer reporte actualizada v2.6→v2.7 (consistencia badge OperationSelector)
 // Previous: v2.0 - MEJORA REPORTE - Formato profesional alineado con reporte nocturno
@@ -21,7 +22,7 @@ import {
 } from "@/components/ui/alert-dialog"; // 🤖 [IA] - v2.8: Modal instrucciones WhatsApp desktop
 import { calculateCashTotal, formatCurrency, generateDenominationSummary } from '@/utils/calculations';
 import { copyToClipboard } from '@/utils/clipboard'; // 🤖 [IA] - v1.1.09
-import { CashCount } from '@/types/cash';
+import { CashCount, Store, Employee } from '@/types/cash'; // 🤖 [IA] - v2.8.2: Tipado estricto (eliminación any)
 import { getStoreById, getEmployeeById } from '@/data/paradise';
 import { toast } from 'sonner';
 
@@ -124,11 +125,12 @@ export function MorningVerification({
   }, []);
 
   // 🤖 [IA] - v2.0: Helper para generar firma digital
+  // 🤖 [IA] - v2.8.2: Tipado estricto - any → Store | null, Employee | null
   const generateDataHash = useCallback((
     data: VerificationData,
-    store: any,
-    cashierIn: any,
-    cashierOut: any
+    store: Store | null,
+    cashierIn: Employee | null,
+    cashierOut: Employee | null
   ): string => {
     const dataString = JSON.stringify({
       total: data.totalCash,
