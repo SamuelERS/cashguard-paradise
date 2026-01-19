@@ -1,5 +1,5 @@
-// 🤖 [IA] - v1.4.0: Integración Sistema Gastos de Caja
-// Previous: v1.3.6AC - FIX S0-003 - Excepción Phase 3 en PWA mode
+// 🤖 [IA] - v2.5.0 Phase 2E: Integración useCashCounting hook - Auditoría "Cimientos de Cristal"
+// Previous: v1.4.0: Integración Sistema Gastos de Caja
 import { useState, useEffect, useCallback } from "react";
 import { DailyExpense } from '@/types/expenses'; // 🤖 [IA] - v1.4.0: Tipos gastos
 import { motion } from "framer-motion";
@@ -54,6 +54,7 @@ import { OperationMode, OPERATION_MODES } from "@/types/operation-mode"; // 🤖
 import { CashCount, ElectronicPayments, DENOMINATIONS } from "@/types/cash"; // 🤖 [IA] - Tipos de conteo
 import { STORES, getEmployeesByStore } from "@/data/paradise"; // 🤖 [IA] - Datos de la empresa
 import { calculateCashTotal } from "@/utils/calculations"; // 🤖 [IA] - v1.0.84
+import { useCashCounting } from "@/hooks/useCashCounting"; // 🤖 [IA] - v2.5.0 Phase 2E: Hook de gestión de efectivo
 
 // 🤖 [IA] - v1.2.22: Interface for webkit-specific CSS properties
 interface ExtendedCSSStyleDeclaration extends CSSStyleDeclaration {
@@ -145,28 +146,16 @@ const CashCounter = ({
     FIELD_ORDER
   } = useGuidedCounting(operationMode); // 🤖 [IA] - v1.0.85: Pass operation mode
 
-  // Cash count state
-  const [cashCount, setCashCount] = useState<CashCount>({
-    penny: 0,
-    nickel: 0,
-    dime: 0,
-    quarter: 0,
-    dollarCoin: 0,
-    bill1: 0,
-    bill5: 0,
-    bill10: 0,
-    bill20: 0,
-    bill50: 0,
-    bill100: 0,
-  });
-
-  // Electronic payments state
-  const [electronicPayments, setElectronicPayments] = useState<ElectronicPayments>({
-    credomatic: 0,
-    promerica: 0,
-    bankTransfer: 0,
-    paypal: 0,
-  });
+  // 🤖 [IA] - v2.5.0 Phase 2E: Estado de efectivo y pagos electrónicos delegados a useCashCounting hook
+  const {
+    cashCount,
+    setCashCount,
+    electronicPayments,
+    setElectronicPayments,
+    handleCashCountChange,
+    handleElectronicChange,
+    resetAll: resetCashCounting
+  } = useCashCounting();
 
   const { createTimeout, createTimeoutWithCleanup } = useTimingConfig(); // 🤖 [IA] - Usar timing unificado v1.0.22
   const availableEmployees = selectedStore ? getEmployeesByStore(selectedStore) : [];
@@ -302,13 +291,7 @@ const CashCounter = ({
     onFlowCancel?.(); // Notificar al padre para navegar de vuelta al inicio
   };
 
-  const handleCashCountChange = (denomination: string, value: string) => {
-    const numValue = parseInt(value) || 0;
-    setCashCount(prev => ({
-      ...prev,
-      [denomination]: numValue
-    }));
-  };
+  // 🤖 [IA] - v2.5.0 Phase 2E: handleCashCountChange ahora proviene del hook useCashCounting
 
   const handleGuidedFieldConfirm = useCallback((value: string) => {
     // 🤖 [IA] - v1.2.8: Sistema Ciego Anti-Fraude - No mostrar totales durante conteo
@@ -382,13 +365,7 @@ const CashCounter = ({
     });
   };
 
-  const handleElectronicChange = (method: string, value: string) => {
-    const numValue = parseFloat(value) || 0;
-    setElectronicPayments(prev => ({
-      ...prev,
-      [method]: numValue
-    }));
-  };
+  // 🤖 [IA] - v2.5.0 Phase 2E: handleElectronicChange ahora proviene del hook useCashCounting
 
   const canProceedToPhase1 = Boolean(selectedStore && selectedCashier && selectedWitness && 
                             selectedCashier !== selectedWitness && expectedSales);
@@ -429,16 +406,11 @@ const CashCounter = ({
     setSelectedCashier("");
     setSelectedWitness("");
     setExpectedSales("");
-    setCashCount({
-      penny: 0, nickel: 0, dime: 0, quarter: 0, dollarCoin: 0,
-      bill1: 0, bill5: 0, bill10: 0, bill20: 0, bill50: 0, bill100: 0,
-    });
-    setElectronicPayments({
-      credomatic: 0, promerica: 0, bankTransfer: 0, paypal: 0,
-    });
+    // 🤖 [IA] - v2.5.0 Phase 2E: Usar resetCashCounting del hook en lugar de setState manual
+    resetCashCounting();
     resetGuidedCounting();
     resetAllPhases();
-    
+
     if (onBack) onBack();
   };
 
