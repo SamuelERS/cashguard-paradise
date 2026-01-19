@@ -1,7 +1,7 @@
-// 🤖 [IA] - v2.7: Versión footer reporte actualizada v2.6→v2.7 (consistencia badge OperationSelector)
-// Previous: v1.3.6AD2 - FIX BUG DIFERENCIA VUELTO - Usar amountRemaining ?? 50 en reporte
-// Previous: v1.3.7 - ANTI-FRAUDE - Confirmación explícita envío WhatsApp ANTES de revelar resultados
-// Previous: v1.3.6AD - FIX MÉTRICA CRÍTICA - totalDenoms usa verificationSteps.length
+// 🤖 [IA] - v2.8.2: Refactor Auditoría "Cimientos de Cristal" - Monolito dismembrado
+// - Funciones puras extraídas a src/utils/reports/alerts.ts y whatsapp-report.ts
+// - Componente reducido de 1,435 líneas a ~900 líneas (-37%)
+// Previous: v2.7 - Versión footer reporte actualizada v2.6→v2.7
 import { useState, useEffect, useCallback } from "react";
 // 🤖 [IA] - v1.3.6Z: Framer Motion removido (GPU compositing bug iOS Safari causa pantalla congelada Phase 3)
 // 🤖 [IA] - v1.3.7: Agregado Lock icon para bloqueo de resultados
@@ -27,8 +27,23 @@ import { PhaseState, DeliveryCalculation } from "@/types/phases";
 // 🤖 [IA] - v1.3.6: MÓDULO 3 - Import tipos para sección anomalías
 import type { VerificationBehavior, VerificationAttempt } from "@/types/verification";
 // 🤖 [IA] - v1.4.0 FASE 5: Import tipos y constantes para gastos
-import { DailyExpense, EXPENSE_CATEGORY_EMOJI, EXPENSE_CATEGORY_LABEL } from '@/types/expenses';
+import { DailyExpense } from '@/types/expenses';
 import { getStoreById, getEmployeeById } from "@/data/paradise";
+// 🤖 [IA] - v2.8.2: Imports de módulos extraídos (Auditoría "Cimientos de Cristal")
+import {
+  generateCompleteReport as generateWhatsAppReport,
+  generateDataHash,
+  generateDenominationDetails,
+  generateDeliveryChecklistSection,
+  generateRemainingChecklistSection,
+  generateExpensesSection,
+  type WhatsAppReportData,
+  type ReportCalculationData
+} from '@/utils/reports/whatsapp-report';
+import {
+  generateCriticalAlertsBlock,
+  generateWarningAlertsBlock
+} from '@/utils/reports/alerts';
 import { DenominationsList } from "@/components/cash-calculation/DenominationsList"; // 🤖 [IA] - v1.0.0: Componente extraído
 
 // 🤖 [IA] - v2.4.2: TypeScript interface actualizada con nueva lógica de ventas
@@ -190,42 +205,7 @@ const CashCalculation = ({
     return true;
   };
 
-  const generateDataHash = () => {
-    const hashData = {
-      storeId,
-      cashierId,
-      witnessId,
-      timestamp: calculationData?.timestamp || '',
-      totalCash: calculationData?.totalCash || 0,
-      totalElectronic: calculationData?.totalElectronic || 0,
-      expectedSales,
-      phaseCompleted: phaseState?.currentPhase || 3
-    };
-    
-    // Simple but effective hash for integrity
-    return btoa(JSON.stringify(hashData)).slice(-12);
-  };
-
-  const generateDenominationDetails = () => {
-    const denominations = [
-      { key: 'penny', label: '1¢', value: 0.01 },
-      { key: 'nickel', label: '5¢', value: 0.05 },
-      { key: 'dime', label: '10¢', value: 0.10 },
-      { key: 'quarter', label: '25¢', value: 0.25 },
-      { key: 'dollarCoin', label: '$1 moneda', value: 1.00 },
-      { key: 'bill1', label: '$1', value: 1.00 },
-      { key: 'bill5', label: '$5', value: 5.00 },
-      { key: 'bill10', label: '$10', value: 10.00 },
-      { key: 'bill20', label: '$20', value: 20.00 },
-      { key: 'bill50', label: '$50', value: 50.00 },
-      { key: 'bill100', label: '$100', value: 100.00 }
-    ];
-
-    return denominations
-      .filter(d => cashCount[d.key as keyof CashCount] > 0)
-      .map(d => `${d.label} × ${cashCount[d.key as keyof CashCount]} = ${formatCurrency(cashCount[d.key as keyof CashCount] * d.value)}`)
-      .join('\n');
-  };
+  // 🤖 [IA] - v2.8.2: generateDataHash y generateDenominationDetails movidos a whatsapp-report.ts
 
   // Generate display for remaining denominations when Phase 2 was skipped
   // 🤖 [IA] - v1.0.0: Refactorizado para usar componente reutilizable
@@ -303,466 +283,55 @@ const CashCalculation = ({
     return details.join('\n');
   };
 
-  // 🤖 [IA] - v1.3.6: MÓDULO 3 - Helper para nombres de denominaciones en español
-  const getDenominationName = (key: keyof CashCount): string => {
-    const names: Record<keyof CashCount, string> = {
-      penny: 'Un centavo (1¢)',
-      nickel: 'Cinco centavos (5¢)',
-      dime: 'Diez centavos (10¢)',
-      quarter: 'Veinticinco centavos (25¢)',
-      dollarCoin: 'Moneda de un dólar ($1)',
-      bill1: 'Billete de un dólar ($1)',
-      bill5: 'Billete de cinco dólares ($5)',
-      bill10: 'Billete de diez dólares ($10)',
-      bill20: 'Billete de veinte dólares ($20)',
-      bill50: 'Billete de cincuenta dólares ($50)',
-      bill100: 'Billete de cien dólares ($100)'
-    };
-    return names[key] || key;
-  };
+  // 🤖 [IA] - v2.8.2: Funciones puras extraídas a src/utils/reports/
+  // - getDenominationName, formatTimestamp, generateAnomalyDetails → alerts.ts
+  // - generateCriticalAlertsBlock, generateWarningAlertsBlock → alerts.ts
+  // - generateDeliveryChecklistSection, generateRemainingChecklistSection → whatsapp-report.ts
+  // - generateExpensesSection, generateDataHash, generateDenominationDetails → whatsapp-report.ts
 
-  // 🤖 [IA] - v1.3.6: MÓDULO 3 - Helper para formatear timestamp ISO 8601 a HH:MM:SS
-  const formatTimestamp = (isoString: string): string => {
-    try {
-      const date = new Date(isoString);
-      return date.toLocaleTimeString('es-SV', {
-        timeZone: 'America/El_Salvador',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: false
-      });
-    } catch (error) {
-      return isoString; // Fallback si timestamp es inválido
-    }
-  };
-
-  // 🤖 [IA] - v1.3.6: MÓDULO 3 - Generar detalle de anomalías para reporte
-  const generateAnomalyDetails = (behavior: VerificationBehavior): string => {
-    // Filtrar solo intentos problemáticos:
-    // - Todos los intentos incorrectos (isCorrect: false)
-    // - Intentos correctos en 2do o 3er intento (attemptNumber > 1 y isCorrect: true)
-    const problematicAttempts = behavior.attempts.filter(
-      a => !a.isCorrect || a.attemptNumber > 1
-    );
-
-    if (problematicAttempts.length === 0) {
-      return 'Sin anomalías detectadas - Todos los intentos correctos en primer intento ✅';
-    }
-
-    return problematicAttempts.map(attempt => {
-      const denom = getDenominationName(attempt.stepKey);
-      const time = formatTimestamp(attempt.timestamp);
-      const status = attempt.isCorrect ? '✅ CORRECTO' : '❌ INCORRECTO';
-
-      return `${status} | ${denom}
-   Intento #${attempt.attemptNumber} | Hora: ${time}
-   Ingresado: ${attempt.inputValue} unidades | Esperado: ${attempt.expectedValue} unidades`;
-    }).join('\n\n');
-  };
-
-  // 🤖 [IA] - v1.3.6U: CAMBIO #3 - Bloque alertas críticas con "Esperado:" en línea separada + timestamps video
-  const generateCriticalAlertsBlock = (behavior: VerificationBehavior): string => {
-    // Filtrar solo severidades críticas (critical_severe, critical_inconsistent)
-    const criticalDenoms = behavior.denominationsWithIssues.filter(d =>
-      d.severity === 'critical_severe' || d.severity === 'critical_inconsistent'
-    );
-
-    if (criticalDenoms.length === 0) return '';
-
-    const alerts = criticalDenoms.map(issue => {
-      const denomName = getDenominationName(issue.denomination);
-      const attemptsStr = issue.attempts.join(' → ');
-
-      // Buscar timestamps del primer y último intento para esta denominación
-      const attemptsForDenom = behavior.attempts.filter(a => a.stepKey === issue.denomination);
-      let videoTimestamp = '';
-      if (attemptsForDenom.length > 0) {
-        const firstTime = formatTimestamp(attemptsForDenom[0].timestamp);
-        const lastTime = formatTimestamp(attemptsForDenom[attemptsForDenom.length - 1].timestamp);
-        videoTimestamp = `   📹 Video: ${firstTime} - ${lastTime}`;
-      }
-
-      // Descripción según severity
-      const description = issue.severity === 'critical_severe' ?
-        '   ⚠️ Patrón errático' :
-        '   ⚠️ Inconsistencia severa';
-
-      // Valor esperado (primer valor de attempts es el correcto)
-      const expectedValue = attemptsForDenom.length > 0 ? attemptsForDenom[0].expectedValue : '?';
-      const expectedUnit = expectedValue === 1 ? 'unidad' : 'unidades';
-
-      return `• ${denomName}
-   Esperado: ${expectedValue} ${expectedUnit}
-   Intentos: ${attemptsStr}
-${videoTimestamp}
-${description}`;
-    }).join('\n\n');
-
-    return `🔴 *CRÍTICAS (${criticalDenoms.length})*
-
-${alerts}`;
-  };
-
-  // 🤖 [IA] - v1.3.6V: FIX #2 - Generar sección "LO QUE RECIBES" con checkboxes para validación física
-  const generateDeliveryChecklistSection = (): string => {
-    // Si Phase 2 no se ejecutó (≤$50), no hay entrega
-    if (phaseState?.shouldSkipPhase2) {
-      return '';
-    }
-
-    if (!deliveryCalculation?.deliverySteps || deliveryCalculation.deliverySteps.length === 0) {
-      return '';
-    }
-
-    const amountToDeliver = deliveryCalculation.amountToDeliver || 0;
-
-    // Separar billetes y monedas de deliverySteps
-    const billKeys = ['bill100', 'bill50', 'bill20', 'bill10', 'bill5', 'bill1'];
-    const coinKeys = ['dollarCoin', 'quarter', 'dime', 'nickel', 'penny'];
-
-    const bills = deliveryCalculation.deliverySteps
-      .filter((step: DeliveryStep) => billKeys.includes(step.key))
-      .map((step: DeliveryStep) => `☐ ${step.label} × ${step.quantity} = ${formatCurrency(step.value * step.quantity)}`);
-
-    const coins = deliveryCalculation.deliverySteps
-      .filter((step: DeliveryStep) => coinKeys.includes(step.key))
-      .map((step: DeliveryStep) => `☐ ${step.label} × ${step.quantity} = ${formatCurrency(step.value * step.quantity)}`);
-
-    let checklistContent = '';
-
-    if (bills.length > 0) {
-      checklistContent += `Billetes:\n${bills.join('\n')}`;
-    }
-
-    if (coins.length > 0) {
-      if (bills.length > 0) checklistContent += '\n\n';
-      checklistContent += `Monedas:\n${coins.join('\n')}`;
-    }
-
-    return `${WHATSAPP_SEPARATOR}
-
-📦 *LO QUE RECIBES (${formatCurrency(amountToDeliver)})*
-
-${checklistContent}
-`;
-  };
-
-  // 🤖 [IA] - v1.3.6V: FIX #3 - Generar sección "LO QUE QUEDÓ EN CAJA" con checkboxes
-  const generateRemainingChecklistSection = (): string => {
-    let remainingCash: CashCount;
-    let remainingAmount = 50; // Default
-
-    // Determinar qué denominaciones quedaron en caja
-    if (!phaseState?.shouldSkipPhase2 && deliveryCalculation?.denominationsToKeep) {
-      // Phase 2 ejecutado: usar denominationsToKeep
-      remainingCash = deliveryCalculation.denominationsToKeep;
-      // 🤖 [IA] - v1.3.6AD2: FIX BUG DIFERENCIA VUELTO - Usar amountRemaining si existe (ajustado post-verificación)
-      // Ejemplo: 75 esperado → 70 aceptado = $50.00 → $49.95 ajustado
-      remainingAmount = deliveryCalculation.amountRemaining ?? 50;
-    } else if (phaseState?.shouldSkipPhase2) {
-      // Phase 2 omitido (≤$50): todo el efectivo queda en caja
-      remainingCash = cashCount;
-      remainingAmount = calculationData?.totalCash || 0;
-    } else {
-      // Fallback: calcular $50
-      const changeResult = calculateChange50(cashCount);
-      if (!changeResult.possible || !changeResult.change) {
-        return ''; // No se puede mostrar si no hay cambio
-      }
-      remainingCash = changeResult.change as CashCount;
-      remainingAmount = 50;
-    }
-
-    // Agrupar billetes y monedas (mayor a menor)
-    const denominations = [
-      { key: 'bill100', label: '$100', value: 100.00 },
-      { key: 'bill50', label: '$50', value: 50.00 },
-      { key: 'bill20', label: '$20', value: 20.00 },
-      { key: 'bill10', label: '$10', value: 10.00 },
-      { key: 'bill5', label: '$5', value: 5.00 },
-      { key: 'bill1', label: '$1', value: 1.00 },
-      { key: 'dollarCoin', label: '$1 moneda', value: 1.00 },
-      { key: 'quarter', label: '25¢', value: 0.25 },
-      { key: 'dime', label: '10¢', value: 0.10 },
-      { key: 'nickel', label: '5¢', value: 0.05 },
-      { key: 'penny', label: '1¢', value: 0.01 }
-    ];
-
-    const billKeys = ['bill100', 'bill50', 'bill20', 'bill10', 'bill5', 'bill1'];
-    const coinKeys = ['dollarCoin', 'quarter', 'dime', 'nickel', 'penny'];
-
-    const bills = denominations
-      .filter(d => billKeys.includes(d.key) && remainingCash[d.key as keyof CashCount] > 0)
-      .map(d => {
-        const quantity = remainingCash[d.key as keyof CashCount];
-        return `☐ ${d.label} × ${quantity} = ${formatCurrency(quantity * d.value)}`;
-      });
-
-    const coins = denominations
-      .filter(d => coinKeys.includes(d.key) && remainingCash[d.key as keyof CashCount] > 0)
-      .map(d => {
-        const quantity = remainingCash[d.key as keyof CashCount];
-        return `☐ ${d.label} × ${quantity} = ${formatCurrency(quantity * d.value)}`;
-      });
-
-    let checklistContent = '';
-
-    if (bills.length > 0) {
-      checklistContent += `${bills.join('\n')}`;
-    }
-
-    if (coins.length > 0) {
-      if (bills.length > 0) checklistContent += '\n';
-      checklistContent += `${coins.join('\n')}`;
-    }
-
-    if (!checklistContent) {
-      return ''; // No hay denominaciones
-    }
-
-    return `${WHATSAPP_SEPARATOR}
-
-🏢 *LO QUE QUEDÓ EN CAJA (${formatCurrency(remainingAmount)})*
-
-${checklistContent}
-
-`;
-  };
-
-  // 🤖 [IA] - v1.3.6U: CAMBIO #4 - Bloque advertencias con MISMO formato que críticas (timestamps + esperado)
-  const generateWarningAlertsBlock = (behavior: VerificationBehavior): string => {
-    // Filtrar solo severidades de advertencia (warning_retry, warning_override)
-    const warningDenoms = behavior.denominationsWithIssues.filter(d =>
-      d.severity === 'warning_retry' || d.severity === 'warning_override'
-    );
-
-    if (warningDenoms.length === 0) return '';
-
-    const alerts = warningDenoms.map(issue => {
-      const denomName = getDenominationName(issue.denomination);
-      const attemptsStr = issue.attempts.join(' → ');
-
-      // Buscar timestamps del primer y último intento para esta denominación
-      const attemptsForDenom = behavior.attempts.filter(a => a.stepKey === issue.denomination);
-      let videoTimestamp = '';
-      if (attemptsForDenom.length > 0) {
-        const firstTime = formatTimestamp(attemptsForDenom[0].timestamp);
-        const lastTime = formatTimestamp(attemptsForDenom[attemptsForDenom.length - 1].timestamp);
-        videoTimestamp = `   📹 Video: ${firstTime} - ${lastTime}`;
-      }
-
-      // Valor esperado (primer valor de attempts es el correcto)
-      const expectedValue = attemptsForDenom.length > 0 ? attemptsForDenom[0].expectedValue : '?';
-      const expectedUnit = expectedValue === 1 ? 'unidad' : 'unidades';
-
-      return `• ${denomName}
-   Esperado: ${expectedValue} ${expectedUnit}
-   Intentos: ${attemptsStr}
-${videoTimestamp}
-   ℹ️ Corregido en ${attemptsForDenom.length}° intento`;
-    }).join('\n\n');
-
-    return `⚠️ *ADVERTENCIAS (${warningDenoms.length})*
-
-${alerts}`;
-  };
-
-  // 🤖 [IA] - v1.4.0 FASE 5: Generar sección de gastos del día
-  const generateExpensesSection = useCallback(() => {
-    if (!expenses || expenses.length === 0) {
-      return ''; // No mostrar sección si no hay gastos
-    }
-
-    const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
-    
-    const expensesList = expenses.map((expense, index) => {
-      const categoryEmoji = EXPENSE_CATEGORY_EMOJI[expense.category];
-      const categoryLabel = EXPENSE_CATEGORY_LABEL[expense.category];
-      const invoiceStatus = expense.hasInvoice ? '✓ Con factura' : '✗ Sin factura';
-      
-      return `${index + 1}. ${categoryEmoji} ${expense.concept}
-   💵 ${formatCurrency(expense.amount)} | ${invoiceStatus}
-   📂 ${categoryLabel}`;
-    }).join('\n\n');
-
-    return `
-${WHATSAPP_SEPARATOR}
-
-💸 *GASTOS DEL DÍA*
-
-${expensesList}
-
-💰 *Total Gastos:* ${formatCurrency(totalExpenses)}
-⚠️ Este monto se restó del total general
-`;
-  }, [expenses]);
-
+  // 🤖 [IA] - v2.8.2: generateCompleteReport refactorizado como wrapper de generateWhatsAppReport
+  // Reducido de 164 líneas a ~25 líneas - toda la lógica de formateo extraída a whatsapp-report.ts
   const generateCompleteReport = useCallback(() => {
     validatePhaseCompletion();
 
-    const denominationDetails = generateDenominationDetails();
-    const dataHash = generateDataHash();
+    // Construir objeto de datos para el módulo de reportes extraído
+    const reportData: WhatsAppReportData = {
+      store,
+      cashier,
+      witness,
+      cashCount,
+      electronicPayments,
+      expenses,
+      expectedSales,
+      calculationData: calculationData ? {
+        totalCash: calculationData.totalCash,
+        totalElectronic: calculationData.totalElectronic,
+        salesCash: calculationData.salesCash,
+        totalGeneral: calculationData.totalGeneral,
+        totalExpenses: calculationData.totalExpenses,
+        totalWithExpenses: calculationData.totalWithExpenses,
+        difference: calculationData.difference,
+        timestamp: calculationData.timestamp
+      } : {
+        totalCash: 0,
+        totalElectronic: 0,
+        salesCash: 0,
+        totalGeneral: 0,
+        totalExpenses: 0,
+        totalWithExpenses: 0,
+        difference: 0,
+        timestamp: ''
+      },
+      deliveryCalculation,
+      phaseState,
+      storeId,
+      cashierId,
+      witnessId
+    };
 
-    // 🤖 [IA] - v1.3.6V: Pagos electrónicos desglosados
-    const totalElectronic = calculationData?.totalElectronic || 0;
-    const electronicDetailsDesglosed = `💳 Pagos Electrónicos: *${formatCurrency(totalElectronic)}*
-   ☐ Credomatic: ${formatCurrency(electronicPayments.credomatic)}
-   ☐ Promerica: ${formatCurrency(electronicPayments.promerica)}
-   ☐ Transferencia: ${formatCurrency(electronicPayments.bankTransfer)}
-   ☐ PayPal: ${formatCurrency(electronicPayments.paypal)}`;
-
-    // 🤖 [IA] - v1.3.6V: Bloques de alertas
-    const criticalAlertsBlock = deliveryCalculation?.verificationBehavior ?
-      generateCriticalAlertsBlock(deliveryCalculation.verificationBehavior) : '';
-    const warningAlertsBlock = deliveryCalculation?.verificationBehavior ?
-      generateWarningAlertsBlock(deliveryCalculation.verificationBehavior) : '';
-
-    // 🤖 [IA] - v1.3.6V: Header dinámico según severidad
-    const criticalCount = deliveryCalculation?.verificationBehavior?.denominationsWithIssues.filter(d =>
-      d.severity === 'critical_severe' || d.severity === 'critical_inconsistent'
-    ).length || 0;
-    const warningCount = deliveryCalculation?.verificationBehavior?.denominationsWithIssues.filter(d =>
-      d.severity === 'warning_retry' || d.severity === 'warning_override'
-    ).length || 0;
-    const headerSeverity = criticalCount > 0 ?
-      "🚨 *REPORTE CRÍTICO - ACCIÓN INMEDIATA*" :
-      warningCount > 0 ?
-      "⚠️ *REPORTE ADVERTENCIAS*" :
-      "✅ *REPORTE NORMAL*";
-
-    // 🤖 [IA] - v1.3.6V: FIX #4 - Sección de alertas con salto de línea correcto (FIX #5)
-    const fullAlertsSection = (criticalAlertsBlock || warningAlertsBlock) ?
-      `
-${WHATSAPP_SEPARATOR}
-
-⚠️ *ALERTAS DETECTADAS*
-
-${criticalAlertsBlock}${criticalAlertsBlock && warningAlertsBlock ? '\n\n' : ''}${warningAlertsBlock}
-` : '';
-
-    // 🤖 [IA] - v1.3.6V: FIX #2 y #3 - Secciones de checklists
-    const deliveryChecklistSection = generateDeliveryChecklistSection();
-    const remainingChecklistSection = generateRemainingChecklistSection();
-
-    // 🤖 [IA] - v1.3.6V: FIX #6 - Métricas Verificación Ciega corregidas
-    let verificationSection = '';
-    if (deliveryCalculation?.verificationBehavior) {
-      const behavior = deliveryCalculation.verificationBehavior;
-      // 🤖 [IA] - v1.3.6AD: FIX CRÍTICO - totalDenoms debe ser DENOMINACIONES, NO intentos
-      // Root cause: behavior.totalAttempts = total de INTENTOS (15, 20, 30... con múltiples errores)
-      // Solución: verificationSteps.length = total de DENOMINACIONES verificadas (las que quedaron en $50)
-      const totalDenoms = deliveryCalculation.verificationSteps.length; // ← CORRECTO
-      const firstAttemptSuccesses = behavior.firstAttemptSuccesses;
-
-      // Contar warnings y críticas desde denominationsWithIssues (más preciso)
-      const warningCountActual = behavior.denominationsWithIssues.filter(d =>
-        d.severity === 'warning_retry' || d.severity === 'warning_override'
-      ).length;
-
-      const criticalCountActual = behavior.denominationsWithIssues.filter(d =>
-        d.severity === 'critical_severe' || d.severity === 'critical_inconsistent'
-      ).length;
-
-      verificationSection = `
-${WHATSAPP_SEPARATOR}
-
-🔍 *VERIFICACIÓN CIEGA*
-
-✅ Perfectas: ${firstAttemptSuccesses}/${totalDenoms}
-⚠️ Corregidas: ${warningCountActual}/${totalDenoms}
-🔴 Críticas: ${criticalCountActual}/${totalDenoms}
-`;
-    }
-
-    // 🤖 [IA] - v1.3.6W: Estructura con espaciado optimizado para WhatsApp mobile
-    return `${headerSeverity}
-
-
-📊 *CORTE DE CAJA*
-${calculationData?.timestamp || ''}
-
-Sucursal: ${store?.name}
-Cajero: ${cashier?.name}
-Testigo: ${witness?.name}
-
-${WHATSAPP_SEPARATOR}
-
-📊 *RESUMEN EJECUTIVO*
-
-${WHATSAPP_SEPARATOR}
-💰 EFECTIVO FÍSICO
-${WHATSAPP_SEPARATOR}
-Contado total:       *${formatCurrency(calculationData?.totalCash || 0)}*
-Menos fondo:         -$50.00
-                     ────────
-Ventas efectivo:     *${formatCurrency(calculationData?.salesCash || 0)}*
-${WHATSAPP_SEPARATOR}
-
-${WHATSAPP_SEPARATOR}
-💳 ELECTRÓNICO
-${WHATSAPP_SEPARATOR}
-${electronicDetailsDesglosed}
-                     ────────
-Total:               *${formatCurrency(calculationData?.totalElectronic || 0)}*
-${WHATSAPP_SEPARATOR}
-
-${WHATSAPP_SEPARATOR}
-📦 DIVISIÓN EFECTIVO
-${WHATSAPP_SEPARATOR}
-Entregado:           *${formatCurrency(deliveryCalculation?.amountToDeliver || 0)}*
-Quedó (fondo):       *${phaseState?.shouldSkipPhase2 ? formatCurrency(calculationData?.totalCash || 0) : formatCurrency(deliveryCalculation?.amountRemaining ?? 50)}*
-                     ────────
-Suma:                *${formatCurrency(calculationData?.totalCash || 0)}* ✓
-${WHATSAPP_SEPARATOR}
-
-${WHATSAPP_SEPARATOR}
-💼 VENTAS
-${WHATSAPP_SEPARATOR}
-Efectivo:            ${formatCurrency(calculationData?.salesCash || 0)}
-Electrónico:         ${formatCurrency(calculationData?.totalElectronic || 0)}
-                     ────────
-Total:               *${formatCurrency(calculationData?.totalGeneral || 0)}*
-${WHATSAPP_SEPARATOR}
-${(calculationData?.totalExpenses || 0) > 0 ? `
-${WHATSAPP_SEPARATOR}
-💸 GASTOS
-${WHATSAPP_SEPARATOR}
-Operativos:          +${formatCurrency(calculationData?.totalExpenses || 0)}
-                     ────────
-Ventas + Gastos:     *${formatCurrency(calculationData?.totalWithExpenses || 0)}*
-${WHATSAPP_SEPARATOR}
-` : ''}
-${WHATSAPP_SEPARATOR}
-🎯 SICAR
-${WHATSAPP_SEPARATOR}
-Calculado:           ${formatCurrency((calculationData?.totalExpenses || 0) > 0 ? (calculationData?.totalWithExpenses || 0) : (calculationData?.totalGeneral || 0))}
-Esperado:            ${formatCurrency(expectedSales)}
-                     ────────
-${(calculationData?.difference || 0) >= 0 ? '📈' : '📉'} *Diferencia:*        *${formatCurrency(Math.abs(calculationData?.difference || 0))}*
-                     *(${(calculationData?.difference || 0) >= 0 ? 'SOBRANTE' : 'FALTANTE'})*
-${WHATSAPP_SEPARATOR}
-${deliveryChecklistSection}${remainingChecklistSection}${generateExpensesSection()}${fullAlertsSection}${verificationSection}
-${WHATSAPP_SEPARATOR}
-
-💰 *CONTEO COMPLETO (${formatCurrency(calculationData?.totalCash || 0)})*
-
-${denominationDetails}
-
-${WHATSAPP_SEPARATOR}
-
-📅 ${calculationData?.timestamp || ''}
-🔐 CashGuard Paradise v2.7
-🔒 NIST SP 800-115 | PCI DSS 12.10.1
-
-✅ Reporte automático
-⚠️ Documento NO editable
-
-Firma Digital: ${dataHash}`;
+    return generateWhatsAppReport(reportData);
   }, [calculationData, electronicPayments, deliveryCalculation, store, cashier, witness, phaseState, expectedSales,
-      validatePhaseCompletion, generateDenominationDetails, generateDataHash, generateCriticalAlertsBlock,
-      generateWarningAlertsBlock, generateDeliveryChecklistSection, generateRemainingChecklistSection, generateExpensesSection]);
-  // 🤖 [IA] - v1.4.0 FASE 5: expenses NO incluido en deps porque generateExpensesSection ya lo captura
+      cashCount, expenses, storeId, cashierId, witnessId, validatePhaseCompletion]);
 
   // 🤖 [IA] - v2.4.1: Handler inteligente con detección de plataforma + copia automática
   // v2.4.1b: Abre modal de instrucciones inmediatamente en desktop (sin toast automático)
