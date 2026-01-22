@@ -1,3 +1,4 @@
+// 🤖 [IA] - v2.8.2: Theme System Migration - Colores hardcodeados migrados a CSS variables semánticas
 // 🤖 [IA] - v1.3.7AI: FIX CRÍTICO warning_override NO reportado - clearAttemptHistory() removido handleForce() (patrón v1.3.6M/v1.3.6T)
 // Previous: v1.3.7AH - OCULTACIÓN MENSAJE "CANTIDAD CORRECTA" - Conditional success message (5 elementos ocultos)
 // Previous: v1.3.7AG - OCULTACIÓN BORDE ROJO INPUT - Conditional borderColor validation (4 elementos ocultos)
@@ -716,12 +717,12 @@ export function Phase2VerificationSection({
                 <span className="hidden sm:inline">Verificado:</span>
                 <span className="inline sm:hidden">Progreso:</span>
               </span>
-              <span className="text-[clamp(0.875rem,3.5vw,1rem)] font-bold" style={{ color: '#ffffff' }}>
+              <span className="text-[clamp(0.875rem,3.5vw,1rem)] font-bold" style={{ color: 'var(--text-white)' }}>
                 ✅ {Object.keys(completedSteps).filter(key => completedSteps[key]).length}/{verificationSteps.length}
               </span>
             </div>
           </div>
-          <div className="flex-1 mx-[clamp(0.5rem,2vw,0.75rem)] rounded-full h-[clamp(0.5rem,2vw,0.625rem)]" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>
+          <div className="flex-1 mx-[clamp(0.5rem,2vw,0.75rem)] rounded-full h-[clamp(0.5rem,2vw,0.625rem)]" style={{ backgroundColor: 'var(--border-subtle)' }}>
             <div 
               className="h-[clamp(0.5rem,2vw,0.625rem)] rounded-full transition-all duration-500"
               style={{ 
@@ -815,7 +816,7 @@ export function Phase2VerificationSection({
               animate={{ opacity: 1, x: 0 }}
               className="absolute top-4 right-4 z-10 bg-primary/90 text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-lg backdrop-blur-sm border border-primary/50"
               style={{
-                background: 'linear-gradient(135deg, rgba(10, 132, 255, 0.9) 0%, rgba(94, 92, 230, 0.9) 100%)'
+                background: 'var(--gradient-primary)'
               }}
             >
               ACTIVO ▶
@@ -841,7 +842,7 @@ export function Phase2VerificationSection({
                 {/* 🔒 Badge condicional QUEDA EN CAJA (conteo ciego producción) */}
                 {SHOW_REMAINING_AMOUNTS && (
                   <div className="glass-status-error inline-block px-4 py-2 rounded-lg mt-4">
-                    <p className="text-sm font-semibold" style={{ color: '#22c55e' }}>
+                    <p className="text-sm font-semibold" style={{ color: 'var(--accent-success)' }}>
                       {'💼\u00A0\u00A0QUEDA EN CAJA '}
                       <span style={{ color: 'white', fontWeight: 'bold', fontSize: '1.4em' }}>{currentStep.quantity}</span>
                     </p>
@@ -851,7 +852,7 @@ export function Phase2VerificationSection({
                 {/* 🔒 Badge alternativo (modo producción - sin cantidad específica) */}
                 {!SHOW_REMAINING_AMOUNTS && (
                   <div className="glass-status-error inline-block px-4 py-2 rounded-lg mt-4">
-                    <p className="text-sm font-semibold" style={{ color: '#22c55e' }}>
+                    <p className="text-sm font-semibold" style={{ color: 'var(--accent-success)' }}>
                       {'💼\u00A0\u00A0VERIFICANDO CAJA'}
                     </p>
                   </div>
@@ -973,8 +974,8 @@ export function Phase2VerificationSection({
             Has confirmado que quedan exactamente {formatCurrency(expectedTotal)} en caja.
           </p>
           <div className="rounded-[clamp(0.5rem,2vw,0.75rem)] p-[clamp(0.75rem,3vw,1rem)] mb-[clamp(0.75rem,3vw,1rem)] mx-auto max-w-md" style={{
-            backgroundColor: 'rgba(0, 186, 124, 0.1)',
-            border: '1px solid rgba(0, 186, 124, 0.3)',
+            backgroundColor: 'var(--alert-success-bg)',
+            border: '1px solid var(--alert-success-border)',
           }}>
             <div className="flex items-center justify-center gap-[clamp(0.375rem,1.5vw,0.5rem)]">
               <Target className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)]" style={{ color: 'var(--success-paradise)' }} />
@@ -983,7 +984,7 @@ export function Phase2VerificationSection({
               </span>
             </div>
           </div>
-          <p className="text-[clamp(0.75rem,3vw,0.875rem)] font-medium" style={{ color: '#1d9bf0' }}>
+          <p className="text-[clamp(0.75rem,3vw,0.875rem)] font-medium" style={{ color: 'var(--accent-primary)' }}>
             Procediendo a generar reporte final...
           </p>
         </div>

@@ -1,3 +1,4 @@
+// 🤖 [IA] - v2.8.2: Theme System Migration - Colores hardcodeados migrados a CSS variables semánticas
 // 🤖 [IA] - v1.3.6AD2: FIX BUG CRÍTICO DIFERENCIA VUELTO - Helper ajusta denominationsToKeep post-verificación con valores ACEPTADOS
 // Previous: v1.3.6N - FIX DEFINITIVO STATE MUTATION - Callback actualiza usePhaseManager state correctamente
 // 🤖 [IA] - v1.3.6f: BUG FIX CRÍTICO #3 - handleVerificationSectionComplete sin useCallback + verificationBehavior en deps
@@ -419,14 +420,14 @@ export function Phase2Manager({
             <div className="flex items-center gap-fluid-md">
               <Package
                 className="flex-shrink-0 w-[clamp(1.5rem,6vw,2rem)] h-[clamp(1.5rem,6vw,2rem)]"
-                style={{ color: '#0a84ff' }}
+                style={{ color: 'var(--accent-primary)' }}
                 aria-label="Icono de preparación de entrega"
               />
               <div className="flex flex-col">
-                <h2 className="font-bold text-[clamp(1.25rem,5vw,1.5rem)] text-[#e1e8ed] leading-tight">
+                <h2 className="font-bold text-[clamp(1.25rem,5vw,1.5rem)] text-theme-title leading-tight">
                   Preparar Dinero a Entregar
                 </h2>
-                <p className="text-[clamp(0.625rem,2.5vw,0.75rem)] text-[#8899a6] mt-[clamp(0.125rem,0.5vw,0.25rem)]">
+                <p className="text-[clamp(0.625rem,2.5vw,0.75rem)] text-theme-subtitle mt-[clamp(0.125rem,0.5vw,0.25rem)]">
                   Preparación de entrega de efectivo
                 </p>
               </div>

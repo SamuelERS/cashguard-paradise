@@ -282,6 +282,15 @@
     --text-body: rgba(255, 255, 255, 0.92);
     --text-gray: #6b7280;               /* Texto gris neutro */
     --text-inverse: #1e293b;            /* Texto sobre fondos claros */
+    --text-white: #ffffff;              /* Texto blanco puro */
+
+    /* === ACENTOS PRINCIPALES === */
+    --accent-success: #00ba7c;          /* Verde success Paradise */
+    --accent-primary: #0a84ff;          /* Azul principal */
+    --accent-secondary: #5e5ce6;        /* Púrpura secundario */
+
+    /* === GRADIENTES === */
+    --gradient-primary: linear-gradient(135deg, rgba(10, 132, 255, 0.9) 0%, rgba(94, 92, 230, 0.9) 100%);
 
     /* === MODO MAÑANA (Orange Theme) === */
     --accent-morning: #f4a52a;          /* Naranja principal modo mañana */
@@ -306,6 +315,20 @@
     --state-disabled-bg: rgba(255, 255, 255, 0.05);
     --state-disabled-text: rgba(255, 255, 255, 0.4);
     --state-focus-ring: rgba(10, 132, 255, 0.5);
+
+    /* === ALERTAS Y BADGES SEMÁNTICOS === */
+    /* 🤖 [IA] - v2.8: Variables para alertas/badges - reemplazan rgba() hardcodeados */
+    --alert-danger-bg: rgba(244, 33, 46, 0.1);
+    --alert-danger-border: rgba(244, 33, 46, 0.3);
+    --alert-success-bg: rgba(0, 186, 124, 0.1);
+    --alert-success-bg-strong: rgba(0, 186, 124, 0.2);
+    --alert-success-border: rgba(0, 186, 124, 0.3);
+    --alert-warning-bg: rgba(255, 159, 10, 0.1);
+    --alert-warning-border: rgba(255, 159, 10, 0.3);
+    --alert-primary-bg: rgba(10, 132, 255, 0.1);
+    --alert-primary-border: rgba(10, 132, 255, 0.3);
+    --alert-secondary-bg: rgba(94, 92, 230, 0.1);
+    --alert-secondary-border: rgba(94, 92, 230, 0.3);
   }
 
   .dark {
@@ -403,6 +426,20 @@
     --state-disabled-bg: rgba(0, 0, 0, 0.04);
     --state-disabled-text: rgba(0, 0, 0, 0.35);
     --state-focus-ring: rgba(10, 132, 255, 0.4);
+
+    /* === ALERTAS Y BADGES SEMÁNTICOS === */
+    /* 🤖 [IA] - v2.8: Variables para alertas/badges en modo claro */
+    --alert-danger-bg: rgba(220, 38, 38, 0.1);
+    --alert-danger-border: rgba(220, 38, 38, 0.25);
+    --alert-success-bg: rgba(5, 150, 105, 0.1);
+    --alert-success-bg-strong: rgba(5, 150, 105, 0.15);
+    --alert-success-border: rgba(5, 150, 105, 0.25);
+    --alert-warning-bg: rgba(217, 119, 6, 0.1);
+    --alert-warning-border: rgba(217, 119, 6, 0.25);
+    --alert-primary-bg: rgba(10, 132, 255, 0.1);
+    --alert-primary-border: rgba(10, 132, 255, 0.25);
+    --alert-secondary-bg: rgba(94, 92, 230, 0.1);
+    --alert-secondary-border: rgba(94, 92, 230, 0.25);
 
     /* === SOMBRAS SUAVES === */
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);

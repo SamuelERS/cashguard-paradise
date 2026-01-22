@@ -1,4 +1,5 @@
-// 🤖 [IA] - v2.8.1: Badge versión actualizado (refinamiento UX botón WhatsApp)
+// 🤖 [IA] - v2.8.2: Migración sistema temas - colores hardcodeados → CSS variables semánticas
+// Previous: v2.8.1 - Badge versión actualizado (refinamiento UX botón WhatsApp)
 // Previous: v2.8 - Badge versión actualizado (sistema WhatsApp inteligente aplicado a Apertura)
 // Previous: v2.7 - Badge versión actualizado (fix orden modal Phase 2 preparación)
 // Previous: v2.6 - Badge versión actualizado (sistema inteligente WhatsApp + optimización UX)
@@ -75,7 +76,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
             <div className="flex items-center gap-3">
               <h1 className="font-bold" style={{
                 fontSize: `clamp(1.5rem, 6vw, 1.875rem)`,
-                color: '#e1e8ed'
+                color: 'var(--text-title)'
               }}>
                 Seleccione Operación
               </h1>
@@ -93,7 +94,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
           </div>
           <p style={{
             fontSize: `clamp(0.875rem, 3.5vw, 1.125rem)`,
-            color: '#8899a6'
+            color: 'var(--text-subtitle)'
           }}>
             Seleccione el Proceso según momento del día
           </p>
@@ -110,10 +111,10 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
             onClick={() => onSelectMode(OperationMode.CASH_COUNT)}
             className="cursor-pointer group"
             style={{
-              background: 'rgba(36, 36, 36, 0.4)',
+              background: 'var(--bg-card)',
               backdropFilter: 'blur(20px)',
               WebkitBackdropFilter: 'blur(20px)',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
+              border: '1px solid var(--border-medium)',
               borderRadius: '16px',
               padding: `clamp(20px, ${32 * viewportScale}px, 32px)`,
               // 🤖 [IA] - v1.1.06: Eliminada transición CSS duplicada - Framer Motion maneja todo
@@ -139,7 +140,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
                   fontSize: `clamp(0.625rem, 2.5vw, 0.75rem)`,
                   background: 'rgba(244, 165, 42, 0.2)',
                   border: '1px solid rgba(244, 165, 42, 0.4)',
-                  color: '#ffb84d'
+                  color: 'var(--accent-morning-light)'
                 }}
               >
                 {cashCount.subtitle}
@@ -149,13 +150,13 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
             {/* Título y descripción */}
             <h3 className="font-bold mb-3" style={{
               fontSize: `clamp(1.25rem, 5vw, 1.5rem)`,
-              color: '#e1e8ed'
+              color: 'var(--text-title)'
             }}>
               {cashCount.title}
             </h3>
             <p className="mb-6" style={{
               fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
-              color: '#8899a6'
+              color: 'var(--text-subtitle)'
             }}>
               {cashCount.description}
             </p>
@@ -166,11 +167,11 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
                 <div className="rounded-full" style={{
                   width: `clamp(5px, 1.5vw, 6px)`,
                   height: `clamp(5px, 1.5vw, 6px)`,
-                  background: '#f4a52a'
+                  background: 'var(--accent-morning)'
                 }} />
                 <span style={{
                   fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
-                  color: '#8899a6'
+                  color: 'var(--text-subtitle)'
                 }}>
                   Verificación de cambio inicial ($50)
                 </span>
@@ -179,11 +180,11 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
                 <div className="rounded-full" style={{
                   width: `clamp(5px, 1.5vw, 6px)`,
                   height: `clamp(5px, 1.5vw, 6px)`,
-                  background: '#f4a52a'
+                  background: 'var(--accent-morning)'
                 }} />
                 <span style={{
                   fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
-                  color: '#8899a6'
+                  color: 'var(--text-subtitle)'
                 }}>
                   Proceso simplificado de 2 fases
                 </span>
@@ -192,11 +193,11 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
                 <div className="rounded-full" style={{
                   width: `clamp(5px, 1.5vw, 6px)`,
                   height: `clamp(5px, 1.5vw, 6px)`,
-                  background: '#f4a52a'
+                  background: 'var(--accent-morning)'
                 }} />
                 <span style={{
                   fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
-                  color: '#8899a6'
+                  color: 'var(--text-subtitle)'
                 }}>
                   Ideal para cambio de turno matutino
                 </span>
@@ -207,13 +208,13 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
             <div className="flex items-center justify-between">
               <span className="font-medium" style={{
                 fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
-                color: '#f4a52a'
+                color: 'var(--accent-morning)'
               }}>
                 Comenzar
               </span>
               <ArrowRight 
                 className="w-5 h-5 group-hover:translate-x-1 transition-transform"
-                style={{ color: '#f4a52a' }}
+                style={{ color: 'var(--accent-morning)' }}
               />
             </div>
           </motion.div>
@@ -227,10 +228,10 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
             onClick={() => onSelectMode(OperationMode.CASH_CUT)}
             className="cursor-pointer group"
             style={{
-              background: 'rgba(36, 36, 36, 0.4)',
+              background: 'var(--bg-card)',
               backdropFilter: 'blur(20px)',
               WebkitBackdropFilter: 'blur(20px)',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
+              border: '1px solid var(--border-medium)',
               borderRadius: '16px',
               padding: `clamp(20px, ${32 * viewportScale}px, 32px)`,
               // 🤖 [IA] - v1.1.06: Eliminada transición CSS duplicada - Framer Motion maneja todo
@@ -256,7 +257,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
                   fontSize: `clamp(0.625rem, 2.5vw, 0.75rem)`,
                   background: 'rgba(10, 132, 255, 0.2)',
                   border: '1px solid rgba(10, 132, 255, 0.4)',
-                  color: '#0a84ff'
+                  color: 'var(--accent-primary)'
                 }}
               >
                 {cashCut.subtitle}
@@ -266,13 +267,13 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
             {/* Título y descripción */}
             <h3 className="font-bold mb-3" style={{
               fontSize: `clamp(1.25rem, 5vw, 1.5rem)`,
-              color: '#e1e8ed'
+              color: 'var(--text-title)'
             }}>
               {cashCut.title}
             </h3>
             <p className="mb-6" style={{
               fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
-              color: '#8899a6'
+              color: 'var(--text-subtitle)'
             }}>
               {cashCut.description}
             </p>
@@ -283,11 +284,11 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
                 <div className="rounded-full" style={{
                   width: `clamp(5px, 1.5vw, 6px)`,
                   height: `clamp(5px, 1.5vw, 6px)`,
-                  background: '#0a84ff'
+                  background: 'var(--accent-primary)'
                 }} />
                 <span style={{
                   fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
-                  color: '#8899a6'
+                  color: 'var(--text-subtitle)'
                 }}>
                   Comparación con venta esperada SICAR
                 </span>
@@ -296,11 +297,11 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
                 <div className="rounded-full" style={{
                   width: `clamp(5px, 1.5vw, 6px)`,
                   height: `clamp(5px, 1.5vw, 6px)`,
-                  background: '#0a84ff'
+                  background: 'var(--accent-primary)'
                 }} />
                 <span style={{
                   fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
-                  color: '#8899a6'
+                  color: 'var(--text-subtitle)'
                 }}>
                   Proceso completo de 3 fases
                 </span>
@@ -309,11 +310,11 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
                 <div className="rounded-full" style={{
                   width: `clamp(5px, 1.5vw, 6px)`,
                   height: `clamp(5px, 1.5vw, 6px)`,
-                  background: '#0a84ff'
+                  background: 'var(--accent-primary)'
                 }} />
                 <span style={{
                   fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
-                  color: '#8899a6'
+                  color: 'var(--text-subtitle)'
                 }}>
                   Entrega de efectivo y reporte final
                 </span>
@@ -324,13 +325,13 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
             <div className="flex items-center justify-between">
               <span className="font-medium" style={{
                 fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
-                color: '#0a84ff'
+                color: 'var(--accent-primary)'
               }}>
                 Comenzar
               </span>
               <ArrowRight 
                 className="w-5 h-5 group-hover:translate-x-1 transition-transform"
-                style={{ color: '#0a84ff' }}
+                style={{ color: 'var(--accent-primary)' }}
               />
             </div>
           </motion.div>
@@ -343,7 +344,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
           transition={{ delay: 0.4 }}
           className="text-center mt-12"
         >
-          <p className="text-sm" style={{ color: '#657786' }}>
+          <p className="text-sm" style={{ color: 'var(--text-gray)' }}>
             Seleccione la operación correcta según el horario actual
           </p>
         </motion.div>
@@ -356,12 +357,12 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
           className="mt-12 max-w-2xl mx-auto rounded-xl"
           style={{ 
             padding: `clamp(16px, ${24 * viewportScale}px, 24px)`,
-            backgroundColor: 'rgba(36, 36, 36, 0.4)',
+            backgroundColor: 'var(--bg-card)',
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
-            border: '1px solid rgba(255, 255, 255, 0.15)',
-            borderLeft: '3px solid #0a84ff',
-            color: '#8899a6',
+            border: '1px solid var(--border-medium)',
+            borderLeft: '3px solid var(--accent-primary)',
+            color: 'var(--text-subtitle)',
             fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
             boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
           }}
@@ -372,7 +373,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
           </span>
           <span className="block mt-2" style={{ 
             fontSize: `clamp(0.625rem, 2.5vw, 0.75rem)`,
-            color: '#657786' 
+            color: 'var(--text-gray)' 
           }}>
             - Equipo de Acuarios Paradise
           </span>
@@ -384,7 +385,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
             transition={{ delay: 0.9, duration: 0.5 }}
             className="flex items-center justify-end gap-2 mt-4 pt-3"
             style={{
-              borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+              borderTop: '1px solid var(--border-subtle)',
             }}
           >
             <motion.span
@@ -407,7 +408,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
               className="font-semibold"
               style={{
                 fontSize: `clamp(0.625rem, 2.5vw, 0.75rem)`,
-                color: '#0a84ff',
+                color: 'var(--accent-primary)',
                 letterSpacing: '0.02em',
               }}
             >
