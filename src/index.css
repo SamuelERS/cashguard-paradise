@@ -268,6 +268,44 @@
 
     /* Nota: Se añade una variable extra para el tamaño de botones del plan */
     --instruction-fluid-3xl: clamp(2.5rem, 8vw, 3rem);
+
+    /* ============================================================================
+     * 🎨 SISTEMA DE TEMAS v2.8 - Variables Semánticas
+     * ============================================================================
+     * 🤖 [IA] - v2.8: Tokens semánticos para eliminar 355+ colores hardcodeados
+     * Estos tokens permiten cambiar entre modo oscuro/claro de forma centralizada.
+     * ============================================================================ */
+
+    /* === TEXTOS SEMÁNTICOS === */
+    --text-title: #e1e8ed;              /* Títulos principales - antes hardcoded */
+    --text-subtitle: #8899a6;           /* Subtítulos y texto secundario */
+    --text-body: rgba(255, 255, 255, 0.92);
+    --text-gray: #6b7280;               /* Texto gris neutro */
+    --text-inverse: #1e293b;            /* Texto sobre fondos claros */
+
+    /* === MODO MAÑANA (Orange Theme) === */
+    --accent-morning: #f4a52a;          /* Naranja principal modo mañana */
+    --accent-morning-light: #ffb84d;    /* Naranja claro modo mañana */
+    --accent-morning-dark: #d4851a;     /* Naranja oscuro (hover) */
+    --accent-morning-glow: rgba(244, 165, 42, 0.25);
+
+    /* === BACKGROUNDS SEMÁNTICOS === */
+    --bg-card: rgba(36, 36, 36, 0.4);   /* Cards con glass effect */
+    --bg-card-solid: #242424;           /* Cards sin transparencia */
+    --bg-input: rgba(255, 255, 255, 0.05);
+    --bg-hover: rgba(255, 255, 255, 0.08);
+    --bg-overlay: rgba(0, 0, 0, 0.6);   /* Overlays de modales */
+
+    /* === BORDES SEMÁNTICOS === */
+    --border-subtle: rgba(255, 255, 255, 0.1);
+    --border-medium: rgba(255, 255, 255, 0.15);
+    --border-strong: rgba(255, 255, 255, 0.2);
+    --border-accent: rgba(10, 132, 255, 0.5);
+
+    /* === ESTADOS INTERACTIVOS === */
+    --state-disabled-bg: rgba(255, 255, 255, 0.05);
+    --state-disabled-text: rgba(255, 255, 255, 0.4);
+    --state-focus-ring: rgba(10, 132, 255, 0.5);
   }
 
   .dark {
@@ -306,6 +344,103 @@
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  /* ============================================================================
+   * 🌞 MODO CLARO - Light Theme Overrides
+   * ============================================================================
+   * 🤖 [IA] - v2.8: Overrides para modo claro con legibilidad optimizada
+   * Preserva la identidad visual Paradise mientras garantiza contraste WCAG AA
+   * ============================================================================ */
+  .light {
+    /* === BACKGROUNDS === */
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8fafc;
+    --bg-tertiary: #f1f5f9;
+    --bg-surface: rgba(248, 250, 252, 0.9);
+
+    /* === TEXTOS SEMÁNTICOS (invertidos para legibilidad) === */
+    --text-title: #1e293b;              /* Slate 800 - alto contraste */
+    --text-subtitle: #64748b;           /* Slate 500 - buen contraste */
+    --text-body: rgba(0, 0, 0, 0.87);
+    --text-gray: #6b7280;
+    --text-primary: rgba(0, 0, 0, 0.87);
+    --text-secondary: rgba(0, 0, 0, 0.6);
+    --text-muted: rgba(0, 0, 0, 0.45);
+
+    /* === ACENTOS (preservados para identidad de marca) === */
+    --accent-primary: #0a84ff;          /* iOS Blue - funciona en ambos modos */
+    --accent-secondary: #5e5ce6;        /* Purple - funciona en ambos modos */
+    --success: #16a34a;                 /* Green 600 - mejor contraste en claro */
+    --success-paradise: #059669;        /* Emerald 600 */
+    --warning: #d97706;                 /* Amber 600 - mejor contraste */
+    --danger: #dc2626;                  /* Red 600 - mejor contraste */
+
+    /* === GLASS MORPHISM ADAPTADO === */
+    --glass-bg: rgba(255, 255, 255, 0.8);
+    --glass-border: rgba(0, 0, 0, 0.08);
+    --glass-hover: rgba(0, 0, 0, 0.04);
+    --glass-surface: rgba(255, 255, 255, 0.7);
+    --glass-bg-primary: rgba(255, 255, 255, 0.9);
+    --glass-bg-secondary: rgba(248, 250, 252, 0.95);
+    --glass-border-primary: rgba(0, 0, 0, 0.1);
+    --glass-border-secondary: rgba(0, 0, 0, 0.06);
+
+    /* === BACKGROUNDS SEMÁNTICOS === */
+    --bg-card: rgba(255, 255, 255, 0.9);
+    --bg-card-solid: #ffffff;
+    --bg-input: rgba(0, 0, 0, 0.04);
+    --bg-hover: rgba(0, 0, 0, 0.06);
+    --bg-overlay: rgba(0, 0, 0, 0.4);
+
+    /* === BORDES SEMÁNTICOS === */
+    --border-subtle: rgba(0, 0, 0, 0.06);
+    --border-medium: rgba(0, 0, 0, 0.1);
+    --border-strong: rgba(0, 0, 0, 0.15);
+    --border-accent: rgba(10, 132, 255, 0.4);
+
+    /* === ESTADOS INTERACTIVOS === */
+    --state-disabled-bg: rgba(0, 0, 0, 0.04);
+    --state-disabled-text: rgba(0, 0, 0, 0.35);
+    --state-focus-ring: rgba(10, 132, 255, 0.4);
+
+    /* === SOMBRAS SUAVES === */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
+    --shadow-glow: 0 0 20px rgba(10, 132, 255, 0.1);
+    --glass-shadow: 0 2px 12px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+
+    /* === HSL OVERRIDES (para compatibilidad shadcn/ui) === */
+    --background: 0 0% 100%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 213 100% 52%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222 47% 11%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 213 100% 52%;
+
+    /* Sidebar light mode */
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5% 26%;
+    --sidebar-primary: 213 100% 52%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 40% 96%;
+    --sidebar-accent-foreground: 222 47% 11%;
+    --sidebar-border: 214 32% 91%;
+    --sidebar-ring: 213 100% 52%;
   }
 }
 
