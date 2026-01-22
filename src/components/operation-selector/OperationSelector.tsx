@@ -1,14 +1,15 @@
-// 🤖 [IA] - v2.8.2: Migración sistema temas - colores hardcodeados → CSS variables semánticas
+// 🤖 [IA] - v2.8.3: Theme System - Toggle UI con Sun/Moon icons + persistencia localStorage
+// Previous: v2.8.2: Migración sistema temas - colores hardcodeados → CSS variables semánticas
 // Previous: v2.8.1 - Badge versión actualizado (refinamiento UX botón WhatsApp)
 // Previous: v2.8 - Badge versión actualizado (sistema WhatsApp inteligente aplicado a Apertura)
 // Previous: v2.7 - Badge versión actualizado (fix orden modal Phase 2 preparación)
 // Previous: v2.6 - Badge versión actualizado (sistema inteligente WhatsApp + optimización UX)
-// Previous: v2.5 - Badge versión actualizado (formato tabla compacto + fix fondo $50 + SICAR)
 import { motion } from 'framer-motion';
-import { Sunrise, Moon, ArrowRight, Calculator, Fish, Heart } from 'lucide-react';
+import { Sunrise, Moon, ArrowRight, Calculator, Heart, Sun } from 'lucide-react';
 // 🤖 [IA] - v1.2.24 - FloatingParticles eliminado para mejorar rendimiento
 import { OperationMode, OPERATION_MODES } from '@/types/operation-mode';
 import { AppFooter } from '@/components/AppFooter';
+import { useTheme } from '@/hooks/useTheme';
 
 interface OperationSelectorProps {
   onSelectMode: (mode: OperationMode) => void;
@@ -17,7 +18,10 @@ interface OperationSelectorProps {
 export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
   const cashCount = OPERATION_MODES[OperationMode.CASH_COUNT];
   const cashCut = OPERATION_MODES[OperationMode.CASH_CUT];
-  
+
+  // 🤖 [IA] - v2.8.3: Theme toggle hook
+  const { theme, toggleTheme, isDark } = useTheme();
+
   // 🤖 [IA] - v1.2.11 - Detección de viewport y escala proporcional
   const viewportScale = typeof window !== 'undefined' ? Math.min(window.innerWidth / 430, 1) : 1;
   const isMobileDevice = typeof window !== 'undefined' && window.innerWidth < 768;
@@ -67,7 +71,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
               style={{
                 width: `clamp(40px, 10vw, 48px)`,
                 height: `clamp(40px, 10vw, 48px)`,
-                background: 'linear-gradient(135deg, #0a84ff 0%, #5e5ce6 100%)',
+                background: 'var(--gradient-evening)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text'
@@ -80,16 +84,43 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
               }}>
                 Seleccione Operación
               </h1>
-              {/* 🤖 [IA] - v2.8.1: Refinamiento UX WhatsApp (botón siempre activo + eliminado redundante) */}
+              {/* 🤖 [IA] - v2.8.3: Badge versión actualizado (Theme System) */}
               <span className="px-3 py-1 rounded-full text-xs font-semibold shadow-lg" style={{
-                background: 'linear-gradient(135deg, #d4af37 0%, #aa8c2d 100%)',
-                color: '#1a1a1a',
+                background: 'var(--gradient-gold)',
+                color: 'var(--badge-text-dark)',
                 textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)',
                 boxShadow: '0 4px 6px rgba(212, 175, 55, 0.4)',
                 border: '1px solid rgba(255, 215, 0, 0.3)'
               }}>
-                v2.8.1
+                v2.8.3
               </span>
+              {/* 🤖 [IA] - v2.8.3: Theme Toggle Button - Sun/Moon icons */}
+              <motion.button
+                onClick={toggleTheme}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                className="p-2 rounded-full transition-colors"
+                style={{
+                  background: 'var(--bg-card)',
+                  border: '1px solid var(--border-medium)',
+                  color: 'var(--text-title)',
+                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
+                }}
+                aria-label={isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+                title={isDark ? 'Modo Claro' : 'Modo Oscuro'}
+              >
+                <motion.div
+                  initial={false}
+                  animate={{ rotate: isDark ? 0 : 180 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {isDark ? (
+                    <Sun style={{ width: 'clamp(16px, 4vw, 20px)', height: 'clamp(16px, 4vw, 20px)' }} />
+                  ) : (
+                    <Moon style={{ width: 'clamp(16px, 4vw, 20px)', height: 'clamp(16px, 4vw, 20px)' }} />
+                  )}
+                </motion.div>
+              </motion.button>
             </div>
           </div>
           <p style={{
@@ -123,11 +154,11 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
           >
             {/* Ícono y badge */}
             <div className="flex items-start justify-between mb-6">
-              <Sunrise 
+              <Sunrise
                 style={{
                   width: `clamp(48px, 12vw, 64px)`,
                   height: `clamp(48px, 12vw, 64px)`,
-                  background: 'linear-gradient(135deg, #f4a52a 0%, #ffb84d 100%)',
+                  background: 'var(--gradient-morning)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                   backgroundClip: 'text'
@@ -240,11 +271,11 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
           >
             {/* Ícono y badge */}
             <div className="flex items-start justify-between mb-6">
-              <Moon 
+              <Moon
                 style={{
                   width: `clamp(48px, 12vw, 64px)`,
                   height: `clamp(48px, 12vw, 64px)`,
-                  background: 'linear-gradient(135deg, #0a84ff 0%, #5e5ce6 100%)',
+                  background: 'var(--gradient-evening)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                   backgroundClip: 'text'
@@ -426,8 +457,8 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
               }}
             >
               <Heart
-                fill="#ef4444"
-                stroke="#ef4444"
+                fill="var(--heart-red)"
+                stroke="var(--heart-red)"
                 style={{
                   width: `clamp(12px, 3vw, 14px)`,
                   height: `clamp(12px, 3vw, 14px)`,

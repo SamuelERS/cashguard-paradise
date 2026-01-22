@@ -291,6 +291,13 @@
 
     /* === GRADIENTES === */
     --gradient-primary: linear-gradient(135deg, rgba(10, 132, 255, 0.9) 0%, rgba(94, 92, 230, 0.9) 100%);
+    --gradient-evening: linear-gradient(135deg, #0a84ff 0%, #5e5ce6 100%);
+    --gradient-morning: linear-gradient(135deg, #f4a52a 0%, #ffb84d 100%);
+    --gradient-gold: linear-gradient(135deg, #d4af37 0%, #aa8c2d 100%);
+
+    /* === COLORES ESPECÍFICOS UI === */
+    --badge-text-dark: #1a1a1a;             /* Texto oscuro para badges dorados */
+    --heart-red: #ef4444;                   /* Rojo corazón espiritual */
 
     /* === MODO MAÑANA (Orange Theme) === */
     --accent-morning: #f4a52a;          /* Naranja principal modo mañana */
@@ -478,6 +485,29 @@
     --sidebar-accent-foreground: 222 47% 11%;
     --sidebar-border: 214 32% 91%;
     --sidebar-ring: 213 100% 52%;
+  }
+
+  /* ============================================================================
+   * 🎨 THEME TRANSITIONS v2.8.3 - Smooth Theme Switching
+   * ============================================================================
+   * 🤖 [IA] - v2.8.3: Transiciones suaves para cambio de tema
+   * Aplica transición gradual a colores y backgrounds al cambiar tema
+   * ============================================================================ */
+  html,
+  html * {
+    transition: background-color 0.3s ease,
+                border-color 0.3s ease,
+                color 0.3s ease,
+                box-shadow 0.3s ease,
+                fill 0.3s ease,
+                stroke 0.3s ease;
+  }
+
+  /* Excluir elementos que no deben tener transición (inputs activos, etc.) */
+  html input:focus,
+  html textarea:focus,
+  html select:focus {
+    transition: none;
   }
 }
 
