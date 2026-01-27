@@ -75,7 +75,14 @@ export default defineConfig({
     },
   ],
 
-  // Development server configuration - NOT used in Docker
-  // In Docker, the app runs separately
-  webServer: undefined,
+  // Development server configuration
+  // 🤖 [IA] - v3.1.0: Always start webServer in local (dev without Docker)
+  // Only skip webServer in CI/Docker (where app runs separately)
+  webServer: process.env.CI || process.env.DOCKER ? undefined : {
+    command: 'npm run dev -- --port 5175',
+    url: 'http://localhost:5175',
+    reuseExistingServer: true,  // Reuse if already running
+    timeout: 120000,
+    cwd: '..',  // Execute from project root
+  },
 });

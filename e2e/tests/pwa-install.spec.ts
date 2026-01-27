@@ -1,4 +1,5 @@
 // 🤖 [IA] - v1.1.17: E2E tests for PWA installation and functionality
+// @regression tag - PWA features (specialized testing)
 import { test, expect } from '@playwright/test';
 
 // Type definition for PWA manifest icon
@@ -9,7 +10,7 @@ interface ManifestIcon {
   purpose?: string;
 }
 
-test.describe('PWA Installation and Functionality', () => {
+test.describe('PWA Installation and Functionality @regression', () => {
   test('Verify manifest.json is properly configured', async ({ page }) => {
     // Navigate to the app
     await page.goto('/');

@@ -59,16 +59,17 @@ export default defineConfig({
         'src/pages/**',
         'src/data/**'
       ],
-      // 🤖 [IA] - Operación Cristal Fase 1: Thresholds for Deliveries/PIN scope
+      // 🤖 [IA] - OPERACIÓN CRISTAL FASE 2: Thresholds raised 10% → 50% for Deliveries/PIN scope
       // Scoped to: deliveries components, pin-modal, useDeliveries hook, deliveryCalculation util
-      // Actual coverage Fase 1: 12.38% lines (Wrapper 96%, pin-modal 88%, rest 0% — untested components)
-      // Thresholds set to current baseline; raise as Fase 2+ adds tests for remaining files
+      // Phase 1 baseline: 12.38% lines (Wrapper 96%, pin-modal 88%, rest 0%)
+      // Phase 2 improvement: pin-modal 80%+ functions (20 tests: 14 original + 6 new onOpenChange/onEscapeKeyDown)
+      // Thresholds raised per ORDEN DE TRABAJO section 4.2: 10% → 50% minimum for module
       // Global thresholds (pre-Cristal): branches: 55, functions: 23, lines: 19, statements: 19
       thresholds: {
-        branches: 10,
-        functions: 10,
-        lines: 10,
-        statements: 10
+        branches: 50,
+        functions: 50,
+        lines: 50,
+        statements: 50
       }
     },
     

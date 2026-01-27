@@ -17,7 +17,10 @@
     "test:coverage:ci": "rm -rf coverage && vitest run --coverage",
     "test:unit": "vitest run src/__tests__/unit",
     "test:integration": "vitest run src/__tests__/integration",
-    "test:e2e": "playwright test --config=e2e/playwright.config.ts",
+    "test:e2e": "npm run test:e2e:smoke",
+    "test:e2e:smoke": "npx playwright test --config=e2e/playwright.config.ts --grep @smoke",
+    "test:e2e:regression": "npx playwright test --config=e2e/playwright.config.ts --grep @regression",
+    "test:e2e:all": "npx playwright test --config=e2e/playwright.config.ts",
     "docker:test": "./Scripts/docker-test-commands.sh test",
     "docker:test:build": "./Scripts/docker-test-commands.sh build"
   },
@@ -76,6 +79,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",
+    "@playwright/test": "^1.58.0",
     "@tailwindcss/typography": "^0.5.16",
     "@testing-library/jest-dom": "^6.4.8",
     "@testing-library/react": "^16.0.0",
@@ -96,6 +100,7 @@
     "jsdom": "^24.1.1",
     "lovable-tagger": "^1.1.9",
     "msw": "^2.3.5",
+    "playwright": "^1.58.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.8.3",

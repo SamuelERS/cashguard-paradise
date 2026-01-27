@@ -1,7 +1,8 @@
 // 🤖 [IA] - v1.1.17: E2E tests for evening cut flow - simulates real end-of-day operations
+// @regression tag - comprehensive flows (longer running)
 import { test, expect } from '@playwright/test';
 
-test.describe('Evening Cut Flow - Complete 3-Phase Process', () => {
+test.describe('Evening Cut Flow - Complete 3-Phase Process @regression', () => {
   test.beforeEach(async ({ page }) => {
     // Navigate to the application
     await page.goto('/');
@@ -22,26 +23,26 @@ test.describe('Evening Cut Flow - Complete 3-Phase Process', () => {
     for (const checkbox of checkboxes) {
       await checkbox.check();
     }
-    await page.click('text=Siguiente');
+    await page.click('[data-testid="wizard-button-next"]');
     
     // Step 3: Select store
     await page.click('button:has-text("Seleccionar sucursal")');
     await page.click('text=Plaza Centro');
-    await page.click('text=Siguiente');
+    await page.click('[data-testid="wizard-button-next"]');
     
     // Step 4: Select cashier
     await page.click('button:has-text("Seleccionar cajero")');
     await page.click('text=Tito Gomez');
-    await page.click('text=Siguiente');
+    await page.click('[data-testid="wizard-button-next"]');
     
     // Step 5: Select witness (different from cashier)
     await page.click('button:has-text("Seleccionar testigo")');
     await page.click('text=Ana Martinez');
-    await page.click('text=Siguiente');
+    await page.click('[data-testid="wizard-button-next"]');
     
     // Step 6: Enter expected sales
     await page.fill('input[placeholder*="esperada"]', '500.00');
-    await page.click('text=Completar');
+    await page.click('[data-testid="wizard-button-complete"]');
     
     // Wait for Phase 1 to start
     await expect(page.locator('text=Fase 1:')).toBeVisible({ timeout: 10000 });
@@ -161,23 +162,23 @@ test.describe('Evening Cut Flow - Complete 3-Phase Process', () => {
     for (const checkbox of checkboxes) {
       await checkbox.check();
     }
-    await page.click('text=Siguiente');
+    await page.click('[data-testid="wizard-button-next"]');
     
     // Quick wizard completion
     await page.click('button:has-text("Seleccionar sucursal")');
     await page.click('text=Los Héroes');
-    await page.click('text=Siguiente');
+    await page.click('[data-testid="wizard-button-next"]');
     
     await page.click('button:has-text("Seleccionar cajero")');
     await page.click('text=Maria Lopez');
-    await page.click('text=Siguiente');
+    await page.click('[data-testid="wizard-button-next"]');
     
     await page.click('button:has-text("Seleccionar testigo")');
     await page.click('text=Pedro Sanchez');
-    await page.click('text=Siguiente');
+    await page.click('[data-testid="wizard-button-next"]');
     
     await page.fill('input[placeholder*="esperada"]', '45.00');
-    await page.click('text=Completar');
+    await page.click('[data-testid="wizard-button-complete"]');
     
     // Count exactly $45 (less than $50)
     await page.fill('input[placeholder*="$20"]', '2'); // $40
@@ -234,17 +235,17 @@ test.describe('Evening Cut Flow - Complete 3-Phase Process', () => {
     for (const checkbox of checkboxes) {
       await checkbox.check();
     }
-    await page.click('text=Siguiente');
+    await page.click('[data-testid="wizard-button-next"]');
     
     // Select store
     await page.click('button:has-text("Seleccionar sucursal")');
     await page.click('text=Los Héroes');
-    await page.click('text=Siguiente');
+    await page.click('[data-testid="wizard-button-next"]');
     
     // Select cashier - Maria Lopez
     await page.click('button:has-text("Seleccionar cajero")');
     await page.click('text=Maria Lopez');
-    await page.click('text=Siguiente');
+    await page.click('[data-testid="wizard-button-next"]');
     
     // Try to select same person as witness
     await page.click('button:has-text("Seleccionar testigo")');
@@ -260,7 +261,7 @@ test.describe('Evening Cut Flow - Complete 3-Phase Process', () => {
     
     // Select a different witness
     await page.click('text=Juan Carlos');
-    await page.click('text=Siguiente');
+    await page.click('[data-testid="wizard-button-next"]');
     
     // Verify we can proceed
     await expect(page.locator('text=Venta Esperada')).toBeVisible();
@@ -275,24 +276,24 @@ test.describe('Evening Cut Flow - Complete 3-Phase Process', () => {
     for (const checkbox of checkboxes) {
       await checkbox.check();
     }
-    await page.click('text=Siguiente');
+    await page.click('[data-testid="wizard-button-next"]');
     
     // Quick wizard
     await page.click('button:has-text("Seleccionar sucursal")');
     await page.click('text=Plaza Centro');
-    await page.click('text=Siguiente');
+    await page.click('[data-testid="wizard-button-next"]');
     
     await page.click('button:has-text("Seleccionar cajero")');
     await page.click('text=Ana Martinez');
-    await page.click('text=Siguiente');
+    await page.click('[data-testid="wizard-button-next"]');
     
     await page.click('button:has-text("Seleccionar testigo")');
     await page.click('text=Tito Gomez');
-    await page.click('text=Siguiente');
+    await page.click('[data-testid="wizard-button-next"]');
     
     // Set high expected sales
     await page.fill('input[placeholder*="esperada"]', '1000.00');
-    await page.click('text=Completar');
+    await page.click('[data-testid="wizard-button-complete"]');
     
     // Count much less money
     await page.fill('input[placeholder*="$100"]', '5'); // $500

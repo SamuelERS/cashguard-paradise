@@ -138,6 +138,7 @@ export function PinModal({
               </label>
               <Input
                 id="pin-input"
+                data-testid="pin-input"
                 type="password"
                 inputMode="numeric"
                 pattern="[0-9]*"
@@ -160,6 +161,7 @@ export function PinModal({
             <div className="flex gap-[clamp(0.75rem,3vw,1rem)]">
               <DestructiveActionButton
                 type="button"
+                data-testid="pin-cancel"
                 onClick={onCancel}
                 className="flex-1 h-[clamp(2.5rem,10vw,3rem)] px-[clamp(1rem,4vw,1.5rem)]"
                 disabled={isValidating}
@@ -168,6 +170,7 @@ export function PinModal({
               </DestructiveActionButton>
               <ConstructiveActionButton
                 type="submit"
+                data-testid="pin-submit"
                 disabled={pin.length < 4 || isValidating}
                 className="flex-1 h-[clamp(2.5rem,10vw,3rem)] px-[clamp(1rem,4vw,1.5rem)]"
               >

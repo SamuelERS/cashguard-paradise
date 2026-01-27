@@ -1,5 +1,5 @@
 #!/bin/sh
-# 🤖 [IA] - v1.2.5: Pre-push hook - Full validation before push (skip in CI)
+# 🤖 [IA] - v3.1.0: Pre-push hook - Native tests (no Docker required)
 . "$(dirname "$0")/_/husky.sh"
 
 # Skip pre-push validation in CI environments
@@ -9,12 +9,12 @@ if [ -n "$CI" ] || [ -n "$GITHUB_ACTIONS" ]; then
 fi
 
 echo "🚀 Running pre-push validation..."
-echo "This will run complete test suite to ensure code quality"
+echo "This will run unit/integration tests natively (no Docker)"
 
-# Run unit tests in Docker
-echo "Running unit tests..."
-./Scripts/docker-test-commands.sh test:unit || {
-    echo "❌ Unit tests failed! Push aborted."
+# Run unit + integration tests natively
+echo "Running npm test (unit + integration)..."
+npm test -- --run || {
+    echo "❌ Tests failed! Push aborted."
     exit 1
 }
 
