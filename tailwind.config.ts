@@ -75,44 +75,6 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				},
-				/* 🤖 [IA] - v2.8: Sistema de Temas - Colores Semánticos */
-				/* Estos tokens eliminan la necesidad de hardcodear hex en componentes */
-				'theme': {
-					/* Textos semánticos - reemplazan #e1e8ed, #8899a6, etc. */
-					'title': 'var(--text-title)',
-					'subtitle': 'var(--text-subtitle)',
-					'body': 'var(--text-body)',
-					'gray': 'var(--text-gray)',
-					'inverse': 'var(--text-inverse)',
-				},
-				/* Modo mañana - reemplaza #f4a52a, #ffb84d */
-				'morning': {
-					DEFAULT: 'var(--accent-morning)',
-					'light': 'var(--accent-morning-light)',
-					'dark': 'var(--accent-morning-dark)',
-					'glow': 'var(--accent-morning-glow)',
-				},
-				/* Backgrounds semánticos */
-				'surface': {
-					'card': 'var(--bg-card)',
-					'card-solid': 'var(--bg-card-solid)',
-					'input': 'var(--bg-input)',
-					'hover': 'var(--bg-hover)',
-					'overlay': 'var(--bg-overlay)',
-				},
-				/* Bordes semánticos */
-				'edge': {
-					'subtle': 'var(--border-subtle)',
-					'medium': 'var(--border-medium)',
-					'strong': 'var(--border-strong)',
-					'accent': 'var(--border-accent)',
-				},
-				/* Estados */
-				'state': {
-					'disabled-bg': 'var(--state-disabled-bg)',
-					'disabled-text': 'var(--state-disabled-text)',
-					'focus': 'var(--state-focus-ring)',
 				}
 			},
 			boxShadow: {

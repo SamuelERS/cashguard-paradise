@@ -1,4 +1,3 @@
-// 🤖 [IA] - v2.8.2: Theme System Migration - Colores hardcodeados migrados a CSS variables semánticas
 // 🤖 [IA] - InitialWizardModal v1.4.0 - Integración Sistema Gastos de Caja
 // 🤖 [IA] - v1.2.41N: UX/UI migrado de MorningCount - header con icono + botón X
 import { useState, useEffect, useCallback } from "react";
@@ -567,14 +566,14 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
             <div className="flex items-center gap-fluid-md">
               <Moon
                 className="flex-shrink-0 w-[clamp(1.5rem,6vw,2rem)] h-[clamp(1.5rem,6vw,2rem)]"
-                style={{ color: 'var(--accent-secondary)' }}
+                style={{ color: '#5e5ce6' }}
                 aria-label="Icono de corte nocturno"
               />
               <div className="flex flex-col">
-                <h2 className="font-bold text-[clamp(1.25rem,5vw,1.5rem)] text-theme-title leading-tight">
+                <h2 className="font-bold text-[clamp(1.25rem,5vw,1.5rem)] text-[#e1e8ed] leading-tight">
                   Corte Nocturno
                 </h2>
-                <p className="text-[clamp(0.625rem,2.5vw,0.75rem)] text-theme-subtitle mt-[clamp(0.125rem,0.5vw,0.25rem)]">
+                <p className="text-[clamp(0.625rem,2.5vw,0.75rem)] text-[#8899a6] mt-[clamp(0.125rem,0.5vw,0.25rem)]">
                   Control de cierre diario
                 </p>
               </div>
@@ -592,7 +591,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
 
           {/* 🤖 [IA] - v1.2.41N: Indicador de paso estilo MorningCount */}
           <div className="mb-fluid-md">
-            <span className="text-[clamp(0.75rem,3.5vw,0.875rem)] text-theme-subtitle">
+            <span className="text-[clamp(0.75rem,3.5vw,0.875rem)] text-[#8899a6]">
               Paso {currentStep} de {totalSteps}
             </span>
           </div>
