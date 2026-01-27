@@ -1,7 +1,7 @@
-// 🤖 [IA] - v2.7: Versión footer reporte actualizada v2.6→v2.7 (consistencia badge OperationSelector)
+// 🤖 [IA] - v2.8: SISTEMA DE TEMAS - Migración de 50+ colores hardcodeados a tokens semánticos
+// Previous: v2.7 - Versión footer reporte actualizada v2.6→v2.7 (consistencia badge OperationSelector)
 // Previous: v1.3.6AD2 - FIX BUG DIFERENCIA VUELTO - Usar amountRemaining ?? 50 en reporte
 // Previous: v1.3.7 - ANTI-FRAUDE - Confirmación explícita envío WhatsApp ANTES de revelar resultados
-// Previous: v1.3.6AD - FIX MÉTRICA CRÍTICA - totalDenoms usa verificationSteps.length
 import { useState, useEffect, useCallback } from "react";
 // 🤖 [IA] - v1.3.6Z: Framer Motion removido (GPU compositing bug iOS Safari causa pantalla congelada Phase 3)
 // 🤖 [IA] - v1.3.7: Agregado Lock icon para bloqueo de resultados
@@ -945,19 +945,19 @@ Firma Digital: ${dataHash}`;
           {!reportSent ? (
             // BLOQUEADO: Mostrar mensaje de bloqueo
             <div style={{
-              background: 'rgba(36, 36, 36, 0.4)',
+              background: 'var(--bg-card)',
               backdropFilter: `blur(clamp(12px, 4vw, 20px))`,
               WebkitBackdropFilter: `blur(clamp(12px, 4vw, 20px))`,
-              border: '1px solid rgba(255, 255, 255, 0.15)',
+              border: '1px solid var(--border-medium)',
               borderRadius: `clamp(8px, 3vw, 16px)`,
               padding: `clamp(3rem, 8vw, 4rem)`,
               textAlign: 'center'
             }}>
-              <Lock className="w-[clamp(3rem,12vw,4rem)] h-[clamp(3rem,12vw,4rem)] mx-auto mb-[clamp(1rem,4vw,1.5rem)]" style={{ color: '#ff9f0a' }} />
-              <h3 className="text-[clamp(1rem,4.5vw,1.25rem)] font-bold mb-2" style={{ color: '#e1e8ed' }}>
+              <Lock className="w-[clamp(3rem,12vw,4rem)] h-[clamp(3rem,12vw,4rem)] mx-auto mb-[clamp(1rem,4vw,1.5rem)]" style={{ color: 'var(--warning)' }} />
+              <h3 className="text-[clamp(1rem,4.5vw,1.25rem)] font-bold mb-2" style={{ color: 'var(--text-title)' }}>
                 🔒 Resultados Bloqueados
               </h3>
-              <p className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#8899a6' }}>
+              <p className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: 'var(--text-subtitle)' }}>
                 Los resultados del corte se revelarán después de enviar el reporte por WhatsApp.
                 Esto garantiza la trazabilidad completa de todos los cortes realizados.
               </p>
@@ -968,15 +968,15 @@ Firma Digital: ${dataHash}`;
           {/* Alert for significant shortage - 🤖 [IA] - v1.1.08: Glass morphism */}
           {calculationData?.hasAlert && (
             <div className="p-[clamp(0.75rem,3vw,1rem)] rounded-[clamp(0.5rem,2vw,0.75rem)] flex items-start gap-3" style={{
-              background: 'rgba(244, 33, 46, 0.1)',
-              border: '1px solid rgba(244, 33, 46, 0.3)'
+              background: 'var(--alert-danger-bg)',
+              border: '1px solid var(--alert-danger-border)'
             }}>
-              <AlertTriangle className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)] mt-0.5" style={{ color: '#f4212e' }} />
+              <AlertTriangle className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)] mt-0.5" style={{ color: 'var(--danger)' }} />
               <div>
-                <p className="font-medium text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#f4212e' }}>
+                <p className="font-medium text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: 'var(--danger)' }}>
                   🚨 ALERTA: Faltante significativo detectado (${Math.abs(calculationData?.difference || 0).toFixed(2)})
                 </p>
-                <p className="text-[clamp(0.75rem,3vw,0.875rem)] mt-1" style={{ color: '#8899a6' }}>
+                <p className="text-[clamp(0.75rem,3vw,0.875rem)] mt-1" style={{ color: 'var(--text-subtitle)' }}>
                   Se enviará notificación automática al administrador.
                 </p>
               </div>
@@ -987,45 +987,45 @@ Firma Digital: ${dataHash}`;
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-[clamp(1rem,4vw,1.5rem)]">
             {/* Información de la sucursal y personal */}
             <div style={{
-              background: 'rgba(36, 36, 36, 0.4)',
+              background: 'var(--bg-card)',
               backdropFilter: `blur(clamp(12px, 4vw, 20px))`,
               WebkitBackdropFilter: `blur(clamp(12px, 4vw, 20px))`,
-              border: '1px solid rgba(255, 255, 255, 0.15)',
+              border: '1px solid var(--border-medium)',
               borderRadius: `clamp(8px, 3vw, 16px)`,
               padding: `clamp(1rem, 5vw, 1.5rem)`
             }}>
-              <h3 className="text-[clamp(1rem,4.5vw,1.25rem)] font-bold mb-[clamp(0.75rem,3vw,1rem)]" style={{ color: '#e1e8ed' }}>
+              <h3 className="text-[clamp(1rem,4.5vw,1.25rem)] font-bold mb-[clamp(0.75rem,3vw,1rem)]" style={{ color: 'var(--text-title)' }}>
                 Información del Corte
               </h3>
               
               <div className="space-y-[clamp(0.75rem,3vw,1rem)]">
                 <div>
-                  <p className="text-[clamp(0.75rem,3vw,0.875rem)]" style={{ color: '#8899a6' }}>Sucursal</p>
-                  <p className="text-[clamp(1rem,4vw,1.125rem)] font-semibold" style={{ color: '#e1e8ed' }}>
+                  <p className="text-[clamp(0.75rem,3vw,0.875rem)]" style={{ color: 'var(--text-subtitle)' }}>Sucursal</p>
+                  <p className="text-[clamp(1rem,4vw,1.125rem)] font-semibold" style={{ color: 'var(--text-title)' }}>
                     {store?.name}
                   </p>
                 </div>
                 
                 <div className="p-[clamp(0.5rem,2.5vw,0.75rem)] rounded-[clamp(0.375rem,1.5vw,0.5rem)]" style={{
-                  background: 'rgba(10, 132, 255, 0.1)',
-                  border: '1px solid rgba(10, 132, 255, 0.3)'
+                  background: 'var(--alert-primary-bg)',
+                  border: '1px solid var(--alert-primary-border)'
                 }}>
-                  <p className="text-[clamp(0.75rem,3vw,0.875rem)] font-medium mb-1" style={{ color: '#0a84ff' }}>
+                  <p className="text-[clamp(0.75rem,3vw,0.875rem)] font-medium mb-1" style={{ color: 'var(--accent-primary)' }}>
                     Cajero (Contador)
                   </p>
-                  <p className="text-[clamp(1rem,4vw,1.125rem)] font-semibold" style={{ color: '#e1e8ed' }}>
+                  <p className="text-[clamp(1rem,4vw,1.125rem)] font-semibold" style={{ color: 'var(--text-title)' }}>
                     {cashier?.name}
                   </p>
                 </div>
                 
                 <div className="p-[clamp(0.5rem,2.5vw,0.75rem)] rounded-[clamp(0.375rem,1.5vw,0.5rem)]" style={{
-                  background: 'rgba(94, 92, 230, 0.1)',
-                  border: '1px solid rgba(94, 92, 230, 0.3)'
+                  background: 'var(--alert-secondary-bg)',
+                  border: '1px solid var(--alert-secondary-border)'
                 }}>
-                  <p className="text-[clamp(0.75rem,3vw,0.875rem)] font-medium mb-1" style={{ color: '#5e5ce6' }}>
+                  <p className="text-[clamp(0.75rem,3vw,0.875rem)] font-medium mb-1" style={{ color: 'var(--accent-secondary)' }}>
                     Testigo (Verificador)
                   </p>
-                  <p className="text-[clamp(1rem,4vw,1.125rem)] font-semibold" style={{ color: '#e1e8ed' }}>
+                  <p className="text-[clamp(1rem,4vw,1.125rem)] font-semibold" style={{ color: 'var(--text-title)' }}>
                     {witness?.name}
                   </p>
                 </div>
@@ -1034,77 +1034,77 @@ Firma Digital: ${dataHash}`;
 
             {/* Calculation Results - Totales */}
             <div style={{
-              background: 'rgba(36, 36, 36, 0.4)',
+              background: 'var(--bg-card)',
               backdropFilter: `blur(clamp(12px, 4vw, 20px))`,
               WebkitBackdropFilter: `blur(clamp(12px, 4vw, 20px))`,
-              border: '1px solid rgba(255, 255, 255, 0.15)',
+              border: '1px solid var(--border-medium)',
               borderRadius: `clamp(8px, 3vw, 16px)`,
               padding: `clamp(1rem, 5vw, 1.5rem)`
             }}>
-              <h3 className="text-[clamp(1rem,4.5vw,1.25rem)] font-bold mb-[clamp(0.75rem,3vw,1rem)]" style={{ color: '#e1e8ed' }}>
+              <h3 className="text-[clamp(1rem,4.5vw,1.25rem)] font-bold mb-[clamp(0.75rem,3vw,1rem)]" style={{ color: 'var(--text-title)' }}>
                 Totales Calculados
               </h3>
               <div className="space-y-[clamp(0.75rem,3vw,1rem)]">
                 <div className="flex justify-between">
-                  <span className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#8899a6' }}>Efectivo Contado:</span>
-                  <span className="font-bold text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#e1e8ed' }}>
+                  <span className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: 'var(--text-subtitle)' }}>Efectivo Contado:</span>
+                  <span className="font-bold text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: 'var(--text-title)' }}>
                     {formatCurrency(calculationData?.totalCash || 0)}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-[clamp(0.75rem,3vw,0.875rem)]" style={{ color: '#8899a6' }}>  (Incluye fondo $50)</span>
-                  <span className="text-[clamp(0.75rem,3vw,0.875rem)]" style={{ color: '#8899a6' }}>
+                  <span className="text-[clamp(0.75rem,3vw,0.875rem)]" style={{ color: 'var(--text-subtitle)' }}>  (Incluye fondo $50)</span>
+                  <span className="text-[clamp(0.75rem,3vw,0.875rem)]" style={{ color: 'var(--text-subtitle)' }}>
                     -$50.00
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#8899a6' }}>Efectivo Ventas:</span>
-                  <span className="font-bold text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#e1e8ed' }}>
+                  <span className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: 'var(--text-subtitle)' }}>Efectivo Ventas:</span>
+                  <span className="font-bold text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: 'var(--text-title)' }}>
                     {formatCurrency(calculationData?.salesCash || 0)}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#8899a6' }}>Electrónico:</span>
-                  <span className="font-bold text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#e1e8ed' }}>
+                  <span className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: 'var(--text-subtitle)' }}>Electrónico:</span>
+                  <span className="font-bold text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: 'var(--text-title)' }}>
                     {formatCurrency(calculationData?.totalElectronic || 0)}
                   </span>
                 </div>
                 <div className="border-t border-gray-700 pt-3">
                   <div className="flex justify-between text-[clamp(1rem,4vw,1.125rem)] font-bold">
-                    <span style={{ color: '#8899a6' }}>Total Ventas:</span>
-                    <span style={{ color: '#0a84ff' }}>
+                    <span style={{ color: 'var(--text-subtitle)' }}>Total Ventas:</span>
+                    <span style={{ color: 'var(--accent-primary)' }}>
                       {formatCurrency(calculationData?.totalGeneral || 0)}
                     </span>
                   </div>
                 </div>
                 {(calculationData?.totalExpenses || 0) > 0 && (
                   <div className="flex justify-between">
-                    <span className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#8899a6' }}>Gastos:</span>
-                    <span className="font-bold text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#ff9f0a' }}>
+                    <span className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: 'var(--text-subtitle)' }}>Gastos:</span>
+                    <span className="font-bold text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: 'var(--warning)' }}>
                       +{formatCurrency(calculationData?.totalExpenses || 0)}
                     </span>
                   </div>
                 )}
                 {(calculationData?.totalExpenses || 0) > 0 && (
                   <div className="flex justify-between">
-                    <span className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#8899a6' }}>Ventas + Gastos:</span>
-                    <span className="font-bold text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#e1e8ed' }}>
+                    <span className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: 'var(--text-subtitle)' }}>Ventas + Gastos:</span>
+                    <span className="font-bold text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: 'var(--text-title)' }}>
                       {formatCurrency(calculationData?.totalWithExpenses || 0)}
                     </span>
                   </div>
                 )}
                 <div className="flex justify-between">
-                  <span className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#8899a6' }}>SICAR Entradas:</span>
-                  <span className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#8899a6' }}>
+                  <span className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: 'var(--text-subtitle)' }}>SICAR Entradas:</span>
+                  <span className="text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: 'var(--text-subtitle)' }}>
                     {formatCurrency(expectedSales)}
                   </span>
                 </div>
                 <div className="flex justify-between text-[clamp(1rem,4vw,1.125rem)] font-bold">
-                  <span style={{ color: '#8899a6' }}>
+                  <span style={{ color: 'var(--text-subtitle)' }}>
                     {(calculationData?.difference || 0) >= 0 ? 'Sobrante:' : 'Faltante:'}
                   </span>
-                  <span style={{ 
-                    color: (calculationData?.difference || 0) >= 0 ? '#00ba7c' : '#f4212e'
+                  <span style={{
+                    color: (calculationData?.difference || 0) >= 0 ? 'var(--success-paradise)' : 'var(--danger)'
                   }}>
                     {formatCurrency(Math.abs(calculationData?.difference || 0))}
                   </span>
@@ -1115,29 +1115,29 @@ Firma Digital: ${dataHash}`;
 
           {/* Cambio para Mañana - 🤖 [IA] - v1.1.08: Glass morphism */}
           <div style={{
-            background: 'rgba(36, 36, 36, 0.4)',
+            background: 'var(--bg-card)',
             backdropFilter: `blur(clamp(12px, 4vw, 20px))`,
             WebkitBackdropFilter: `blur(clamp(12px, 4vw, 20px))`,
-            border: '1px solid rgba(255, 255, 255, 0.15)',
+            border: '1px solid var(--border-medium)',
             borderRadius: `clamp(8px, 3vw, 16px)`,
             padding: `clamp(1rem, 5vw, 1.5rem)`
           }}>
-            <h3 className="text-[clamp(1rem,4.5vw,1.25rem)] font-bold mb-[clamp(0.75rem,3vw,1rem)]" style={{ color: '#e1e8ed' }}>
+            <h3 className="text-[clamp(1rem,4.5vw,1.25rem)] font-bold mb-[clamp(0.75rem,3vw,1rem)]" style={{ color: 'var(--text-title)' }}>
               Cambio para Mañana
             </h3>
             <div className="space-y-[clamp(0.75rem,3vw,1rem)]">
               <div className="text-center">
-                <div className="text-[clamp(1.5rem,7vw,2rem)] font-bold mb-2" style={{ color: '#00ba7c' }}>
+                <div className="text-[clamp(1.5rem,7vw,2rem)] font-bold mb-2" style={{ color: 'var(--success)' }}>
                   $50.00
                 </div>
-                <p className="text-[clamp(0.75rem,3vw,0.875rem)]" style={{ color: '#8899a6' }}>Cambio calculado</p>
+                <p className="text-[clamp(0.75rem,3vw,0.875rem)]" style={{ color: 'var(--text-subtitle)' }}>Cambio calculado</p>
               </div>
               
               <div className="p-[clamp(0.75rem,3vw,1rem)] rounded-[clamp(0.5rem,2vw,0.75rem)]" style={{
-                background: 'rgba(0, 186, 124, 0.1)',
-                border: '1px solid rgba(0, 186, 124, 0.3)'
+                background: 'var(--alert-success-bg)',
+                border: '1px solid var(--alert-success-border)'
               }}>
-                <p className="text-[clamp(0.75rem,3vw,0.875rem)] font-medium mb-3" style={{ color: '#00ba7c' }}>
+                <p className="text-[clamp(0.75rem,3vw,0.875rem)] font-medium mb-3" style={{ color: 'var(--success)' }}>
                   Detalle del cambio:
                 </p>
                 
@@ -1166,20 +1166,20 @@ Firma Digital: ${dataHash}`;
 
           {/* 🤖 [IA] - v1.3.7: ANTI-FRAUDE - Bloque de acción SIEMPRE visible */}
           <div style={{
-            background: 'rgba(36, 36, 36, 0.4)',
+            background: 'var(--bg-card)',
             backdropFilter: `blur(clamp(12px, 4vw, 20px))`,
             WebkitBackdropFilter: `blur(clamp(12px, 4vw, 20px))`,
-            border: '1px solid rgba(255, 255, 255, 0.15)',
+            border: '1px solid var(--border-medium)',
             borderRadius: `clamp(8px, 3vw, 16px)`,
             padding: `clamp(1.5rem, 6vw, 2rem)`,
             marginBottom: `clamp(1rem, 4vw, 1.5rem)`
           }}>
             <div className="text-center">
-              <CheckCircle className="w-[clamp(3rem,12vw,4rem)] h-[clamp(3rem,12vw,4rem)] mx-auto mb-[clamp(0.75rem,3vw,1rem)]" style={{ color: '#00ba7c' }} />
-              <h3 className="text-[clamp(1rem,4.5vw,1.25rem)] font-bold mb-2" style={{ color: '#00ba7c' }}>
+              <CheckCircle className="w-[clamp(3rem,12vw,4rem)] h-[clamp(3rem,12vw,4rem)] mx-auto mb-[clamp(0.75rem,3vw,1rem)]" style={{ color: 'var(--success)' }} />
+              <h3 className="text-[clamp(1rem,4.5vw,1.25rem)] font-bold mb-2" style={{ color: 'var(--success)' }}>
                 Corte de Caja Completado
               </h3>
-              <p className="mb-[clamp(1rem,4vw,1.5rem)] text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#8899a6' }}>
+              <p className="mb-[clamp(1rem,4vw,1.5rem)] text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: 'var(--text-subtitle)' }}>
                 Los datos han sido calculados y están listos para generar el reporte.
                 {!reportSent && ' Debe enviar el reporte para continuar.'}
               </p>
@@ -1226,15 +1226,15 @@ Firma Digital: ${dataHash}`;
           {/* 🤖 [IA] - v1.3.7: Banner advertencia inicial si NO enviado */}
           {!reportSent && !whatsappOpened && !popupBlocked && (
             <div className="p-[clamp(0.75rem,3vw,1rem)] rounded-[clamp(0.5rem,2vw,0.75rem)] mb-[clamp(1rem,4vw,1.5rem)] flex items-start gap-3" style={{
-              background: 'rgba(255, 159, 10, 0.1)',
-              border: '1px solid rgba(255, 159, 10, 0.3)'
+              background: 'var(--alert-warning-bg)',
+              border: '1px solid var(--alert-warning-border)'
             }}>
-              <AlertTriangle className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)] mt-0.5" style={{ color: '#ff9f0a' }} />
+              <AlertTriangle className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)] mt-0.5" style={{ color: 'var(--warning)' }} />
               <div>
-                <p className="font-medium text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#ff9f0a' }}>
+                <p className="font-medium text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: 'var(--warning)' }}>
                   ⚠️ DEBE ENVIAR REPORTE PARA CONTINUAR
                 </p>
-                <p className="text-[clamp(0.75rem,3vw,0.875rem)] mt-1" style={{ color: '#8899a6' }}>
+                <p className="text-[clamp(0.75rem,3vw,0.875rem)] mt-1" style={{ color: 'var(--text-subtitle)' }}>
                   Los resultados se revelarán después de enviar el reporte por WhatsApp.
                 </p>
               </div>
@@ -1247,12 +1247,12 @@ Firma Digital: ${dataHash}`;
               background: 'rgba(255, 69, 58, 0.1)',
               border: '1px solid rgba(255, 69, 58, 0.3)'
             }}>
-              <AlertTriangle className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)] mt-0.5" style={{ color: '#ff453a' }} />
+              <AlertTriangle className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)] mt-0.5" style={{ color: 'var(--danger)' }} />
               <div>
-                <p className="font-medium text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#ff453a' }}>
+                <p className="font-medium text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: 'var(--danger)' }}>
                   🚫 Pop-ups Bloqueados
                 </p>
-                <p className="text-[clamp(0.75rem,3vw,0.875rem)] mt-1" style={{ color: '#8899a6' }}>
+                <p className="text-[clamp(0.75rem,3vw,0.875rem)] mt-1" style={{ color: 'var(--text-subtitle)' }}>
                   Su navegador bloqueó la apertura de WhatsApp. El reporte ya está copiado - vaya a WhatsApp Web y péguelo manualmente.
                 </p>
               </div>
@@ -1292,14 +1292,14 @@ Firma Digital: ${dataHash}`;
             <div className="flex items-center gap-fluid-md">
               <MessageSquare
                 className="flex-shrink-0 w-[clamp(1.5rem,6vw,2rem)] h-[clamp(1.5rem,6vw,2rem)]"
-                style={{ color: '#00ba7c' }}
+                style={{ color: 'var(--success)' }}
                 aria-label="Icono de WhatsApp"
               />
               <div className="flex flex-col">
-                <h2 className="font-bold text-[clamp(1.125rem,5vw,1.375rem)] text-[#e1e8ed] leading-tight">
+                <h2 className="font-bold text-[clamp(1.125rem,5vw,1.375rem)] text-theme-title leading-tight">
                   Cómo enviar el reporte
                 </h2>
-                <p className="text-[clamp(0.625rem,2.5vw,0.75rem)] text-[#8899a6] mt-[clamp(0.125rem,0.5vw,0.25rem)]">
+                <p className="text-[clamp(0.625rem,2.5vw,0.75rem)] text-theme-subtitle mt-[clamp(0.125rem,0.5vw,0.25rem)]">
                   Siga estos pasos para enviar por WhatsApp Web
                 </p>
               </div>
@@ -1312,17 +1312,17 @@ Firma Digital: ${dataHash}`;
                 <div 
                   className="w-[clamp(1.75rem,7vw,2rem)] h-[clamp(1.75rem,7vw,2rem)] rounded-full flex items-center justify-center flex-shrink-0"
                   style={{
-                    background: 'rgba(0, 186, 124, 0.2)',
-                    border: '1px solid rgba(0, 186, 124, 0.3)'
+                    background: 'var(--alert-success-bg-strong)',
+                    border: '1px solid var(--alert-success-border)'
                   }}
                 >
-                  <span className="text-[clamp(0.875rem,3.5vw,1rem)] font-bold" style={{ color: '#00ba7c' }}>1</span>
+                  <span className="text-[clamp(0.875rem,3.5vw,1rem)] font-bold" style={{ color: 'var(--success)' }}>1</span>
                 </div>
                 <div>
-                  <p className="font-medium text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#e1e8ed' }}>
+                  <p className="font-medium text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: 'var(--text-title)' }}>
                     Vaya a su WhatsApp Web
                   </p>
-                  <p className="text-[clamp(0.75rem,3vw,0.875rem)] mt-1" style={{ color: '#8899a6' }}>
+                  <p className="text-[clamp(0.75rem,3vw,0.875rem)] mt-1" style={{ color: 'var(--text-subtitle)' }}>
                     Debe estar ya abierto según el protocolo
                   </p>
                 </div>
@@ -1333,17 +1333,17 @@ Firma Digital: ${dataHash}`;
                 <div 
                   className="w-[clamp(1.75rem,7vw,2rem)] h-[clamp(1.75rem,7vw,2rem)] rounded-full flex items-center justify-center flex-shrink-0"
                   style={{
-                    background: 'rgba(0, 186, 124, 0.2)',
-                    border: '1px solid rgba(0, 186, 124, 0.3)'
+                    background: 'var(--alert-success-bg-strong)',
+                    border: '1px solid var(--alert-success-border)'
                   }}
                 >
-                  <span className="text-[clamp(0.875rem,3.5vw,1rem)] font-bold" style={{ color: '#00ba7c' }}>2</span>
+                  <span className="text-[clamp(0.875rem,3.5vw,1rem)] font-bold" style={{ color: 'var(--success)' }}>2</span>
                 </div>
                 <div>
-                  <p className="font-medium text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#e1e8ed' }}>
+                  <p className="font-medium text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: 'var(--text-title)' }}>
                     Seleccione el chat de gerencia
                   </p>
-                  <p className="text-[clamp(0.75rem,3vw,0.875rem)] mt-1" style={{ color: '#8899a6' }}>
+                  <p className="text-[clamp(0.75rem,3vw,0.875rem)] mt-1" style={{ color: 'var(--text-subtitle)' }}>
                     O el grupo correspondiente para reportes
                   </p>
                 </div>
@@ -1354,17 +1354,17 @@ Firma Digital: ${dataHash}`;
                 <div 
                   className="w-[clamp(1.75rem,7vw,2rem)] h-[clamp(1.75rem,7vw,2rem)] rounded-full flex items-center justify-center flex-shrink-0"
                   style={{
-                    background: 'rgba(0, 186, 124, 0.2)',
-                    border: '1px solid rgba(0, 186, 124, 0.3)'
+                    background: 'var(--alert-success-bg-strong)',
+                    border: '1px solid var(--alert-success-border)'
                   }}
                 >
-                  <span className="text-[clamp(0.875rem,3.5vw,1rem)] font-bold" style={{ color: '#00ba7c' }}>3</span>
+                  <span className="text-[clamp(0.875rem,3.5vw,1rem)] font-bold" style={{ color: 'var(--success)' }}>3</span>
                 </div>
                 <div>
-                  <p className="font-medium text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#e1e8ed' }}>
+                  <p className="font-medium text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: 'var(--text-title)' }}>
                     Pegue el reporte
                   </p>
-                  <p className="text-[clamp(0.75rem,3vw,0.875rem)] mt-1" style={{ color: '#8899a6' }}>
+                  <p className="text-[clamp(0.75rem,3vw,0.875rem)] mt-1" style={{ color: 'var(--text-subtitle)' }}>
                     Presione {/Mac/i.test(navigator.userAgent) ? 'Cmd+V' : 'Ctrl+V'} en el campo de mensaje
                   </p>
                 </div>
@@ -1375,17 +1375,17 @@ Firma Digital: ${dataHash}`;
                 <div 
                   className="w-[clamp(1.75rem,7vw,2rem)] h-[clamp(1.75rem,7vw,2rem)] rounded-full flex items-center justify-center flex-shrink-0"
                   style={{
-                    background: 'rgba(0, 186, 124, 0.2)',
-                    border: '1px solid rgba(0, 186, 124, 0.3)'
+                    background: 'var(--alert-success-bg-strong)',
+                    border: '1px solid var(--alert-success-border)'
                   }}
                 >
-                  <span className="text-[clamp(0.875rem,3.5vw,1rem)] font-bold" style={{ color: '#00ba7c' }}>4</span>
+                  <span className="text-[clamp(0.875rem,3.5vw,1rem)] font-bold" style={{ color: 'var(--success)' }}>4</span>
                 </div>
                 <div>
-                  <p className="font-medium text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: '#e1e8ed' }}>
+                  <p className="font-medium text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: 'var(--text-title)' }}>
                     Envíe el mensaje
                   </p>
-                  <p className="text-[clamp(0.75rem,3vw,0.875rem)] mt-1" style={{ color: '#8899a6' }}>
+                  <p className="text-[clamp(0.75rem,3vw,0.875rem)] mt-1" style={{ color: 'var(--text-subtitle)' }}>
                     Presione Enter para enviar el reporte
                   </p>
                 </div>
@@ -1395,12 +1395,12 @@ Firma Digital: ${dataHash}`;
               <div 
                 className="p-[clamp(0.75rem,3vw,1rem)] rounded-[clamp(0.5rem,2vw,0.75rem)] flex items-center gap-[clamp(0.5rem,2vw,0.75rem)]"
                 style={{
-                  background: 'rgba(0, 186, 124, 0.1)',
-                  border: '1px solid rgba(0, 186, 124, 0.3)'
+                  background: 'var(--alert-success-bg)',
+                  border: '1px solid var(--alert-success-border)'
                 }}
               >
-                <CheckCircle className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)] flex-shrink-0" style={{ color: '#00ba7c' }} />
-                <p className="text-[clamp(0.75rem,3vw,0.875rem)]" style={{ color: '#00ba7c' }}>
+                <CheckCircle className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)] flex-shrink-0" style={{ color: 'var(--success)' }} />
+                <p className="text-[clamp(0.75rem,3vw,0.875rem)]" style={{ color: 'var(--success)' }}>
                   El reporte ya está copiado en su portapapeles
                 </p>
               </div>
