@@ -106,18 +106,66 @@ if (typeof Element !== 'undefined') {
 }
 
 // ══════════════════════════════════════════════════════════════
+// 4️⃣ STORAGE MOCKS - localStorage y sessionStorage (Tarea B Fix)
+// ══════════════════════════════════════════════════════════════
+// JUSTIFICACIÓN: smoke.test.ts espera que storage sea spy para validar
+// toHaveBeenCalledWith - necesario para tests que usan localStorage/sessionStorage
+
+// Mock localStorage con spies
+const localStorageMock = {
+  getItem: vi.fn((key: string) => null),
+  setItem: vi.fn((key: string, value: string) => {}),
+  removeItem: vi.fn((key: string) => {}),
+  clear: vi.fn(() => {}),
+  key: vi.fn((index: number) => null),
+  length: 0
+};
+Object.defineProperty(window, 'localStorage', { value: localStorageMock });
+
+// Mock sessionStorage con spies
+const sessionStorageMock = {
+  getItem: vi.fn((key: string) => null),
+  setItem: vi.fn((key: string, value: string) => {}),
+  removeItem: vi.fn((key: string) => {}),
+  clear: vi.fn(() => {}),
+  key: vi.fn((index: number) => null),
+  length: 0
+};
+Object.defineProperty(window, 'sessionStorage', { value: sessionStorageMock });
+
+// ══════════════════════════════════════════════════════════════
+// 5️⃣ MATCHMEDIA MOCK - window.matchMedia (Tarea B Fix)
+// ══════════════════════════════════════════════════════════════
+// JUSTIFICACIÓN: Componentes responsive y smoke.test.ts requieren matchMedia
+// JSDOM no implementa esta API por defecto
+
+// Usar vi.stubGlobal para matchMedia (persiste a través de restoreAllMocks)
+vi.stubGlobal('matchMedia', vi.fn((query: string) => ({
+  matches: false,
+  media: query,
+  onchange: null,
+  addListener: vi.fn(), // Deprecated
+  removeListener: vi.fn(), // Deprecated
+  addEventListener: vi.fn(),
+  removeEventListener: vi.fn(),
+  dispatchEvent: vi.fn(),
+})));
+
+// ══════════════════════════════════════════════════════════════
 // RESUMEN SETUP MÍNIMO
 // ══════════════════════════════════════════════════════════════
-// Total líneas: ~94 (≤108 objetivo cumplido)
+// Total líneas: ~145 (aumentó de 94 por fix de mocks faltantes)
 //
-// REMOVIDO (ahora en módulos):
+// AGREGADO NUEVAMENTE (Tarea B Fix - smoke.test.ts requiere):
+// ✅ localStorage/sessionStorage mocks con spies (~20 líneas)
+// ✅ window.matchMedia mock (~15 líneas)
+//
+// REMOVIDO (ahora en módulos o eliminado):
 // - ResizeObserver (46 líneas) → mocks/browser-apis.ts
-// - matchMedia (20 líneas) → mocks/browser-apis.ts
 // - IntersectionObserver (10 líneas) → mocks/browser-apis.ts
 // - Animation APIs (15 líneas) → mocks/browser-apis.ts
 // - getComputedStyle (42 líneas) → mocks/browser-apis.ts
 // - CSS.supports (15 líneas) → mocks/browser-apis.ts
-// - Storage mocks (30 líneas) → mocks/storage.ts
 // - Console suppression (13 líneas) → ELIMINADO (anti-pattern)
 // - Body style override (15 líneas) → ELIMINADO (revisión pendiente)
 //
@@ -125,3 +173,5 @@ if (typeof Element !== 'undefined') {
 // ✅ Testing Library cleanup (14 líneas)
 // ✅ Radix UI Pointer Capture polyfills (43 líneas)
 // ✅ Radix UI Scroll APIs polyfills (37 líneas)
+// ✅ Storage mocks con vi.fn() spies (20 líneas)
+// ✅ matchMedia mock (15 líneas)
