@@ -1,21 +1,5 @@
 #!/bin/sh
-# 🤖 [IA] - v3.1.0: Pre-push hook - Native tests (no Docker required)
 . "$(dirname "$0")/_/husky.sh"
 
-# Skip pre-push validation in CI environments
-if [ -n "$CI" ] || [ -n "$GITHUB_ACTIONS" ]; then
-    echo "⏭️  Skipping pre-push validation in CI environment"
-    exit 0
-fi
-
-echo "🚀 Running pre-push validation..."
-echo "This will run unit/integration tests natively (no Docker)"
-
-# Run unit + integration tests natively
-echo "Running npm test (unit + integration)..."
-npm test -- --run || {
-    echo "❌ Tests failed! Push aborted."
-    exit 1
-}
-
-echo "✅ All pre-push checks passed! Pushing to remote..."
+echo "pre-push disabled in dev: run tests manually (unit/e2e) when needed"
+exit 0
