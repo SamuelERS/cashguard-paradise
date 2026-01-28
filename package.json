@@ -18,7 +18,7 @@
     "test:unit": "vitest run src/__tests__/unit",
     "test:integration": "vitest run src/__tests__/integration",
     "test:e2e": "npm run test:e2e:smoke",
-    "test:e2e:smoke": "npx playwright test --config=e2e/playwright.config.ts --grep @smoke",
+    "test:e2e:smoke": "npx playwright test --config=e2e/playwright.smoke.config.ts --grep @smoke",
     "test:e2e:regression": "npx playwright test --config=e2e/playwright.config.ts --grep @regression",
     "test:e2e:all": "npx playwright test --config=e2e/playwright.config.ts",
     "docker:test": "./Scripts/docker-test-commands.sh test",
