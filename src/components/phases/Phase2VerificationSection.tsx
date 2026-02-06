@@ -30,6 +30,9 @@ import { useBlindVerification } from '@/hooks/useBlindVerification';
 import { BlindVerificationModal } from '@/components/verification/BlindVerificationModal';
 import type { VerificationAttempt, ThirdAttemptResult, VerificationBehavior, VerificationSeverity } from '@/types/verification';
 import type { CashCount } from '@/types/cash'; // 🤖 [IA] - v1.3.6: MÓDULO 1 - Para tipado buildVerificationBehavior
+// 🤖 [IA] - Desmonolitado desde Phase2VerificationSection.tsx
+import { getDenominationDescription, SHOW_REMAINING_AMOUNTS } from '@/utils/verification-helpers';
+import { useVerificationBehavior } from '@/hooks/useVerificationBehavior';
 
 interface Phase2VerificationSectionProps {
   deliveryCalculation: DeliveryCalculation;
@@ -42,30 +45,6 @@ interface Phase2VerificationSectionProps {
   // 🤖 [IA] - v1.2.24: Navigation props to match Phase 1 pattern
   onCancel: () => void;
 }
-
-// Función para convertir labels a texto descriptivo
-const getDenominationDescription = (fieldName: string, fieldLabel: string): string => {
-  const descriptions: Record<string, string> = {
-    'penny': 'Un centavo',
-    'nickel': 'Cinco centavos',
-    'dime': 'Diez centavos',
-    'quarter': 'Veinticinco centavos',
-    'dollarCoin': 'Moneda de un dólar',
-    'bill1': 'Billete de un dólar',
-    'bill5': 'Billete de cinco dólares',
-    'bill10': 'Billete de diez dólares',
-    'bill20': 'Billete de veinte dólares',
-    'bill50': 'Billete de cincuenta dólares',
-    'bill100': 'Billete de cien dólares'
-  };
-
-  return descriptions[fieldName] || fieldLabel;
-};
-
-// 🤖 [IA] - v1.3.7AE: Bandera para ocultar montos en badges (conteo ciego producción)
-// true = DESARROLLO (montos visibles para debugging)
-// false = PRODUCCIÓN (conteo ciego anti-fraude - valores ocultos)
-const SHOW_REMAINING_AMOUNTS = false;
 
 export function Phase2VerificationSection({
   deliveryCalculation,
@@ -135,133 +114,9 @@ export function Phase2VerificationSection({
     });
   };
 
-  // 🤖 [IA] - v1.3.6a: BUG FIX CRÍTICO - Memoizado con useCallback para evitar loop infinito useEffect
-  // Root cause: Función en dependencies array sin useCallback causaba re-disparos infinitos
-  // Solución: useCallback con única dependencia attemptHistory (referencia estable)
-  // 🤖 [IA] - v1.3.6: MÓDULO 1 - Construir objeto VerificationBehavior desde attemptHistory
-  const buildVerificationBehavior = useCallback((): VerificationBehavior => {
-    const allAttempts: VerificationAttempt[] = [];
-    // 🤖 [IA] - v1.3.6Y: firstAttemptSuccesses se calculará por diferencia después del forEach
-    let secondAttemptSuccesses = 0;
-    let thirdAttemptRequired = 0;
-    let forcedOverrides = 0;
-    let criticalInconsistencies = 0;
-    let severeInconsistencies = 0;
-    const severityFlags: VerificationSeverity[] = [];
-    const forcedOverridesDenoms: Array<keyof CashCount> = [];
-    const criticalInconsistenciesDenoms: Array<keyof CashCount> = [];
-    const severeInconsistenciesDenoms: Array<keyof CashCount> = [];
-    // 🤖 [IA] - v1.3.6P: Array consolidado de denominaciones con issues (para reporte WhatsApp)
-    const denominationsWithIssues: Array<{
-      denomination: keyof CashCount;
-      severity: VerificationSeverity;
-      attempts: number[];
-    }> = [];
-
-    // Iterar sobre attemptHistory Map
-    attemptHistory.forEach((attempts, stepKey) => {
-      allAttempts.push(...attempts);
-
-      // 🤖 [IA] - v1.3.6P: Determinar severity para esta denominación
-      let currentSeverity: VerificationSeverity = 'success';
-
-      // Analizar patrón de intentos por denominación
-      if (attempts.length === 1) {
-        if (attempts[0].isCorrect) {
-          // 🤖 [IA] - v1.3.6Y: firstAttemptSuccesses++ removido (se calcula por diferencia después)
-          currentSeverity = 'success'; // ← v1.3.6P: Explícito
-        } else {
-          // 🤖 [IA] - v1.3.6Q: FIX BUG #1 - Primer intento incorrecto
-          // Root cause: Sin else block, severity quedaba como 'success' (default línea 165)
-          // Solución: Setear 'warning_retry' para que aparezca en reporte advertencias
-          currentSeverity = 'warning_retry';
-          severityFlags.push('warning_retry');
-        }
-      } else if (attempts.length === 2) {
-        // Verificar si segundo intento fue correcto
-        if (attempts[1].isCorrect) {
-          secondAttemptSuccesses++;
-          currentSeverity = 'warning_retry'; // ← v1.3.6P: Capturar severity
-          severityFlags.push('warning_retry');
-        } else {
-          // Dos intentos incorrectos
-          if (attempts[0].inputValue === attempts[1].inputValue) {
-            // Force override (dos intentos iguales incorrectos)
-            forcedOverrides++;
-            forcedOverridesDenoms.push(stepKey as keyof CashCount);
-            currentSeverity = 'warning_override'; // ← v1.3.6P: Capturar severity
-            severityFlags.push('warning_override');
-          } else {
-            // 🤖 [IA] - v1.3.6Q: FIX BUG #3 - Dos intentos diferentes (patrón [A, B])
-            // Root cause: Marcaba como 'critical_inconsistent' pero tercer intento NO garantizado
-            // Solución: Marcar como 'warning_retry' (advertencia), solo crítico si hay 3 intentos
-            currentSeverity = 'warning_retry';
-            severityFlags.push('warning_retry');
-            thirdAttemptRequired++; // Mantener contador para tracking métrico
-          }
-        }
-      } else if (attempts.length >= 3) {
-        // Tercer intento ejecutado
-        thirdAttemptRequired++;
-
-        // Analizar severidad del pattern
-        const [attempt1, attempt2, attempt3] = attempts;
-
-        if (
-          (attempt1.inputValue === attempt3.inputValue && attempt1.inputValue !== attempt2.inputValue) ||
-          (attempt2.inputValue === attempt3.inputValue && attempt2.inputValue !== attempt1.inputValue)
-        ) {
-          // Pattern [A,B,A] o [A,B,B] - inconsistencia crítica
-          criticalInconsistencies++;
-          criticalInconsistenciesDenoms.push(stepKey as keyof CashCount);
-          currentSeverity = 'critical_inconsistent'; // ← v1.3.6P: Capturar severity
-          severityFlags.push('critical_inconsistent');
-        } else {
-          // Pattern [A,B,C] - severamente inconsistente
-          severeInconsistencies++;
-          severeInconsistenciesDenoms.push(stepKey as keyof CashCount);
-          currentSeverity = 'critical_severe'; // ← v1.3.6P: Capturar severity
-          severityFlags.push('critical_severe');
-        }
-      }
-
-      // 🤖 [IA] - v1.3.6P: Agregar a denominationsWithIssues si NO es success
-      if (currentSeverity !== 'success') {
-        denominationsWithIssues.push({
-          denomination: stepKey as keyof CashCount,
-          severity: currentSeverity,
-          attempts: attempts.map(a => a.inputValue)
-        });
-      }
-    });
-
-    // 🤖 [IA] - v1.3.6Y: FIX CÁLCULO PERFECTAS - Calcular por diferencia (Total - Errores)
-    // Root cause: attemptHistory solo contiene denominaciones con intentos (errores)
-    // Solución: Total denominaciones - denominaciones con issues = denominaciones perfectas
-    const totalDenominations = verificationSteps.length;
-    const firstAttemptSuccesses = totalDenominations - denominationsWithIssues.length;
-
-    const finalBehavior = {
-      totalAttempts: allAttempts.length,
-      firstAttemptSuccesses,
-      secondAttemptSuccesses,
-      thirdAttemptRequired,
-      forcedOverrides,
-      criticalInconsistencies,
-      severeInconsistencies,
-      attempts: allAttempts.sort((a, b) => a.timestamp.localeCompare(b.timestamp)), // Ordenar por timestamp
-      severityFlags,
-      forcedOverridesDenoms,
-      criticalInconsistenciesDenoms,
-      severeInconsistenciesDenoms,
-      denominationsWithIssues // 🤖 [IA] - v1.3.6P: Array consolidado para reporte WhatsApp
-    };
-
-    return finalBehavior;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [attemptHistory]); // ← v1.3.6a: Única dependencia, referencia estable
-  // verificationSteps.length omitido intencionalmente - función solo lee attemptHistory Map
-  // verificationSteps es constante derivada de deliveryCalculation (prop), no cambia durante lifecycle
+  // 🤖 [IA] - Desmonolitado desde Phase2VerificationSection.tsx
+  // Hook que construye VerificationBehavior desde attemptHistory Map
+  const behavior = useVerificationBehavior(attemptHistory, verificationSteps);
 
   // Auto-advance to next incomplete step
   useEffect(() => {
@@ -290,8 +145,7 @@ export function Phase2VerificationSection({
       // Root cause: Callback ejecutaba inmediatamente → state update async → useEffect Phase2Manager ejecutaba ANTES de tener behavior
       // Solución: Construir behavior dentro timeout → garantizar secuencia: behavior ready → callback → small delay → section complete
       const cleanup = createTimeoutWithCleanup(() => {
-        const behavior = buildVerificationBehavior();
-
+        // 🤖 [IA] - Desmonolitado: behavior ahora viene del hook useVerificationBehavior
         if (onVerificationBehaviorCollected) {
           onVerificationBehaviorCollected(behavior);
         }
@@ -304,7 +158,7 @@ export function Phase2VerificationSection({
       return cleanup;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [allStepsCompleted, verificationSteps.length, buildVerificationBehavior]);
+  }, [allStepsCompleted, verificationSteps.length, behavior]);
   // 🤖 [IA] - v1.3.6g: BUG FIX #1 (2/2) - createTimeoutWithCleanup removido de dependencies
   // Mismo patrón que auto-advance: helper solo se ejecuta, no necesita estar en deps
   // Eliminación de ambos useEffects resuelve race condition que causaba 9 errores loop
