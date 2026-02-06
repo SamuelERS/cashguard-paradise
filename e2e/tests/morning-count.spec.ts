@@ -1,7 +1,8 @@
 // 🤖 [IA] - v1.1.17: E2E tests for morning count flow - simulates real cashier interactions
+// @regression tag - comprehensive morning count flow
 import { test, expect } from '@playwright/test';
 
-test.describe('Morning Count Flow - $50 Cash Verification', () => {
+test.describe('Morning Count Flow - $50 Cash Verification @regression', () => {
   test.beforeEach(async ({ page }) => {
     // Navigate to the application
     await page.goto('/');
@@ -11,28 +12,29 @@ test.describe('Morning Count Flow - $50 Cash Verification', () => {
   });
 
   test('Complete morning count flow with exact $50', async ({ page }) => {
+    // 🤖 [IA] - FASE 2: Migrated to stable data-testid selectors
     // Step 1: Select morning count operation
     await page.click('text=Conteo de Caja');
-    
+
     // Step 2: Morning count wizard appears
     await expect(page.locator('text=Conteo Matutino')).toBeVisible();
-    
+
     // Step 3: Select store - Los Héroes
     await page.click('button:has-text("Seleccionar sucursal")');
     await page.click('text=Los Héroes');
-    
+
     // Step 4: Select cashier - Maria Lopez
-    await page.click('text=Siguiente');
+    await page.click('[data-testid="wizard-button-next"]');
     await page.click('button:has-text("Seleccionar cajero")');
     await page.click('text=Maria Lopez');
-    
+
     // Step 5: Select witness - Juan Carlos
-    await page.click('text=Siguiente');
+    await page.click('[data-testid="wizard-button-next"]');
     await page.click('button:has-text("Seleccionar testigo")');
     await page.click('text=Juan Carlos');
-    
+
     // Step 6: Complete wizard
-    await page.click('text=Completar');
+    await page.click('[data-testid="wizard-button-complete"]');
     
     // Wait for cash counter to load
     await expect(page.locator('text=Fase 1:')).toBeVisible({ timeout: 10000 });
@@ -79,21 +81,22 @@ test.describe('Morning Count Flow - $50 Cash Verification', () => {
   });
 
   test('Morning count with shortage alert', async ({ page }) => {
+    // 🤖 [IA] - FASE 2: Migrated to stable data-testid selectors
     // Select morning count
     await page.click('text=Conteo de Caja');
-    
+
     // Quick wizard completion
     await page.click('button:has-text("Seleccionar sucursal")');
     await page.click('text=Los Héroes');
-    await page.click('text=Siguiente');
-    
+    await page.click('[data-testid="wizard-button-next"]');
+
     await page.click('button:has-text("Seleccionar cajero")');
     await page.click('text=Tito Gomez');
-    await page.click('text=Siguiente');
-    
+    await page.click('[data-testid="wizard-button-next"]');
+
     await page.click('button:has-text("Seleccionar testigo")');
     await page.click('text=Maria Lopez');
-    await page.click('text=Completar');
+    await page.click('[data-testid="wizard-button-complete"]');
     
     // Count only $45 (shortage)
     await page.fill('input[placeholder*="$20"]', '2'); // $40
@@ -125,21 +128,22 @@ test.describe('Morning Count Flow - $50 Cash Verification', () => {
   });
 
   test('Morning count with excess alert', async ({ page }) => {
+    // 🤖 [IA] - FASE 2: Migrated to stable data-testid selectors
     // Select morning count
     await page.click('text=Conteo de Caja');
-    
+
     // Quick wizard completion
     await page.click('button:has-text("Seleccionar sucursal")');
     await page.click('text=Los Héroes');
-    await page.click('text=Siguiente');
-    
+    await page.click('[data-testid="wizard-button-next"]');
+
     await page.click('button:has-text("Seleccionar cajero")');
     await page.click('text=Ana Martinez');
-    await page.click('text=Siguiente');
-    
+    await page.click('[data-testid="wizard-button-next"]');
+
     await page.click('button:has-text("Seleccionar testigo")');
     await page.click('text=Pedro Sanchez');
-    await page.click('text=Completar');
+    await page.click('[data-testid="wizard-button-complete"]');
     
     // Count $55 (excess)
     await page.fill('input[placeholder*="$20"]', '2'); // $40
@@ -174,27 +178,28 @@ test.describe('Morning Count Flow - $50 Cash Verification', () => {
   });
 
   test('Mobile responsiveness for morning count', async ({ page, viewport }) => {
+    // 🤖 [IA] - FASE 2: Migrated to stable data-testid selectors
     // Set mobile viewport
     await page.setViewportSize({ width: 375, height: 667 });
-    
+
     // Select morning count
     await page.click('text=Conteo de Caja');
-    
+
     // Verify mobile-optimized layout
     await expect(page.locator('.sm\\:max-w-md')).toBeVisible();
-    
+
     // Complete wizard on mobile
     await page.click('button:has-text("Seleccionar sucursal")');
     await page.click('text=Los Héroes');
-    await page.click('text=Siguiente');
-    
+    await page.click('[data-testid="wizard-button-next"]');
+
     await page.click('button:has-text("Seleccionar cajero")');
     await page.click('text=Maria Lopez');
-    await page.click('text=Siguiente');
-    
+    await page.click('[data-testid="wizard-button-next"]');
+
     await page.click('button:has-text("Seleccionar testigo")');
     await page.click('text=Juan Carlos');
-    await page.click('text=Completar');
+    await page.click('[data-testid="wizard-button-complete"]');
     
     // Verify guided view is mobile-optimized
     await expect(page.locator('text=Paso 1 de 12')).toBeVisible();

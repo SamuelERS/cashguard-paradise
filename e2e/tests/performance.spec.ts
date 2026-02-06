@@ -1,4 +1,5 @@
 // 🤖 [IA] - v1.1.17: Performance metrics tests - Web Vitals and bundle analysis
+// @regression tag - performance monitoring (longer running)
 import { test, expect } from '@playwright/test';
 
 // Type definitions for performance APIs
@@ -33,7 +34,7 @@ interface AnimationMetrics {
   duration: number;
 }
 
-test.describe('Performance Metrics', () => {
+test.describe('Performance Metrics @regression', () => {
   test('Core Web Vitals measurements', async ({ page }) => {
     // Navigate and wait for load
     await page.goto('/');
@@ -193,13 +194,13 @@ test.describe('Performance Metrics', () => {
     await page.click('text=Conteo de Caja');
     await page.click('button:has-text("Seleccionar sucursal")');
     await page.click('text=Los Héroes');
-    await page.click('text=Siguiente');
+    await page.click('[data-testid="wizard-button-next"]');
     await page.click('button:has-text("Seleccionar cajero")');
     await page.click('text=Maria Lopez');
-    await page.click('text=Siguiente');
+    await page.click('[data-testid="wizard-button-next"]');
     await page.click('button:has-text("Seleccionar testigo")');
     await page.click('text=Juan Carlos');
-    await page.click('text=Completar');
+    await page.click('[data-testid="wizard-button-complete"]');
     
     // Get memory after interactions
     const finalMemory = await page.evaluate(() => {

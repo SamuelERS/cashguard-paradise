@@ -1,8 +1,9 @@
 // 🤖 [IA] - v1.1.17: Visual regression tests with screenshot comparisons
+// @regression tag - visual snapshots (slower, flaky on CI)
 import test from '@playwright/test';
 const { expect } = test;
 
-test.describe('Visual Regression Testing', () => {
+test.describe('Visual Regression Testing @regression', () => {
   test('Homepage visual consistency across viewports', async ({ page }) => {
     // Desktop viewport
     await page.setViewportSize({ width: 1920, height: 1080 });
@@ -58,7 +59,7 @@ test.describe('Visual Regression Testing', () => {
     for (const checkbox of checkboxes) {
       await checkbox.check();
     }
-    await page.click('text=Siguiente');
+    await page.click('[data-testid="wizard-button-next"]');
     await page.waitForTimeout(300);
     
     // Step 2: Store selection
@@ -75,7 +76,7 @@ test.describe('Visual Regression Testing', () => {
     });
     
     await page.click('text=Los Héroes');
-    await page.click('text=Siguiente');
+    await page.click('[data-testid="wizard-button-next"]');
     await page.waitForTimeout(300);
     
     // Step 3: Cashier selection
@@ -86,7 +87,7 @@ test.describe('Visual Regression Testing', () => {
     
     await page.click('button:has-text("Seleccionar cajero")');
     await page.click('text=Maria Lopez');
-    await page.click('text=Siguiente');
+    await page.click('[data-testid="wizard-button-next"]');
     await page.waitForTimeout(300);
     
     // Step 4: Witness selection
@@ -97,7 +98,7 @@ test.describe('Visual Regression Testing', () => {
     
     await page.click('button:has-text("Seleccionar testigo")');
     await page.click('text=Juan Carlos');
-    await page.click('text=Siguiente');
+    await page.click('[data-testid="wizard-button-next"]');
     await page.waitForTimeout(300);
     
     // Step 5: Expected sales
@@ -119,22 +120,22 @@ test.describe('Visual Regression Testing', () => {
     for (const checkbox of checkboxes) {
       await checkbox.check();
     }
-    await page.click('text=Siguiente');
+    await page.click('[data-testid="wizard-button-next"]');
 
     // Step 2: Store selection
     await page.click('button:has-text("Seleccionar sucursal")');
     await page.click('text=Los Héroes');
-    await page.click('text=Siguiente');
+    await page.click('[data-testid="wizard-button-next"]');
 
     // Step 3: Cashier selection
     await page.click('button:has-text("Seleccionar cajero")');
     await page.click('text=Maria Lopez');
-    await page.click('text=Siguiente');
+    await page.click('[data-testid="wizard-button-next"]');
 
     // Step 4: Witness selection
     await page.click('button:has-text("Seleccionar testigo")');
     await page.click('text=Juan Carlos');
-    await page.click('text=Siguiente');
+    await page.click('[data-testid="wizard-button-next"]');
 
     // Step 5: Expected sales
     const input = page.locator('#expected-sales');
@@ -177,22 +178,22 @@ test.describe('Visual Regression Testing', () => {
     for (const checkbox of checkboxes) {
       await checkbox.check();
     }
-    await page.click('text=Siguiente');
+    await page.click('[data-testid="wizard-button-next"]');
     
     await page.click('button:has-text("Seleccionar sucursal")');
     await page.click('text=Los Héroes');
-    await page.click('text=Siguiente');
+    await page.click('[data-testid="wizard-button-next"]');
     
     await page.click('button:has-text("Seleccionar cajero")');
     await page.click('text=Maria Lopez');
-    await page.click('text=Siguiente');
+    await page.click('[data-testid="wizard-button-next"]');
     
     await page.click('button:has-text("Seleccionar testigo")');
     await page.click('text=Juan Carlos');
-    await page.click('text=Siguiente');
+    await page.click('[data-testid="wizard-button-next"]');
     
     await page.fill('input[placeholder*="esperada"]', '500.00');
-    await page.click('text=Completar');
+    await page.click('[data-testid="wizard-button-complete"]');
     
     // Wait for Phase 1 to load
     await expect(page.locator('text=Fase 1:')).toBeVisible();

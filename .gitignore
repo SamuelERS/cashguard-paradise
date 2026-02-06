@@ -10,6 +10,7 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+dev-dist
 *.local
 
 # Editor directories and files
@@ -36,3 +37,5 @@ test-results
 
 # Test artifacts y reportes descargados
 Pruebas Test GitHub/
+e2e/tests/**/*.spec.ts-snapshots/
+dev-dist/

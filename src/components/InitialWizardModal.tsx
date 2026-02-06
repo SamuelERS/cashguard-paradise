@@ -610,10 +610,12 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
           </AnimatePresence>
 
           {/* 🤖 [IA] - v1.4.0: Footer con navegación profesional (← Anterior | Continuar/Finalizar →) */}
+          {/* 🤖 [IA] - FASE 2: data-testid agregados para E2E stability */}
           <div className="flex items-center justify-center mt-fluid-2xl pt-fluid-xl border-t border-slate-600 gap-fluid-lg wizard-dialog-footer">
             <NeutralActionButton
               onClick={handlePrevious}
               disabled={currentStep === 1}
+              data-testid="wizard-button-previous"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Anterior
@@ -623,6 +625,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               <ConstructiveActionButton
                 onClick={handleNext}
                 disabled={currentStep === 1 ? !isFlowCompleted() : !getNavigationState(isFlowCompleted()).canGoNext}
+                data-testid="wizard-button-next"
               >
                 Continuar
                 <ArrowRight className="h-4 w-4 ml-2" />
@@ -633,6 +636,7 @@ const InitialWizardModal = ({ isOpen, onClose, onComplete }: InitialWizardModalP
               <ConstructiveActionButton
                 onClick={handleComplete}
                 disabled={!getNavigationState(isFlowCompleted()).isCompleted}
+                data-testid="wizard-button-complete"
               >
                 <CheckCircle className="h-4 w-4 mr-2" />
                 Finalizar

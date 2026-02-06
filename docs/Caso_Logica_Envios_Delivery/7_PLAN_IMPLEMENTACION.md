@@ -27,11 +27,11 @@
 Implementar **Opción B: Módulo de Envíos + Dashboard Acumulado** para eliminar el workaround actual de registros falsos en SICAR y automatizar el ajuste de SICAR esperado considerando envíos pendientes COD.
 
 ### Alcance Total
-- **Duración:** 23-31 horas (3-4 semanas en jornadas 8h)
-- **Costo estimado:** $1,800 - $2,500 USD
+- **Duración:** 26-35 horas (3-4 semanas en jornadas 8h)
+- **Costo estimado:** $2,080 - $2,800 USD
 - **Equipo:** 1 desarrollador senior + 1 tester
-- **Fases:** 8 fases secuenciales
-- **Entregables:** 15+ archivos de código + 30+ tests + documentación completa
+- **Fases:** 9 fases secuenciales
+- **Entregables:** 18+ archivos de código + 38+ tests + documentación completa
 
 ### Fases de Alto Nivel
 
@@ -45,6 +45,7 @@ Implementar **Opción B: Módulo de Envíos + Dashboard Acumulado** para elimina
 | **FASE 6** | Sistema Alertas | 2-3h | 🟢 Baja | FASE 5 |
 | **FASE 7** | Reporte WhatsApp | 2-3h | 🟡 Media | FASE 4, 5 |
 | **FASE 8** | Testing & Validación | 3-4h | 🔴 Alta | FASE 1-7 |
+| **FASE 9** | Vista Home Screen 🆕 | 3-4h | 🟡 Media | FASE 5 |
 
 ### Hitos Críticos
 
@@ -52,6 +53,7 @@ Implementar **Opción B: Módulo de Envíos + Dashboard Acumulado** para elimina
 2. **Hito 2 (FASE 2 + 3):** Registro de envíos integrado en wizard → 7-9h
 3. **Hito 3 (FASE 5 + 6):** Dashboard con alertas operativo → 7-9h
 4. **Hito 4 (FASE 7 + 8):** Reportería completa + tests → 5-7h
+5. **Hito 5 (FASE 9):** 🆕 Acceso directo desde pantalla inicial → 3-4h
 
 ---
 
@@ -2361,17 +2363,17 @@ npm run build
 ### Deliverables Totales
 
 **Código:**
-- 15+ archivos nuevos (.ts, .tsx, .test.ts)
-- ~3,500 líneas código productivo
-- ~1,200 líneas tests (30+ TIER 0 + 40+ unit/integration + 5+ E2E)
+- 18+ archivos nuevos (.ts, .tsx, .test.ts) - incluye FASE 9
+- ~3,800 líneas código productivo
+- ~1,400 líneas tests (30+ TIER 0 + 48+ unit/integration + 10+ E2E)
 - 0 breaking changes codebase existente
 
 **Testing:**
 - TIER 0: 30+ tests (100% coverage cálculos financieros)
-- Unit: 40+ tests (hooks + componentes)
-- Integration: 25+ tests (flujos multi-componente)
-- E2E: 5+ tests (flujos completos usuario)
-- **Total:** 100+ tests automatizados
+- Unit: 48+ tests (hooks + componentes + FASE 9)
+- Integration: 28+ tests (flujos multi-componente + navegación home)
+- E2E: 10+ tests (flujos completos usuario + acceso directo)
+- **Total:** 116+ tests automatizados
 
 **Documentación:**
 - Arquitectura técnica completa (archivo 6)
@@ -2383,16 +2385,17 @@ npm run build
 ### ROI Esperado
 
 **Inversión:**
-- Desarrollo: $2,128-2,553 USD
-- Tiempo: 3-4 semanas (23-31 horas)
+- Desarrollo: $2,080-2,800 USD (incluye FASE 9)
+- Tiempo: 3-4 semanas (26-35 horas)
 
 **Beneficios Anuales:**
 - Eliminación workaround SICAR: $3,600/año (10 min/día × $30/h × 240 días)
 - Reducción envíos morosos: $2,400/año (50% reducción × $200 promedio × 24 casos)
 - Precisión financiera 100%: $1,200/año (eliminación discrepancias)
-- **Total beneficios:** $7,200/año
+- **Ahorro tiempo consultas (FASE 9):** $1,800/año (5 consultas/día × 2min ahorrados × $30/h × 240 días)
+- **Total beneficios:** $9,000/año
 
-**ROI:** 282% primer año ($7,200 / $2,553 × 100)
+**ROI:** 321% primer año ($9,000 / $2,800 × 100)
 
 ### Next Steps
 
@@ -2406,12 +2409,231 @@ npm run build
 
 ---
 
+## FASE 9: VISTA HOME SCREEN - ACCESO DIRECTO DELIVERIES 🆕
+
+### Objetivo
+Agregar **tercera tarjeta "Deliveries Pendientes"** en pantalla inicial (`OperationSelector`) para acceso directo al dashboard sin completar wizard de corte nocturno.
+
+### Tareas
+
+| # | Tarea | Duración | Archivos |
+|---|-------|----------|----------|
+| 9.1 | Actualizar operation-mode.ts (nuevo enum) | 15min | `operation-mode.ts` |
+| 9.2 | Agregar tercera tarjeta en OperationSelector | 90min | `OperationSelector.tsx` |
+| 9.3 | Crear DeliveryDashboardWrapper con PIN | 60min | `DeliveryDashboardWrapper.tsx` |
+| 9.4 | Crear PinModal component | 45min | `pin-modal.tsx` |
+| 9.5 | Agregar ruta en App.tsx | 10min | `App.tsx` |
+| 9.6 | Testing integración completa | 40min | Tests |
+
+### Entregables
+
+**Archivos nuevos:**
+1. `src/components/deliveries/DeliveryDashboardWrapper.tsx` (~100 líneas)
+2. `src/components/ui/pin-modal.tsx` (~120 líneas)
+3. `src/__tests__/fixtures/delivery-fixtures.ts` (~60 líneas)
+
+**Archivos modificados:**
+1. `src/types/operation-mode.ts` (+20 líneas)
+2. `src/components/operation-selector/OperationSelector.tsx` (+120 líneas)
+3. `src/App.tsx` (+5 líneas)
+
+### Diseño UI Tercera Tarjeta
+
+```
+┌─────────────────────────────────────────┐
+│ 📦 Deliveries Pendientes         [COD] │
+│                                         │
+│ Deliveries Pendientes                  │
+│ Consulta envíos pendientes de cobro    │
+│                                         │
+│ • Vista completa envíos activos        │
+│ • Actualizar estados (pagado/cancelado)│
+│ • Alertas automáticas antigüedad       │
+│                                         │
+│ Comenzar →                              │
+└─────────────────────────────────────────┘
+```
+
+**Colores (Verde - diferenciarse):**
+- Gradiente: `#10b981` → `#059669` (Tailwind green-500→600)
+- Background: `rgba(16, 185, 129, 0.2)`
+- Border: `rgba(16, 185, 129, 0.4)`
+
+### Implementación Código Clave
+
+**1. Enum nuevo (operation-mode.ts):**
+```typescript
+export enum OperationMode {
+  CASH_COUNT = 'cash-count',
+  CASH_CUT = 'cash-cut',
+  DELIVERY_VIEW = 'delivery-view' // 🆕 NUEVO
+}
+
+export const OPERATION_MODES = {
+  // ... existentes ...
+  [OperationMode.DELIVERY_VIEW]: {
+    title: 'Deliveries Pendientes',
+    subtitle: 'COD',
+    description: 'Consulta envíos pendientes de cobro',
+    icon: 'Package',
+    gradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+    route: '/deliveries-pending'
+  }
+};
+```
+
+**2. DeliveryDashboardWrapper (nuevo componente):**
+```typescript
+export function DeliveryDashboardWrapper({ requirePin = true }) {
+  const navigate = useNavigate();
+  const [isPinValidated, setIsPinValidated] = useState(!requirePin);
+  const [failedAttempts, setFailedAttempts] = useState(0);
+  const [isLocked, setIsLocked] = useState(false);
+
+  const handlePinSuccess = () => {
+    setIsPinValidated(true);
+    setFailedAttempts(0);
+  };
+
+  const handlePinError = () => {
+    setFailedAttempts(prev => prev + 1);
+    if (failedAttempts >= 2) {
+      setIsLocked(true);
+      setTimeout(() => {
+        setIsLocked(false);
+        setFailedAttempts(0);
+      }, 5 * 60 * 1000); // 5 minutos
+    }
+  };
+
+  if (!isPinValidated) {
+    return (
+      <PinModal
+        isOpen={true}
+        onSuccess={handlePinSuccess}
+        onError={handlePinError}
+        isLocked={isLocked}
+        attempts={failedAttempts}
+        maxAttempts={3}
+        onCancel={() => navigate('/')}
+      />
+    );
+  }
+
+  return (
+    <div className="min-h-screen relative p-4">
+      <Button variant="ghost" onClick={() => navigate('/')}>
+        <ArrowLeft className="w-4 h-4" />
+        Volver a Operaciones
+      </Button>
+      <DeliveryDashboard />
+    </div>
+  );
+}
+```
+
+**3. Ruta en App.tsx:**
+```typescript
+case OperationMode.DELIVERY_VIEW:
+  return <DeliveryDashboardWrapper requirePin={true} />;
+```
+
+### Testing Suite
+
+**Unit Tests (8 tests):**
+- PinModal renderiza correctamente
+- PinModal valida PIN correcto/incorrecto
+- PinModal bloquea tras 3 intentos
+- DeliveryDashboardWrapper muestra PIN modal
+- DeliveryDashboardWrapper muestra dashboard tras validar
+
+**Integration Tests (3 tests):**
+- Navegación completa desde home → deliveries
+- Tarjeta visible en OperationSelector
+- Click tarjeta ejecuta navegación correcta
+
+**E2E Tests (5 tests):**
+- Flujo completo con PIN correcto
+- Flujo con PIN incorrecto (3 intentos)
+- Breadcrumb "Volver" funciona
+- Responsive móvil 360px-430px
+- Dashboard completo funcional
+
+### Criterios de Aceptación
+
+**Funcionales:**
+- [ ] Tarjeta visible en pantalla inicial
+- [ ] Click tarjeta → Modal PIN aparece
+- [ ] PIN correcto → Dashboard carga
+- [ ] PIN incorrecto → Mensaje error + contador
+- [ ] 3 intentos fallidos → Bloqueo 5 minutos
+- [ ] Breadcrumb "Volver" retorna correctamente
+- [ ] Dashboard completo funcional (todas acciones)
+
+**No Funcionales:**
+- [ ] Responsive perfecto 360px-430px
+- [ ] Performance <2s carga dashboard
+- [ ] Zero breaking changes
+- [ ] Tests ≥85% coverage
+- [ ] TypeScript compila sin errores
+
+### Beneficios de Esta Fase
+
+**Operacionales:**
+- ⚡ Reducción 95%+ tiempo consultas (2-3min → 5-10seg)
+- 📊 Visibilidad inmediata deliveries pendientes
+- 🎯 Mejor planificación cobranza diaria
+- 📱 Respuesta rápida consultas clientes
+
+**Técnicos:**
+- 🔧 Reutiliza 100% dashboard existente (FASE 5)
+- 🏗️ Arquitectura limpia (separación responsabilidades)
+- 📦 Costo mínimo (solo integración)
+- ✅ Totalmente tested
+
+**Negocio:**
+- 💰 ROI inmediato (sin esperar meses)
+- 😊 Satisfacción usuario mejorada
+- 📈 Adopción sistema incrementada
+- 🏆 Alineación filosofía Paradise
+
+### Dependencias
+
+**CRÍTICAS:**
+- ✅ FASE 5 completada (DeliveryDashboard debe existir)
+- ✅ React Router funcional
+- ✅ localStorage disponible
+
+**OPCIONALES:**
+- Badge contador dinámico (mejora futura v1.1)
+- Notificaciones push (mejora futura v1.2)
+
+### Riesgos y Mitigación
+
+| Riesgo | Probabilidad | Impacto | Mitigación |
+|--------|--------------|---------|------------|
+| PIN olvidado por usuarios | Media | Medio | Documentar PIN claramente + recovery process |
+| Confusión navegación | Baja | Bajo | Breadcrumb claro + testing UX |
+| Performance dashboard | Baja | Medio | Lazy loading + memoization |
+
+### Documentación Adicional
+
+**Referencias completas:**
+- Plan detallado: `/docs/Caso_Logica_Envios_Delivery/Caso_Pantalla_Pendientes_Inicio/`
+- Requerimientos: `1_REQUERIMIENTO_DETALLADO.md`
+- Análisis técnico: `2_ANALISIS_TECNICO.md`
+- Plan implementación: `3_PLAN_IMPLEMENTACION.md`
+- Testing plan: `4_TESTING_PLAN.md`
+- Sugerencias mejoras: `SUGERENCIAS_MEJORAS.md`
+
+---
+
 **🙏 Gloria a Dios por guiarnos en esta planificación exhaustiva y profesional. Que este sistema sirva para mejorar la operación de Acuarios Paradise con excelencia y transparencia.**
 
 ---
 
 **Documento:** 7 de 9 - Plan de Implementación Detallado
-**Versión:** 1.0
+**Versión:** 1.1 (Actualizado con FASE 9 - Vista Home Screen)
 **Fecha:** 23 Octubre 2025
 **Próximo:** [8_IMPACTO_NEGOCIO.md](/Documentos_MarkDown/Planes_de_Desarrollos/Caso_Logica_Envios_Delivery/8_IMPACTO_NEGOCIO.md)
 **Anterior:** [6_ARQUITECTURA_TECNICA.md](/Documentos_MarkDown/Planes_de_Desarrollos/Caso_Logica_Envios_Delivery/6_ARQUITECTURA_TECNICA.md)

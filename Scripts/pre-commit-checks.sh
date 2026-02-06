@@ -61,7 +61,8 @@ fi
 TEST_FILES=$(echo "$STAGED_FILES" | grep -E '\.test\.(ts|tsx)$' || true)
 if [ ! -z "$TEST_FILES" ]; then
     echo -e "${BLUE}Running tests for modified test files...${NC}"
-    docker compose -f docker-compose.test.yml run --rm cashguard-tests npm run test:unit -- --run || {
+    # 🤖 [IA] - v3.1.0: Use native npm test (Docker optional)
+    npm run test:unit -- --run || {
         echo -e "${RED}❌ Tests failed! Please fix before committing.${NC}"
         exit 1
     }

@@ -126,9 +126,9 @@ export function MorningVerification({
   // 🤖 [IA] - v2.0: Helper para generar firma digital
   const generateDataHash = useCallback((
     data: VerificationData,
-    store: any,
-    cashierIn: any,
-    cashierOut: any
+    store: { id?: string } | undefined,
+    cashierIn: { id?: string } | undefined,
+    cashierOut: { id?: string } | undefined
   ): string => {
     const dataString = JSON.stringify({
       total: data.totalCash,
