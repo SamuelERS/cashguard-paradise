@@ -1,33 +1,9 @@
-// 🤖 [IA] - v1.0.1 - Tests integración DeliveryDashboardWrapper: PIN modal + navegación + lockout persistence
-// Previous: v1.0.0 - Versión inicial con fake timers globales (incompatible con crypto.subtle.digest async)
+// 🤖 [IA] - v1.1.0 - Tests: onGoBack callback prop replaces useNavigate/useOperationMode mocks
+// Previous: v1.0.1 - Tests integración DeliveryDashboardWrapper: PIN modal + navegación + lockout persistence
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { DeliveryDashboardWrapper } from '../DeliveryDashboardWrapper';
-
-// Mock react-router-dom navigate
-const mockNavigate = vi.fn();
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom');
-  return {
-    ...actual,
-    useNavigate: () => mockNavigate,
-  };
-});
-
-// Mock useOperationMode
-const mockResetMode = vi.fn();
-vi.mock('@/hooks/useOperationMode', () => ({
-  useOperationMode: () => ({
-    currentMode: null,
-    selectMode: vi.fn(),
-    resetMode: mockResetMode,
-    getModeInfo: () => null,
-    isCashCount: false,
-    isCashCut: false,
-    hasSelectedMode: false,
-  }),
-}));
 
 // Mock DeliveryDashboard (heavy component, not needed for wrapper tests)
 vi.mock('../DeliveryDashboard', () => ({
@@ -46,10 +22,12 @@ vi.mock('sonner', () => ({
 const LOCKOUT_KEY = 'delivery_pin_lockout';
 const LOCKOUT_DURATION = 5 * 60 * 1000; // 5 minutes
 
-const renderWrapper = (props?: { requirePin?: boolean }) => {
+const mockOnGoBack = vi.fn();
+
+const renderWrapper = (props?: { requirePin?: boolean; onGoBack?: () => void }) => {
   return render(
     <MemoryRouter>
-      <DeliveryDashboardWrapper {...props} />
+      <DeliveryDashboardWrapper onGoBack={mockOnGoBack} {...props} />
     </MemoryRouter>
   );
 };
@@ -129,14 +107,13 @@ describe('DeliveryDashboardWrapper', () => {
   });
 
   describe('Navegación Cancel/Back', () => {
-    it('botón Cancelar llama resetMode y navega a /', () => {
+    it('botón Cancelar llama onGoBack callback', () => {
       renderWrapper();
 
       const cancelButton = screen.getByRole('button', { name: /Cancelar/i });
       fireEvent.click(cancelButton);
 
-      expect(mockResetMode).toHaveBeenCalledTimes(1);
-      expect(mockNavigate).toHaveBeenCalledWith('/');
+      expect(mockOnGoBack).toHaveBeenCalledTimes(1);
     });
 
     it('botón Volver a Operaciones navega a / después de PIN válido', async () => {
@@ -158,8 +135,7 @@ describe('DeliveryDashboardWrapper', () => {
       const backButton = screen.getByRole('button', { name: /Volver a Operaciones/i });
       fireEvent.click(backButton);
 
-      expect(mockResetMode).toHaveBeenCalled();
-      expect(mockNavigate).toHaveBeenCalledWith('/');
+      expect(mockOnGoBack).toHaveBeenCalledTimes(1);
     });
 
     it('limpia lockout localStorage al navegar atrás', () => {

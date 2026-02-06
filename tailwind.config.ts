@@ -96,6 +96,9 @@ export default {
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)'
 			},
+			ringWidth: {
+				'3': '3px', // 🤖 [IA] - WCAG 2.4.7: 3px focus ring para accesibilidad
+			},
 			keyframes: {
 				'accordion-down': {
 					from: {

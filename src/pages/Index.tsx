@@ -1,4 +1,5 @@
-// 🤖 [IA] - v1.4.0 - Integración Sistema Gastos de Caja
+// 🤖 [IA] - v3.2.0 - FIX: Pass onGoBack to DeliveryDashboardWrapper (fixes PIN modal stuck)
+// Previous: v1.4.0 - Integración Sistema Gastos de Caja
 import { useState, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import CashCounter from "@/components/CashCounter";
@@ -113,7 +114,7 @@ const Index = () => {
 
   // 🤖 [IA] - v1.0.82 - Renderizar DeliveryDashboardWrapper si modo es DELIVERY_VIEW
   if (currentMode === OperationMode.DELIVERY_VIEW) {
-    return <DeliveryDashboardWrapper requirePin={true} />;
+    return <DeliveryDashboardWrapper requirePin={true} onGoBack={resetMode} />;
   }
 
   if (showCashCounter && initialData) {

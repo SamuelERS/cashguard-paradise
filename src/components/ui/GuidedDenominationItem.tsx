@@ -317,10 +317,13 @@ export const GuidedDenominationItem = ({
             size="sm"
             variant="guided-numeric-confirm"
             data-context="denomination"
+            aria-label="Confirmar cantidad ingresada"
+            title="Presione Enter o toque para confirmar"
             // 🤖 [IA] - v1.1.15: Removidos preventDefaults que bloqueaban el teclado móvil
             // 🤖 [IA] - Botón más grande en móviles (48px) para mejor accesibilidad
+            // 🤖 [IA] - WCAG 1.1.1: aria-label para screen readers + title tooltip
           >
-            ⏎
+            <span aria-hidden="true">⏎</span>
           </Button>
         )}
       </div>

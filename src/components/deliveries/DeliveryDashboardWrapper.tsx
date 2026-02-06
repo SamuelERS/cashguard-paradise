@@ -1,10 +1,8 @@
-// 🤖 [IA] - v3.1.0 - Integración DeliveryManager con tabs Dashboard/Gestión (Bug #1 + #5 resueltos)
+// 🤖 [IA] - v3.2.0 - FIX DEFINITIVO: onGoBack callback prop resets parent state (elimina bug estado local independiente)
+// Previous: v3.1.0 - Integración DeliveryManager con tabs Dashboard/Gestión (Bug #1 + #5 resueltos)
 // Previous: v3.0.0 - FIX DEFINITIVO: Reset completo de state antes de navegar (Bug #6 resuelto)
-// Previous: v1.0.2 - Wrapper para DeliveryDashboard con validación PIN y navegación
 import { useState, useEffect } from 'react';
 import { ArrowLeft, BarChart3, ClipboardList } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { useOperationMode } from '@/hooks/useOperationMode';
 import { DeliveryDashboard } from './DeliveryDashboard';
 import { DeliveryManager } from './DeliveryManager';
 import { PinModal } from '../ui/pin-modal';
@@ -65,13 +63,13 @@ const setLockoutData = (attempts: number): void => {
 
 interface DeliveryDashboardWrapperProps {
   requirePin?: boolean;
+  onGoBack?: () => void;
 }
 
 export function DeliveryDashboardWrapper({
-  requirePin = true
+  requirePin = true,
+  onGoBack
 }: DeliveryDashboardWrapperProps) {
-  const navigate = useNavigate();
-  const { resetMode } = useOperationMode();
   const [isPinValidated, setIsPinValidated] = useState(!requirePin);
   const [failedAttempts, setFailedAttempts] = useState(0);
   const [isLocked, setIsLocked] = useState(false);
@@ -127,25 +125,20 @@ export function DeliveryDashboardWrapper({
   };
 
   const handleGoBack = () => {
-    console.log('[DEBUG] Back button clicked, resetting operation mode and navigating to home');
+    // 🤖 [IA] - v3.2.0: FIX DEFINITIVO - Parent callback resets parent's own currentMode state
+    // Root cause: useOperationMode() creates LOCAL state. Wrapper's resetMode() only resets
+    // its own copy, NOT Index.tsx's currentMode. Parent's onGoBack calls parent's resetMode().
+    console.log('[DEBUG] handleGoBack: cleaning local state and calling parent onGoBack');
 
-    // 🔄 BUG FIX v3.0.0: Reset PIN validation state FIRST para prevenir re-render de PinModal
-    // Root cause: Modal permanecía montado porque isPinValidated seguía en false
-    // Secuencia correcta: 1) Limpiar state local, 2) Reset mode, 3) Navigate
+    // Step 1: Clean local state
     setIsPinValidated(false);
     setFailedAttempts(0);
     setIsLocked(false);
     localStorage.removeItem(LOCKOUT_KEY);
-    console.log('[DEBUG] PIN state reset completed');
 
-    // 🔄 CRITICAL: Reset operation mode to show OperationSelector
-    resetMode();
-
-    try {
-      navigate('/');
-    } catch (error) {
-      console.error('[ERROR] Navigate failed, using window.location fallback', error);
-      window.location.href = '/';
+    // Step 2: Notify parent to reset operation mode
+    if (onGoBack) {
+      onGoBack();
     }
   };
 

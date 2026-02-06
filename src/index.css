@@ -99,6 +99,25 @@
 
 /* Paradise Aquarium Cash Control - Glass Morphism Design System */
 
+/* ============================================================================
+ * 🔒 SAFE AREA INSETS - iPhone Notch/Dynamic Island Support
+ * ============================================================================
+ * 🤖 [IA] - Auditoría UX-UI: Critical fix para dispositivos con notch
+ * Previene que contenido quede oculto detrás del notch/Dynamic Island
+ * Afecta: iPhone X, 11, 12, 13, 14, 15 (todos los modelos con notch)
+ * Estándar: CSS Environment Variables Level 1 (viewport-fit=cover)
+ * Referencia: https://webkit.org/blog/7929/designing-websites-for-iphone-x/
+ * ============================================================================ */
+
+@supports (padding: max(0px)) {
+  body {
+    padding-top: max(0px, env(safe-area-inset-top));
+    padding-bottom: max(0px, env(safe-area-inset-bottom));
+    padding-left: max(0px, env(safe-area-inset-left));
+    padding-right: max(0px, env(safe-area-inset-right));
+  }
+}
+
 @layer base {
   :root {
     /* iOS 26 Official Palette - Ultra Modern Glass */

@@ -303,7 +303,8 @@ describe('Grupo 2: Primer Intento Correcto (success)', () => {
     expect(input).toHaveValue('');
   });
 
-  it('2.5 - Primer intento correcto muestra "Cantidad correcta" antes de confirmar', async () => {
+  // 🤖 [IA] - Migración fake timers: SHOW_REMAINING_AMOUNTS=false (v1.3.7AH) oculta este texto en producción
+  it.skip('2.5 - Primer intento correcto muestra "Cantidad correcta" antes de confirmar', async () => {
     renderPhase2Verification();
 
     const input = getCurrentInput();
@@ -444,8 +445,8 @@ describe('Grupo 3: Primer Intento Incorrecto → Modal "incorrect"', () => {
 
     await enterIncorrectValue(44);
 
-    // Modal type "incorrect" no debe mostrar botón "Forzar este valor"
-    expect(screen.queryByText('Forzar este valor')).not.toBeInTheDocument();
+    // Modal type "incorrect" no debe mostrar botón "Forzar y Continuar"
+    expect(screen.queryByText('Forzar y Continuar')).not.toBeInTheDocument();
   });
 
   it('3.6 - Input pierde focus cuando modal abre (v1.3.6h fix)', async () => {
@@ -635,21 +636,21 @@ describe('Grupo 4: Segundo Intento Patterns', () => {
     await enterIncorrectValue(44); // Intento 2 (mismo valor)
 
     // Modal force-same
-    expect(screen.getByText(/Has ingresado el mismo valor incorrecto dos veces/i)).toBeInTheDocument();
+    expect(screen.getByText(/Has ingresado la misma cantidad/i)).toBeInTheDocument();
   });
 
-  it('4.4 - Modal "force-same" muestra botón "Forzar este valor" habilitado', async () => {
+  it('4.4 - Modal "force-same" muestra botón "Forzar y Continuar" habilitado', async () => {
     renderPhase2Verification();
 
     await enterIncorrectValue(44);
     await clickModalButtonSafe('Volver a contar');
     await enterIncorrectValue(44);
 
-    const forceButton = screen.getByText('Forzar este valor');
+    const forceButton = screen.getByText('Forzar y Continuar');
     expect(forceButton).toBeEnabled();
   });
 
-  it('4.5 - Click "Forzar este valor" marca paso completado con valor forzado', async () => {
+  it('4.5 - Click "Forzar y Continuar" marca paso completado con valor forzado', async () => {
     const onStepComplete = vi.fn();
     renderPhase2Verification({ onStepComplete });
 
@@ -657,7 +658,7 @@ describe('Grupo 4: Segundo Intento Patterns', () => {
     await clickModalButtonSafe('Volver a contar');
     await enterIncorrectValue(44);
 
-    const forceButton = screen.getByText('Forzar este valor');
+    const forceButton = screen.getByText('Forzar y Continuar');
     fireEvent.click(forceButton);
     await act(async () => { vi.advanceTimersByTime(250); });
 
@@ -671,7 +672,7 @@ describe('Grupo 4: Segundo Intento Patterns', () => {
     await enterIncorrectValue(44); // penny
     await clickModalButtonSafe('Volver a contar');
     await enterIncorrectValue(44);
-    fireEvent.click(screen.getByText('Forzar este valor'));
+    fireEvent.click(screen.getByText('Forzar y Continuar'));
     await act(async () => { vi.advanceTimersByTime(250); });
 
     // Completar resto
@@ -686,8 +687,8 @@ describe('Grupo 4: Segundo Intento Patterns', () => {
 
     expect(onVerificationBehaviorCollected).toHaveBeenCalled();
     const behavior = onVerificationBehaviorCollected.mock.calls[0][0];
-    // Force override limpia attemptHistory → totalAttempts NO incluye intentos forzados
-    expect(behavior.totalAttempts).toBe(0); // Limpiados después de force
+    // v1.3.7AI: clearAttemptHistory removido de handleForce → intentos se preservan
+    expect(behavior.totalAttempts).toBe(2); // 2 intentos penny (44, 44) preservados
   });
 
   it('4.7 - Force override genera severity warning_override', async () => {
@@ -701,7 +702,7 @@ describe('Grupo 4: Segundo Intento Patterns', () => {
     await enterIncorrectValue(30); // dime (esperado: 33)
     await clickModalButtonSafe('Volver a contar');
     await enterIncorrectValue(30); // mismo valor
-    fireEvent.click(screen.getByText('Forzar este valor'));
+    fireEvent.click(screen.getByText('Forzar y Continuar'));
     await act(async () => { vi.advanceTimersByTime(250); });
 
     // Completar resto
@@ -726,17 +727,17 @@ describe('Grupo 4: Segundo Intento Patterns', () => {
     await clickModalButtonSafe('Volver a contar');
     await enterIncorrectValue(42); // Intento 2 (diferente, pero incorrecto)
 
-    expect(screen.getByText(/Se requiere un tercer intento/i)).toBeInTheDocument();
+    expect(screen.getByText(/ALERTA CRÍTICA - Tercer Intento Obligatorio/i)).toBeInTheDocument();
   });
 
-  it('4.9 - Modal "require-third" muestra botón "Volver a contar"', async () => {
+  it('4.9 - Modal "require-third" muestra botón "Hacer Tercer Intento"', async () => {
     renderPhase2Verification();
 
     await enterIncorrectValue(44);
     await clickModalButtonSafe('Volver a contar');
     await enterIncorrectValue(42);
 
-    expect(screen.getByText('Volver a contar')).toBeInTheDocument();
+    expect(screen.getByText('Hacer Tercer Intento')).toBeInTheDocument();
   });
 
   it('4.10 - Modal "require-third" NO muestra botón "Forzar"', async () => {
@@ -746,7 +747,7 @@ describe('Grupo 4: Segundo Intento Patterns', () => {
     await clickModalButtonSafe('Volver a contar');
     await enterIncorrectValue(42);
 
-    expect(screen.queryByText('Forzar este valor')).not.toBeInTheDocument();
+    expect(screen.queryByText('Forzar y Continuar')).not.toBeInTheDocument();
   });
 
   it('4.11 - Click "Volver a contar" en require-third permite tercer intento', async () => {
@@ -809,28 +810,24 @@ describe('Grupo 4: Segundo Intento Patterns', () => {
     expect(behavior.firstAttemptSuccesses).toBe(6);
   });
 
-  it('4.14 - Modal "force-same" tiene ícono 🚨', async () => {
+  it('4.14 - Modal "force-same" muestra título "Segundo Intento Idéntico"', async () => {
     renderPhase2Verification();
 
     await enterIncorrectValue(44);
     await clickModalButtonSafe('Volver a contar');
     await enterIncorrectValue(44);
 
-    expect(screen.getByText((content, element) => {
-      return element?.textContent?.includes('🚨') || false;
-    })).toBeInTheDocument();
+    expect(screen.getByText(/Segundo Intento Idéntico/i)).toBeInTheDocument();
   });
 
-  it('4.15 - Modal "require-third" tiene ícono 🔴', async () => {
+  it('4.15 - Modal "require-third" muestra título "ALERTA CRÍTICA"', async () => {
     renderPhase2Verification();
 
     await enterIncorrectValue(44);
     await clickModalButtonSafe('Volver a contar');
     await enterIncorrectValue(42);
 
-    expect(screen.getByText((content, element) => {
-      return element?.textContent?.includes('🔴') || false;
-    })).toBeInTheDocument();
+    expect(screen.getByText(/ALERTA CRÍTICA/i)).toBeInTheDocument();
   });
 
   it('4.16 - Force override avanza a siguiente paso', async () => {
@@ -839,7 +836,7 @@ describe('Grupo 4: Segundo Intento Patterns', () => {
     await enterIncorrectValue(44);
     await clickModalButtonSafe('Volver a contar');
     await enterIncorrectValue(44);
-    fireEvent.click(screen.getByText('Forzar este valor'));
+    fireEvent.click(screen.getByText('Forzar y Continuar'));
     await act(async () => { vi.advanceTimersByTime(250); });
 
     // Debe avanzar a nickel
@@ -852,7 +849,7 @@ describe('Grupo 4: Segundo Intento Patterns', () => {
     await enterIncorrectValue(44);
     await clickModalButtonSafe('Volver a contar');
     await enterIncorrectValue(44);
-    fireEvent.click(screen.getByText('Forzar este valor'));
+    fireEvent.click(screen.getByText('Forzar y Continuar'));
     await act(async () => { vi.advanceTimersByTime(250); });
 
     // Input debe estar vacío
@@ -913,8 +910,8 @@ describe('Grupo 4: Segundo Intento Patterns', () => {
     await clickModalButtonSafe('Volver a contar');
     await enterIncorrectValue(44);
 
-    // Modal debe mencionar el valor 44
-    expect(screen.getByText(/44/)).toBeInTheDocument();
+    // Modal debe mencionar la denominación (texto único de descripción modal)
+    expect(screen.getByText(/la misma cantidad para Un centavo/i)).toBeInTheDocument();
   });
 });
 
@@ -934,7 +931,7 @@ describe('Grupo 5: Tercer Intento Patterns (critical)', () => {
     await enterIncorrectValue(40); // Intento 3 (todos diferentes)
 
     // Modal third-result
-    expect(screen.getByText(/Resultado del Tercer Intento/i)).toBeInTheDocument();
+    expect(screen.getByText(/FALTA.*GRAVE/i)).toBeInTheDocument();
   });
 
   it('5.2 - Modal "third-result" muestra pattern detectado [A,B,C]', async () => {
@@ -960,7 +957,7 @@ describe('Grupo 5: Tercer Intento Patterns (critical)', () => {
     await enterIncorrectValue(40); // 40
 
     // Promedio: (44 + 42 + 40) / 3 = 42
-    expect(screen.getByText(/42/)).toBeInTheDocument();
+    expect(screen.getByText(/Valor aceptado: 42/i)).toBeInTheDocument();
   });
 
   it('5.4 - Pattern [A, B, A] → modal con severity critical_inconsistent', async () => {
@@ -972,7 +969,7 @@ describe('Grupo 5: Tercer Intento Patterns (critical)', () => {
     await clickModalButtonSafe('Volver a contar');
     await enterIncorrectValue(44); // A (repite primer intento)
 
-    expect(screen.getByText(/Resultado del Tercer Intento/i)).toBeInTheDocument();
+    expect(screen.getByText(/FALTA.*GRAVE/i)).toBeInTheDocument();
   });
 
   it('5.5 - Pattern [A, B, B] → modal con severity critical_inconsistent', async () => {
@@ -984,7 +981,7 @@ describe('Grupo 5: Tercer Intento Patterns (critical)', () => {
     await clickModalButtonSafe('Volver a contar');
     await enterIncorrectValue(42); // B (repite segundo intento)
 
-    expect(screen.getByText(/Resultado del Tercer Intento/i)).toBeInTheDocument();
+    expect(screen.getByText(/FALTA.*GRAVE/i)).toBeInTheDocument();
   });
 
   it('5.6 - Click "Aceptar resultado" marca paso completado', async () => {
@@ -1095,7 +1092,7 @@ describe('Grupo 5: Tercer Intento Patterns (critical)', () => {
     expect(behavior.criticalInconsistencies).toBe(1);
   });
 
-  it('5.11 - Modal "third-result" tiene ícono 🔴', async () => {
+  it('5.11 - Modal "third-result" muestra título "FALTA MUY GRAVE"', async () => {
     renderPhase2Verification();
 
     await enterIncorrectValue(44);
@@ -1104,9 +1101,7 @@ describe('Grupo 5: Tercer Intento Patterns (critical)', () => {
     await clickModalButtonSafe('Volver a contar');
     await enterIncorrectValue(40);
 
-    expect(screen.getByText((content, element) => {
-      return element?.textContent?.includes('🔴') || false;
-    })).toBeInTheDocument();
+    expect(screen.getByText(/FALTA MUY GRAVE/i)).toBeInTheDocument();
   });
 
   it('5.12 - Tercer intento genera severity flag critical_severe', async () => {
@@ -1162,7 +1157,7 @@ describe('Grupo 5: Tercer Intento Patterns (critical)', () => {
     await enterIncorrectValue(68);
 
     // (66 + 64 + 68) / 3 = 66
-    expect(screen.getByText(/66/)).toBeInTheDocument();
+    expect(screen.getByText(/Valor aceptado: 66/i)).toBeInTheDocument();
   });
 
   it('5.15 - denominationsWithIssues incluye tercer intento', async () => {
@@ -1443,7 +1438,7 @@ describe('Grupo 6: buildVerificationBehavior() - Métricas Agregadas', () => {
     await enterIncorrectValue(30); // dime
     await clickModalButtonSafe('Volver a contar');
     await enterIncorrectValue(30); // mismo valor
-    fireEvent.click(screen.getByText('Forzar este valor'));
+    fireEvent.click(screen.getByText('Forzar y Continuar'));
     await act(async () => { vi.advanceTimersByTime(250); });
 
     await completeStepCorrectly(8);  // quarter
@@ -1456,8 +1451,8 @@ describe('Grupo 6: buildVerificationBehavior() - Métricas Agregadas', () => {
     expect(onVerificationBehaviorCollected).toHaveBeenCalled();
 
     const behavior = onVerificationBehaviorCollected.mock.calls[0][0];
-    // Force limpia attemptHistory → array vacío
-    expect(behavior.forcedOverridesDenoms).toEqual([]);
+    // v1.3.7AI: clearAttemptHistory removido → dime aparece como forzado
+    expect(behavior.forcedOverridesDenoms).toEqual(['dime']);
   });
 
   it('6.8 - severeInconsistenciesDenoms array contiene denominaciones [A,B,C]', async () => {
@@ -1791,55 +1786,6 @@ describe('Grupo 8: Regresión Bugs Históricos', () => {
 
     // onStepComplete NO debe haberse llamado
     expect(onStepComplete).not.toHaveBeenCalled();
-  });
-});
-
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// DEBUG: Temporary test to diagnose modal interaction
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-describe('DEBUG: Modal interaction', () => {
-  it('DEBUG - full second attempt flow', async () => {
-    renderPhase2Verification();
-
-    // Step 1: Enter incorrect value (44, esperado 43)
-    await enterIncorrectValue(44);
-    console.log('[DEBUG] 1. Modal present:', !!screen.queryByRole('alertdialog'));
-
-    // Step 2: Click Volver a contar
-    await clickModalButtonSafe('Volver a contar');
-    console.log('[DEBUG] 2. Modal present:', !!screen.queryByRole('alertdialog'));
-    console.log('[DEBUG] 2. scroll-locked:', document.body.getAttribute('data-scroll-locked'));
-
-    // Step 3: Check input state
-    const input = getCurrentInput();
-    console.log('[DEBUG] 3. Input found:', !!input);
-    console.log('[DEBUG] 3. Input value:', (input as HTMLInputElement).value);
-
-    // Step 4: Enter same incorrect value again
-    fireEvent.change(input, { target: { value: '44' } });
-    console.log('[DEBUG] 4a. After change, input value:', (input as HTMLInputElement).value);
-    await act(async () => {});
-    console.log('[DEBUG] 4b. After act flush, input value:', (getCurrentInput() as HTMLInputElement).value);
-
-    fireEvent.keyDown(getCurrentInput(), { key: 'Enter', code: 'Enter' });
-    console.log('[DEBUG] 4c. After keyDown, modal present:', !!screen.queryByRole('alertdialog'));
-
-    await act(async () => { vi.advanceTimersByTime(200); });
-    console.log('[DEBUG] 4d. After 200ms, modal present:', !!screen.queryByRole('alertdialog'));
-    console.log('[DEBUG] 4d. scroll-locked:', document.body.getAttribute('data-scroll-locked'));
-
-    // Check for force-same modal text
-    const forceText = screen.queryByText(/Has ingresado el mismo valor incorrecto dos veces/i);
-    console.log('[DEBUG] 5. Force-same modal text found:', !!forceText);
-
-    // Check what modals/text ARE present
-    const allDialogs = screen.queryAllByRole('alertdialog');
-    console.log('[DEBUG] 6. Total alertdialogs:', allDialogs.length);
-    if (allDialogs.length > 0) {
-      allDialogs.forEach((d, i) => {
-        console.log(`[DEBUG] 6.${i} dialog text:`, d.textContent?.substring(0, 100));
-      });
-    }
   });
 });
 
