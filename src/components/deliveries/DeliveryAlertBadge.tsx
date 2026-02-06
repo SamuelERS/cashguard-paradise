@@ -100,7 +100,7 @@ export function DeliveryAlertBadge({
   const badgeText = `${config.emoji} ${config.label} (${daysOld} ${daysOld === 1 ? 'día' : 'días'})`;
 
   return (
-    <div className={`inline-block ${className}`} title={showTooltip ? config.action : undefined}>
+    <div className={`group inline-block relative ${className}`} title={showTooltip ? config.action : undefined}>
       <Badge
         variant="outline"
         className={`

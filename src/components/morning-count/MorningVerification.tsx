@@ -6,21 +6,13 @@
 // Previous: v1.1.13 - Mejora visual del detalle de denominaciones con tabla estructurada
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Sunrise, CheckCircle, AlertTriangle, Download, Share, ArrowLeft, Copy, FileText, Lock, MessageSquare } from 'lucide-react';
+import { Sunrise, CheckCircle, AlertTriangle, Download, Share, ArrowLeft, Copy, FileText, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { 
-  AlertDialog, 
-  AlertDialogContent, 
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogCancel,
-  AlertDialogAction
-} from "@/components/ui/alert-dialog"; // 🤖 [IA] - v2.8: Modal instrucciones WhatsApp desktop
+import { WhatsAppInstructionsModal } from '@/components/shared/WhatsAppInstructionsModal'; // 🤖 [IA] - DRY: Modal compartido WhatsApp
 import { calculateCashTotal, formatCurrency, generateDenominationSummary } from '@/utils/calculations';
 import { copyToClipboard } from '@/utils/clipboard'; // 🤖 [IA] - v1.1.09
+import { generateDenominationDetails, WHATSAPP_SEPARATOR } from '@/utils/reportHelpers';
 import { CashCount } from '@/types/cash';
 import { getStoreById, getEmployeeById } from '@/data/paradise';
 import { toast } from 'sonner';
@@ -97,32 +89,6 @@ export function MorningVerification({
     performVerification();
   }, [performVerification]);
 
-  // 🤖 [IA] - v2.0: Helper para generar desglose de denominaciones (formato profesional)
-  const generateDenominationDetails = useCallback((cashCount: CashCount): string => {
-    const denominations = [
-      { key: 'penny', label: '1¢', value: 0.01 },
-      { key: 'nickel', label: '5¢', value: 0.05 },
-      { key: 'dime', label: '10¢', value: 0.10 },
-      { key: 'quarter', label: '25¢', value: 0.25 },
-      { key: 'dollarCoin', label: '$1 moneda', value: 1.00 },
-      { key: 'bill1', label: '$1', value: 1.00 },
-      { key: 'bill5', label: '$5', value: 5.00 },
-      { key: 'bill10', label: '$10', value: 10.00 },
-      { key: 'bill20', label: '$20', value: 20.00 },
-      { key: 'bill50', label: '$50', value: 50.00 },
-      { key: 'bill100', label: '$100', value: 100.00 }
-    ];
-
-    return denominations
-      .filter(d => cashCount[d.key as keyof CashCount] > 0)
-      .map(d => {
-        const quantity = cashCount[d.key as keyof CashCount];
-        const subtotal = quantity * d.value;
-        return `${d.label} × ${quantity} = ${formatCurrency(subtotal)}`;
-      })
-      .join('\n');
-  }, []);
-
   // 🤖 [IA] - v2.0: Helper para generar firma digital
   const generateDataHash = useCallback((
     data: VerificationData,
@@ -152,8 +118,8 @@ export function MorningVerification({
       ? "⚠️ *REPORTE ADVERTENCIA*"
       : "✅ *REPORTE NORMAL*";
 
-    // Separador profesional (igual que reporte nocturno)
-    const SEPARATOR = '━━━━━━━━━━━━━━━━';
+    // 🤖 [IA] - Separador importado de reportHelpers.ts (DRY)
+    const SEPARATOR = WHATSAPP_SEPARATOR;
 
     // Generar desglose de denominaciones
     const denominationDetails = generateDenominationDetails(cashCount);
@@ -213,7 +179,7 @@ ${SEPARATOR}
 ⚠️ Documento NO editable
 
 Firma Digital: ${dataHash}`;
-  }, [verificationData, store, cashierIn, cashierOut, cashCount, generateDenominationDetails, generateDataHash]);
+  }, [verificationData, store, cashierIn, cashierOut, cashCount, generateDataHash]);
 
   // 🤖 [IA] - v1.1.09: Función mejorada con fallback robusto
   const handleCopyToClipboard = useCallback(async () => {
@@ -765,164 +731,12 @@ Firma Digital: ${dataHash}`;
       </motion.div>
       </div>
 
-      {/* 🤖 [IA] - v2.8: Modal Instrucciones WhatsApp (desktop-only) */}
-      <AlertDialog open={showWhatsAppInstructions} onOpenChange={setShowWhatsAppInstructions}>
-      <AlertDialogContent
-        className="max-w-md"
-        style={{
-          background: 'rgba(36, 36, 36, 0.6)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          border: '1px solid rgba(255, 255, 255, 0.15)',
-          borderRadius: '12px'
-        }}
-      >
-        <AlertDialogHeader>
-          <AlertDialogTitle className="flex items-center gap-2 text-white">
-            <MessageSquare className="w-5 h-5 text-[#25D366]" />
-            ¿Cómo enviar por WhatsApp?
-          </AlertDialogTitle>
-          <AlertDialogDescription className="text-gray-300">
-            Sigue estos pasos para enviar el reporte por WhatsApp Web
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-
-        {/* Banner "Reporte Copiado" */}
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-4 p-3 rounded-lg"
-          style={{
-            background: 'rgba(34, 197, 94, 0.15)',
-            border: '1px solid rgba(34, 197, 94, 0.3)'
-          }}
-        >
-          <div className="flex items-center gap-2 text-sm text-green-400">
-            <CheckCircle className="w-4 h-4" />
-            <span className="font-medium">Reporte copiado al portapapeles</span>
-          </div>
-        </motion.div>
-
-        {/* Pasos numerados */}
-        <div className="space-y-3 mb-6">
-          {/* Paso 1 */}
-          <div className="flex gap-3">
-            <div
-              className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
-              style={{
-                background: 'linear-gradient(135deg, #f4a52a 0%, #ffb84d 100%)',
-                color: '#1a1a1a'
-              }}
-            >
-              1
-            </div>
-            <div className="flex-1 pt-0.5">
-              <p className="text-sm text-gray-200">
-                <span className="font-medium text-white">Abra WhatsApp Web</span>
-                <br />
-                <span className="text-gray-400 text-xs">
-                  Vaya a{' '}
-                  <code className="px-1 py-0.5 rounded bg-gray-800 text-green-400">
-                    web.whatsapp.com
-                  </code>{' '}
-                  en su navegador
-                </span>
-              </p>
-            </div>
-          </div>
-
-          {/* Paso 2 */}
-          <div className="flex gap-3">
-            <div
-              className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
-              style={{
-                background: 'linear-gradient(135deg, #f4a52a 0%, #ffb84d 100%)',
-                color: '#1a1a1a'
-              }}
-            >
-              2
-            </div>
-            <div className="flex-1 pt-0.5">
-              <p className="text-sm text-gray-200">
-                <span className="font-medium text-white">Seleccione el contacto</span>
-                <br />
-                <span className="text-gray-400 text-xs">
-                  Busque el chat de su supervisor o grupo
-                </span>
-              </p>
-            </div>
-          </div>
-
-          {/* Paso 3 */}
-          <div className="flex gap-3">
-            <div
-              className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
-              style={{
-                background: 'linear-gradient(135deg, #f4a52a 0%, #ffb84d 100%)',
-                color: '#1a1a1a'
-              }}
-            >
-              3
-            </div>
-            <div className="flex-1 pt-0.5">
-              <p className="text-sm text-gray-200">
-                <span className="font-medium text-white">Pegue el reporte</span>
-                <br />
-                <span className="text-gray-400 text-xs">
-                  Presione{' '}
-                  <code className="px-1 py-0.5 rounded bg-gray-800 text-blue-400">
-                    {/Mac|iPhone|iPod|iPad/i.test(navigator.userAgent) ? 'Cmd+V' : 'Ctrl+V'}
-                  </code>{' '}
-                  en el campo de mensaje
-                </span>
-              </p>
-            </div>
-          </div>
-
-          {/* Paso 4 */}
-          <div className="flex gap-3">
-            <div
-              className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
-              style={{
-                background: 'linear-gradient(135deg, #f4a52a 0%, #ffb84d 100%)',
-                color: '#1a1a1a'
-              }}
-            >
-              4
-            </div>
-            <div className="flex-1 pt-0.5">
-              <p className="text-sm text-gray-200">
-                <span className="font-medium text-white">Envíe el mensaje</span>
-                <br />
-                <span className="text-gray-400 text-xs">
-                  Haga clic en el botón de enviar y regrese aquí para confirmar
-                </span>
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <AlertDialogFooter className="flex-col sm:flex-row gap-2">
-          <AlertDialogCancel
-            onClick={() => setShowWhatsAppInstructions(false)}
-            style={{
-              background: 'rgba(255, 255, 255, 0.1)',
-              color: '#e1e8ed',
-              border: '1px solid rgba(255, 255, 255, 0.15)'
-            }}
-          >
-            Cerrar
-          </AlertDialogCancel>
-          <AlertDialogAction
-            onClick={handleConfirmSent}
-            className="bg-gradient-to-r from-[#f4a52a] to-[#ffb84d] text-[#1a1a1a] font-semibold hover:opacity-90"
-          >
-            <CheckCircle className="w-4 h-4 mr-2" />
-            Ya lo envié
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+      {/* 🤖 [IA] - DRY: Modal compartido WhatsApp (extraído de CashCalculation + MorningVerification) */}
+      <WhatsAppInstructionsModal
+        isOpen={showWhatsAppInstructions}
+        onOpenChange={setShowWhatsAppInstructions}
+        onConfirmSent={handleConfirmSent}
+      />
     </div>
   );
 }

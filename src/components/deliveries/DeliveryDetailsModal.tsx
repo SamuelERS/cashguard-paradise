@@ -25,10 +25,12 @@
  * - Design System: Consistente con app
  */
 
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { X, User, DollarSign, Package, FileText, Calendar, Check, Ban, AlertTriangle } from 'lucide-react';
 import { DeliveryAlertBadge } from './DeliveryAlertBadge';
-import { Button } from '../ui/button';
+import { ConstructiveActionButton } from '@/components/shared/ConstructiveActionButton';
+import { DestructiveActionButton } from '@/components/shared/DestructiveActionButton';
 import {
   Dialog,
   DialogContent,
@@ -37,6 +39,15 @@ import {
   DialogDescription,
   DialogFooter,
 } from '../ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+} from '../ui/alert-dialog';
+import { Textarea } from '../ui/textarea';
 import type { DeliveryEntry } from '../../types/deliveries';
 import { COURIER_DISPLAY_NAMES, STATUS_DISPLAY_LABELS } from '../../data/deliveryConfig';
 import { toast } from 'sonner';
@@ -104,6 +115,16 @@ export function DeliveryDetailsModal({
   alertLevel,
 }: DeliveryDetailsModalProps) {
   // ─────────────────────────────────────────
+  // STATE - Modal razón
+  // ─────────────────────────────────────────
+
+  // 🤖 [IA] - v3.1.0: Estado modal razón (reemplaza prompt() para PWA compatibility)
+  const [reasonModal, setReasonModal] = useState<{
+    type: 'cancel' | 'reject';
+  } | null>(null);
+  const [reasonText, setReasonText] = useState('');
+
+  // ─────────────────────────────────────────
   // HANDLERS
   // ─────────────────────────────────────────
 
@@ -113,19 +134,28 @@ export function DeliveryDetailsModal({
     onClose();
   };
 
+  // 🤖 [IA] - v3.1.0: Reemplazado prompt() con modal (Bug #3 - PWA iOS compatibility)
   const handleCancel = () => {
     if (!delivery) return;
-    const reason = prompt(`Razón de cancelación para ${delivery.customerName}:`);
-    if (!reason) return;
-    onCancel?.(delivery.id, reason);
-    onClose();
+    setReasonModal({ type: 'cancel' });
+    setReasonText('');
   };
 
   const handleReject = () => {
     if (!delivery) return;
-    const reason = prompt(`Razón de rechazo para ${delivery.customerName}:`);
-    if (!reason) return;
-    onReject?.(delivery.id, reason);
+    setReasonModal({ type: 'reject' });
+    setReasonText('');
+  };
+
+  const handleReasonConfirm = () => {
+    if (!delivery || !reasonModal || !reasonText.trim()) return;
+    if (reasonModal.type === 'cancel') {
+      onCancel?.(delivery.id, reasonText.trim());
+    } else {
+      onReject?.(delivery.id, reasonText.trim());
+    }
+    setReasonModal(null);
+    setReasonText('');
     onClose();
   };
 
@@ -295,34 +325,73 @@ export function DeliveryDetailsModal({
             {/* FOOTER - ACCIONES */}
             {delivery.status === 'pending_cod' && (
               <DialogFooter className="flex flex-col sm:flex-row gap-2">
-                <Button
+                <ConstructiveActionButton
                   onClick={handleMarkPaid}
-                  className="flex-1 bg-gradient-to-r from-[#34c759] to-[#30d158] hover:opacity-90"
+                  className="flex-1 h-auto py-2 px-4"
                 >
                   <Check className="mr-2 h-4 w-4" />
                   Marcar Pagado
-                </Button>
-                <Button
+                </ConstructiveActionButton>
+                <DestructiveActionButton
                   onClick={handleCancel}
-                  variant="secondary"
-                  className="border-[rgba(255,255,255,0.15)] hover:bg-[rgba(255,255,255,0.05)]"
+                  className="h-auto py-2 px-4"
                 >
                   <X className="mr-2 h-4 w-4" />
                   Cancelar
-                </Button>
-                <Button
+                </DestructiveActionButton>
+                <DestructiveActionButton
                   onClick={handleReject}
-                  variant="destructive"
-                  className="hover:opacity-90"
+                  className="h-auto py-2 px-4"
                 >
                   <Ban className="mr-2 h-4 w-4" />
                   Rechazar
-                </Button>
+                </DestructiveActionButton>
               </DialogFooter>
             )}
           </>
         )}
       </DialogContent>
+
+      {/* 🤖 [IA] - v3.1.0: Modal razón cancelación/rechazo (reemplaza prompt() para PWA iOS) */}
+      <AlertDialog open={!!reasonModal} onOpenChange={(open) => !open && setReasonModal(null)}>
+        <AlertDialogContent className="max-w-[90vw] sm:max-w-md bg-[rgba(36,36,36,0.95)] backdrop-blur-xl border-[rgba(255,255,255,0.15)]">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-[#e1e8ed]">
+              {reasonModal?.type === 'cancel' ? 'Cancelar Delivery' : 'Rechazar Delivery'}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-[#8899a6]">
+              Ingresa la razón de {reasonModal?.type === 'cancel' ? 'cancelación' : 'rechazo'} para{' '}
+              <span className="font-medium text-[#e1e8ed]">{delivery?.customerName}</span>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <Textarea
+            value={reasonText}
+            onChange={(e) => setReasonText(e.target.value)}
+            placeholder={`Razón de ${reasonModal?.type === 'cancel' ? 'cancelación' : 'rechazo'}...`}
+            rows={3}
+            maxLength={500}
+            className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,255,255,0.1)] text-[#e1e8ed] resize-none"
+            autoFocus
+          />
+
+          <AlertDialogFooter className="flex flex-col sm:flex-row gap-2">
+            <DestructiveActionButton
+              onClick={() => setReasonModal(null)}
+              className="h-auto py-2 px-4"
+            >
+              Volver
+            </DestructiveActionButton>
+            <ConstructiveActionButton
+              onClick={handleReasonConfirm}
+              disabled={!reasonText.trim()}
+              className="h-auto py-2 px-4"
+            >
+              Confirmar
+            </ConstructiveActionButton>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   );
 }

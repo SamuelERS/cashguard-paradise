@@ -1,4 +1,4 @@
-// > [IA] - v1.4.0: Sistema de Gastos de Caja - Types y validaciones
+// 🤖 [IA] - v1.4.0: Sistema de Gastos de Caja - Types y validaciones
 // Previous: N/A (archivo nuevo)
 // Objetivo: Definir interfaces, types, guards y constantes para gesti�n de gastos operacionales
 

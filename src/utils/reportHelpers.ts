@@ -1,8 +1,46 @@
-// 🤖 [IA] - Extraído de CashCalculation.tsx para eliminar warnings react-hooks/exhaustive-deps
-// Funciones puras sin closures de estado del componente
+// 🤖 [IA] - Funciones puras compartidas entre CashCalculation.tsx y MorningVerification.tsx
+// Extraídas para eliminar warnings react-hooks/exhaustive-deps y duplicación (DRY - Mandamiento #6)
 
 import type { VerificationBehavior } from '@/types/verification';
 import type { CashCount } from '@/types/cash';
+import { formatCurrency } from '@/utils/calculations';
+
+/**
+ * Separador visual para reportes WhatsApp (12 caracteres, optimizado para mobile)
+ */
+export const WHATSAPP_SEPARATOR = '━━━━━━━━━━━━';
+
+/**
+ * Lista de denominaciones USD con labels en español y valor unitario
+ */
+const DENOMINATIONS = [
+  { key: 'penny', label: '1¢', value: 0.01 },
+  { key: 'nickel', label: '5¢', value: 0.05 },
+  { key: 'dime', label: '10¢', value: 0.10 },
+  { key: 'quarter', label: '25¢', value: 0.25 },
+  { key: 'dollarCoin', label: '$1 moneda', value: 1.00 },
+  { key: 'bill1', label: '$1', value: 1.00 },
+  { key: 'bill5', label: '$5', value: 5.00 },
+  { key: 'bill10', label: '$10', value: 10.00 },
+  { key: 'bill20', label: '$20', value: 20.00 },
+  { key: 'bill50', label: '$50', value: 50.00 },
+  { key: 'bill100', label: '$100', value: 100.00 }
+] as const;
+
+/**
+ * Genera desglose de denominaciones con cantidades > 0 para reporte WhatsApp
+ * Formato: "1¢ × 43 = $0.43" por línea
+ */
+export const generateDenominationDetails = (cashCount: CashCount): string => {
+  return DENOMINATIONS
+    .filter(d => cashCount[d.key as keyof CashCount] > 0)
+    .map(d => {
+      const quantity = cashCount[d.key as keyof CashCount];
+      const subtotal = quantity * d.value;
+      return `${d.label} × ${quantity} = ${formatCurrency(subtotal)}`;
+    })
+    .join('\n');
+};
 
 /**
  * Mapeo de denomination key a nombre legible en español

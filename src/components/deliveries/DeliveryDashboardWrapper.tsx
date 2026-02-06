@@ -1,14 +1,14 @@
-// 🤖 [IA] - v3.0.0 - FIX DEFINITIVO: Reset completo de state antes de navegar (Bug #6 resuelto)
+// 🤖 [IA] - v3.1.0 - Integración DeliveryManager con tabs Dashboard/Gestión (Bug #1 + #5 resueltos)
+// Previous: v3.0.0 - FIX DEFINITIVO: Reset completo de state antes de navegar (Bug #6 resuelto)
 // Previous: v1.0.2 - Wrapper para DeliveryDashboard con validación PIN y navegación
-// Previous: v1.0.1 - Agregada persistencia lockout con localStorage
-// Previous: v1.0.0 - Implementación inicial sin persistencia lockout
 import { useState, useEffect } from 'react';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, BarChart3, ClipboardList } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useOperationMode } from '@/hooks/useOperationMode';
 import { DeliveryDashboard } from './DeliveryDashboard';
+import { DeliveryManager } from './DeliveryManager';
 import { PinModal } from '../ui/pin-modal';
-import { Button } from '../ui/button';
+import { DestructiveActionButton } from '@/components/shared/DestructiveActionButton';
 
 // 🔒 [SECURITY] - Lockout persistence helpers
 interface LockoutData {
@@ -75,6 +75,7 @@ export function DeliveryDashboardWrapper({
   const [isPinValidated, setIsPinValidated] = useState(!requirePin);
   const [failedAttempts, setFailedAttempts] = useState(0);
   const [isLocked, setIsLocked] = useState(false);
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'management'>('dashboard');
 
   // 🔒 [SECURITY] - Restaurar lockout desde localStorage al montar componente
   useEffect(() => {
@@ -166,26 +167,57 @@ export function DeliveryDashboardWrapper({
   // Mostrar dashboard una vez validado el PIN
   return (
     <div className="min-h-screen relative p-4">
-      {/* Breadcrumb de navegación */}
-      <div className="mb-4 relative z-50">
-        <Button 
-          variant="ghost" 
+      {/* Header: Botón volver + Tabs */}
+      <div className="mb-4 relative z-50 flex flex-col gap-3">
+        <DestructiveActionButton
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
             console.log('[DEBUG] Button clicked, calling handleGoBack');
             handleGoBack();
           }}
-          className="flex items-center gap-2 hover:bg-white/10 cursor-pointer"
+          className="flex items-center gap-2 h-auto py-2 px-4 self-start"
           type="button"
         >
           <ArrowLeft className="w-4 h-4" />
           Volver a Operaciones
-        </Button>
+        </DestructiveActionButton>
+
+        {/* Tab selector */}
+        <div className="flex gap-2 p-1 rounded-lg bg-[rgba(36,36,36,0.6)] backdrop-blur-md border border-[rgba(255,255,255,0.1)]">
+          <button
+            type="button"
+            onClick={() => setActiveTab('dashboard')}
+            className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-md text-sm font-medium transition-all duration-200 ${
+              activeTab === 'dashboard'
+                ? 'bg-[rgba(10,132,255,0.2)] text-[#0a84ff] border border-[rgba(10,132,255,0.3)]'
+                : 'text-[#8899a6] hover:text-[#e1e8ed] hover:bg-[rgba(255,255,255,0.05)]'
+            }`}
+          >
+            <BarChart3 className="w-4 h-4" />
+            Dashboard
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('management')}
+            className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-md text-sm font-medium transition-all duration-200 ${
+              activeTab === 'management'
+                ? 'bg-[rgba(10,132,255,0.2)] text-[#0a84ff] border border-[rgba(10,132,255,0.3)]'
+                : 'text-[#8899a6] hover:text-[#e1e8ed] hover:bg-[rgba(255,255,255,0.05)]'
+            }`}
+          >
+            <ClipboardList className="w-4 h-4" />
+            Gestión
+          </button>
+        </div>
       </div>
 
-      {/* Dashboard de deliveries */}
-      <DeliveryDashboard />
+      {/* Contenido según tab activo */}
+      {activeTab === 'dashboard' ? (
+        <DeliveryDashboard />
+      ) : (
+        <DeliveryManager />
+      )}
     </div>
   );
 }

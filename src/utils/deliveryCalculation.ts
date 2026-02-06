@@ -1,3 +1,4 @@
+// 🤖 [IA] - Delivery calculation: optimal distribution algorithm
 import { CashCount, DENOMINATIONS } from '@/types/cash';
 import { DeliveryCalculation } from '@/types/phases';
 

@@ -25,7 +25,7 @@
 
 import { motion } from 'framer-motion';
 import { X, Package, DollarSign, TrendingDown, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
-import { Button } from '../ui/button';
+import { ConstructiveActionButton } from '@/components/shared/ConstructiveActionButton';
 import {
   Dialog,
   DialogContent,
@@ -327,13 +327,13 @@ export function DeliveryEducationModal({
 
         {/* FOOTER */}
         <DialogFooter>
-          <Button
+          <ConstructiveActionButton
             onClick={onClose}
-            className="w-full sm:w-auto bg-gradient-to-r from-[#0a84ff] to-[#5e5ce6] hover:opacity-90"
+            className="w-full sm:w-auto h-auto py-2 px-4"
           >
             <CheckCircle className="mr-2 h-4 w-4" />
             Entendido
-          </Button>
+          </ConstructiveActionButton>
         </DialogFooter>
       </DialogContent>
     </Dialog>

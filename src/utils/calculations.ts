@@ -1,3 +1,4 @@
+// 🤖 [IA] - Core cash calculation utilities
 import { CashCount, DENOMINATIONS } from "@/types/cash";
 
 /**
