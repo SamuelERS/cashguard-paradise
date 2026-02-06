@@ -200,7 +200,7 @@ describe('💰 TotalsSummarySection - Integration Tests', () => {
       // 🤖 [IA] - CI Hotfix: Timeout aumentado para GitHub Actions runners (2-3x más lentos)
       await waitFor(() => {
         expect(mockOnConfirm).toHaveBeenCalledTimes(1);
-      }, { timeout: 90000 }); // 10s para CI compatibility
+      }, { timeout: 5000 }); // 10s para CI compatibility
     });
 
     it('Test 2.5: NO debe mostrar botón en campo completado', () => {

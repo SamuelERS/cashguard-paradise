@@ -82,8 +82,8 @@ export default defineConfig({
     // Reporter configuration
     reporters: ['verbose'],
     
-    // Test timeout: 120s in CI, 60s locally (property-based tests necesitan más tiempo)
-    testTimeout: process.env.CI ? 120000 : 60000,
+    // Test timeout: 30s CI, 15s local (reducido de 120s/60s - batch fix v1.3.7e revertido)
+    testTimeout: process.env.CI ? 30000 : 15000,
     
     // CSS handling
     css: {

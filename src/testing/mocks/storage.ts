@@ -9,6 +9,15 @@ import { vi } from 'vitest';
 // STORAGE MOCKS (30 líneas originales)
 // ══════════════════════════════════════════════════════════════
 
+interface StorageMock {
+  getItem: ReturnType<typeof vi.fn>;
+  setItem: ReturnType<typeof vi.fn>;
+  removeItem: ReturnType<typeof vi.fn>;
+  clear: ReturnType<typeof vi.fn>;
+  length: number;
+  key: ReturnType<typeof vi.fn>;
+}
+
 /**
  * Mock de localStorage con vi.fn() para mejor control en tests
  *
@@ -25,14 +34,14 @@ import { vi } from 'vitest';
  * });
  * ```
  */
-export function setupLocalStorageMock() {
-  const localStorageMock = {
-    getItem: vi.fn((key: string) => null),
-    setItem: vi.fn((key: string, value: string) => undefined),
-    removeItem: vi.fn((key: string) => undefined),
+export function setupLocalStorageMock(): StorageMock {
+  const localStorageMock: StorageMock = {
+    getItem: vi.fn((_key: string) => null),
+    setItem: vi.fn((_key: string, _value: string) => undefined),
+    removeItem: vi.fn((_key: string) => undefined),
     clear: vi.fn(() => undefined),
     length: 0,
-    key: vi.fn((index: number) => null),
+    key: vi.fn((_index: number) => null),
   };
 
   Object.defineProperty(window, 'localStorage', {
@@ -48,7 +57,7 @@ export function setupLocalStorageMock() {
  */
 export function cleanupLocalStorageMock() {
   if (window.localStorage) {
-    const storage = window.localStorage as any;
+    const storage = window.localStorage as unknown as StorageMock;
     if (storage.getItem && vi.isMockFunction(storage.getItem)) {
       storage.getItem.mockClear();
       storage.setItem.mockClear();
@@ -75,14 +84,14 @@ export function cleanupLocalStorageMock() {
  * });
  * ```
  */
-export function setupSessionStorageMock() {
-  const sessionStorageMock = {
-    getItem: vi.fn((key: string) => null),
-    setItem: vi.fn((key: string, value: string) => undefined),
-    removeItem: vi.fn((key: string) => undefined),
+export function setupSessionStorageMock(): StorageMock {
+  const sessionStorageMock: StorageMock = {
+    getItem: vi.fn((_key: string) => null),
+    setItem: vi.fn((_key: string, _value: string) => undefined),
+    removeItem: vi.fn((_key: string) => undefined),
     clear: vi.fn(() => undefined),
     length: 0,
-    key: vi.fn((index: number) => null),
+    key: vi.fn((_index: number) => null),
   };
 
   Object.defineProperty(window, 'sessionStorage', {
@@ -98,7 +107,7 @@ export function setupSessionStorageMock() {
  */
 export function cleanupSessionStorageMock() {
   if (window.sessionStorage) {
-    const storage = window.sessionStorage as any;
+    const storage = window.sessionStorage as unknown as StorageMock;
     if (storage.getItem && vi.isMockFunction(storage.getItem)) {
       storage.getItem.mockClear();
       storage.setItem.mockClear();

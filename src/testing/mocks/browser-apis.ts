@@ -23,15 +23,15 @@ import { vi } from 'vitest';
  */
 export function setupResizeObserverMock() {
   const ResizeObserverMock = class ResizeObserver {
-    callback: any;
-    observations: Map<any, any>;
+    callback: ResizeObserverCallback;
+    observations: Map<Element, ResizeObserverOptions>;
 
-    constructor(callback: any) {
+    constructor(callback: ResizeObserverCallback) {
       this.callback = callback;
       this.observations = new Map();
     }
 
-    observe(target: any, options = {}) {
+    observe(target: Element, options: ResizeObserverOptions = {}) {
       if (!target) return;
       this.observations.set(target, options);
 
@@ -40,18 +40,18 @@ export function setupResizeObserverMock() {
         try {
           this.callback([{
             target,
-            contentRect: { width: 100, height: 100, x: 0, y: 0, top: 0, right: 100, bottom: 100, left: 0 },
-            borderBoxSize: [{ inlineSize: 100, blockSize: 100 }],
-            contentBoxSize: [{ inlineSize: 100, blockSize: 100 }],
-            devicePixelContentBoxSize: [{ inlineSize: 100, blockSize: 100 }]
-          }], this);
-        } catch (e) {
+            contentRect: { width: 100, height: 100, x: 0, y: 0, top: 0, right: 100, bottom: 100, left: 0 } as DOMRectReadOnly,
+            borderBoxSize: [{ inlineSize: 100, blockSize: 100 }] as ReadonlyArray<ResizeObserverSize>,
+            contentBoxSize: [{ inlineSize: 100, blockSize: 100 }] as ReadonlyArray<ResizeObserverSize>,
+            devicePixelContentBoxSize: [{ inlineSize: 100, blockSize: 100 }] as ReadonlyArray<ResizeObserverSize>
+          }] as ResizeObserverEntry[], this);
+        } catch (_e) {
           // Silenciar errores en callback
         }
       }
     }
 
-    unobserve(target: any) {
+    unobserve(target: Element) {
       if (target) {
         this.observations.delete(target);
       }
@@ -62,12 +62,12 @@ export function setupResizeObserverMock() {
     }
   };
 
-  global.ResizeObserver = ResizeObserverMock as any;
+  global.ResizeObserver = ResizeObserverMock as unknown as typeof ResizeObserver;
   if (global.window) {
-    (global.window as any).ResizeObserver = ResizeObserverMock;
+    (global.window as typeof globalThis & { ResizeObserver: typeof ResizeObserver }).ResizeObserver = ResizeObserverMock as unknown as typeof ResizeObserver;
   }
   if (typeof globalThis !== 'undefined') {
-    (globalThis as any).ResizeObserver = ResizeObserverMock;
+    (globalThis as typeof globalThis & { ResizeObserver: typeof ResizeObserver }).ResizeObserver = ResizeObserverMock as unknown as typeof ResizeObserver;
   }
 }
 
@@ -104,7 +104,7 @@ export function setupMatchMediaMock() {
     value: matchMediaMock,
   });
 
-  (global as any).matchMedia = matchMediaMock;
+  (global as typeof globalThis & { matchMedia: typeof window.matchMedia }).matchMedia = matchMediaMock;
 }
 
 /**
@@ -112,7 +112,7 @@ export function setupMatchMediaMock() {
  */
 export function cleanupMatchMediaMock() {
   if (global.matchMedia && vi.isMockFunction(global.matchMedia)) {
-    (global.matchMedia as any).mockClear();
+    (global.matchMedia as ReturnType<typeof vi.fn>).mockClear();
   }
 }
 
@@ -133,7 +133,7 @@ export function cleanupMatchMediaMock() {
  * ```
  */
 export function setupIntersectionObserverMock() {
-  (global as any).IntersectionObserver = vi.fn().mockImplementation(() => ({
+  (global as typeof globalThis & { IntersectionObserver: unknown }).IntersectionObserver = vi.fn().mockImplementation(() => ({
     observe: vi.fn(),
     unobserve: vi.fn(),
     disconnect: vi.fn(),
@@ -149,7 +149,7 @@ export function setupIntersectionObserverMock() {
  */
 export function cleanupIntersectionObserverMock() {
   if (global.IntersectionObserver && vi.isMockFunction(global.IntersectionObserver)) {
-    (global.IntersectionObserver as any).mockClear();
+    (global.IntersectionObserver as ReturnType<typeof vi.fn>).mockClear();
   }
 }
 
@@ -170,11 +170,11 @@ export function cleanupIntersectionObserverMock() {
  * ```
  */
 export function setupAnimationApisMock() {
-  (global as any).requestAnimationFrame = vi.fn((callback: FrameRequestCallback) => {
-    return setTimeout(() => callback(performance.now()), 16) as any; // ~60fps
+  (global as typeof globalThis & { requestAnimationFrame: (cb: FrameRequestCallback) => number }).requestAnimationFrame = vi.fn((callback: FrameRequestCallback) => {
+    return setTimeout(() => callback(performance.now()), 16) as unknown as number; // ~60fps
   });
 
-  (global as any).cancelAnimationFrame = vi.fn((id: number) => {
+  (global as typeof globalThis & { cancelAnimationFrame: (id: number) => void }).cancelAnimationFrame = vi.fn((id: number) => {
     clearTimeout(id);
   });
 
@@ -189,10 +189,10 @@ export function setupAnimationApisMock() {
  */
 export function cleanupAnimationApisMock() {
   if (global.requestAnimationFrame && vi.isMockFunction(global.requestAnimationFrame)) {
-    (global.requestAnimationFrame as any).mockClear();
+    (global.requestAnimationFrame as ReturnType<typeof vi.fn>).mockClear();
   }
   if (global.cancelAnimationFrame && vi.isMockFunction(global.cancelAnimationFrame)) {
-    (global.cancelAnimationFrame as any).mockClear();
+    (global.cancelAnimationFrame as ReturnType<typeof vi.fn>).mockClear();
   }
 }
 
@@ -213,7 +213,7 @@ export function cleanupAnimationApisMock() {
  * ```
  */
 export function setupGetComputedStyleMock() {
-  const mockGetComputedStyle = vi.fn((element: Element) => ({
+  const mockGetComputedStyle = vi.fn((_element: Element) => ({
     getPropertyValue: vi.fn((property: string) => {
       switch (property) {
         case 'transform':
@@ -274,7 +274,7 @@ export function setupGetComputedStyleMock() {
  */
 export function setupCssSupportsMock() {
   Object.defineProperty(CSS, 'supports', {
-    value: vi.fn((property: string, value?: string) => {
+    value: vi.fn((property: string, _value?: string) => {
       const supportedProperties = [
         'backdrop-filter',
         'filter',
