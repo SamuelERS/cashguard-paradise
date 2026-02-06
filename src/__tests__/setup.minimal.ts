@@ -1,11 +1,12 @@
-// 🤖 [IA] - OPERACIÓN ISLA RÁPIDA - Setup Mínimo (Tarea B)
-// Reducido de 321 líneas a ≤108 líneas (polyfills esenciales únicamente)
-// Ref: docs/qa/tests/031-operacion-isla-rapida.md
+// 🤖 [IA] - Setup Consolidado (setup.ts eliminado, mocks modulares integrados)
+// Un solo archivo de configuración para todos los tests
+// Mocks browser APIs importados desde módulos reutilizables
 
 import '@testing-library/jest-dom';
-import { expect, afterEach, beforeAll, afterAll, vi } from 'vitest';
+import { expect, afterEach, vi } from 'vitest';
 import { cleanup } from '@testing-library/react';
 import * as matchers from '@testing-library/jest-dom/matchers';
+import { setupAllBrowserApisMocks } from '@/testing/mocks/browser-apis';
 
 // ══════════════════════════════════════════════════════════════
 // 1️⃣ TESTING LIBRARY SETUP (Universal - ~20 líneas)
@@ -13,6 +14,14 @@ import * as matchers from '@testing-library/jest-dom/matchers';
 
 // Extend Vitest's expect with jest-dom matchers
 expect.extend(matchers);
+
+// ══════════════════════════════════════════════════════════════
+// 1.5️⃣ BROWSER APIs MOCKS (ResizeObserver, IntersectionObserver, etc.)
+// ══════════════════════════════════════════════════════════════
+// Importados desde módulos reutilizables en src/testing/mocks/browser-apis.ts
+// Incluye: ResizeObserver, IntersectionObserver, requestAnimationFrame,
+//          performance.now, getComputedStyle, CSS.supports
+setupAllBrowserApisMocks();
 
 // ══════════════════════════════════════════════════════════════
 // GUARDRAILS ANTI-FLAKE (Tarea E)
@@ -152,26 +161,20 @@ vi.stubGlobal('matchMedia', vi.fn((query: string) => ({
 })));
 
 // ══════════════════════════════════════════════════════════════
-// RESUMEN SETUP MÍNIMO
+// RESUMEN SETUP CONSOLIDADO
 // ══════════════════════════════════════════════════════════════
-// Total líneas: ~145 (aumentó de 94 por fix de mocks faltantes)
+// Este es el ÚNICO archivo de setup (setup.ts eliminado).
 //
-// AGREGADO NUEVAMENTE (Tarea B Fix - smoke.test.ts requiere):
-// ✅ localStorage/sessionStorage mocks con spies (~20 líneas)
-// ✅ window.matchMedia mock (~15 líneas)
+// GLOBAL (aplicado a todos los tests):
+// ✅ Testing Library matchers + cleanup afterEach
+// ✅ Browser APIs mocks via setupAllBrowserApisMocks():
+//    - ResizeObserver, IntersectionObserver, requestAnimationFrame,
+//    - performance.now, getComputedStyle, CSS.supports
+// ✅ Radix UI Pointer Capture polyfills (hasPointerCapture, set/release)
+// ✅ Radix UI Scroll APIs polyfills (scrollIntoView, scrollTo, scroll)
+// ✅ Storage mocks con vi.fn() spies (localStorage, sessionStorage)
+// ✅ matchMedia mock (responsive queries)
 //
-// REMOVIDO (ahora en módulos o eliminado):
-// - ResizeObserver (46 líneas) → mocks/browser-apis.ts
-// - IntersectionObserver (10 líneas) → mocks/browser-apis.ts
-// - Animation APIs (15 líneas) → mocks/browser-apis.ts
-// - getComputedStyle (42 líneas) → mocks/browser-apis.ts
-// - CSS.supports (15 líneas) → mocks/browser-apis.ts
-// - Console suppression (13 líneas) → ELIMINADO (anti-pattern)
-// - Body style override (15 líneas) → ELIMINADO (revisión pendiente)
-//
-// MANTENIDO (esencial):
-// ✅ Testing Library cleanup (14 líneas)
-// ✅ Radix UI Pointer Capture polyfills (43 líneas)
-// ✅ Radix UI Scroll APIs polyfills (37 líneas)
-// ✅ Storage mocks con vi.fn() spies (20 líneas)
-// ✅ matchMedia mock (15 líneas)
+// NO INCLUIDO (eliminado intencionalmente):
+// - Console suppression → anti-pattern que oculta errores reales
+// - Body style override → no necesario para tests

@@ -308,7 +308,7 @@ Firma Digital: ${dataHash}`;
         description: 'Por favor intente nuevamente'
       });
     }
-  }, [store, cashierIn, cashierOut, reportSent, generateReport]);
+  }, [store, cashierIn, cashierOut, generateReport, handleCopyToClipboard]);
 
   // 🤖 [IA] - v2.8: Handler confirmación explícita usuario (actualizado para cerrar modal instrucciones)
   const handleConfirmSent = useCallback(() => {

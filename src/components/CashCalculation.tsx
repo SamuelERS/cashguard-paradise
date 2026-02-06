@@ -25,7 +25,8 @@ import { toast } from "sonner"; // 🤖 [IA] - v1.1.15 - Migrated to Sonner for 
 import { CashCount, ElectronicPayments } from "@/types/cash";
 import { PhaseState, DeliveryCalculation } from "@/types/phases";
 // 🤖 [IA] - v1.3.6: MÓDULO 3 - Import tipos para sección anomalías
-import type { VerificationBehavior, VerificationAttempt } from "@/types/verification";
+import type { VerificationBehavior } from "@/types/verification";
+import { getDenominationName, formatTimestamp, generateCriticalAlertsBlock, generateWarningAlertsBlock } from '@/utils/reportHelpers';
 // 🤖 [IA] - v1.4.0 FASE 5: Import tipos y constantes para gastos
 import { DailyExpense, EXPENSE_CATEGORY_EMOJI, EXPENSE_CATEGORY_LABEL } from '@/types/expenses';
 import { getStoreById, getEmployeeById } from "@/data/paradise";
@@ -174,71 +175,6 @@ const CashCalculation = ({
     }
   }, [isCalculated, performCalculation]);
 
-  // Security validations before generating reports
-  const validatePhaseCompletion = () => {
-    // Phase 1: Validate all 13 fields completed
-    const phase1Fields = [
-      cashCount.penny, cashCount.nickel, cashCount.dime, cashCount.quarter, 
-      cashCount.dollarCoin, cashCount.bill1, cashCount.bill5, cashCount.bill10, 
-      cashCount.bill20, cashCount.bill50, cashCount.bill100,
-      electronicPayments.credomatic, electronicPayments.promerica
-    ];
-    
-    if (phase1Fields.some(field => field === undefined || field === null)) {
-      throw new Error("❌ Conteo incompleto - Faltan campos por completar");
-    }
-
-    // Phase 2: Validate division is correct (if applicable)
-    if (!phaseState?.shouldSkipPhase2 && deliveryCalculation) {
-      const totalCash = calculateCashTotal(cashCount);
-      const expectedInCash = 50;
-      const expectedToDeliver = totalCash - expectedInCash;
-      
-      if (Math.abs(deliveryCalculation.amountToDeliver - expectedToDeliver) > 0.01) {
-        throw new Error("❌ División incorrecta - Los montos no cuadran");
-      }
-    }
-
-    return true;
-  };
-
-  const generateDataHash = () => {
-    const hashData = {
-      storeId,
-      cashierId,
-      witnessId,
-      timestamp: calculationData?.timestamp || '',
-      totalCash: calculationData?.totalCash || 0,
-      totalElectronic: calculationData?.totalElectronic || 0,
-      expectedSales,
-      phaseCompleted: phaseState?.currentPhase || 3
-    };
-    
-    // Simple but effective hash for integrity
-    return btoa(JSON.stringify(hashData)).slice(-12);
-  };
-
-  const generateDenominationDetails = () => {
-    const denominations = [
-      { key: 'penny', label: '1¢', value: 0.01 },
-      { key: 'nickel', label: '5¢', value: 0.05 },
-      { key: 'dime', label: '10¢', value: 0.10 },
-      { key: 'quarter', label: '25¢', value: 0.25 },
-      { key: 'dollarCoin', label: '$1 moneda', value: 1.00 },
-      { key: 'bill1', label: '$1', value: 1.00 },
-      { key: 'bill5', label: '$5', value: 5.00 },
-      { key: 'bill10', label: '$10', value: 10.00 },
-      { key: 'bill20', label: '$20', value: 20.00 },
-      { key: 'bill50', label: '$50', value: 50.00 },
-      { key: 'bill100', label: '$100', value: 100.00 }
-    ];
-
-    return denominations
-      .filter(d => cashCount[d.key as keyof CashCount] > 0)
-      .map(d => `${d.label} × ${cashCount[d.key as keyof CashCount]} = ${formatCurrency(cashCount[d.key as keyof CashCount] * d.value)}`)
-      .join('\n');
-  };
-
   // Generate display for remaining denominations when Phase 2 was skipped
   // 🤖 [IA] - v1.0.0: Refactorizado para usar componente reutilizable
   const generateRemainingDenominationsDisplay = (remainingCash: CashCount) => {
@@ -265,319 +201,6 @@ const CashCalculation = ({
         <p className="text-xs">No hay suficiente efectivo para cambio de $50.00</p>
       </div>
     );
-  };
-
-  // Generate remaining cash details for text report
-  const generateRemainingCashDetails = () => {
-    let remainingCash: CashCount;
-
-    // Determine which denominations remain in cash
-    if (!phaseState?.shouldSkipPhase2 && deliveryCalculation?.denominationsToKeep) {
-      // Phase 2 was completed, use the verified denominations to keep
-      remainingCash = deliveryCalculation.denominationsToKeep;
-    } else if (phaseState?.shouldSkipPhase2) {
-      // Phase 2 was skipped (≤$50), all cash remains
-      remainingCash = cashCount;
-    } else {
-      // Fallback: try to calculate $50
-      const changeResult = calculateChange50(cashCount);
-      if (changeResult.possible && changeResult.change) {
-        remainingCash = changeResult.change as CashCount;
-      } else {
-        // If can't make exact $50, don't show duplicate data
-        // Return empty to avoid confusion
-        return "No se puede hacer cambio exacto de $50.00";
-      }
-    }
-
-    const denominations = [
-      { key: 'penny', label: '1¢ centavo', value: 0.01 },
-      { key: 'nickel', label: '5¢ centavos', value: 0.05 },
-      { key: 'dime', label: '10¢ centavos', value: 0.10 },
-      { key: 'quarter', label: '25¢ centavos', value: 0.25 },
-      { key: 'dollarCoin', label: '$1 moneda', value: 1.00 },
-      { key: 'bill1', label: '$1', value: 1.00 },
-      { key: 'bill5', label: '$5', value: 5.00 },
-      { key: 'bill10', label: '$10', value: 10.00 },
-      { key: 'bill20', label: '$20', value: 20.00 },
-      { key: 'bill50', label: '$50', value: 50.00 },
-      { key: 'bill100', label: '$100', value: 100.00 }
-    ];
-
-    const details = denominations
-      .filter(d => remainingCash[d.key as keyof CashCount] > 0)
-      .map(d => {
-        const quantity = remainingCash[d.key as keyof CashCount];
-        const subtotal = quantity * d.value;
-        return `${d.label} × ${quantity} = ${formatCurrency(subtotal)}`;
-      });
-
-    return details.join('\n');
-  };
-
-  // 🤖 [IA] - v1.3.6: MÓDULO 3 - Helper para nombres de denominaciones en español
-  const getDenominationName = (key: keyof CashCount): string => {
-    const names: Record<keyof CashCount, string> = {
-      penny: 'Un centavo (1¢)',
-      nickel: 'Cinco centavos (5¢)',
-      dime: 'Diez centavos (10¢)',
-      quarter: 'Veinticinco centavos (25¢)',
-      dollarCoin: 'Moneda de un dólar ($1)',
-      bill1: 'Billete de un dólar ($1)',
-      bill5: 'Billete de cinco dólares ($5)',
-      bill10: 'Billete de diez dólares ($10)',
-      bill20: 'Billete de veinte dólares ($20)',
-      bill50: 'Billete de cincuenta dólares ($50)',
-      bill100: 'Billete de cien dólares ($100)'
-    };
-    return names[key] || key;
-  };
-
-  // 🤖 [IA] - v1.3.6: MÓDULO 3 - Helper para formatear timestamp ISO 8601 a HH:MM:SS
-  const formatTimestamp = (isoString: string): string => {
-    try {
-      const date = new Date(isoString);
-      return date.toLocaleTimeString('es-SV', {
-        timeZone: 'America/El_Salvador',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: false
-      });
-    } catch (error) {
-      return isoString; // Fallback si timestamp es inválido
-    }
-  };
-
-  // 🤖 [IA] - v1.3.6: MÓDULO 3 - Generar detalle de anomalías para reporte
-  const generateAnomalyDetails = (behavior: VerificationBehavior): string => {
-    // Filtrar solo intentos problemáticos:
-    // - Todos los intentos incorrectos (isCorrect: false)
-    // - Intentos correctos en 2do o 3er intento (attemptNumber > 1 y isCorrect: true)
-    const problematicAttempts = behavior.attempts.filter(
-      a => !a.isCorrect || a.attemptNumber > 1
-    );
-
-    if (problematicAttempts.length === 0) {
-      return 'Sin anomalías detectadas - Todos los intentos correctos en primer intento ✅';
-    }
-
-    return problematicAttempts.map(attempt => {
-      const denom = getDenominationName(attempt.stepKey);
-      const time = formatTimestamp(attempt.timestamp);
-      const status = attempt.isCorrect ? '✅ CORRECTO' : '❌ INCORRECTO';
-
-      return `${status} | ${denom}
-   Intento #${attempt.attemptNumber} | Hora: ${time}
-   Ingresado: ${attempt.inputValue} unidades | Esperado: ${attempt.expectedValue} unidades`;
-    }).join('\n\n');
-  };
-
-  // 🤖 [IA] - v1.3.6U: CAMBIO #3 - Bloque alertas críticas con "Esperado:" en línea separada + timestamps video
-  const generateCriticalAlertsBlock = (behavior: VerificationBehavior): string => {
-    // Filtrar solo severidades críticas (critical_severe, critical_inconsistent)
-    const criticalDenoms = behavior.denominationsWithIssues.filter(d =>
-      d.severity === 'critical_severe' || d.severity === 'critical_inconsistent'
-    );
-
-    if (criticalDenoms.length === 0) return '';
-
-    const alerts = criticalDenoms.map(issue => {
-      const denomName = getDenominationName(issue.denomination);
-      const attemptsStr = issue.attempts.join(' → ');
-
-      // Buscar timestamps del primer y último intento para esta denominación
-      const attemptsForDenom = behavior.attempts.filter(a => a.stepKey === issue.denomination);
-      let videoTimestamp = '';
-      if (attemptsForDenom.length > 0) {
-        const firstTime = formatTimestamp(attemptsForDenom[0].timestamp);
-        const lastTime = formatTimestamp(attemptsForDenom[attemptsForDenom.length - 1].timestamp);
-        videoTimestamp = `   📹 Video: ${firstTime} - ${lastTime}`;
-      }
-
-      // Descripción según severity
-      const description = issue.severity === 'critical_severe' ?
-        '   ⚠️ Patrón errático' :
-        '   ⚠️ Inconsistencia severa';
-
-      // Valor esperado (primer valor de attempts es el correcto)
-      const expectedValue = attemptsForDenom.length > 0 ? attemptsForDenom[0].expectedValue : '?';
-      const expectedUnit = expectedValue === 1 ? 'unidad' : 'unidades';
-
-      return `• ${denomName}
-   Esperado: ${expectedValue} ${expectedUnit}
-   Intentos: ${attemptsStr}
-${videoTimestamp}
-${description}`;
-    }).join('\n\n');
-
-    return `🔴 *CRÍTICAS (${criticalDenoms.length})*
-
-${alerts}`;
-  };
-
-  // 🤖 [IA] - v1.3.6V: FIX #2 - Generar sección "LO QUE RECIBES" con checkboxes para validación física
-  const generateDeliveryChecklistSection = (): string => {
-    // Si Phase 2 no se ejecutó (≤$50), no hay entrega
-    if (phaseState?.shouldSkipPhase2) {
-      return '';
-    }
-
-    if (!deliveryCalculation?.deliverySteps || deliveryCalculation.deliverySteps.length === 0) {
-      return '';
-    }
-
-    const amountToDeliver = deliveryCalculation.amountToDeliver || 0;
-
-    // Separar billetes y monedas de deliverySteps
-    const billKeys = ['bill100', 'bill50', 'bill20', 'bill10', 'bill5', 'bill1'];
-    const coinKeys = ['dollarCoin', 'quarter', 'dime', 'nickel', 'penny'];
-
-    const bills = deliveryCalculation.deliverySteps
-      .filter((step: DeliveryStep) => billKeys.includes(step.key))
-      .map((step: DeliveryStep) => `☐ ${step.label} × ${step.quantity} = ${formatCurrency(step.value * step.quantity)}`);
-
-    const coins = deliveryCalculation.deliverySteps
-      .filter((step: DeliveryStep) => coinKeys.includes(step.key))
-      .map((step: DeliveryStep) => `☐ ${step.label} × ${step.quantity} = ${formatCurrency(step.value * step.quantity)}`);
-
-    let checklistContent = '';
-
-    if (bills.length > 0) {
-      checklistContent += `Billetes:\n${bills.join('\n')}`;
-    }
-
-    if (coins.length > 0) {
-      if (bills.length > 0) checklistContent += '\n\n';
-      checklistContent += `Monedas:\n${coins.join('\n')}`;
-    }
-
-    return `${WHATSAPP_SEPARATOR}
-
-📦 *LO QUE RECIBES (${formatCurrency(amountToDeliver)})*
-
-${checklistContent}
-`;
-  };
-
-  // 🤖 [IA] - v1.3.6V: FIX #3 - Generar sección "LO QUE QUEDÓ EN CAJA" con checkboxes
-  const generateRemainingChecklistSection = (): string => {
-    let remainingCash: CashCount;
-    let remainingAmount = 50; // Default
-
-    // Determinar qué denominaciones quedaron en caja
-    if (!phaseState?.shouldSkipPhase2 && deliveryCalculation?.denominationsToKeep) {
-      // Phase 2 ejecutado: usar denominationsToKeep
-      remainingCash = deliveryCalculation.denominationsToKeep;
-      // 🤖 [IA] - v1.3.6AD2: FIX BUG DIFERENCIA VUELTO - Usar amountRemaining si existe (ajustado post-verificación)
-      // Ejemplo: 75 esperado → 70 aceptado = $50.00 → $49.95 ajustado
-      remainingAmount = deliveryCalculation.amountRemaining ?? 50;
-    } else if (phaseState?.shouldSkipPhase2) {
-      // Phase 2 omitido (≤$50): todo el efectivo queda en caja
-      remainingCash = cashCount;
-      remainingAmount = calculationData?.totalCash || 0;
-    } else {
-      // Fallback: calcular $50
-      const changeResult = calculateChange50(cashCount);
-      if (!changeResult.possible || !changeResult.change) {
-        return ''; // No se puede mostrar si no hay cambio
-      }
-      remainingCash = changeResult.change as CashCount;
-      remainingAmount = 50;
-    }
-
-    // Agrupar billetes y monedas (mayor a menor)
-    const denominations = [
-      { key: 'bill100', label: '$100', value: 100.00 },
-      { key: 'bill50', label: '$50', value: 50.00 },
-      { key: 'bill20', label: '$20', value: 20.00 },
-      { key: 'bill10', label: '$10', value: 10.00 },
-      { key: 'bill5', label: '$5', value: 5.00 },
-      { key: 'bill1', label: '$1', value: 1.00 },
-      { key: 'dollarCoin', label: '$1 moneda', value: 1.00 },
-      { key: 'quarter', label: '25¢', value: 0.25 },
-      { key: 'dime', label: '10¢', value: 0.10 },
-      { key: 'nickel', label: '5¢', value: 0.05 },
-      { key: 'penny', label: '1¢', value: 0.01 }
-    ];
-
-    const billKeys = ['bill100', 'bill50', 'bill20', 'bill10', 'bill5', 'bill1'];
-    const coinKeys = ['dollarCoin', 'quarter', 'dime', 'nickel', 'penny'];
-
-    const bills = denominations
-      .filter(d => billKeys.includes(d.key) && remainingCash[d.key as keyof CashCount] > 0)
-      .map(d => {
-        const quantity = remainingCash[d.key as keyof CashCount];
-        return `☐ ${d.label} × ${quantity} = ${formatCurrency(quantity * d.value)}`;
-      });
-
-    const coins = denominations
-      .filter(d => coinKeys.includes(d.key) && remainingCash[d.key as keyof CashCount] > 0)
-      .map(d => {
-        const quantity = remainingCash[d.key as keyof CashCount];
-        return `☐ ${d.label} × ${quantity} = ${formatCurrency(quantity * d.value)}`;
-      });
-
-    let checklistContent = '';
-
-    if (bills.length > 0) {
-      checklistContent += `${bills.join('\n')}`;
-    }
-
-    if (coins.length > 0) {
-      if (bills.length > 0) checklistContent += '\n';
-      checklistContent += `${coins.join('\n')}`;
-    }
-
-    if (!checklistContent) {
-      return ''; // No hay denominaciones
-    }
-
-    return `${WHATSAPP_SEPARATOR}
-
-🏢 *LO QUE QUEDÓ EN CAJA (${formatCurrency(remainingAmount)})*
-
-${checklistContent}
-
-`;
-  };
-
-  // 🤖 [IA] - v1.3.6U: CAMBIO #4 - Bloque advertencias con MISMO formato que críticas (timestamps + esperado)
-  const generateWarningAlertsBlock = (behavior: VerificationBehavior): string => {
-    // Filtrar solo severidades de advertencia (warning_retry, warning_override)
-    const warningDenoms = behavior.denominationsWithIssues.filter(d =>
-      d.severity === 'warning_retry' || d.severity === 'warning_override'
-    );
-
-    if (warningDenoms.length === 0) return '';
-
-    const alerts = warningDenoms.map(issue => {
-      const denomName = getDenominationName(issue.denomination);
-      const attemptsStr = issue.attempts.join(' → ');
-
-      // Buscar timestamps del primer y último intento para esta denominación
-      const attemptsForDenom = behavior.attempts.filter(a => a.stepKey === issue.denomination);
-      let videoTimestamp = '';
-      if (attemptsForDenom.length > 0) {
-        const firstTime = formatTimestamp(attemptsForDenom[0].timestamp);
-        const lastTime = formatTimestamp(attemptsForDenom[attemptsForDenom.length - 1].timestamp);
-        videoTimestamp = `   📹 Video: ${firstTime} - ${lastTime}`;
-      }
-
-      // Valor esperado (primer valor de attempts es el correcto)
-      const expectedValue = attemptsForDenom.length > 0 ? attemptsForDenom[0].expectedValue : '?';
-      const expectedUnit = expectedValue === 1 ? 'unidad' : 'unidades';
-
-      return `• ${denomName}
-   Esperado: ${expectedValue} ${expectedUnit}
-   Intentos: ${attemptsStr}
-${videoTimestamp}
-   ℹ️ Corregido en ${attemptsForDenom.length}° intento`;
-    }).join('\n\n');
-
-    return `⚠️ *ADVERTENCIAS (${warningDenoms.length})*
-
-${alerts}`;
   };
 
   // 🤖 [IA] - v1.4.0 FASE 5: Generar sección de gastos del día
@@ -611,6 +234,188 @@ ${expensesList}
   }, [expenses]);
 
   const generateCompleteReport = useCallback(() => {
+    // 🤖 [IA] - Funciones stateful movidas DENTRO del useCallback para eliminar warnings react-hooks/exhaustive-deps
+    // Estas funciones cierran sobre estado del componente y se usan exclusivamente aquí
+
+    // Security validations before generating reports
+    const validatePhaseCompletion = () => {
+      const phase1Fields = [
+        cashCount.penny, cashCount.nickel, cashCount.dime, cashCount.quarter,
+        cashCount.dollarCoin, cashCount.bill1, cashCount.bill5, cashCount.bill10,
+        cashCount.bill20, cashCount.bill50, cashCount.bill100,
+        electronicPayments.credomatic, electronicPayments.promerica
+      ];
+
+      if (phase1Fields.some(field => field === undefined || field === null)) {
+        throw new Error("❌ Conteo incompleto - Faltan campos por completar");
+      }
+
+      if (!phaseState?.shouldSkipPhase2 && deliveryCalculation) {
+        const totalCash = calculateCashTotal(cashCount);
+        const expectedInCash = 50;
+        const expectedToDeliver = totalCash - expectedInCash;
+
+        if (Math.abs(deliveryCalculation.amountToDeliver - expectedToDeliver) > 0.01) {
+          throw new Error("❌ División incorrecta - Los montos no cuadran");
+        }
+      }
+
+      return true;
+    };
+
+    const generateDataHash = () => {
+      const hashData = {
+        storeId,
+        cashierId,
+        witnessId,
+        timestamp: calculationData?.timestamp || '',
+        totalCash: calculationData?.totalCash || 0,
+        totalElectronic: calculationData?.totalElectronic || 0,
+        expectedSales,
+        phaseCompleted: phaseState?.currentPhase || 3
+      };
+
+      return btoa(JSON.stringify(hashData)).slice(-12);
+    };
+
+    const generateDenominationDetails = () => {
+      const denominations = [
+        { key: 'penny', label: '1¢', value: 0.01 },
+        { key: 'nickel', label: '5¢', value: 0.05 },
+        { key: 'dime', label: '10¢', value: 0.10 },
+        { key: 'quarter', label: '25¢', value: 0.25 },
+        { key: 'dollarCoin', label: '$1 moneda', value: 1.00 },
+        { key: 'bill1', label: '$1', value: 1.00 },
+        { key: 'bill5', label: '$5', value: 5.00 },
+        { key: 'bill10', label: '$10', value: 10.00 },
+        { key: 'bill20', label: '$20', value: 20.00 },
+        { key: 'bill50', label: '$50', value: 50.00 },
+        { key: 'bill100', label: '$100', value: 100.00 }
+      ];
+
+      return denominations
+        .filter(d => cashCount[d.key as keyof CashCount] > 0)
+        .map(d => `${d.label} × ${cashCount[d.key as keyof CashCount]} = ${formatCurrency(cashCount[d.key as keyof CashCount] * d.value)}`)
+        .join('\n');
+    };
+
+    const generateDeliveryChecklistSection = (): string => {
+      if (phaseState?.shouldSkipPhase2) {
+        return '';
+      }
+
+      if (!deliveryCalculation?.deliverySteps || deliveryCalculation.deliverySteps.length === 0) {
+        return '';
+      }
+
+      const amountToDeliver = deliveryCalculation.amountToDeliver || 0;
+
+      const billKeys = ['bill100', 'bill50', 'bill20', 'bill10', 'bill5', 'bill1'];
+      const coinKeys = ['dollarCoin', 'quarter', 'dime', 'nickel', 'penny'];
+
+      const bills = deliveryCalculation.deliverySteps
+        .filter((step: DeliveryStep) => billKeys.includes(step.key))
+        .map((step: DeliveryStep) => `☐ ${step.label} × ${step.quantity} = ${formatCurrency(step.value * step.quantity)}`);
+
+      const coins = deliveryCalculation.deliverySteps
+        .filter((step: DeliveryStep) => coinKeys.includes(step.key))
+        .map((step: DeliveryStep) => `☐ ${step.label} × ${step.quantity} = ${formatCurrency(step.value * step.quantity)}`);
+
+      let checklistContent = '';
+
+      if (bills.length > 0) {
+        checklistContent += `Billetes:\n${bills.join('\n')}`;
+      }
+
+      if (coins.length > 0) {
+        if (bills.length > 0) checklistContent += '\n\n';
+        checklistContent += `Monedas:\n${coins.join('\n')}`;
+      }
+
+      return `${WHATSAPP_SEPARATOR}
+
+📦 *LO QUE RECIBES (${formatCurrency(amountToDeliver)})*
+
+${checklistContent}
+`;
+    };
+
+    const generateRemainingChecklistSection = (): string => {
+      let remainingCash: CashCount;
+      let remainingAmount = 50;
+
+      if (!phaseState?.shouldSkipPhase2 && deliveryCalculation?.denominationsToKeep) {
+        remainingCash = deliveryCalculation.denominationsToKeep;
+        remainingAmount = deliveryCalculation.amountRemaining ?? 50;
+      } else if (phaseState?.shouldSkipPhase2) {
+        remainingCash = cashCount;
+        remainingAmount = calculationData?.totalCash || 0;
+      } else {
+        const changeResult = calculateChange50(cashCount);
+        if (!changeResult.possible || !changeResult.change) {
+          return '';
+        }
+        remainingCash = changeResult.change as CashCount;
+        remainingAmount = 50;
+      }
+
+      const denominations = [
+        { key: 'bill100', label: '$100', value: 100.00 },
+        { key: 'bill50', label: '$50', value: 50.00 },
+        { key: 'bill20', label: '$20', value: 20.00 },
+        { key: 'bill10', label: '$10', value: 10.00 },
+        { key: 'bill5', label: '$5', value: 5.00 },
+        { key: 'bill1', label: '$1', value: 1.00 },
+        { key: 'dollarCoin', label: '$1 moneda', value: 1.00 },
+        { key: 'quarter', label: '25¢', value: 0.25 },
+        { key: 'dime', label: '10¢', value: 0.10 },
+        { key: 'nickel', label: '5¢', value: 0.05 },
+        { key: 'penny', label: '1¢', value: 0.01 }
+      ];
+
+      const billKeys = ['bill100', 'bill50', 'bill20', 'bill10', 'bill5', 'bill1'];
+      const coinKeys = ['dollarCoin', 'quarter', 'dime', 'nickel', 'penny'];
+
+      const bills = denominations
+        .filter(d => billKeys.includes(d.key) && remainingCash[d.key as keyof CashCount] > 0)
+        .map(d => {
+          const quantity = remainingCash[d.key as keyof CashCount];
+          return `☐ ${d.label} × ${quantity} = ${formatCurrency(quantity * d.value)}`;
+        });
+
+      const coins = denominations
+        .filter(d => coinKeys.includes(d.key) && remainingCash[d.key as keyof CashCount] > 0)
+        .map(d => {
+          const quantity = remainingCash[d.key as keyof CashCount];
+          return `☐ ${d.label} × ${quantity} = ${formatCurrency(quantity * d.value)}`;
+        });
+
+      let checklistContent = '';
+
+      if (bills.length > 0) {
+        checklistContent += `${bills.join('\n')}`;
+      }
+
+      if (coins.length > 0) {
+        if (bills.length > 0) checklistContent += '\n';
+        checklistContent += `${coins.join('\n')}`;
+      }
+
+      if (!checklistContent) {
+        return '';
+      }
+
+      return `${WHATSAPP_SEPARATOR}
+
+🏢 *LO QUE QUEDÓ EN CAJA (${formatCurrency(remainingAmount)})*
+
+${checklistContent}
+
+`;
+    };
+
+    // --- Inicio lógica principal del reporte ---
+
     validatePhaseCompletion();
 
     const denominationDetails = generateDenominationDetails();
@@ -779,10 +584,7 @@ ${WHATSAPP_SEPARATOR}
 
 Firma Digital: ${dataHash}`;
   }, [calculationData, electronicPayments, deliveryCalculation, store, cashier, witness, phaseState, expectedSales, pendingDeliveries,
-      validatePhaseCompletion, generateDenominationDetails, generateDataHash, generateCriticalAlertsBlock,
-      generateWarningAlertsBlock, generateDeliveryChecklistSection, generateRemainingChecklistSection, generateExpensesSection]);
-  // 🤖 [IA] - v3.0 FASE 4: pendingDeliveries agregado para ajuste SICAR
-  // 🤖 [IA] - v1.4.0 FASE 5: expenses NO incluido en deps porque generateExpensesSection ya lo captura
+      cashCount, storeId, cashierId, witnessId, generateExpensesSection]);
 
   // 🤖 [IA] - v2.4.1: Handler inteligente con detección de plataforma + copia automática
   // v2.4.1b: Abre modal de instrucciones inmediatamente en desktop (sin toast automático)

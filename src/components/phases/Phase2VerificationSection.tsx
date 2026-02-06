@@ -140,25 +140,6 @@ export function Phase2VerificationSection({
   // Solución: useCallback con única dependencia attemptHistory (referencia estable)
   // 🤖 [IA] - v1.3.6: MÓDULO 1 - Construir objeto VerificationBehavior desde attemptHistory
   const buildVerificationBehavior = useCallback((): VerificationBehavior => {
-    // 🤖 [IA] - v1.3.6S: DEBUG CHECKPOINT #1 - Estado inicial attemptHistory Map
-    console.log('[DEBUG v1.3.6S] ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.log('[DEBUG v1.3.6S] 📊 buildVerificationBehavior() INICIO');
-    console.log('[DEBUG v1.3.6S] 🗺️ attemptHistory Map size:', attemptHistory.size);
-    console.log('[DEBUG v1.3.6S] 🗺️ attemptHistory Map keys:', Array.from(attemptHistory.keys()));
-    console.log('[DEBUG v1.3.6S] 🗺️ attemptHistory Map completo:', JSON.stringify(
-      Array.from(attemptHistory.entries()).map(([key, attempts]) => ({
-        denomination: key,
-        attempts: attempts.map(a => ({
-          attemptNumber: a.attemptNumber,
-          inputValue: a.inputValue,
-          expectedValue: a.expectedValue,
-          isCorrect: a.isCorrect
-        }))
-      })),
-      null,
-      2
-    ));
-
     const allAttempts: VerificationAttempt[] = [];
     // 🤖 [IA] - v1.3.6Y: firstAttemptSuccesses se calculará por diferencia después del forEach
     let secondAttemptSuccesses = 0;
@@ -179,16 +160,6 @@ export function Phase2VerificationSection({
 
     // Iterar sobre attemptHistory Map
     attemptHistory.forEach((attempts, stepKey) => {
-      // 🤖 [IA] - v1.3.6S: DEBUG CHECKPOINT #2 - Análisis de cada denominación
-      console.log('[DEBUG v1.3.6S] ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      console.log('[DEBUG v1.3.6S] 🔍 Analizando denominación:', stepKey);
-      console.log('[DEBUG v1.3.6S] 🔍 Número de intentos:', attempts.length);
-      console.log('[DEBUG v1.3.6S] 🔍 Intentos detallados:', attempts.map(a => ({
-        attemptNumber: a.attemptNumber,
-        inputValue: a.inputValue,
-        expectedValue: a.expectedValue,
-        isCorrect: a.isCorrect
-      })));
       allAttempts.push(...attempts);
 
       // 🤖 [IA] - v1.3.6P: Determinar severity para esta denominación
@@ -254,27 +225,13 @@ export function Phase2VerificationSection({
         }
       }
 
-      // 🤖 [IA] - v1.3.6S: DEBUG CHECKPOINT #3 - Determinación severity
-      console.log('[DEBUG v1.3.6S] ⚖️ Severity determinada para', stepKey, ':', currentSeverity);
-      console.log('[DEBUG v1.3.6S] ⚖️ ¿Es success? (NO debería agregarse):', currentSeverity === 'success');
-
       // 🤖 [IA] - v1.3.6P: Agregar a denominationsWithIssues si NO es success
       if (currentSeverity !== 'success') {
-        // 🤖 [IA] - v1.3.6S: DEBUG CHECKPOINT #4 - Agregando a denominationsWithIssues
-        console.log('[DEBUG v1.3.6S] ➕ AGREGANDO a denominationsWithIssues:', {
-          denomination: stepKey,
-          severity: currentSeverity,
-          attempts: attempts.map(a => a.inputValue)
-        });
-
         denominationsWithIssues.push({
           denomination: stepKey as keyof CashCount,
           severity: currentSeverity,
-          attempts: attempts.map(a => a.inputValue) // Array de valores ingresados
+          attempts: attempts.map(a => a.inputValue)
         });
-      } else {
-        // 🤖 [IA] - v1.3.6S: DEBUG CHECKPOINT #4b - NO agregando (success)
-        console.log('[DEBUG v1.3.6S] ⏭️ OMITIENDO', stepKey, '- severity es success, NO se agrega a denominationsWithIssues');
       }
     });
 
@@ -283,19 +240,6 @@ export function Phase2VerificationSection({
     // Solución: Total denominaciones - denominaciones con issues = denominaciones perfectas
     const totalDenominations = verificationSteps.length;
     const firstAttemptSuccesses = totalDenominations - denominationsWithIssues.length;
-
-    // 🤖 [IA] - v1.3.6S: DEBUG CHECKPOINT #5 - Estado final antes de return
-    console.log('[DEBUG v1.3.6S] ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.log('[DEBUG v1.3.6S] 📊 buildVerificationBehavior() PRE-RETURN');
-    console.log('[DEBUG v1.3.6S] 📊 Total attempts procesados:', allAttempts.length);
-    console.log('[DEBUG v1.3.6S] 📊 denominationsWithIssues length:', denominationsWithIssues.length);
-    console.log('[DEBUG v1.3.6S] 📊 denominationsWithIssues array completo:', JSON.stringify(denominationsWithIssues, null, 2));
-    console.log('[DEBUG v1.3.6Y] 📊 totalDenominations:', totalDenominations);
-    console.log('[DEBUG v1.3.6Y] 📊 firstAttemptSuccesses (calculado):', firstAttemptSuccesses, '=', totalDenominations, '-', denominationsWithIssues.length);
-    console.log('[DEBUG v1.3.6S] 📊 secondAttemptSuccesses:', secondAttemptSuccesses);
-    console.log('[DEBUG v1.3.6S] 📊 forcedOverrides:', forcedOverrides);
-    console.log('[DEBUG v1.3.6S] 📊 criticalInconsistencies:', criticalInconsistencies);
-    console.log('[DEBUG v1.3.6S] 📊 severeInconsistencies:', severeInconsistencies);
 
     const finalBehavior = {
       totalAttempts: allAttempts.length,
@@ -312,12 +256,6 @@ export function Phase2VerificationSection({
       severeInconsistenciesDenoms,
       denominationsWithIssues // 🤖 [IA] - v1.3.6P: Array consolidado para reporte WhatsApp
     };
-
-    // 🤖 [IA] - v1.3.6S: DEBUG CHECKPOINT #6 - Objeto final VerificationBehavior
-    console.log('[DEBUG v1.3.6S] ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.log('[DEBUG v1.3.6S] 🎯 OBJETO FINAL VerificationBehavior:');
-    console.log('[DEBUG v1.3.6S] 🎯 VerificationBehavior completo:', JSON.stringify(finalBehavior, null, 2));
-    console.log('[DEBUG v1.3.6S] ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
     return finalBehavior;
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -355,13 +293,7 @@ export function Phase2VerificationSection({
         const behavior = buildVerificationBehavior();
 
         if (onVerificationBehaviorCollected) {
-          console.log('[Phase2VerificationSection] 📊 VerificationBehavior construido:', behavior);
-          console.log('[Phase2VerificationSection] 🔍 Total de attempts en behavior:', behavior.totalAttempts);
-          console.log('[Phase2VerificationSection] 🔍 Intentos inconsistentes:', behavior.criticalInconsistencies + behavior.severeInconsistencies);
           onVerificationBehaviorCollected(behavior);
-          console.log('[Phase2VerificationSection] ✅ Callback onVerificationBehaviorCollected ejecutado exitosamente');
-        } else {
-          console.warn('[Phase2VerificationSection] ⚠️ onVerificationBehaviorCollected es undefined - behavior NO se recolectará');
         }
 
         // ⏱️ Small delay para garantizar state update en Phase2Manager antes de section complete
