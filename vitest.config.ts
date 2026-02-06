@@ -24,7 +24,9 @@ export default defineConfig({
     globals: true,
     
     // Setup files to run before tests
-    setupFiles: './src/__tests__/setup.ts',
+    // 🤖 [IA] - OPERACIÓN ISLA RÁPIDA: Migrado a setup mínimo (94 líneas vs 321)
+    // Ref: docs/qa/tests/031-operacion-isla-rapida.md
+    setupFiles: './src/__tests__/setup.minimal.ts',
     
     // Coverage configuration
     // 🤖 [IA] - Operación Cristal Fase 1: Coverage scoped to Deliveries/PIN module
@@ -100,11 +102,16 @@ export default defineConfig({
       }
     },
 
-    // Pool configuration para mejor performance con mocks
+    // 🤖 [IA] - OPERACIÓN ISLA RÁPIDA: Pool configuration para paralelismo estable
+    // Decisión: pool: 'forks' (preferido para estabilidad con librerías nativas)
+    // Alternativa: pool: 'threads' (más rápido, usar si no hay issues)
+    // Ref: docs/qa/tests/031-operacion-isla-rapida.md Tarea D
     pool: 'forks',
     poolOptions: {
       forks: {
-        singleFork: true // Evitar conflictos entre workers con mocks globales
+        singleFork: false, // ⚠️ CAMBIADO: false para habilitar paralelismo real
+        maxForks: 4, // Límite razonable para evitar saturación
+        minForks: 1
       }
     }
   },
