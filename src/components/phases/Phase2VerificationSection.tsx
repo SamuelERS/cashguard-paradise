@@ -1,4 +1,5 @@
-// 🤖 [IA] - v1.3.2.3: FASE 3 MÓDULO 3 - Extracción Header + Progress → Componentes separados (-87 líneas neto)
+// 🤖 [IA] - v1.3.2.4: FASE 4 - Extracción VerificationInputField component (-70 líneas neto)
+// Previous: v1.3.2.3 - FASE 3 MÓDULO 3 - Extracción Header + Progress → Componentes separados (-87 líneas neto)
 // Previous: v1.3.7AI - FIX CRÍTICO warning_override NO reportado - clearAttemptHistory() removido handleForce() (patrón v1.3.6M/v1.3.6T)
 // Previous: v1.3.7AH - OCULTACIÓN MENSAJE "CANTIDAD CORRECTA" - Conditional success message (5 elementos ocultos)
 // 🤖 [IA] - v1.3.6M: FIX CRÍTICO - clearAttemptHistory() borraba intentos antes de buildVerificationBehavior (reporte sin datos)
@@ -33,9 +34,17 @@ import type { CashCount } from '@/types/cash'; // 🤖 [IA] - v1.3.6: MÓDULO 1 
 // 🤖 [IA] - Desmonolitado desde Phase2VerificationSection.tsx
 import { getDenominationDescription, SHOW_REMAINING_AMOUNTS } from '@/utils/verification-helpers';
 import { useVerificationBehavior } from '@/hooks/useVerificationBehavior';
+// 🤖 [IA] - FASE 5 PASO 2: Utilidad centralizada para imágenes denominaciones (elimina DRY violation)
+import { getDenominationImageElement } from '@/utils/denomination-images';
 // 🤖 [IA] - v1.3.2.3: FASE 3 MÓDULO 3 - Componentes Header + Progress extraídos
 import { VerificationHeader } from '@/components/verification/VerificationHeader';
 import { VerificationProgress } from '@/components/verification/VerificationProgress';
+// 🤖 [IA] - v1.3.2.4: FASE 4 - Input Field component extraído
+import { VerificationInputField } from '@/components/verification/VerificationInputField';
+// 🤖 [IA] - FASE 5 PASO 4: Completion Message component extraído
+import { VerificationCompletionMessage } from '@/components/verification/VerificationCompletionMessage';
+// 🤖 [IA] - FASE 5 PASO 6: Footer component extraído
+import { VerificationFooter } from '@/components/verification/VerificationFooter';
 
 interface Phase2VerificationSectionProps {
   deliveryCalculation: DeliveryCalculation;
@@ -442,70 +451,9 @@ export function Phase2VerificationSection({
 
       {/* Current Step - Con detección dinámica y animaciones v1.0.77 */}
       {currentStep && !completedSteps[currentStep.key] && (() => {
-        // 🤖 [IA] - Función getIcon para mostrar imagen de denominación como DeliveryFieldView
-        const getIcon = () => {
-          const fieldType = ['penny', 'nickel', 'dime', 'quarter', 'dollarCoin'].includes(currentStep.key) ? 'coin' : 'bill';
-
-          if (fieldType === 'coin') {
-            let coinImage = '/monedas-recortadas-dolares/moneda-centavo-front-inlay.webp';
-
-            if (currentStep.key === 'nickel') {
-              coinImage = '/monedas-recortadas-dolares/moneda-cinco-centavos-dos-caras.webp';
-            } else if (currentStep.key === 'dime') {
-              coinImage = '/monedas-recortadas-dolares/moneda-diez-centavos.webp';
-            } else if (currentStep.key === 'quarter') {
-              coinImage = '/monedas-recortadas-dolares/moneda-25-centavos-dos-caras.webp';
-            } else if (currentStep.key === 'dollarCoin') {
-              coinImage = '/monedas-recortadas-dolares/moneda-un-dollar-nueva.webp';
-            }
-
-            return (
-              <img
-                src={coinImage}
-                alt={`Moneda de ${currentStep.label}`}
-                className="object-contain"
-                style={{
-                  width: 'clamp(234.375px, 58.59vw, 390.625px)',
-                  aspectRatio: '2.4 / 1'
-                }}
-              />
-            );
-          } else {
-            // 🤖 [IA] - v1.3.7T: Imágenes con fallback a placeholder.svg
-            // Rutas originales preservadas para cuando se agreguen assets profesionales
-            let billImage = '/monedas-recortadas-dolares/billete-1.webp';
-
-            // Usar estándar canónico: bill1, bill5, bill10, bill20, bill50, bill100
-            if (currentStep.key === 'bill1') {
-              billImage = '/monedas-recortadas-dolares/billete-1.webp';
-            } else if (currentStep.key === 'bill5') {
-              billImage = '/monedas-recortadas-dolares/billete-5.webp';
-            } else if (currentStep.key === 'bill10') {
-              billImage = '/monedas-recortadas-dolares/billete-10.webp';
-            } else if (currentStep.key === 'bill20') {
-              billImage = '/monedas-recortadas-dolares/billete-20.webp';
-            } else if (currentStep.key === 'bill50') {
-              billImage = '/monedas-recortadas-dolares/billete-cincuenta-dolares-sobre-fondo-blanco(1).webp';
-            } else if (currentStep.key === 'bill100') {
-              billImage = '/monedas-recortadas-dolares/billete-100.webp';
-            }
-
-            return (
-              <img
-                src={billImage}
-                alt={`Billete de ${currentStep.label}`}
-                className="object-contain w-full h-full"
-                onError={(e) => {
-                  // 🤖 [IA] - v1.3.7T: Fallback a placeholder.svg si imagen no existe
-                  const target = e.target as HTMLImageElement;
-                  if (target.src !== '/placeholder.svg') {
-                    target.src = '/placeholder.svg';
-                  }
-                }}
-              />
-            );
-          }
-        };
+        // 🤖 [IA] - FASE 5 PASO 2: getIcon() removido (63 líneas) → Usando getDenominationImageElement() utility
+        // Root cause: Función duplicada en 3 archivos (~200 líneas total)
+        // Solución: Single source of truth en /src/utils/denomination-images.ts
 
         return (
           <motion.div
@@ -540,7 +488,8 @@ export function Phase2VerificationSection({
                     backgroundColor: 'transparent'
                   }}
                 >
-                  {getIcon()}
+                  {/* 🤖 [IA] - FASE 5 PASO 2: Usando getDenominationImageElement() utility */}
+                  {getDenominationImageElement(currentStep.key as keyof CashCount, currentStep.label)}
                 </div>
 
                 {/* 🔒 Badge condicional QUEDA EN CAJA (conteo ciego producción) */}
@@ -571,127 +520,39 @@ export function Phase2VerificationSection({
                 </div>
               </div>
 
-              {/* Input de confirmación - Estilo coherente con DeliveryFieldView */}
-              <div>
-              <div className="flex items-center" style={{ gap: 'clamp(8px, 2vw, 16px)' }}>
-                <div className="flex-1 relative">
-                  {/* 🤖 [IA] - v1.2.52: Accessible label for screen readers (WCAG 2.1 SC 3.3.2) */}
-                  <Label
-                    htmlFor={`verification-input-${currentStep.key}`}
-                    className="sr-only"
-                  >
-                    {getDenominationDescription(currentStep.key, currentStep.label)}
-                  </Label>
+              {/* 🤖 [IA] - v1.3.2.4: Input Field component extraído */}
+              {/* Calcular valores correctos/incorrectos para props del componente */}
+              {(() => {
+                const isValueCorrect = inputValue && parseInt(inputValue) === currentStep.quantity;
+                const isValueIncorrect = parseInt(inputValue) !== currentStep.quantity && inputValue;
 
-                  <Input
-                    id={`verification-input-${currentStep.key}`}
-                    ref={inputRef}
-                    type="text"  // 🤖 [IA] - v3.1.0: Unificado a "text" para teclado decimal consistente
-                    inputMode="decimal"  // 🤖 [IA] - v3.1.0: Forzar teclado decimal en todos los casos
-                    pattern="[0-9]*[.,]?[0-9]*"  // 🤖 [IA] - v3.1.0: Acepta punto y coma para Android
-                    value={inputValue}
-                    onChange={(e) => {
-                      const value = e.target.value.replace(/[^0-9]/g, '');
-                      setInputValue(value);
-                    }}
+                return (
+                  <VerificationInputField
+                    inputValue={inputValue}
+                    onInputChange={(value) => setInputValue(value.replace(/[^0-9]/g, ''))}
+                    currentStep={currentStep}
+                    inputRef={inputRef}
                     onKeyDown={handleKeyPress}
-                    autoCapitalize="off"
-                    autoCorrect="off"
-                    autoComplete="off"
-                    placeholder={`¿Cuántos ${getDenominationDescription(currentStep.key, currentStep.label).toLowerCase()}?`}
-                    style={{
-                      // 🔒 Borde condicional (conteo ciego producción)
-                      borderColor: SHOW_REMAINING_AMOUNTS && parseInt(inputValue) !== currentStep.quantity && inputValue ? 'var(--danger)' : 'var(--accent-primary)',
-                      fontSize: 'clamp(18px, 4vw, 24px)',
-                      fontWeight: 'bold',
-                      height: 'clamp(48px, 12vw, 56px)',
-                      textAlign: 'center',
-                      paddingLeft: 'clamp(14px, 3vw, 20px)',
-                      paddingRight: 'clamp(14px, 3vw, 20px)',
-                      transition: 'all 0.3s ease'
-                    }}
-                    className="focus:neon-glow-primary"
-                    autoFocus
+                    onConfirm={handleConfirmStep}
+                    isValueCorrect={!!isValueCorrect}
+                    isValueIncorrect={!!isValueIncorrect}
+                    modalIsOpen={modalState.isOpen}
+                    showRemainingAmounts={SHOW_REMAINING_AMOUNTS}
+                    confirmDisabled={!inputValue}
                   />
-                  {/* 🔒 Mensaje error condicional (conteo ciego producción) */}
-                  {SHOW_REMAINING_AMOUNTS && parseInt(inputValue) !== currentStep.quantity && inputValue && (
-                    <div className="absolute -bottom-6 left-0 right-0 text-center">
-                      <span className="text-xs text-destructive">
-                        Ingresa exactamente {currentStep.quantity} {getDenominationDescription(currentStep.key, currentStep.label).toLowerCase()}
-                      </span>
-                    </div>
-                  )}
-                </div>
-                <ConstructiveActionButton
-                  onClick={handleConfirmStep}
-                  disabled={!inputValue}  // 🤖 [IA] - v1.3.0: MÓDULO 4 - Permitir valores incorrectos para blind verification
-                  onTouchStart={(e) => e.preventDefault()}
-                  aria-label="Confirmar cantidad"
-                  className="btn-guided-confirm"
-                  style={{
-                    height: 'clamp(48px, 12vw, 56px)'
-                  }}
-                >
-                  Confirmar
-                  <ChevronRight className="w-4 h-4 ml-1" />
-                </ConstructiveActionButton>
-              </div>
-              {/* Success indicator */}
-              {/* 🔒 Mensaje success condicional (conteo ciego producción) */}
-              {SHOW_REMAINING_AMOUNTS && inputValue && parseInt(inputValue) === currentStep.quantity && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="mt-2 flex justify-start"
-                >
-                  <div className="flex items-center gap-1 text-xs text-success">
-                    <Check className="w-3 h-3" />
-                    <span>Cantidad correcta</span>
-                  </div>
-                </motion.div>
-              )}
-              </div>
+                );
+              })()}
             </div>
 
-            {/* Navigation footer - matching DeliveryFieldView */}
-            {/* 🚨 FIX v1.3.1: onCancel prop requerida */}
-            <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-3 border-t border-white/10 p-4 bg-black/20 backdrop-blur-sm">
-              <DestructiveActionButton
-                onClick={onCancel}
-                aria-label="Cancelar verificación y volver"
-              >
-                Cancelar
-              </DestructiveActionButton>
-            </div>
+            {/* 🤖 [IA] - FASE 5 PASO 6: Footer component extraído */}
+            <VerificationFooter onCancel={onCancel} />
           </motion.div>
         );
       })()}
 
-      {/* Final Validation - 🤖 [IA] - v1.2.24: Glass morphism unificado */}
+      {/* 🤖 [IA] - FASE 5 PASO 4: Completion Message component extraído */}
       {allStepsCompleted && (
-        <div className="glass-panel-success text-center p-8">
-          <Check className="w-[clamp(3rem,12vw,4rem)] h-[clamp(3rem,12vw,4rem)] mx-auto mb-[clamp(0.75rem,3vw,1rem)]" style={{ color: 'var(--success-paradise)' }} />
-          <h3 className="text-[clamp(1rem,4.5vw,1.25rem)] font-bold mb-[clamp(0.5rem,2vw,0.75rem)]" style={{ color: 'var(--success-paradise)' }}>
-            Verificación Exitosa
-          </h3>
-          <p className="text-[clamp(0.875rem,3.5vw,1rem)] mb-[clamp(0.75rem,3vw,1rem)]" style={{ color: 'var(--muted-paradise)' }}>
-            Has confirmado que quedan exactamente {formatCurrency(expectedTotal)} en caja.
-          </p>
-          <div className="rounded-[clamp(0.5rem,2vw,0.75rem)] p-[clamp(0.75rem,3vw,1rem)] mb-[clamp(0.75rem,3vw,1rem)] mx-auto max-w-md" style={{
-            backgroundColor: 'rgba(0, 186, 124, 0.1)',
-            border: '1px solid rgba(0, 186, 124, 0.3)',
-          }}>
-            <div className="flex items-center justify-center gap-[clamp(0.375rem,1.5vw,0.5rem)]">
-              <Target className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)]" style={{ color: 'var(--success-paradise)' }} />
-              <span className="font-bold text-[clamp(0.875rem,3.5vw,1rem)]" style={{ color: 'var(--success-paradise)' }}>
-                OBJETIVO CUMPLIDO: {formatCurrency(50.00)} ✓
-              </span>
-            </div>
-          </div>
-          <p className="text-[clamp(0.75rem,3vw,0.875rem)] font-medium" style={{ color: '#1d9bf0' }}>
-            Procediendo a generar reporte final...
-          </p>
-        </div>
+        <VerificationCompletionMessage totalDenominations={verificationSteps.length} />
       )}
 
       {/* 🤖 [IA] - v1.3.0: MÓDULO 4 - BlindVerificationModal para triple intento */}
