@@ -39,3 +39,6 @@ test-results
 Pruebas Test GitHub/
 e2e/tests/**/*.spec.ts-snapshots/
 dev-dist/
+
+# Backups de refactorizaciones
+Backups-RESPALDOS/
