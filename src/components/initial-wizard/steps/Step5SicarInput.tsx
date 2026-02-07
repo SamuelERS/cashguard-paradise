@@ -1,0 +1,122 @@
+// 🤖 [IA] - ORDEN #075: Step 5 - Venta Esperada (SICAR)
+import { motion } from 'framer-motion';
+import { DollarSign, ArrowRight, CheckCircle } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { ConstructiveActionButton } from '@/components/shared/ConstructiveActionButton';
+import { STORES } from '@/data/paradise';
+import { cn } from '@/lib/utils';
+import type { Step5Props } from '@/types/initialWizard';
+
+export function Step5SicarInput({
+  wizardData,
+  updateWizardData,
+  validateInput,
+  getPattern,
+  getInputMode,
+  handleNext,
+  canGoNext,
+  currentStep,
+  totalSteps,
+  availableEmployees,
+}: Step5Props) {
+  return (
+    <div className="glass-morphism-panel space-y-fluid-lg">
+      <div className="glass-morphism-panel header-section">
+        <DollarSign className="flex-shrink-0 w-[clamp(1.25rem,5vw,1.5rem)] h-[clamp(1.25rem,5vw,1.5rem)] bg-gradient-to-br from-green-400 to-emerald-400 bg-clip-text text-transparent" />
+        <div className="flex-1 min-w-0">
+          <h3 className="font-semibold text-primary-foreground text-fluid-xl">Ingresa Total Vendido</h3>
+          <p className="text-muted-foreground text-fluid-xs mt-fluid-xs">Según SICAR</p>
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-fluid-lg">
+        <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-fluid-md items-center">
+          <div className="glass-morphism-panel relative flex-1 pl-2 flex items-center">
+            <span className="absolute left-6 top-1/2 -translate-y-1/2 font-bold text-green-400 text-base md:text-lg">
+              $
+            </span>
+            <Input
+              id="expected-sales"
+              type="text"
+              inputMode={getInputMode('currency')}
+              pattern={getPattern('currency')}
+              step="0.01"
+              min="0"
+              value={wizardData.expectedSales}
+              onChange={(e) => {
+                const validation = validateInput(e.target.value, 'currency');
+                if (validation.isValid) {
+                  updateWizardData({ expectedSales: validation.cleanValue });
+                }
+              }}
+              placeholder="0.00"
+              aria-label="Ingrese el monto de la venta esperada"
+              className={cn(
+                'font-semibold bg-transparent border-none text-primary-foreground pl-[clamp(3rem,12vw,3.5rem)] h-[clamp(2.25rem,9vw,2.75rem)] text-fluid-lg neon-glow-success',
+                wizardData.expectedSales && parseFloat(wizardData.expectedSales) > 0 && 'border-green-500/50'
+              )}
+              data-valid={!!(wizardData.expectedSales && parseFloat(wizardData.expectedSales) > 0)}
+              autoComplete="off"
+            />
+          </div>
+          {currentStep < totalSteps && (
+            <ConstructiveActionButton
+              onClick={handleNext}
+              disabled={!canGoNext}
+              aria-label="Continuar al siguiente paso"
+              type="button"
+              className="h-[clamp(2.25rem,9vw,2.75rem)]"
+            >
+              <span className="text-fluid-base">Continuar</span>
+              <ArrowRight aria-hidden="true" className="w-[clamp(1.25rem,5vw,1.5rem)] h-[clamp(1.25rem,5vw,1.5rem)] ml-fluid-sm" />
+            </ConstructiveActionButton>
+          )}
+        </div>
+        {wizardData.expectedSales && parseFloat(wizardData.expectedSales) <= 0 && (
+          <p className="text-xs text-red-500">
+            El monto debe ser mayor a $0.00
+          </p>
+        )}
+      </div>
+
+      {wizardData.expectedSales && parseFloat(wizardData.expectedSales) > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="glass-morphism-panel border border-green-400/40 shadow-lg shadow-green-400/20"
+        >
+          <div className="flex items-center gap-fluid-md">
+            <CheckCircle className="flex-shrink-0 text-green-400 w-[clamp(1.25rem,5vw,1.5rem)] h-[clamp(1.25rem,5vw,1.5rem)]" />
+            <span className="font-medium text-primary-foreground text-fluid-sm">
+              Venta esperada: ${parseFloat(wizardData.expectedSales).toFixed(2)}
+            </span>
+          </div>
+        </motion.div>
+      )}
+
+      <div className="glass-morphism-panel border-l-4 border-l-blue-500 shadow-lg shadow-blue-500/20">
+        <h4 className="font-semibold text-blue-500 text-fluid-sm mb-fluid-sm">Resumen de Información:</h4>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-fluid-sm text-fluid-xs">
+          <div className="flex flex-col gap-fluid-xs">
+            <span className="min-w-0 text-muted-foreground">Sucursal:</span>
+            <span className="font-medium text-left truncate text-primary-foreground">
+              {STORES.find(s => s.id === wizardData.selectedStore)?.name}
+            </span>
+          </div>
+          <div className="flex flex-col gap-fluid-xs">
+            <span className="min-w-0 text-muted-foreground">Cajero:</span>
+            <span className="font-medium text-left truncate text-primary-foreground">
+              {availableEmployees.find(e => e.id === wizardData.selectedCashier)?.name}
+            </span>
+          </div>
+          <div className="flex flex-col gap-fluid-xs">
+            <span className="min-w-0 text-muted-foreground">Testigo:</span>
+            <span className="font-medium text-left truncate text-primary-foreground">
+              {availableEmployees.find(e => e.id === wizardData.selectedWitness)?.name}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
