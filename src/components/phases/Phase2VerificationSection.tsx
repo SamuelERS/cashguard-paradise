@@ -1,6 +1,6 @@
-// 🤖 [IA] - v1.3.7AI: FIX CRÍTICO warning_override NO reportado - clearAttemptHistory() removido handleForce() (patrón v1.3.6M/v1.3.6T)
+// 🤖 [IA] - v1.3.2.3: FASE 3 MÓDULO 3 - Extracción Header + Progress → Componentes separados (-87 líneas neto)
+// Previous: v1.3.7AI - FIX CRÍTICO warning_override NO reportado - clearAttemptHistory() removido handleForce() (patrón v1.3.6M/v1.3.6T)
 // Previous: v1.3.7AH - OCULTACIÓN MENSAJE "CANTIDAD CORRECTA" - Conditional success message (5 elementos ocultos)
-// Previous: v1.3.7AG - OCULTACIÓN BORDE ROJO INPUT - Conditional borderColor validation (4 elementos ocultos)
 // 🤖 [IA] - v1.3.6M: FIX CRÍTICO - clearAttemptHistory() borraba intentos antes de buildVerificationBehavior (reporte sin datos)
 // 🤖 [IA] - v1.3.6h: BUG FIX CRÍTICO - Enter key leak modal verificación (triple defensa anti-fraude)
 // 🤖 [IA] - v1.3.6g: BUG FIX #1 - createTimeoutWithCleanup en deps causaba race conditions (9 errores loop)
@@ -33,6 +33,9 @@ import type { CashCount } from '@/types/cash'; // 🤖 [IA] - v1.3.6: MÓDULO 1 
 // 🤖 [IA] - Desmonolitado desde Phase2VerificationSection.tsx
 import { getDenominationDescription, SHOW_REMAINING_AMOUNTS } from '@/utils/verification-helpers';
 import { useVerificationBehavior } from '@/hooks/useVerificationBehavior';
+// 🤖 [IA] - v1.3.2.3: FASE 3 MÓDULO 3 - Componentes Header + Progress extraídos
+import { VerificationHeader } from '@/components/verification/VerificationHeader';
+import { VerificationProgress } from '@/components/verification/VerificationProgress';
 
 interface Phase2VerificationSectionProps {
   deliveryCalculation: DeliveryCalculation;
@@ -428,98 +431,14 @@ export function Phase2VerificationSection({
       animate={{ opacity: 1, x: 0 }}
       className="space-y-[clamp(0.5rem,2vw,0.75rem)] max-w-md mx-auto sm:max-w-2xl lg:max-w-3xl overflow-y-auto max-h-screen"
     >
-      {/* Header - 🤖 [IA] - v1.2.24: Glass morphism unificado */}
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ type: "spring", stiffness: 260, damping: 20 }}
-        className="glass-panel-success p-4"
-      >
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-[clamp(0.5rem,2vw,0.75rem)]">
-          <div className="flex items-center gap-[clamp(0.5rem,2vw,0.75rem)]">
-            <div className="w-[clamp(2.5rem,10vw,3rem)] h-[clamp(2.5rem,10vw,3rem)] rounded-full flex items-center justify-center" style={{
-              background: 'linear-gradient(135deg, var(--success-paradise) 0%, var(--success-paradise-light) 100%)'
-            }}>
-              <Building className="w-[clamp(1.25rem,5vw,1.5rem)] h-[clamp(1.25rem,5vw,1.5rem)] text-white" />
-            </div>
-            <div>
-              <h3 className="text-[clamp(0.875rem,3.5vw,1rem)] sm:text-[clamp(1rem,4vw,1.125rem)] font-bold" style={{ color: 'var(--success-paradise)' }}>
-                VERIFICACIÓN EN CAJA
-              </h3>
-              <p className="text-[clamp(0.75rem,3vw,0.875rem)]" style={{ color: 'var(--muted-foreground)' }}>
-                Confirmar lo que queda
-              </p>
-            </div>
-          </div>
-          {/* 🤖 [IA] - v1.2.41AF: Badge objetivo responsive - visible en móviles */}
-          <div className="text-center sm:text-right w-full sm:w-auto mt-2 sm:mt-0">
-            <span className="glass-target-badge inline-block px-[clamp(0.5rem,2vw,0.75rem)] py-[clamp(0.25rem,1vw,0.375rem)] rounded-[clamp(0.5rem,2vw,0.75rem)] text-[clamp(0.625rem,2.5vw,0.875rem)] font-bold whitespace-nowrap">
-              🎯 Objetivo: Cambio completo
-            </span>
-          </div>
-        </div>
-      </motion.div>
+      {/* 🤖 [IA] - v1.3.2.3: Header component extraído */}
+      <VerificationHeader />
 
-      {/* Progress - 🤖 [IA] - v1.2.24: Glass morphism unificado */}
-      <div className="glass-progress-container p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-[clamp(0.5rem,2vw,0.75rem)]">
-            {/* 🔒 Badge condicional QUEDA EN CAJA (conteo ciego producción) */}
-            {SHOW_REMAINING_AMOUNTS && (
-              <div className="glass-badge-success" style={{
-                padding: `clamp(0.25rem,1vw,0.375rem) clamp(0.5rem,2vw,0.75rem)`,
-                borderRadius: `clamp(10px,4vw,20px)`,
-                display: 'flex',
-                alignItems: 'center',
-                gap: `clamp(0.25rem,1vw,0.375rem)`
-              }}>
-                <span style={{ fontSize: `clamp(0.7rem,2.8vw,0.75rem)` }}>💼</span>
-                <span className="text-[clamp(0.7rem,2.8vw,0.75rem)] font-bold uppercase" style={{ color: 'var(--success-paradise)', letterSpacing: '0.5px' }}>
-                  Queda en Caja
-                </span>
-              </div>
-            )}
-
-            {/* 🔒 Badge alternativo (modo producción - sin monto) */}
-            {!SHOW_REMAINING_AMOUNTS && (
-              <div className="glass-badge-success" style={{
-                padding: `clamp(0.25rem,1vw,0.375rem) clamp(0.5rem,2vw,0.75rem)`,
-                borderRadius: `clamp(10px,4vw,20px)`,
-                display: 'flex',
-                alignItems: 'center',
-                gap: `clamp(0.25rem,1vw,0.375rem)`
-              }}>
-                <span style={{ fontSize: `clamp(0.7rem,2.8vw,0.75rem)` }}>💼</span>
-                <span className="text-[clamp(0.7rem,2.8vw,0.75rem)] font-bold uppercase" style={{ color: 'var(--success-paradise)', letterSpacing: '0.5px' }}>
-                  Verificando Caja
-                </span>
-              </div>
-            )}
-            {/* Contador de unidades */}
-            {/* 🤖 [IA] - v1.2.41AF: Etiqueta visible en móvil para contexto ("Progreso:" en lugar de "Verificado:") */}
-            <div className="flex items-center gap-[clamp(0.375rem,1.5vw,0.5rem)]">
-              <span className="text-[clamp(0.75rem,3vw,0.875rem)]" style={{ color: 'var(--muted-paradise)' }}>
-                <span className="hidden sm:inline">Verificado:</span>
-                <span className="inline sm:hidden">Progreso:</span>
-              </span>
-              <span className="text-[clamp(0.875rem,3.5vw,1rem)] font-bold" style={{ color: '#ffffff' }}>
-                ✅ {Object.keys(completedSteps).filter(key => completedSteps[key]).length}/{verificationSteps.length}
-              </span>
-            </div>
-          </div>
-          <div className="flex-1 mx-[clamp(0.5rem,2vw,0.75rem)] rounded-full h-[clamp(0.5rem,2vw,0.625rem)]" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>
-            <div 
-              className="h-[clamp(0.5rem,2vw,0.625rem)] rounded-full transition-all duration-500"
-              style={{ 
-                width: `${(Object.keys(completedSteps).filter(key => completedSteps[key]).length / verificationSteps.length) * 100}%`,
-                background: 'linear-gradient(90deg, var(--success-paradise) 0%, var(--success-paradise-light) 100%)',
-                boxShadow: '0 0 8px rgba(0, 186, 124, 0.4)'
-              }}
-            />
-          </div>
-          {/* 🤖 [IA] - v1.2.11: Sin mostrar montos hasta el final */}
-        </div>
-      </div>
+      {/* 🤖 [IA] - v1.3.2.3: Progress component extraído */}
+      <VerificationProgress
+        completedSteps={completedSteps}
+        verificationSteps={verificationSteps}
+      />
 
       {/* Current Step - Con detección dinámica y animaciones v1.0.77 */}
       {currentStep && !completedSteps[currentStep.key] && (() => {
