@@ -1,23 +1,11 @@
-// 🤖 [IA] - v1.4.1: Tests adaptados ORDEN #074 - Desmonolitización MorningVerification
-// Previous: v1.3.7 (20 tests, monolito 742 líneas)
-// Now: 17 tests adaptados (Group 4 eliminado — auto-timeout NO existe en v2.8.1+)
-//
-// Cambios v1.4.1:
-// - Agregado mock @/data/paradise (controller requiere actores resueltos)
-// - Agregado mock mobile user agent (handleWhatsAppSend usa isMobilePlatform())
-// - Agregado mock navigator.clipboard (copyReportToClipboard en controller)
-// - Eliminado Group 4 (3 tests auto-timeout) con evidencia documentada
-// - Removido setTimeoutSpy (ya no necesario sin Group 4)
+// 🤖 [IA] - v1.3.7: Tests confirmación explícita WhatsApp ANTES de revelar resultados - Morning Verification
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MorningVerification } from '@/components/morning-count/MorningVerification';
 import type { CashCount } from '@/types/cash';
 
-// ────────────────────────────────────────────────────────────────
-// Mocks
-// ────────────────────────────────────────────────────────────────
-
+// Mock dependencies
 vi.mock('@/utils/clipboard', () => ({
   copyToClipboard: vi.fn(() => Promise.resolve({ success: true }))
 }));
@@ -28,20 +16,6 @@ vi.mock('sonner', () => ({
     error: vi.fn(),
     info: vi.fn()
   }
-}));
-
-// 🤖 [IA] - v1.4.1: Mock @/data/paradise — controller llama resolveVerificationActors()
-// Sin este mock, store/cashierIn/cashierOut son undefined → handleWhatsAppSend retorna early
-vi.mock('@/data/paradise', () => ({
-  getStoreById: (id: string) => {
-    if (id === 'store1') return { id: 'store1', name: 'Los Heroes', address: '', phone: '', schedule: '' };
-    return undefined;
-  },
-  getEmployeeById: (id: string) => {
-    if (id === 'cashier1') return { id: 'cashier1', name: 'Cajero Test', role: 'cashier', stores: ['store1'] };
-    if (id === 'witness1') return { id: 'witness1', name: 'Testigo Test', role: 'cashier', stores: ['store1'] };
-    return undefined;
-  },
 }));
 
 describe('MorningVerification - v1.3.7 WhatsApp Confirmation Flow', () => {
@@ -69,6 +43,7 @@ describe('MorningVerification - v1.3.7 WhatsApp Confirmation Flow', () => {
   };
 
   let windowOpenSpy: ReturnType<typeof vi.spyOn>;
+  let setTimeoutSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -77,23 +52,13 @@ describe('MorningVerification - v1.3.7 WhatsApp Confirmation Flow', () => {
       closed: false,
       close: vi.fn()
     } as Window);
-    // 🤖 [IA] - v1.4.1: Mock mobile user agent — controller usa isMobilePlatform()
-    // Sin este mock, jsdom reporta desktop UA → handleWhatsAppSend NO llama window.open (muestra modal instrucciones)
-    Object.defineProperty(navigator, 'userAgent', {
-      value: 'iPhone',
-      writable: true,
-      configurable: true,
-    });
-    // 🤖 [IA] - v1.4.1: Mock navigator.clipboard — copyReportToClipboard() en controller
-    Object.defineProperty(navigator, 'clipboard', {
-      value: { writeText: vi.fn().mockResolvedValue(undefined) },
-      writable: true,
-      configurable: true,
-    });
+    // Mock setTimeout para control manual
+    setTimeoutSpy = vi.spyOn(global, 'setTimeout');
   });
 
   afterEach(() => {
     windowOpenSpy.mockRestore();
+    setTimeoutSpy.mockRestore();
   });
 
   describe('Grupo 1: Estado inicial bloqueado', () => {
@@ -198,9 +163,9 @@ describe('MorningVerification - v1.3.7 WhatsApp Confirmation Flow', () => {
       const confirmButton = await screen.findByRole('button', { name: /sí, ya envié el reporte/i });
       await user.click(confirmButton);
 
-      // Resultados ahora visibles (getAllByText porque hay 2 elementos con "Total Contado")
+      // Resultados ahora visibles
       await waitFor(() => {
-        expect(screen.getAllByText(/Total Contado:/i).length).toBeGreaterThan(0);
+        expect(screen.getByText(/Total Contado:/i)).toBeInTheDocument();
         expect(screen.queryByText('🔒 Resultados Bloqueados')).not.toBeInTheDocument();
       });
     });
@@ -322,14 +287,70 @@ describe('MorningVerification - v1.3.7 WhatsApp Confirmation Flow', () => {
     });
   });
 
-  // 🤖 [IA] - v1.4.1: Group 4 ELIMINADO (3 tests auto-timeout)
-  // Evidencia: Auto-timeout de 10s NO existe en v2.8.1+ (fue removido intencionalmente)
-  // Verificación:
-  //   - grep 'setTimeout' useMorningVerificationController.ts → 0 matches
-  //   - grep 'setTimeout' MorningVerificationView.tsx → 0 matches
-  //   - grep '10000' useMorningVerificationController.ts → 0 matches
-  // Controller usa confirmación manual explícita (handleConfirmSent) sin auto-timeout
-  // Tests eliminados: 4.1 (setTimeout 10s), 4.2 (auto-confirm), 4.3 (cancel before timeout)
+  describe('Grupo 4: Auto-confirmación timeout', () => {
+    it('4.1 - Debe crear timeout de 10 segundos después de abrir WhatsApp', async () => {
+      const user = userEvent.setup();
+      render(<MorningVerification {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /whatsapp/i })).toBeInTheDocument();
+      });
+
+      const whatsappButton = screen.getByRole('button', { name: /whatsapp/i });
+      await user.click(whatsappButton);
+
+      await waitFor(() => {
+        expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 10000);
+      });
+    });
+
+    it('4.2 - Después de 10s sin confirmar, debe auto-confirmar reportSent', async () => {
+      vi.useFakeTimers();
+      const user = userEvent.setup();
+      render(<MorningVerification {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /whatsapp/i })).toBeInTheDocument();
+      });
+
+      const whatsappButton = screen.getByRole('button', { name: /whatsapp/i });
+      await user.click(whatsappButton);
+
+      // Avanzar tiempo 10 segundos
+      vi.advanceTimersByTime(10000);
+
+      await waitFor(() => {
+        expect(screen.queryByText('🔒 Resultados Bloqueados')).not.toBeInTheDocument();
+      });
+
+      vi.useRealTimers();
+    });
+
+    it('4.3 - Si usuario confirma antes de 10s, timeout NO debe ejecutarse', async () => {
+      vi.useFakeTimers();
+      const user = userEvent.setup();
+      render(<MorningVerification {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /whatsapp/i })).toBeInTheDocument();
+      });
+
+      const whatsappButton = screen.getByRole('button', { name: /whatsapp/i });
+      await user.click(whatsappButton);
+
+      // Confirmar manualmente ANTES de timeout
+      const confirmButton = await screen.findByRole('button', { name: /sí, ya envié el reporte/i });
+      await user.click(confirmButton);
+
+      // Avanzar tiempo (no debería cambiar nada)
+      vi.advanceTimersByTime(10000);
+
+      // Botón sigue mostrando "Reporte Enviado" (no se duplica confirmación)
+      expect(screen.getByRole('button', { name: /reporte enviado/i })).toBeInTheDocument();
+
+      vi.useRealTimers();
+    });
+  });
 
   describe('Grupo 5: Banners adaptativos', () => {
     it('5.1 - Debe mostrar banner advertencia inicial cuando NO enviado', async () => {
