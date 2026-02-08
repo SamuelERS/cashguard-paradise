@@ -30,6 +30,7 @@ La inspección técnica (PROPUESTA_FORMAL_SISTEMA_AUDITORIA_CORTE.md) reveló qu
 | `08_Testing_CICD.md` | Estrategia de testing y CI/CD | ✅ |
 | `09_Roles_Responsabilidades.md` | Roles de agentes y responsabilidades por capa | ✅ |
 | `10_Convenciones_Obligatorias.md` | Convenciones del proyecto (naming, estructura, reglas) | ✅ |
+| `11_Certificado_Garantia_Calidad.md` | Certificado de garantía, consistencia y ejecutabilidad | ✅ |
 
 ## Principios obligatorios (recordatorio)
 
