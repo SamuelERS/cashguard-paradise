@@ -12,10 +12,7 @@ import {
   CORRELATIVO_REGEX,
   FASE_MAXIMA,
 } from '../auditoria';
-
-// ---------------------------------------------------------------------------
 // Test data factories
-// ---------------------------------------------------------------------------
 
 function makeCorte(overrides: Partial<Record<string, unknown>> = {}): Record<string, unknown> {
   return {
@@ -55,9 +52,7 @@ function makeCorteIntento(overrides: Partial<Record<string, unknown>> = {}): Rec
   };
 }
 
-// ---------------------------------------------------------------------------
 // Tests
-// ---------------------------------------------------------------------------
 
 describe('auditoria.ts - Tipos y Guards del sistema de auditoria', () => {
   // =========================================================================
@@ -484,7 +479,6 @@ describe('auditoria.ts - Tipos y Guards del sistema de auditoria', () => {
     });
 
     it('ESTADOS_TERMINALES es readonly', () => {
-      // Verificar que es un array
       expect(Array.isArray(ESTADOS_TERMINALES)).toBe(true);
     });
 
