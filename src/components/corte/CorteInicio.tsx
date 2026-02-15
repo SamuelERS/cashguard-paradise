@@ -22,7 +22,7 @@ import {
 interface CorteInicioProps {
   /** Lista de sucursales disponibles (filtradas a activas por el padre) */
   sucursales: Sucursal[];
-  /** Indica si hay una operacion async en curso */
+  /** Indica si hay una operación async en curso */
   cargando: boolean;
   /** Llamado cuando el usuario completa los 3 pasos y confirma */
   onIniciar: (params: IniciarCorteParams) => void;
@@ -140,7 +140,7 @@ function CorteInicio({
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-[#8899a6] text-sm">
               <Building2 className="w-4 h-4" />
-              <span>Seleccione la sucursal donde se realizara el corte</span>
+              <span>Seleccione la sucursal donde se realizará el corte</span>
             </div>
 
             {sucursales.length === 0 ? (

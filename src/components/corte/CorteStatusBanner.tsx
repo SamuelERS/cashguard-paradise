@@ -1,6 +1,5 @@
 // 🤖 [IA] - v1.0.0: Componente de estado de conexion y sincronizacion — Orden #006
 import {
-  Wifi,
   WifiOff,
   CheckCircle,
   Clock,
@@ -121,7 +120,7 @@ function resolverConfig(props: CorteStatusBannerProps): BannerConfig {
   // CASO 3: Pendientes
   if (estadoSync === 'pendiente') {
     const texto = pendientes > 0
-      ? `${pendientes} operacion${pendientes === 1 ? '' : 'es'} pendiente${pendientes === 1 ? '' : 's'} de sincronizar`
+      ? `${pendientes} ${pendientes === 1 ? 'operación' : 'operaciones'} pendiente${pendientes === 1 ? '' : 's'} de sincronizar`
       : 'Sincronización pendiente';
     return {
       containerClasses: 'bg-amber-900/60 border-amber-700 text-amber-300',

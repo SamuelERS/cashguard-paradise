@@ -23,9 +23,9 @@ import {
 interface CorteReanudacionProps {
   /** Corte activo encontrado en el servidor */
   corte: Corte;
-  /** Intento activo actual (puede ser null si no se encontro) */
+  /** Intento activo actual (puede ser null si no se encontró) */
   intento: CorteIntento | null;
-  /** Indica si hay una operacion async en curso */
+  /** Indica si hay una operación async en curso */
   cargando: boolean;
   /** Llamado cuando el usuario elige reanudar el corte existente */
   onReanudar: () => void;
@@ -184,7 +184,7 @@ function CorteReanudacion({
 
         {/* Texto explicativo */}
         <p className="text-sm text-[#8899a6]">
-          Se encontro un corte de caja pendiente. Seleccione una accion:
+          Se encontró un corte de caja pendiente. Seleccione una acción:
         </p>
 
         {/* Indicador de carga */}
@@ -269,7 +269,7 @@ function CorteReanudacion({
               <div className="flex items-start gap-2 text-xs text-red-400 bg-red-950/40 border border-red-900/50 rounded-lg p-3">
                 <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
                 <span>
-                  Esta accion es IRREVERSIBLE. El corte quedara registrado como ABORTADO permanentemente.
+                  Esta acción es IRREVERSIBLE. El corte quedará registrado como ABORTADO permanentemente.
                 </span>
               </div>
               <DestructiveActionButton
