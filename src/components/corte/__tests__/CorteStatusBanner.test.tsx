@@ -261,7 +261,7 @@ describe('Suite 6: Casos de plural y singular', () => {
       pendientes: 1,
     });
 
-    expect(screen.getByText('1 operacion pendiente de sincronizar')).toBeInTheDocument();
+    expect(screen.getByText('1 operación pendiente de sincronizar')).toBeInTheDocument();
   });
 
   it('6.2 - Sincronizando con 1 pendiente usa forma singular', () => {

@@ -367,11 +367,11 @@ describe('Suite 6: Persistencia y edge cases', () => {
     expect(callback).toHaveBeenCalledTimes(2);
   });
 
-  it('6.7 - Cola vacía al inicio retorna array vacío', () => {
+  it('6.6 - Cola vacía al inicio retorna array vacío', () => {
     expect(obtenerCola()).toEqual([]);
   });
 
-  it('6.8 - procesarCola con cola vacía retorna resultado vacío', async () => {
+  it('6.7 - procesarCola con cola vacía retorna resultado vacío', async () => {
     const resultado = await procesarCola(ejecutorExitoso);
     expect(resultado.exitosas).toBe(0);
     expect(resultado.fallidas).toBe(0);

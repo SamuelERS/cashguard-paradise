@@ -47,6 +47,17 @@ export type CleanupFn = () => void;
 
 export const STORAGE_KEY = 'cashguard_offline_queue';
 export const MAX_REINTENTOS = 5;
+/**
+ * Delays en milisegundos para backoff exponencial entre reintentos.
+ *
+ * NOTA: Esta constante NO se consume internamente en procesarCola().
+ * El módulo offlineQueue solo incrementa el contador "reintentos" y marca
+ * como "fallida" cuando alcanza MAX_REINTENTOS. La responsabilidad de
+ * programar los reintentos con estos delays corresponde al consumidor
+ * externo (p.ej. useCorteSesion o un scheduler dedicado).
+ *
+ * Secuencia: 2s, 4s, 8s, 16s, 30s (5 niveles)
+ */
 export const BACKOFF_MS = [2000, 4000, 8000, 16000, 30000] as const;
 
 // ─── Helpers internos ────────────────────────────────────────────────────────
