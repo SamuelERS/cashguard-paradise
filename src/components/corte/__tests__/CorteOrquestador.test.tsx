@@ -1,5 +1,5 @@
-// 🤖 [IA] - v1.0.0: Tests CorteOrquestador — Orden #009
-// Integración completa: sub-componentes reales (NO mockeados), hook mockeado.
+// 🤖 [IA] - v1.1.0: Tests CorteOrquestador — Orden #009 + #013
+// Integración completa: sub-componentes reales (NO mockeados), hook y CashCounter mockeados.
 
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -18,6 +18,31 @@ vi.mock('../../../hooks/useCorteSesion', () => ({
 import { useCorteSesion } from '../../../hooks/useCorteSesion';
 
 const mockUseCorteSesion = vi.mocked(useCorteSesion);
+
+// ---------------------------------------------------------------------------
+// Mock de CashCounter (CorteConteoAdapter lo renderiza internamente)
+// ---------------------------------------------------------------------------
+
+vi.mock('../../../components/CashCounter', () => ({
+  default: vi.fn((props) => (
+    <div
+      data-testid="mock-cash-counter"
+      data-operation-mode={props.operationMode}
+      data-initial-store={props.initialStore}
+      data-initial-cashier={props.initialCashier}
+      data-initial-witness={props.initialWitness}
+      data-initial-expected-sales={props.initialExpectedSales ?? ''}
+    >
+      <button data-testid="mock-back" onClick={props.onBack}>mock-back</button>
+      <button data-testid="mock-cancel" onClick={props.onFlowCancel}>mock-cancel</button>
+    </div>
+  )),
+}));
+
+import CashCounter from '../../../components/CashCounter';
+import { OperationMode } from '../../../types/operation-mode';
+
+const MockCashCounter = vi.mocked(CashCounter);
 
 // ---------------------------------------------------------------------------
 // Fixtures
@@ -306,7 +331,7 @@ describe('Suite 3: Vista Reanudación — Corte Activo Detectado', () => {
     expect(screen.getByText('CORTE-2026-02-12-S-001')).toBeInTheDocument();
   });
 
-  it('3.4 - Al click "Reanudar Corte", transiciona a vista progreso', async () => {
+  it('3.4 - Al click "Reanudar Corte", transiciona a vista progreso con CorteConteoAdapter', async () => {
     configurarMock({
       corte_actual: corteActivoTest,
       intento_actual: intentoActivoTest,
@@ -322,8 +347,8 @@ describe('Suite 3: Vista Reanudación — Corte Activo Detectado', () => {
     // Click reanudar
     await user.click(screen.getByRole('button', { name: /reanudar corte/i }));
 
-    // Should now show PanelProgreso
-    expect(screen.getByText('Corte en Progreso')).toBeInTheDocument();
+    // Should now show CorteConteoAdapter (renders mocked CashCounter)
+    expect(screen.getByTestId('mock-cash-counter')).toBeInTheDocument();
   });
 
   it('3.5 - Al click "Nuevo Intento" con motivo, llama sesion.reiniciarIntento', async () => {
@@ -357,61 +382,8 @@ describe('Suite 3: Vista Reanudación — Corte Activo Detectado', () => {
 // SUITE 4: Vista Progreso — Corte Confirmado
 // ===========================================================================
 
-describe('Suite 4: Vista Progreso — Corte Confirmado', () => {
-  function renderConProgreso() {
-    configurarMock({
-      corte_actual: corteActivoTest,
-      intento_actual: intentoActivoTest,
-    });
-    const user = userEvent.setup();
-    render(
-      <CorteOrquestador
-        sucursales={sucursalesTest}
-        sucursalId="suc-001"
-      />
-    );
-    return { user };
-  }
-
-  it('4.1 - Muestra "Corte en Progreso" después de reanudar', async () => {
-    const { user } = renderConProgreso();
-    await user.click(screen.getByRole('button', { name: /reanudar corte/i }));
-    expect(screen.getByText('Corte en Progreso')).toBeInTheDocument();
-  });
-
-  it('4.2 - Muestra correlativo y fase actual', async () => {
-    const { user } = renderConProgreso();
-    await user.click(screen.getByRole('button', { name: /reanudar corte/i }));
-    expect(screen.getByText('CORTE-2026-02-12-S-001')).toBeInTheDocument();
-    expect(screen.getByText('Fase 1 de 3')).toBeInTheDocument();
-  });
-
-  it('4.3 - Muestra cajero y testigo del corte', async () => {
-    const { user } = renderConProgreso();
-    await user.click(screen.getByRole('button', { name: /reanudar corte/i }));
-    expect(screen.getByText(/Juan Pérez/)).toBeInTheDocument();
-    expect(screen.getByText(/María López/)).toBeInTheDocument();
-  });
-
-  it('4.4 - Muestra placeholder de fases de conteo', async () => {
-    const { user } = renderConProgreso();
-    await user.click(screen.getByRole('button', { name: /reanudar corte/i }));
-    expect(screen.getByText(/Aquí se integrarán las fases de conteo/)).toBeInTheDocument();
-  });
-
-  it('4.5 - Botón "Abortar Corte" es visible', async () => {
-    const { user } = renderConProgreso();
-    await user.click(screen.getByRole('button', { name: /reanudar corte/i }));
-    expect(screen.getByRole('button', { name: /abortar corte/i })).toBeInTheDocument();
-  });
-});
-
-// ===========================================================================
-// SUITE 5: Flujo de Aborto desde Progreso
-// ===========================================================================
-
-describe('Suite 5: Flujo de Aborto desde Progreso', () => {
-  async function renderEnProgreso() {
+describe('Suite 4: Vista Progreso — CorteConteoAdapter', () => {
+  async function renderConProgreso() {
     const mock = configurarMock({
       corte_actual: corteActivoTest,
       intento_actual: intentoActivoTest,
@@ -423,22 +395,74 @@ describe('Suite 5: Flujo de Aborto desde Progreso', () => {
         sucursalId="suc-001"
       />
     );
-    // Go to progreso view
+    // Navigate to progreso view
     await user.click(screen.getByRole('button', { name: /reanudar corte/i }));
     return { user, mock };
   }
 
+  it('4.1 - Renderiza CashCounter (mock) después de reanudar', async () => {
+    await renderConProgreso();
+    expect(screen.getByTestId('mock-cash-counter')).toBeInTheDocument();
+  });
+
+  it('4.2 - CashCounter recibe sucursalNombre como initialStore', async () => {
+    await renderConProgreso();
+    const counter = screen.getByTestId('mock-cash-counter');
+    expect(counter.dataset.initialStore).toBe('Sucursal Central');
+  });
+
+  it('4.3 - CashCounter recibe cajero y testigo del corte', async () => {
+    await renderConProgreso();
+    const counter = screen.getByTestId('mock-cash-counter');
+    expect(counter.dataset.initialCashier).toBe('Juan Pérez');
+    expect(counter.dataset.initialWitness).toBe('María López');
+  });
+
+  it('4.4 - CashCounter recibe operationMode CASH_CUT', async () => {
+    await renderConProgreso();
+    const counter = screen.getByTestId('mock-cash-counter');
+    expect(counter.dataset.operationMode).toBe(OperationMode.CASH_CUT);
+  });
+
+  it('4.5 - onBack de CashCounter dispara finalizarCorte', async () => {
+    const { user, mock } = await renderConProgreso();
+    await user.click(screen.getByTestId('mock-back'));
+    expect(mock.finalizarCorte).toHaveBeenCalledWith('placeholder-hash');
+  });
+});
+
+// ===========================================================================
+// SUITE 5: Flujo de Aborto desde Progreso
+// ===========================================================================
+
+describe('Suite 5: Flujo de Aborto desde Reanudación', () => {
+  function renderEnReanudacion() {
+    const mock = configurarMock({
+      corte_actual: corteActivoTest,
+      intento_actual: intentoActivoTest,
+    });
+    const user = userEvent.setup();
+    render(
+      <CorteOrquestador
+        sucursales={sucursalesTest}
+        sucursalId="suc-001"
+      />
+    );
+    // Stay in reanudacion view (do NOT click "Reanudar Corte")
+    return { user, mock };
+  }
+
   it('5.1 - Toggle del panel abortar muestra textarea', async () => {
-    const { user } = await renderEnProgreso();
+    const { user } = renderEnReanudacion();
     await user.click(screen.getByRole('button', { name: /abortar corte/i }));
-    expect(screen.getByPlaceholderText(/por qué aborta/i)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/por que aborta/i)).toBeInTheDocument();
   });
 
   it('5.2 - Botón confirmar deshabilitado con motivo < 10 chars', async () => {
-    const { user } = await renderEnProgreso();
+    const { user } = renderEnReanudacion();
     await user.click(screen.getByRole('button', { name: /abortar corte/i }));
 
-    const textarea = screen.getByPlaceholderText(/por qué aborta/i);
+    const textarea = screen.getByPlaceholderText(/por que aborta/i);
     await user.type(textarea, 'Corto');
 
     const confirmar = screen.getByRole('button', { name: /confirmar aborto/i });
@@ -446,10 +470,10 @@ describe('Suite 5: Flujo de Aborto desde Progreso', () => {
   });
 
   it('5.3 - Botón confirmar habilitado con motivo >= 10 chars', async () => {
-    const { user } = await renderEnProgreso();
+    const { user } = renderEnReanudacion();
     await user.click(screen.getByRole('button', { name: /abortar corte/i }));
 
-    const textarea = screen.getByPlaceholderText(/por qué aborta/i);
+    const textarea = screen.getByPlaceholderText(/por que aborta/i);
     await user.type(textarea, 'Motivo largo suficiente');
 
     const confirmar = screen.getByRole('button', { name: /confirmar aborto/i });
@@ -457,11 +481,11 @@ describe('Suite 5: Flujo de Aborto desde Progreso', () => {
   });
 
   it('5.4 - Al confirmar aborto, preserva corte y muestra resumen ABORTADO', async () => {
-    const { user, mock } = await renderEnProgreso();
+    const { user, mock } = renderEnReanudacion();
 
     await user.click(screen.getByRole('button', { name: /abortar corte/i }));
 
-    const textarea = screen.getByPlaceholderText(/por qué aborta/i);
+    const textarea = screen.getByPlaceholderText(/por que aborta/i);
     await user.type(textarea, 'Error detectado en el conteo');
 
     await user.click(screen.getByRole('button', { name: /confirmar aborto/i }));
@@ -477,11 +501,11 @@ describe('Suite 5: Flujo de Aborto desde Progreso', () => {
   });
 
   it('5.5 - Resumen de aborto muestra "Corte Abortado" y el motivo', async () => {
-    const { user, mock } = await renderEnProgreso();
+    const { user, mock } = renderEnReanudacion();
 
     await user.click(screen.getByRole('button', { name: /abortar corte/i }));
 
-    const textarea = screen.getByPlaceholderText(/por qué aborta/i);
+    const textarea = screen.getByPlaceholderText(/por que aborta/i);
     await user.type(textarea, 'Error detectado en el conteo');
 
     await user.click(screen.getByRole('button', { name: /confirmar aborto/i }));
