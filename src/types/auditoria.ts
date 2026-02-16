@@ -161,6 +161,8 @@ export interface IniciarCorteParams {
   cajero: string;
   /** Nombre del testigo (debe ser != cajero) */
   testigo: string;
+  /** Venta esperada segun SICAR (opcional, >= 0) */
+  venta_esperada?: number;
 }
 
 /**
@@ -349,6 +351,33 @@ export function isCorteIntento(obj: unknown): obj is CorteIntento {
   // Regla de negocio: motivo_reinicio requerido si attempt > 1
   if (record.attempt_number > 1 && (record.motivo_reinicio === null || record.motivo_reinicio === '')) {
     return false;
+  }
+
+  return true;
+}
+
+/**
+ * Valida si un objeto desconocido cumple con IniciarCorteParams.
+ *
+ * @remarks Verifica campos string obligatorios (sucursal_id, cajero, testigo)
+ * y que venta_esperada, si esta definida, sea un numero >= 0.
+ */
+export function isIniciarCorteParamsValido(obj: unknown): obj is IniciarCorteParams {
+  if (typeof obj !== 'object' || obj === null) {
+    return false;
+  }
+
+  const record = obj as Record<string, unknown>;
+
+  // Campos string obligatorios
+  if (typeof record.sucursal_id !== 'string') return false;
+  if (typeof record.cajero !== 'string') return false;
+  if (typeof record.testigo !== 'string') return false;
+
+  // venta_esperada opcional: si esta definida debe ser number >= 0
+  if (record.venta_esperada !== undefined) {
+    if (typeof record.venta_esperada !== 'number') return false;
+    if (record.venta_esperada < 0) return false;
   }
 
   return true;

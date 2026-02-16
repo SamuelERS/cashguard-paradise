@@ -8,6 +8,7 @@ import {
   isCorteIntento,
   isEstadoCorte,
   isCorrelativoValido,
+  isIniciarCorteParamsValido,
   ESTADOS_TERMINALES,
   CORRELATIVO_REGEX,
   FASE_MAXIMA,
@@ -495,6 +496,53 @@ describe('auditoria.ts - Tipos y Guards del sistema de auditoria', () => {
 
     it('FASE_MAXIMA es 3', () => {
       expect(FASE_MAXIMA).toBe(3);
+    });
+  });
+
+  // =========================================================================
+  // isIniciarCorteParamsValido()
+  // =========================================================================
+  describe('isIniciarCorteParamsValido()', () => {
+    it('Acepta params validos sin venta_esperada', () => {
+      expect(isIniciarCorteParamsValido({
+        sucursal_id: 'suc-001',
+        cajero: 'Tito Gomez',
+        testigo: 'Adonay Torres',
+      })).toBe(true);
+    });
+
+    it('Acepta params validos con venta_esperada numerico >= 0', () => {
+      expect(isIniciarCorteParamsValido({
+        sucursal_id: 'suc-001',
+        cajero: 'Tito Gomez',
+        testigo: 'Adonay Torres',
+        venta_esperada: 653.65,
+      })).toBe(true);
+
+      expect(isIniciarCorteParamsValido({
+        sucursal_id: 'suc-001',
+        cajero: 'Tito Gomez',
+        testigo: 'Adonay Torres',
+        venta_esperada: 0,
+      })).toBe(true);
+    });
+
+    it('Rechaza venta_esperada negativa', () => {
+      expect(isIniciarCorteParamsValido({
+        sucursal_id: 'suc-001',
+        cajero: 'Tito Gomez',
+        testigo: 'Adonay Torres',
+        venta_esperada: -1,
+      })).toBe(false);
+    });
+
+    it('Rechaza venta_esperada no numerica', () => {
+      expect(isIniciarCorteParamsValido({
+        sucursal_id: 'suc-001',
+        cajero: 'Tito Gomez',
+        testigo: 'Adonay Torres',
+        venta_esperada: 'abc',
+      })).toBe(false);
     });
   });
 });
