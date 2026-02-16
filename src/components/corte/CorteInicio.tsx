@@ -13,6 +13,7 @@ import {
   AlertTriangle,
   Loader2,
   Play,
+  DollarSign,
 } from 'lucide-react';
 
 // ---------------------------------------------------------------------------
@@ -24,7 +25,7 @@ interface CorteInicioProps {
   sucursales: Sucursal[];
   /** Indica si hay una operación async en curso */
   cargando: boolean;
-  /** Llamado cuando el usuario completa los 3 pasos y confirma */
+  /** Llamado cuando el usuario completa los 4 pasos y confirma */
   onIniciar: (params: IniciarCorteParams) => void;
   /** Llamado cuando el usuario cancela el proceso */
   onCancelar: () => void;
@@ -56,6 +57,7 @@ function CorteInicio({
   });
   const [cajero, setCajero] = useState('');
   const [testigo, setTestigo] = useState('');
+  const [ventaEsperada, setVentaEsperada] = useState<string>('');
 
   // Validaciones derivadas
   const cajeroValido = cajero.trim().length >= NOMBRE_MIN_LENGTH;
@@ -65,7 +67,7 @@ function CorteInicio({
     testigo.trim().toLowerCase() === cajero.trim().toLowerCase();
 
   const handleSiguiente = () => {
-    if (paso < 3) setPaso(paso + 1);
+    if (paso < 4) setPaso(paso + 1);
   };
 
   const handleAnterior = () => {
@@ -74,15 +76,20 @@ function CorteInicio({
 
   const handleIniciar = () => {
     if (!sucursalId) return;
-    onIniciar({
+    const params: IniciarCorteParams = {
       sucursal_id: sucursalId,
       cajero: cajero.trim(),
       testigo: testigo.trim(),
-    });
+    };
+    const parsed = parseFloat(ventaEsperada);
+    if (ventaEsperada.trim() !== '' && !isNaN(parsed) && parsed >= 0) {
+      params.venta_esperada = parsed;
+    }
+    onIniciar(params);
   };
 
   // Progreso visual
-  const porcentajePaso = (paso / 3) * 100;
+  const porcentajePaso = (paso / 4) * 100;
 
   return (
     <div
@@ -109,11 +116,12 @@ function CorteInicio({
           <h1 className="text-xl font-bold text-[#e1e8ed]">Iniciar Corte de Caja</h1>
           <div className="space-y-1">
             <div className="flex items-center justify-between text-sm text-[#8899a6]">
-              <span>Paso {paso} de 3</span>
+              <span>Paso {paso} de 4</span>
               <span>
                 {paso === 1 && 'Seleccionar Sucursal'}
                 {paso === 2 && 'Identificar Cajero'}
                 {paso === 3 && 'Identificar Testigo'}
+                {paso === 4 && 'Venta Esperada SICAR'}
               </span>
             </div>
             <div className="h-1.5 bg-slate-700 rounded-full overflow-hidden">
@@ -274,15 +282,69 @@ function CorteInicio({
                 <ArrowLeft className="w-4 h-4" />
                 Anterior
               </NeutralActionButton>
+              <NeutralActionButton
+                onClick={handleSiguiente}
+                disabled={!testigoValido || testigoIgualCajero || cargando}
+                className="flex-1 gap-2"
+              >
+                Siguiente
+                <ArrowRight className="w-4 h-4" />
+              </NeutralActionButton>
+            </div>
+          </div>
+        )}
+
+        {/* ----------------------------------------------------------------- */}
+        {/* Paso 4: Venta Esperada SICAR */}
+        {/* ----------------------------------------------------------------- */}
+        {paso === 4 && (
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 text-[#8899a6] text-sm">
+              <DollarSign className="w-4 h-4" />
+              <span>Ingrese la venta esperada segun SICAR (opcional)</span>
+            </div>
+
+            <input
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="Ej: 653.65"
+              value={ventaEsperada}
+              onChange={(e) => setVentaEsperada(e.target.value)}
+              disabled={cargando}
+              className="w-full bg-slate-800/60 border border-slate-700 rounded-lg p-3 text-sm text-[#e1e8ed] placeholder-slate-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none disabled:opacity-50"
+            />
+
+            {/* Botones */}
+            <div className="flex gap-3">
+              <NeutralActionButton
+                onClick={handleAnterior}
+                disabled={cargando}
+                className="flex-1 gap-2"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Anterior
+              </NeutralActionButton>
               <ConstructiveActionButton
                 onClick={handleIniciar}
-                disabled={!testigoValido || testigoIgualCajero || cargando}
+                disabled={cargando}
                 className="flex-1 gap-2"
               >
                 <Play className="w-4 h-4" />
                 Iniciar Corte
               </ConstructiveActionButton>
             </div>
+
+            <NeutralActionButton
+              onClick={() => {
+                setVentaEsperada('');
+                handleIniciar();
+              }}
+              disabled={cargando}
+              className="w-full"
+            >
+              Omitir
+            </NeutralActionButton>
           </div>
         )}
 

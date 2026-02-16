@@ -257,11 +257,12 @@ describe('Suite 2: Vista Inicio — Sin Corte Activo', () => {
     await user.type(cajeroInput, 'Tito Gomez');
     await user.click(screen.getByRole('button', { name: /siguiente/i }));
 
-    // Paso 3: Ingresar testigo
+    // Paso 3: Ingresar testigo + siguiente
     const testigoInput = screen.getByPlaceholderText(/nombre completo del testigo/i);
     await user.type(testigoInput, 'Adonay Torres');
+    await user.click(screen.getByRole('button', { name: /siguiente/i }));
 
-    // Confirmar inicio
+    // Paso 4: Confirmar inicio (sin venta_esperada)
     await user.click(screen.getByRole('button', { name: /iniciar corte/i }));
 
     expect(mock.iniciarCorte).toHaveBeenCalledWith({

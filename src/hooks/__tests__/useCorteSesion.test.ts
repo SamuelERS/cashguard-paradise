@@ -366,7 +366,59 @@ describe('Suite 3: iniciarCorte', () => {
     expect(result.current.error).toBe('DB error');
   });
 
-  it('3.5 - Rechaza si ya existe corte FINALIZADO hoy', async () => {
+  it('3.5 - Propaga venta_esperada numerica al insert', async () => {
+    const { result } = renderHook(() => useCorteSesion(SUCURSAL_ID));
+
+    await waitFor(() => {
+      expect(result.current.cargando).toBe(false);
+    });
+
+    const corteConVenta: Corte = { ...CORTE_MOCK, venta_esperada: 653.65 };
+    setupIniciarCorteExitoso(corteConVenta);
+
+    await act(async () => {
+      await result.current.iniciarCorte({
+        sucursal_id: SUCURSAL_ID,
+        cajero: 'Juan Perez',
+        testigo: 'Maria Lopez',
+        venta_esperada: 653.65,
+      });
+    });
+
+    // Verificar que insert recibio venta_esperada
+    const insertCall = mockChain.cortes.insert.mock.calls[
+      mockChain.cortes.insert.mock.calls.length - 1
+    ][0];
+    expect(insertCall.venta_esperada).toBe(653.65);
+    expect(result.current.corte_actual?.venta_esperada).toBe(653.65);
+  });
+
+  it('3.6 - Envia venta_esperada null cuando no se proporciona', async () => {
+    const { result } = renderHook(() => useCorteSesion(SUCURSAL_ID));
+
+    await waitFor(() => {
+      expect(result.current.cargando).toBe(false);
+    });
+
+    setupIniciarCorteExitoso();
+
+    await act(async () => {
+      await result.current.iniciarCorte({
+        sucursal_id: SUCURSAL_ID,
+        cajero: 'Juan Perez',
+        testigo: 'Maria Lopez',
+      });
+    });
+
+    // Verificar que insert recibio venta_esperada: null
+    const insertCall = mockChain.cortes.insert.mock.calls[
+      mockChain.cortes.insert.mock.calls.length - 1
+    ][0];
+    expect(insertCall.venta_esperada).toBeNull();
+    expect(result.current.corte_actual?.venta_esperada).toBeNull();
+  });
+
+  it('3.7 - Rechaza si ya existe corte FINALIZADO hoy', async () => {
     const { result } = renderHook(() => useCorteSesion(SUCURSAL_ID));
 
     await waitFor(() => {

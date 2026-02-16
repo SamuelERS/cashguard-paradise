@@ -54,9 +54,10 @@ async function navegarAPaso(
     await user.click(screen.getByRole('button', { name: /siguiente/i }));
   }
 
-  if (paso >= 3 && testigoNombre) {
-    // No escribimos testigo automaticamente, solo si explicitamente pedido
-    // El caller puede escribir el testigo despues
+  if (paso >= 4) {
+    // Paso 3: escribir testigo + siguiente
+    await user.type(screen.getByPlaceholderText(/nombre completo del testigo/i), testigoNombre);
+    await user.click(screen.getByRole('button', { name: /siguiente/i }));
   }
 }
 
@@ -71,9 +72,9 @@ describe('Suite 1: Renderizado inicial', () => {
     expect(screen.getByText('Seleccionar Sucursal')).toBeInTheDocument();
   });
 
-  it('1.2 - Muestra indicador "Paso 1 de 3"', () => {
+  it('1.2 - Muestra indicador "Paso 1 de 4"', () => {
     renderCorteInicio();
-    expect(screen.getByText('Paso 1 de 3')).toBeInTheDocument();
+    expect(screen.getByText('Paso 1 de 4')).toBeInTheDocument();
   });
 
   it('1.3 - Muestra boton "Cancelar"', () => {
@@ -152,7 +153,7 @@ describe('Suite 3: Paso 2 — Cajero', () => {
     await user.click(screen.getByText('Los Heroes'));
     await user.click(screen.getByRole('button', { name: /siguiente/i }));
 
-    expect(screen.getByText('Paso 2 de 3')).toBeInTheDocument();
+    expect(screen.getByText('Paso 2 de 4')).toBeInTheDocument();
     expect(screen.getByText('Identificar Cajero')).toBeInTheDocument();
   });
 
@@ -183,12 +184,12 @@ describe('Suite 3: Paso 2 — Cajero', () => {
     await user.click(screen.getByRole('button', { name: /siguiente/i }));
 
     // Now on paso 2
-    expect(screen.getByText('Paso 2 de 3')).toBeInTheDocument();
+    expect(screen.getByText('Paso 2 de 4')).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: /anterior/i }));
 
     // Back on paso 1
-    expect(screen.getByText('Paso 1 de 3')).toBeInTheDocument();
+    expect(screen.getByText('Paso 1 de 4')).toBeInTheDocument();
 
     // Sucursal still selected (border-blue-500)
     const heroesButton = screen.getByText('Los Heroes').closest('button')!;
@@ -207,7 +208,7 @@ describe('Suite 4: Paso 3 — Testigo', () => {
 
     await navegarAPaso(user, 3);
 
-    expect(screen.getByText('Paso 3 de 3')).toBeInTheDocument();
+    expect(screen.getByText('Paso 3 de 4')).toBeInTheDocument();
     expect(screen.getByText('Identificar Testigo')).toBeInTheDocument();
   });
 
@@ -234,7 +235,7 @@ describe('Suite 4: Paso 3 — Testigo', () => {
     ).toBeInTheDocument();
   });
 
-  it('4.4 - Boton "Iniciar Corte" deshabilitado cuando testigo === cajero', async () => {
+  it('4.4 - Boton "Siguiente" deshabilitado cuando testigo === cajero', async () => {
     const user = userEvent.setup();
     renderCorteInicio();
 
@@ -244,10 +245,11 @@ describe('Suite 4: Paso 3 — Testigo', () => {
       'TITO GOMEZ'
     );
 
-    expect(screen.getByRole('button', { name: /iniciar corte/i })).toBeDisabled();
+    const botones = screen.getAllByRole('button', { name: /siguiente/i });
+    expect(botones[botones.length - 1]).toBeDisabled();
   });
 
-  it('4.5 - Boton "Iniciar Corte" habilitado con testigo valido y diferente', async () => {
+  it('4.5 - Boton "Siguiente" habilitado con testigo valido y diferente', async () => {
     const user = userEvent.setup();
     renderCorteInicio();
 
@@ -257,7 +259,8 @@ describe('Suite 4: Paso 3 — Testigo', () => {
       'Adonay Torres'
     );
 
-    expect(screen.getByRole('button', { name: /iniciar corte/i })).toBeEnabled();
+    const botones = screen.getAllByRole('button', { name: /siguiente/i });
+    expect(botones[botones.length - 1]).toBeEnabled();
   });
 });
 
@@ -271,11 +274,7 @@ describe('Suite 5: Callback onIniciar', () => {
     const onIniciar = vi.fn();
     renderCorteInicio({ onIniciar });
 
-    await navegarAPaso(user, 3, { cajeroNombre: 'Tito Gomez' });
-    await user.type(
-      screen.getByPlaceholderText(/nombre completo del testigo/i),
-      'Adonay Torres'
-    );
+    await navegarAPaso(user, 4, { cajeroNombre: 'Tito Gomez', testigoNombre: 'Adonay Torres' });
     await user.click(screen.getByRole('button', { name: /iniciar corte/i }));
 
     expect(onIniciar).toHaveBeenCalledTimes(1);
@@ -302,6 +301,9 @@ describe('Suite 5: Callback onIniciar', () => {
       screen.getByPlaceholderText(/nombre completo del testigo/i),
       '  Adonay Torres  '
     );
+    await user.click(screen.getByRole('button', { name: /siguiente/i }));
+
+    // Paso 4: click Iniciar Corte sin venta_esperada
     await user.click(screen.getByRole('button', { name: /iniciar corte/i }));
 
     expect(onIniciar).toHaveBeenCalledWith({
@@ -330,6 +332,9 @@ describe('Suite 5: Callback onIniciar', () => {
       screen.getByPlaceholderText(/nombre completo del testigo/i),
       'Jonathan Melara'
     );
+    await user.click(screen.getByRole('button', { name: /siguiente/i }));
+
+    // Paso 4: click Iniciar Corte
     await user.click(screen.getByRole('button', { name: /iniciar corte/i }));
 
     expect(onIniciar).toHaveBeenCalledWith(
@@ -407,11 +412,16 @@ describe('Suite 7: Navegacion y edge cases', () => {
     );
     await user.click(screen.getByRole('button', { name: /siguiente/i }));
 
-    // Paso 3: write testigo
+    // Paso 3: write testigo + siguiente
     await user.type(
       screen.getByPlaceholderText(/nombre completo del testigo/i),
       'Adonay Torres'
     );
+    await user.click(screen.getByRole('button', { name: /siguiente/i }));
+
+    // Paso 4: go back to paso 3
+    await user.click(screen.getByRole('button', { name: /anterior/i }));
+    expect(screen.getByPlaceholderText(/nombre completo del testigo/i)).toHaveValue('Adonay Torres');
 
     // Go back to paso 2
     await user.click(screen.getByRole('button', { name: /anterior/i }));
@@ -436,5 +446,85 @@ describe('Suite 7: Navegacion y edge cases', () => {
 
     const heroesCard = screen.getByText('Los Heroes').closest('button')!;
     expect(heroesCard).toBeDisabled();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Suite 8: Paso 4 — Venta Esperada SICAR
+// ---------------------------------------------------------------------------
+
+describe('Suite 8: Paso 4 — Venta Esperada SICAR', () => {
+  it('8.1 - Navegar desde paso 3 muestra input de venta esperada', async () => {
+    const user = userEvent.setup();
+    renderCorteInicio();
+
+    await navegarAPaso(user, 4);
+
+    expect(screen.getByText('Paso 4 de 4')).toBeInTheDocument();
+    expect(screen.getByText('Venta Esperada SICAR')).toBeInTheDocument();
+  });
+
+  it('8.2 - Input con placeholder "Ej: 653.65"', async () => {
+    const user = userEvent.setup();
+    renderCorteInicio();
+
+    await navegarAPaso(user, 4);
+    expect(screen.getByPlaceholderText('Ej: 653.65')).toBeInTheDocument();
+  });
+
+  it('8.3 - "Iniciar Corte" envia venta_esperada como number', async () => {
+    const user = userEvent.setup();
+    const onIniciar = vi.fn();
+    renderCorteInicio({ onIniciar });
+
+    await navegarAPaso(user, 4);
+    await user.type(screen.getByPlaceholderText('Ej: 653.65'), '653.65');
+    await user.click(screen.getByRole('button', { name: /iniciar corte/i }));
+
+    expect(onIniciar).toHaveBeenCalledWith(
+      expect.objectContaining({ venta_esperada: 653.65 })
+    );
+  });
+
+  it('8.4 - "Omitir" envia params sin venta_esperada', async () => {
+    const user = userEvent.setup();
+    const onIniciar = vi.fn();
+    renderCorteInicio({ onIniciar });
+
+    await navegarAPaso(user, 4);
+    await user.click(screen.getByRole('button', { name: /omitir/i }));
+
+    expect(onIniciar).toHaveBeenCalledTimes(1);
+    const params = onIniciar.mock.calls[0][0];
+    expect(params).not.toHaveProperty('venta_esperada');
+  });
+
+  it('8.5 - "Iniciar Corte" sin valor en input no envia venta_esperada', async () => {
+    const user = userEvent.setup();
+    const onIniciar = vi.fn();
+    renderCorteInicio({ onIniciar });
+
+    await navegarAPaso(user, 4);
+    await user.click(screen.getByRole('button', { name: /iniciar corte/i }));
+
+    expect(onIniciar).toHaveBeenCalledTimes(1);
+    const params = onIniciar.mock.calls[0][0];
+    expect(params).not.toHaveProperty('venta_esperada');
+  });
+
+  it('8.6 - Boton "Anterior" regresa a paso 3 con testigo preservado', async () => {
+    const user = userEvent.setup();
+    renderCorteInicio();
+
+    await navegarAPaso(user, 4, { testigoNombre: 'Adonay Torres' });
+
+    // Now on paso 4
+    expect(screen.getByText('Paso 4 de 4')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: /anterior/i }));
+
+    // Back on paso 3
+    expect(screen.getByText('Paso 3 de 4')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/nombre completo del testigo/i)).toHaveValue('Adonay Torres');
   });
 });

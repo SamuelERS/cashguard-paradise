@@ -148,7 +148,7 @@ export function useCorteSesion(sucursal_id: string): UseCorteSesionReturn {
           correlativo: correlativo,
           fase_actual: 0,
           intento_actual: 1,
-          venta_esperada: null,
+          venta_esperada: params.venta_esperada ?? null,
           datos_conteo: null,
           datos_entrega: null,
           datos_verificacion: null,
