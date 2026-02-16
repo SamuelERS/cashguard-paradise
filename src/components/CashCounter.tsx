@@ -20,6 +20,7 @@ interface CashCounterProps {
   initialDailyExpenses?: DailyExpense[];
   onBack?: () => void;
   onFlowCancel?: () => void;
+  skipWizard?: boolean; // 🤖 [IA] - Orden #015: Saltar instrucciones cuando datos vienen del flujo de auditoría
 }
 
 // 🤖 [IA] - v1.4.1: Componente presentacional delgado - toda lógica en useCashCounterOrchestrator
@@ -31,7 +32,8 @@ const CashCounter = ({
   initialExpectedSales = "",
   initialDailyExpenses = [],
   onBack,
-  onFlowCancel
+  onFlowCancel,
+  skipWizard = false,
 }: CashCounterProps) => {
   const state = useCashCounterOrchestrator({
     operationMode,
@@ -42,6 +44,7 @@ const CashCounter = ({
     initialDailyExpenses,
     onBack,
     onFlowCancel,
+    skipWizard,
   });
 
   // 🤖 [IA] - v1.4.1: Phase 3 early return

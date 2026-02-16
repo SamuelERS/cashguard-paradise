@@ -33,6 +33,7 @@ interface CashCounterOrchestratorOptions {
   initialDailyExpenses: DailyExpense[];
   onBack?: () => void;
   onFlowCancel?: () => void;
+  skipWizard?: boolean; // 🤖 [IA] - Orden #015: Saltar instrucciones en flujo auditoría
 }
 
 export function useCashCounterOrchestrator({
@@ -44,6 +45,7 @@ export function useCashCounterOrchestrator({
   initialDailyExpenses,
   onBack,
   onFlowCancel,
+  skipWizard = false,
 }: CashCounterOrchestratorOptions) {
   // 🤖 [IA] - v1.0.81 - Detectar modo de operación
   const isMorningCount = operationMode === OperationMode.CASH_COUNT;
@@ -126,8 +128,8 @@ export function useCashCounterOrchestrator({
     if (hasInitialData && !phaseState.phase1Completed) {
       resetFlow(); // Limpiar estado persistente del flujo Wizard v3
 
-      if (isMorningCount) {
-        // Morning Count: Ir directo a Fase 1 (instrucciones ya confirmadas en MorningCountWizard)
+      if (isMorningCount || skipWizard) {
+        // Morning Count o skipWizard (auditoría): Ir directo a Fase 1 sin instrucciones
         startPhase1();
         sessionStorage.setItem('current-counting-session', `session-${Date.now()}`);
       } else {

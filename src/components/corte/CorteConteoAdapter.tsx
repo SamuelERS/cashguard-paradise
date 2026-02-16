@@ -56,6 +56,7 @@ function CorteConteoAdapter({
       initialExpectedSales={ventaEsperadaStr}
       onBack={onConteoCompletado}
       onFlowCancel={onConteoCompletado}
+      skipWizard
     />
   );
 }
