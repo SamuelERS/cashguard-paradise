@@ -49,11 +49,17 @@ export type Database = {
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
 
-if (!supabaseUrl) {
-  throw new Error('Missing VITE_SUPABASE_URL environment variable');
-}
-if (!supabaseAnonKey) {
-  throw new Error('Missing VITE_SUPABASE_ANON_KEY environment variable');
+// 🤖 [IA] - Fix OT-02: Degradación controlada cuando env vars no están presentes.
+// En lugar de throw que crashea toda la app/tests al importar el módulo,
+// se usa un placeholder que falla en runtime solo cuando se intenta usar.
+const PLACEHOLDER_URL = 'https://placeholder.supabase.co';
+const PLACEHOLDER_KEY = 'placeholder-key';
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.warn(
+    '[supabase] VITE_SUPABASE_URL o VITE_SUPABASE_ANON_KEY no configuradas. ' +
+    'El cliente Supabase operará en modo degradado (las llamadas fallarán).'
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -61,7 +67,13 @@ if (!supabaseAnonKey) {
 // ---------------------------------------------------------------------------
 
 /** Cliente Supabase tipado — singleton para toda la aplicación. */
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient<Database>(
+  supabaseUrl ?? PLACEHOLDER_URL,
+  supabaseAnonKey ?? PLACEHOLDER_KEY,
+);
+
+/** Indica si el cliente Supabase tiene credenciales reales configuradas. */
+export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
 
 // ---------------------------------------------------------------------------
 // 4. Helpers tipados

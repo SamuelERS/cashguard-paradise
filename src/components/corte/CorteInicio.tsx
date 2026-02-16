@@ -337,8 +337,17 @@ function CorteInicio({
 
             <NeutralActionButton
               onClick={() => {
-                setVentaEsperada('');
-                handleIniciar();
+                // 🤖 [IA] - Fix OT-02: No depender de setState async.
+                // Construir params directamente sin venta_esperada en lugar
+                // de llamar setVentaEsperada('') + handleIniciar() que causa
+                // race condition (handleIniciar lee state stale).
+                if (!sucursalId) return;
+                const params: IniciarCorteParams = {
+                  sucursal_id: sucursalId,
+                  cajero: cajero.trim(),
+                  testigo: testigo.trim(),
+                };
+                onIniciar(params);
               }}
               disabled={cargando}
               className="w-full"

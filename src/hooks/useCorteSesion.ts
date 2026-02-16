@@ -194,7 +194,8 @@ export function useCorteSesion(sucursal_id: string): UseCorteSesionReturn {
       loadingCount.current -= 1;
       if (loadingCount.current === 0) setCargando(false);
     }
-  }, [sucursal_id]);
+  // 🤖 [IA] - Fix OT-02: sucursal_id removido de deps (callback usa params.sucursal_id, no la variable outer)
+  }, []);
 
   // -------------------------------------------------------------------------
   // guardarProgreso

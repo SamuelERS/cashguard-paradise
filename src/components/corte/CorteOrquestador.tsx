@@ -56,9 +56,19 @@ function PantallaCargaInicial() {
 
 function CorteOrquestador({ sucursales, sucursalId, onSalir }: CorteOrquestadorProps) {
   // -----------------------------------------------------------------------
-  // Hook de sesión
+  // Hook de sesión — desestructurado para que ESLint rastree deps individuales
+  // 🤖 [IA] - Fix OT-02: Evita warning "missing dependency: sesion" en useCallback
   // -----------------------------------------------------------------------
-  const sesion = useCorteSesion(sucursalId);
+  const {
+    corte_actual,
+    intento_actual,
+    cargando: sesionCargando,
+    error: sesionError,
+    iniciarCorte,
+    finalizarCorte,
+    abortarCorte,
+    reiniciarIntento,
+  } = useCorteSesion(sucursalId);
 
   // -----------------------------------------------------------------------
   // Estado local
@@ -81,24 +91,24 @@ function CorteOrquestador({ sucursales, sucursalId, onSalir }: CorteOrquestadorP
 
   const vistaActual: VistaOrquestador = (() => {
     // 1. Carga inicial
-    if (!inicializado && sesion.cargando) return 'cargando_inicial';
+    if (!inicializado && sesionCargando) return 'cargando_inicial';
 
     // 2. Resumen de aborto (copia local)
     if (corteParaResumen !== null) return 'resumen';
 
     // 3. Corte en estado terminal (FINALIZADO / ABORTADO)
     if (
-      sesion.corte_actual !== null &&
-      ESTADOS_TERMINALES.includes(sesion.corte_actual.estado)
+      corte_actual !== null &&
+      ESTADOS_TERMINALES.includes(corte_actual.estado)
     ) {
       return 'resumen';
     }
 
     // 4. Corte activo no confirmado → reanudación
-    if (sesion.corte_actual !== null && !sesionConfirmada) return 'reanudacion';
+    if (corte_actual !== null && !sesionConfirmada) return 'reanudacion';
 
     // 5. Corte activo confirmado → progreso
-    if (sesion.corte_actual !== null && sesionConfirmada) return 'progreso';
+    if (corte_actual !== null && sesionConfirmada) return 'progreso';
 
     // 6. Sin corte activo → inicio
     return 'inicio';
@@ -111,10 +121,10 @@ function CorteOrquestador({ sucursales, sucursalId, onSalir }: CorteOrquestadorP
   useEffect(() => {
     // Marcar como inicializado cuando el hook deja de cargar
     // por primera vez (recuperarSesion completó)
-    if (!sesion.cargando && !inicializado) {
+    if (!sesionCargando && !inicializado) {
       setInicializado(true);
     }
-  }, [sesion.cargando, inicializado]);
+  }, [sesionCargando, inicializado]);
 
   // -----------------------------------------------------------------------
   // Handlers (todos con useCallback)
@@ -122,12 +132,12 @@ function CorteOrquestador({ sucursales, sucursalId, onSalir }: CorteOrquestadorP
 
   const handleIniciarCorte = useCallback(async (params: IniciarCorteParams) => {
     try {
-      await sesion.iniciarCorte(params);
+      await iniciarCorte(params);
       setSesionConfirmada(true);
     } catch {
-      // Error ya está en sesion.error
+      // Error ya está en sesionError
     }
-  }, [sesion.iniciarCorte]);
+  }, [iniciarCorte]);
 
   const handleCancelarInicio = useCallback(() => {
     if (onSalir) onSalir();
@@ -139,20 +149,20 @@ function CorteOrquestador({ sucursales, sucursalId, onSalir }: CorteOrquestadorP
 
   const handleNuevoIntento = useCallback(async (motivo: string) => {
     try {
-      await sesion.reiniciarIntento(motivo);
+      await reiniciarIntento(motivo);
       setSesionConfirmada(true);
     } catch {
-      // Error ya está en sesion.error
+      // Error ya está en sesionError
     }
-  }, [sesion.reiniciarIntento]);
+  }, [reiniciarIntento]);
 
   // CRÍTICO: Preservar corte ANTES de abortar porque
-  // sesion.abortarCorte() pone corte_actual en null
+  // abortarCorte() del hook pone corte_actual en null
   const handleAbortarCorte = useCallback(async (motivo: string) => {
-    if (!sesion.corte_actual) return;
-    const cortePreAbort = { ...sesion.corte_actual };
+    if (!corte_actual) return;
+    const cortePreAbort = { ...corte_actual };
     try {
-      await sesion.abortarCorte(motivo);
+      await abortarCorte(motivo);
       // Marcar como abortado en la copia local
       setCorteParaResumen({
         ...cortePreAbort,
@@ -161,19 +171,33 @@ function CorteOrquestador({ sucursales, sucursalId, onSalir }: CorteOrquestadorP
         finalizado_at: new Date().toISOString(),
       });
     } catch {
-      // Error ya está en sesion.error
+      // Error ya está en sesionError
     }
-  }, [sesion.corte_actual, sesion.abortarCorte]);
+  }, [corte_actual, abortarCorte]);
 
-  // 🤖 [IA] - v1.1.0: Handler conteo completado — Orden #013
+  // 🤖 [IA] - v1.1.1: Handler conteo completado — Orden #013 + Fix OT-02
   const handleConteoCompletado = useCallback(async () => {
-    if (!sesion.corte_actual) return;
+    if (!corte_actual) return;
     try {
-      await sesion.finalizarCorte('placeholder-hash');
+      // Generar SHA-256 del snapshot de datos del corte para integridad del reporte
+      const payload = JSON.stringify({
+        corte_id: corte_actual.id,
+        correlativo: corte_actual.correlativo,
+        datos_conteo: corte_actual.datos_conteo,
+        datos_entrega: corte_actual.datos_entrega,
+        datos_verificacion: corte_actual.datos_verificacion,
+        finalizado_at: new Date().toISOString(),
+      });
+      const encoded = new TextEncoder().encode(payload);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', encoded);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+      await finalizarCorte(hashHex);
     } catch {
-      // Error ya está en sesion.error
+      // Error ya está en sesionError
     }
-  }, [sesion.corte_actual, sesion.finalizarCorte]);
+  }, [corte_actual, finalizarCorte]);
 
   const handleCerrarResumen = useCallback(() => {
     setCorteParaResumen(null);
@@ -219,29 +243,29 @@ function CorteOrquestador({ sucursales, sucursalId, onSalir }: CorteOrquestadorP
         {vistaActual === 'inicio' && (
           <CorteInicio
             sucursales={sucursales}
-            cargando={sesion.cargando}
+            cargando={sesionCargando}
             onIniciar={handleIniciarCorte}
             onCancelar={handleCancelarInicio}
-            error={sesion.error}
+            error={sesionError}
           />
         )}
 
-        {vistaActual === 'reanudacion' && sesion.corte_actual && (
+        {vistaActual === 'reanudacion' && corte_actual && (
           <CorteReanudacion
-            corte={sesion.corte_actual}
-            intento={sesion.intento_actual}
-            cargando={sesion.cargando}
+            corte={corte_actual}
+            intento={intento_actual}
+            cargando={sesionCargando}
             onReanudar={handleReanudar}
             onNuevoIntento={handleNuevoIntento}
             onAbortarCorte={handleAbortarCorte}
           />
         )}
 
-        {vistaActual === 'progreso' && sesion.corte_actual && (
+        {vistaActual === 'progreso' && corte_actual && (
           <CorteConteoAdapter
-            corte={sesion.corte_actual}
-            intento={sesion.intento_actual}
-            sucursalNombre={resolverNombreSucursal(sesion.corte_actual)}
+            corte={corte_actual}
+            intento={intento_actual}
+            sucursalNombre={resolverNombreSucursal(corte_actual)}
             onConteoCompletado={handleConteoCompletado}
           />
         )}
@@ -254,10 +278,10 @@ function CorteOrquestador({ sucursales, sucursalId, onSalir }: CorteOrquestadorP
           />
         )}
 
-        {vistaActual === 'resumen' && !corteParaResumen && sesion.corte_actual && (
+        {vistaActual === 'resumen' && !corteParaResumen && corte_actual && (
           <CorteResumen
-            corte={sesion.corte_actual}
-            nombreSucursal={resolverNombreSucursal(sesion.corte_actual)}
+            corte={corte_actual}
+            nombreSucursal={resolverNombreSucursal(corte_actual)}
             onCerrar={handleCerrarResumen}
           />
         )}

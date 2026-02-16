@@ -428,7 +428,9 @@ describe('Suite 4: Vista Progreso — CorteConteoAdapter', () => {
   it('4.5 - onBack de CashCounter dispara finalizarCorte', async () => {
     const { user, mock } = await renderConProgreso();
     await user.click(screen.getByTestId('mock-back'));
-    expect(mock.finalizarCorte).toHaveBeenCalledWith('placeholder-hash');
+    expect(mock.finalizarCorte).toHaveBeenCalledTimes(1);
+    const hashArg = mock.finalizarCorte.mock.calls[0][0] as string;
+    expect(hashArg).toMatch(/^[a-f0-9]{64}$/);
   });
 });
 

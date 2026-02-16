@@ -138,7 +138,7 @@ export function useCashCounterOrchestrator({
         sessionStorage.setItem('current-counting-session', `session-${Date.now()}`);
       }
     }
-  }, [hasInitialData, phaseState.phase1Completed, resetFlow, isMorningCount, startPhase1]);
+  }, [hasInitialData, phaseState.phase1Completed, resetFlow, isMorningCount, startPhase1, skipWizard]);
 
   // 🤖 [IA] - v1.2.8 - Handler para cuando se confirman las instrucciones
   const handleInstructionsConfirm = () => {
