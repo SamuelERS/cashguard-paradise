@@ -24,6 +24,9 @@ vi.mock('../../../components/CashCounter', () => ({
       data-initial-expected-sales={props.initialExpectedSales ?? ''}
       data-initial-daily-expenses={props.initialDailyExpenses ? 'present' : 'absent'}
       data-skip-wizard={props.skipWizard ? 'true' : 'false'}
+      data-has-initial-cash-count={props.initialCashCount ? 'true' : 'false'}
+      data-has-initial-electronic-payments={props.initialElectronicPayments ? 'true' : 'false'}
+      data-has-guardar-progreso={typeof props.onGuardarProgreso === 'function' ? 'true' : 'false'}
     >
       <button data-testid="mock-back" onClick={props.onBack}>mock-back</button>
       <button data-testid="mock-cancel" onClick={props.onFlowCancel}>mock-cancel</button>
@@ -406,6 +409,99 @@ describe('CorteConteoAdapter', () => {
         expect.objectContaining({ skipWizard: true }),
         expect.anything(),
       );
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // Suite 8: OT-17 — Hidratación desde datos_conteo
+  // -------------------------------------------------------------------------
+  describe('Suite 8: OT-17 — Hidratación desde datos_conteo', () => {
+    it('8.1 — Extrae initialCashCount de datos_conteo.conteo_parcial', () => {
+      const corteConDatos: Corte = {
+        ...corteActivoTest,
+        datos_conteo: {
+          conteo_parcial: { penny: 50, nickel: 20, dime: 0, quarter: 0, dollarCoin: 0, bill1: 0, bill5: 0, bill10: 0, bill20: 0, bill50: 0, bill100: 0 },
+        },
+      };
+      render(<CorteConteoAdapter {...defaultProps()} corte={corteConDatos} />);
+      expect(MockCashCounter).toHaveBeenCalledWith(
+        expect.objectContaining({
+          initialCashCount: expect.objectContaining({ penny: 50, nickel: 20 }),
+        }),
+        expect.anything(),
+      );
+    });
+
+    it('8.2 — Extrae initialElectronicPayments de datos_conteo.pagos_electronicos', () => {
+      const corteConPagos: Corte = {
+        ...corteActivoTest,
+        datos_conteo: {
+          pagos_electronicos: { credomatic: 5.32, promerica: 56.12, bankTransfer: 43.56, paypal: 0 },
+        },
+      };
+      render(<CorteConteoAdapter {...defaultProps()} corte={corteConPagos} />);
+      expect(MockCashCounter).toHaveBeenCalledWith(
+        expect.objectContaining({
+          initialElectronicPayments: expect.objectContaining({ credomatic: 5.32 }),
+        }),
+        expect.anything(),
+      );
+    });
+
+    it('8.3 — Sin datos_conteo pasa undefined para ambos', () => {
+      render(<CorteConteoAdapter {...defaultProps()} />);
+      expect(MockCashCounter).toHaveBeenCalledWith(
+        expect.objectContaining({
+          initialCashCount: undefined,
+          initialElectronicPayments: undefined,
+        }),
+        expect.anything(),
+      );
+    });
+
+    it('8.4 — datos_conteo vacío pasa undefined', () => {
+      const corteVacio: Corte = { ...corteActivoTest, datos_conteo: {} };
+      render(<CorteConteoAdapter {...defaultProps()} corte={corteVacio} />);
+      expect(MockCashCounter).toHaveBeenCalledWith(
+        expect.objectContaining({
+          initialCashCount: undefined,
+          initialElectronicPayments: undefined,
+        }),
+        expect.anything(),
+      );
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // Suite 9: OT-17 — Prop onGuardarProgreso
+  // -------------------------------------------------------------------------
+  describe('Suite 9: OT-17 — Prop onGuardarProgreso', () => {
+    it('9.1 — Pasa onGuardarProgreso a CashCounter cuando se provee', () => {
+      const mockGuardar = vi.fn();
+      render(
+        <CorteConteoAdapter {...defaultProps()} onGuardarProgreso={mockGuardar} />,
+      );
+      expect(MockCashCounter).toHaveBeenCalledWith(
+        expect.objectContaining({ onGuardarProgreso: mockGuardar }),
+        expect.anything(),
+      );
+    });
+
+    it('9.2 — Sin onGuardarProgreso pasa undefined', () => {
+      render(<CorteConteoAdapter {...defaultProps()} />);
+      expect(MockCashCounter).toHaveBeenCalledWith(
+        expect.objectContaining({ onGuardarProgreso: undefined }),
+        expect.anything(),
+      );
+    });
+
+    it('9.3 — data attribute refleja presencia de callback', () => {
+      const mockGuardar = vi.fn();
+      render(
+        <CorteConteoAdapter {...defaultProps()} onGuardarProgreso={mockGuardar} />,
+      );
+      const counter = screen.getByTestId('mock-cash-counter');
+      expect(counter).toHaveAttribute('data-has-guardar-progreso', 'true');
     });
   });
 });

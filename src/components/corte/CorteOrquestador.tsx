@@ -1,11 +1,16 @@
-// 🤖 [IA] - v1.1.0: Integración CorteConteoAdapter — Orden #013
+// 🤖 [IA] - v1.3.0: OT-17 — Conecta guardarProgreso para autosave de conteo
+// Previous: v1.2.0: OT-14 — Pasa sucursalPreseleccionadaId + omitirPasoSucursal a CorteInicio
+// Previous: v1.1.0: Integración CorteConteoAdapter — Orden #013
 // Integra CorteInicio, CorteReanudacion, CorteResumen, CorteStatusBanner
 // y CorteConteoAdapter en un flujo unificado gobernado por useCorteSesion.
 
 import React, { useState, useEffect, useCallback } from 'react';
-import type { Corte, Sucursal, IniciarCorteParams } from '../../types/auditoria';
+import type { Corte, Sucursal, IniciarCorteParams, DatosProgreso } from '../../types/auditoria';
+import type { CashCount, ElectronicPayments } from '../../types/cash';
+import type { DailyExpense } from '../../types/expenses';
 import { ESTADOS_TERMINALES } from '../../types/auditoria';
 import { useCorteSesion } from '../../hooks/useCorteSesion';
+import { useEmpleadosSucursal } from '../../hooks/useEmpleadosSucursal';
 import { CorteInicio } from './CorteInicio';
 import { CorteReanudacion } from './CorteReanudacion';
 import { CorteResumen } from './CorteResumen';
@@ -68,7 +73,13 @@ function CorteOrquestador({ sucursales, sucursalId, onSalir }: CorteOrquestadorP
     finalizarCorte,
     abortarCorte,
     reiniciarIntento,
+    guardarProgreso,
   } = useCorteSesion(sucursalId);
+  const {
+    empleados: empleadosSucursal,
+    cargando: cargandoEmpleados,
+    error: errorEmpleados,
+  } = useEmpleadosSucursal(sucursalId);
 
   // -----------------------------------------------------------------------
   // Estado local
@@ -204,6 +215,26 @@ function CorteOrquestador({ sucursales, sucursalId, onSalir }: CorteOrquestadorP
     setSesionConfirmada(false);
   }, []);
 
+  // 🤖 [IA] - OT-17: Handler autosave — convierte payload del orquestador a DatosProgreso
+  const handleGuardarProgreso = useCallback((datos: {
+    fase_actual: number;
+    conteo_parcial: CashCount;
+    pagos_electronicos: ElectronicPayments;
+    gastos_dia: DailyExpense[];
+  }) => {
+    const datosProgreso: DatosProgreso = {
+      fase_actual: datos.fase_actual,
+      conteo_parcial: datos.conteo_parcial as Record<string, unknown>,
+      pagos_electronicos: datos.pagos_electronicos as Record<string, unknown>,
+      gastos_dia: datos.gastos_dia.length > 0
+        ? { items: datos.gastos_dia } as unknown as Record<string, unknown>
+        : null,
+    };
+    guardarProgreso(datosProgreso).catch((err: unknown) => {
+      console.warn('[CorteOrquestador] autosave falló (no-blocking):', err);
+    });
+  }, [guardarProgreso]);
+
   // -----------------------------------------------------------------------
   // Helper: resolver nombre de sucursal
   // -----------------------------------------------------------------------
@@ -247,6 +278,11 @@ function CorteOrquestador({ sucursales, sucursalId, onSalir }: CorteOrquestadorP
             onIniciar={handleIniciarCorte}
             onCancelar={handleCancelarInicio}
             error={sesionError}
+            sucursalPreseleccionadaId={sucursalId}
+            omitirPasoSucursal={true}
+            empleadosDisponibles={empleadosSucursal.map((empleado) => empleado.nombre)}
+            cargandoEmpleados={cargandoEmpleados}
+            errorEmpleados={errorEmpleados}
           />
         )}
 
@@ -267,6 +303,7 @@ function CorteOrquestador({ sucursales, sucursalId, onSalir }: CorteOrquestadorP
             intento={intento_actual}
             sucursalNombre={resolverNombreSucursal(corte_actual)}
             onConteoCompletado={handleConteoCompletado}
+            onGuardarProgreso={handleGuardarProgreso}
           />
         )}
 

@@ -1,9 +1,12 @@
-// 🤖 [IA] - v1.0.0: Adaptador corte → CashCounter — Orden #013
+// 🤖 [IA] - v1.1.0: OT-17 — Hidratación desde datos_conteo + wiring onGuardarProgreso
+// Previous: v1.0.0: Adaptador corte → CashCounter — Orden #013
 // Mapea datos del sistema de auditoría (Corte, CorteIntento) a las props
 // de CashCounter existente. Wrapper delgado sin lógica duplicada.
 
 import { useMemo } from 'react';
 import type { Corte, CorteIntento } from '../../types/auditoria';
+import type { CashCount, ElectronicPayments } from '../../types/cash';
+import type { DailyExpense } from '../../types/expenses';
 import { OperationMode } from '../../types/operation-mode';
 import CashCounter from '../CashCounter';
 
@@ -20,6 +23,13 @@ interface CorteConteoAdapterProps {
   sucursalNombre: string;
   /** Callback cuando el conteo se completa exitosamente */
   onConteoCompletado: () => void;
+  // 🤖 [IA] - OT-17: Callback de autosave de progreso
+  onGuardarProgreso?: (datos: {
+    fase_actual: number;
+    conteo_parcial: CashCount;
+    pagos_electronicos: ElectronicPayments;
+    gastos_dia: DailyExpense[];
+  }) => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -40,12 +50,29 @@ function CorteConteoAdapter({
   intento: _intento,
   sucursalNombre,
   onConteoCompletado,
+  onGuardarProgreso,
 }: CorteConteoAdapterProps) {
   // 🤖 [IA] - v1.0.0: Mapeo venta_esperada — null → undefined, number → string
   const ventaEsperadaStr = useMemo((): string | undefined => {
     if (corte.venta_esperada === null) return undefined;
     return corte.venta_esperada.toString();
   }, [corte.venta_esperada]);
+
+  // 🤖 [IA] - OT-17: Hidratación — extraer conteo_parcial y pagos_electronicos de datos_conteo
+  const { initialCashCount, initialElectronicPayments } = useMemo(() => {
+    const dc = corte.datos_conteo;
+    if (!dc || typeof dc !== 'object') {
+      return { initialCashCount: undefined, initialElectronicPayments: undefined };
+    }
+
+    const conteo = dc.conteo_parcial as CashCount | undefined;
+    const pagos = dc.pagos_electronicos as ElectronicPayments | undefined;
+
+    return {
+      initialCashCount: conteo ?? undefined,
+      initialElectronicPayments: pagos ?? undefined,
+    };
+  }, [corte.datos_conteo]);
 
   return (
     <CashCounter
@@ -57,6 +84,9 @@ function CorteConteoAdapter({
       onBack={onConteoCompletado}
       onFlowCancel={onConteoCompletado}
       skipWizard
+      initialCashCount={initialCashCount}
+      initialElectronicPayments={initialElectronicPayments}
+      onGuardarProgreso={onGuardarProgreso}
     />
   );
 }

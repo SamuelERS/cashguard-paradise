@@ -14,10 +14,15 @@ import type { Corte, CorteIntento, Sucursal } from '../../../types/auditoria';
 vi.mock('../../../hooks/useCorteSesion', () => ({
   useCorteSesion: vi.fn(),
 }));
+vi.mock('../../../hooks/useEmpleadosSucursal', () => ({
+  useEmpleadosSucursal: vi.fn(),
+}));
 
 import { useCorteSesion } from '../../../hooks/useCorteSesion';
+import { useEmpleadosSucursal } from '../../../hooks/useEmpleadosSucursal';
 
 const mockUseCorteSesion = vi.mocked(useCorteSesion);
+const mockUseEmpleadosSucursal = vi.mocked(useEmpleadosSucursal);
 
 // ---------------------------------------------------------------------------
 // Mock de CashCounter (CorteConteoAdapter lo renderiza internamente)
@@ -35,6 +40,17 @@ vi.mock('../../../components/CashCounter', () => ({
     >
       <button data-testid="mock-back" onClick={props.onBack}>mock-back</button>
       <button data-testid="mock-cancel" onClick={props.onFlowCancel}>mock-cancel</button>
+      {props.onGuardarProgreso && (
+        <button
+          data-testid="mock-guardar-progreso"
+          onClick={() => props.onGuardarProgreso({
+            fase_actual: 1,
+            conteo_parcial: { penny: 5 },
+            pagos_electronicos: { credomatic: 0, promerica: 0, bankTransfer: 0, paypal: 0 },
+            gastos_dia: [],
+          })}
+        >mock-guardar</button>
+      )}
     </div>
   )),
 }));
@@ -124,6 +140,15 @@ function configurarMock(overrides: Partial<ReturnType<typeof useCorteSesion>> = 
     ...overrides,
   };
   mockUseCorteSesion.mockReturnValue(defaultMock);
+  mockUseEmpleadosSucursal.mockReturnValue({
+    empleados: [
+      { id: 'emp-1', nombre: 'Tito Gomez' },
+      { id: 'emp-2', nombre: 'Adonay Torres' },
+    ],
+    cargando: false,
+    error: null,
+    recargar: vi.fn().mockResolvedValue(undefined),
+  });
   return defaultMock;
 }
 
@@ -196,6 +221,17 @@ describe('Suite 1: Inicialización y Carga', () => {
     );
     expect(mockUseCorteSesion).toHaveBeenCalledWith('suc-001');
   });
+
+  it('1.5 - Pasa sucursalId al hook useEmpleadosSucursal', () => {
+    configurarMock();
+    render(
+      <CorteOrquestador
+        sucursales={sucursalesTest}
+        sucursalId="suc-001"
+      />
+    );
+    expect(mockUseEmpleadosSucursal).toHaveBeenCalledWith('suc-001');
+  });
 });
 
 // ===========================================================================
@@ -227,7 +263,8 @@ describe('Suite 2: Vista Inicio — Sin Corte Activo', () => {
     expect(titulo.tagName).toBe('H1');
   });
 
-  it('2.3 - Muestra la sucursal disponible en CorteInicio', () => {
+  // 🤖 [IA] - OT-14: Sucursal preseleccionada → wizard arranca en paso cajero
+  it('2.3 - Muestra paso cajero como primer paso (sucursal preseleccionada)', () => {
     configurarMock();
     render(
       <CorteOrquestador
@@ -235,9 +272,10 @@ describe('Suite 2: Vista Inicio — Sin Corte Activo', () => {
         sucursalId="suc-001"
       />
     );
-    expect(screen.getByText('Sucursal Central')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/nombre completo del cajero/i)).toBeInTheDocument();
   });
 
+  // 🤖 [IA] - OT-14: Wizard de 3 pasos (cajero → testigo → venta)
   it('2.4 - Al completar wizard de inicio, llama sesion.iniciarCorte con params', async () => {
     const mock = configurarMock();
     const user = userEvent.setup();
@@ -248,21 +286,17 @@ describe('Suite 2: Vista Inicio — Sin Corte Activo', () => {
       />
     );
 
-    // Paso 1: Seleccionar sucursal
-    await user.click(screen.getByText('Sucursal Central'));
-    await user.click(screen.getByRole('button', { name: /siguiente/i }));
-
-    // Paso 2: Ingresar cajero
+    // Paso 1: Ingresar cajero
     const cajeroInput = screen.getByPlaceholderText(/nombre completo del cajero/i);
     await user.type(cajeroInput, 'Tito Gomez');
     await user.click(screen.getByRole('button', { name: /siguiente/i }));
 
-    // Paso 3: Ingresar testigo + siguiente
+    // Paso 2: Ingresar testigo + siguiente
     const testigoInput = screen.getByPlaceholderText(/nombre completo del testigo/i);
     await user.type(testigoInput, 'Adonay Torres');
     await user.click(screen.getByRole('button', { name: /siguiente/i }));
 
-    // Paso 4: Confirmar inicio (sin venta_esperada)
+    // Paso 3: Confirmar inicio (sin venta_esperada)
     await user.click(screen.getByRole('button', { name: /iniciar corte/i }));
 
     expect(mock.iniciarCorte).toHaveBeenCalledWith({
@@ -695,5 +729,119 @@ describe('Suite 8: Resolución de Nombre de Sucursal', () => {
     expect(screen.getByText('Sucursal Central')).toBeInTheDocument();
     // Also verify the aborted state
     expect(screen.getByText('Corte Abortado')).toBeInTheDocument();
+  });
+});
+
+// ===========================================================================
+// SUITE 9: Preselección sucursal en CorteInicio (OT-14)
+// ===========================================================================
+
+describe('Suite 9: Preselección sucursal en CorteInicio (OT-14)', () => {
+  it('9.1 - CorteInicio inicia en paso cajero, sin picker de sucursal', () => {
+    configurarMock({ corte_actual: null });
+    render(
+      <CorteOrquestador
+        sucursales={sucursalesTest}
+        sucursalId="suc-001"
+      />
+    );
+    // NO debe mostrar paso de selección de sucursal
+    expect(screen.queryByText('Seleccionar Sucursal')).not.toBeInTheDocument();
+    // Debe mostrar paso cajero directamente
+    expect(screen.getByText('Identificar Cajero')).toBeInTheDocument();
+  });
+
+  it('9.2 - Progreso muestra "Paso 1 de 3" (no 4)', () => {
+    configurarMock({ corte_actual: null });
+    render(
+      <CorteOrquestador
+        sucursales={sucursalesTest}
+        sucursalId="suc-001"
+      />
+    );
+    expect(screen.getByText('Paso 1 de 3')).toBeInTheDocument();
+  });
+
+  it('9.3 - Al completar wizard, iniciarCorte recibe sucursalId del orquestador', async () => {
+    const mock = configurarMock({ corte_actual: null });
+    const user = userEvent.setup();
+    render(
+      <CorteOrquestador
+        sucursales={sucursalesTest}
+        sucursalId="suc-001"
+      />
+    );
+
+    // Paso 1 (cajero)
+    await user.type(screen.getByPlaceholderText(/nombre completo del cajero/i), 'Tito Gomez');
+    await user.click(screen.getByRole('button', { name: /siguiente/i }));
+
+    // Paso 2 (testigo)
+    await user.type(screen.getByPlaceholderText(/nombre completo del testigo/i), 'Adonay Torres');
+    await user.click(screen.getByRole('button', { name: /siguiente/i }));
+
+    // Paso 3 (venta esperada) → iniciar
+    await user.click(screen.getByRole('button', { name: /iniciar corte/i }));
+
+    expect(mock.iniciarCorte).toHaveBeenCalledWith(
+      expect.objectContaining({ sucursal_id: 'suc-001' })
+    );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Suite 10: OT-17 — handleGuardarProgreso wiring
+// ---------------------------------------------------------------------------
+
+describe('Suite 10: OT-17 — handleGuardarProgreso', () => {
+  it('10.1 — Pasa onGuardarProgreso a CorteConteoAdapter y llama guardarProgreso', async () => {
+    const mock = configurarMock({
+      corte_actual: {
+        id: 'corte-progreso',
+        correlativo: 'CORTE-2026-02-17-H-001',
+        sucursal_id: 'suc-001',
+        cajero: 'Tester',
+        testigo: 'Testigo',
+        estado: 'EN_PROGRESO' as const,
+        fase_actual: 1,
+        intento_actual: 1,
+        venta_esperada: 100,
+        datos_conteo: null,
+        datos_entrega: null,
+        datos_verificacion: null,
+        datos_reporte: null,
+        reporte_hash: null,
+        created_at: '2026-02-17T10:00:00.000Z',
+        updated_at: '2026-02-17T10:00:00.000Z',
+        finalizado_at: null,
+        motivo_aborto: null,
+      },
+      cargando: false,
+    });
+
+    const user = userEvent.setup();
+
+    render(
+      <CorteOrquestador
+        sucursales={sucursalesTest}
+        sucursalId="suc-001"
+      />
+    );
+
+    // El orquestador detecta corte activo no confirmado → vista reanudación
+    const reanudarBtn = await screen.findByText(/reanudar/i);
+    await user.click(reanudarBtn);
+
+    // Ahora en vista progreso → CashCounter renderizado con mock-guardar-progreso
+    const guardarBtn = await screen.findByTestId('mock-guardar-progreso');
+    await user.click(guardarBtn);
+
+    expect(mock.guardarProgreso).toHaveBeenCalledTimes(1);
+    expect(mock.guardarProgreso).toHaveBeenCalledWith(
+      expect.objectContaining({
+        fase_actual: 1,
+        conteo_parcial: expect.any(Object),
+      }),
+    );
   });
 });
