@@ -1,6 +1,8 @@
-// 🤖 [IA] - v1.0.0: Hook para proveer lista de sucursales — mock actual, arquitectura lista para Supabase
+// 🤖 [IA] - v2.0.0 - OT-13: Hook real Supabase — elimina mock, consume tabla sucursales
+// Previous: v1.0.0 - Mock con SUCURSALES_MOCK y setTimeout(300)
 import { useState, useEffect, useCallback } from 'react';
 import type { Sucursal } from '@/types/auditoria';
+import { tables } from '@/lib/supabase';
 
 export interface UseSucursalesReturn {
   sucursales: Sucursal[];
@@ -9,112 +11,50 @@ export interface UseSucursalesReturn {
   recargar: () => Promise<void>;
 }
 
-const SUCURSALES_MOCK: Sucursal[] = [
-  { id: 'suc-001', nombre: 'Los Héroes', codigo: 'H', activa: true },
-  { id: 'suc-002', nombre: 'Plaza Merliot', codigo: 'M', activa: true },
-  { id: 'suc-003', nombre: 'San Benito', codigo: 'B', activa: false },
-];
-
-// Flag interno para testing — permite simular errores en la carga
-let _simulateError: string | null = null;
-
-/**
- * Solo para uso en tests. Configura un error simulado en la proxima carga.
- * Pasar null para limpiar.
- */
-export const _setSimulateError = (errorMsg: string | null): void => {
-  _simulateError = errorMsg;
-};
-
 export const useSucursales = (): UseSucursalesReturn => {
   const [sucursales, setSucursales] = useState<Sucursal[]>([]);
   const [cargando, setCargando] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const cargar = useCallback(async (): Promise<void> => {
+  const cargar = useCallback(async (signal?: { cancelled: boolean }): Promise<void> => {
     setCargando(true);
     setError(null);
 
-    return new Promise<void>((resolve) => {
-      const timeoutId = setTimeout(() => {
-        if (_simulateError) {
-          const errorMsg = _simulateError;
-          _simulateError = null;
-          setSucursales([]);
-          setError(errorMsg);
-          setCargando(false);
-          resolve();
-          return;
-        }
+    try {
+      const { data, error: supaError } = await tables.sucursales()
+        .select('id,nombre,codigo,activa')
+        .eq('activa', true)
+        .order('nombre', { ascending: true });
 
-        const activas = SUCURSALES_MOCK.filter((s) => s.activa);
-        setSucursales(activas);
+      if (signal?.cancelled) return;
+
+      if (supaError) {
+        setSucursales([]);
+        setError(supaError.message);
+        return;
+      }
+
+      setSucursales((data as Sucursal[]) ?? []);
+    } catch (err: unknown) {
+      if (signal?.cancelled) return;
+      setSucursales([]);
+      setError(err instanceof Error ? err.message : 'Error al cargar sucursales');
+    } finally {
+      if (!signal?.cancelled) {
         setCargando(false);
-        resolve();
-      }, 300);
-
-      // Cleanup reference para unmount — se maneja en el efecto
-      return () => clearTimeout(timeoutId);
-    });
+      }
+    }
   }, []);
 
   useEffect(() => {
-    let isMounted = true;
-    let timeoutId: ReturnType<typeof setTimeout> | null = null;
-
-    const cargarInterno = () => {
-      setCargando(true);
-      setError(null);
-
-      timeoutId = setTimeout(() => {
-        if (!isMounted) return;
-
-        if (_simulateError) {
-          const errorMsg = _simulateError;
-          _simulateError = null;
-          setSucursales([]);
-          setError(errorMsg);
-          setCargando(false);
-          return;
-        }
-
-        const activas = SUCURSALES_MOCK.filter((s) => s.activa);
-        setSucursales(activas);
-        setCargando(false);
-      }, 300);
-    };
-
-    cargarInterno();
-
-    return () => {
-      isMounted = false;
-      if (timeoutId) clearTimeout(timeoutId);
-    };
-  }, []);
+    const signal = { cancelled: false };
+    cargar(signal);
+    return () => { signal.cancelled = true; };
+  }, [cargar]);
 
   const recargar = useCallback(async (): Promise<void> => {
-    setCargando(true);
-    setError(null);
-
-    return new Promise<void>((resolve) => {
-      setTimeout(() => {
-        if (_simulateError) {
-          const errorMsg = _simulateError;
-          _simulateError = null;
-          setSucursales([]);
-          setError(errorMsg);
-          setCargando(false);
-          resolve();
-          return;
-        }
-
-        const activas = SUCURSALES_MOCK.filter((s) => s.activa);
-        setSucursales(activas);
-        setCargando(false);
-        resolve();
-      }, 300);
-    });
-  }, []);
+    await cargar();
+  }, [cargar]);
 
   return { sucursales, cargando, error, recargar };
 };
