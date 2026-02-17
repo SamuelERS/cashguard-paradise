@@ -97,6 +97,7 @@ const CashCounter = ({
               selectedCashier={state.selectedCashier}
               selectedWitness={state.selectedWitness}
               expectedSales={state.expectedSales}
+              availableStores={state.availableStores}
               availableEmployees={state.availableEmployees}
               canProceedToPhase1={state.canProceedToPhase1}
               operationMode={operationMode}

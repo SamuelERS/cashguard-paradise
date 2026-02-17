@@ -83,6 +83,22 @@ vi.mock('@/hooks/usePwaScrollPrevention', () => ({
 }));
 
 vi.mock('@/data/paradise', () => ({
+  STORES: [
+    {
+      id: 'los-heroes',
+      name: 'Los Héroes',
+      address: 'Mock address H',
+      phone: '',
+      schedule: '',
+    },
+    {
+      id: 'plaza-merliot',
+      name: 'Plaza Merliot',
+      address: 'Mock address M',
+      phone: '',
+      schedule: '',
+    },
+  ],
   getEmployeesByStore: mockGetEmployeesByStore,
 }));
 
@@ -329,5 +345,71 @@ describe('useCashCounterOrchestrator — OT-18 fuente unificada empleados', () =
     expect(result.current.availableEmployees[0].name).toBe('Tito Gomez');
     expect(result.current.availableEmployees[1].name).toBe('Adonay Torres');
     expect(mockGetEmployeesByStore).not.toHaveBeenCalled();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Suite OT-19: Sucursales dinámicas + fallback controlado
+// ---------------------------------------------------------------------------
+
+describe('useCashCounterOrchestrator — OT-19 sucursales dinamicas', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    sessionStorage.clear();
+  });
+
+  it('Construye availableStores desde useSucursales (Supabase)', () => {
+    mockUseSucursales.mockReturnValue({
+      sucursales: [
+        { id: 'suc-h', nombre: 'Los Héroes', codigo: 'H', activa: true },
+        { id: 'suc-m', nombre: 'Plaza Merliot', codigo: 'M', activa: true },
+      ],
+      cargando: false,
+      error: null,
+      recargar: vi.fn(),
+    });
+    mockUseEmpleadosSucursal.mockReturnValue({
+      empleados: [],
+      cargando: false,
+      error: null,
+      recargar: vi.fn(),
+    });
+
+    const { result } = renderHook(() =>
+      useCashCounterOrchestrator(defaultOptions({
+        initialStore: 'suc-h',
+        skipWizard: true,
+      })),
+    );
+
+    expect(result.current.availableStores).toHaveLength(2);
+    expect(result.current.availableStores[0].id).toBe('suc-h');
+    expect(result.current.availableStores[0].name).toBe('Los Héroes');
+    expect(result.current.availableStores[0].address).toContain('H');
+  });
+
+  it('Aplica fallback legacy de sucursales en test/dev solo cuando Supabase falla', () => {
+    mockUseSucursales.mockReturnValue({
+      sucursales: [],
+      cargando: false,
+      error: 'network error',
+      recargar: vi.fn(),
+    });
+    mockUseEmpleadosSucursal.mockReturnValue({
+      empleados: [],
+      cargando: false,
+      error: null,
+      recargar: vi.fn(),
+    });
+
+    const { result } = renderHook(() =>
+      useCashCounterOrchestrator(defaultOptions({
+        initialStore: 'los-heroes',
+        skipWizard: true,
+      })),
+    );
+
+    expect(result.current.availableStores.length).toBeGreaterThan(0);
+    expect(result.current.availableStores[0].id).toBe('los-heroes');
   });
 });

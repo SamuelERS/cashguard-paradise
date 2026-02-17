@@ -11,7 +11,7 @@
 
 1. [x] Escribir test RED para `useCashCounterOrchestrator` verificando empleados desde proveedor unificado.
 2. [x] Reemplazar `getEmployeesByStore` por hook/proveedor central.
-3. [ ] Validar `StoreSelectionForm` con datos dinamicos y fallback controlado solo en test/dev si aplica.
+3. [x] Validar `StoreSelectionForm` con datos dinamicos y fallback controlado solo en test/dev si aplica.
 4. [x] Ejecutar suite del modulo.
 
 ## Modulo C - Integridad de flujo CorteInicio

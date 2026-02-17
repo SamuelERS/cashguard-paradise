@@ -13,8 +13,9 @@ import { Calculator, Sunrise } from "lucide-react";
 import { toast } from 'sonner';
 import { TOAST_DURATIONS, TOAST_MESSAGES } from '@/config/toast';
 import { OperationMode } from "@/types/operation-mode";
-import type { CashCount, ElectronicPayments, Employee } from "@/types/cash";
+import type { CashCount, ElectronicPayments, Employee, Store } from "@/types/cash";
 import type { DailyExpense } from '@/types/expenses';
+import { STORES } from "@/data/paradise";
 import { calculateCashTotal } from "@/utils/calculations";
 import { useGuidedCounting } from "@/hooks/useGuidedCounting";
 import { usePhaseManager } from "@/hooks/usePhaseManager";
@@ -36,6 +37,27 @@ function resolveLegacyStoreCode(storeValue: string): string | null {
   if (normalized.includes('heroes') || normalized.includes('héroes')) return 'H';
   if (normalized.includes('merliot')) return 'M';
   return null;
+}
+
+function resolveSucursalIdFromSelectedStore(
+  selectedStore: string,
+  sucursales: Array<{ id: string; codigo: string }>,
+): string | undefined {
+  const normalized = selectedStore.trim();
+  const byId = sucursales.find((sucursal) => sucursal.id === normalized);
+  if (byId) return byId.id;
+
+  const byCode = sucursales.find(
+    (sucursal) => sucursal.codigo.toUpperCase() === normalized.toUpperCase(),
+  );
+  if (byCode) return byCode.id;
+
+  const legacyCode = resolveLegacyStoreCode(selectedStore);
+  if (!legacyCode) return undefined;
+  const byLegacyCode = sucursales.find(
+    (sucursal) => sucursal.codigo.toUpperCase() === legacyCode,
+  );
+  return byLegacyCode?.id;
 }
 
 // 🤖 [IA] - v1.5.0: OT-17 — Opciones del orquestador (espejo de CashCounterProps)
@@ -146,12 +168,30 @@ export function useCashCounterOrchestrator({
   );
 
   const { createTimeoutWithCleanup } = useTimingConfig(); // 🤖 [IA] - Timing unificado v1.0.22
-  const { sucursales } = useSucursales();
-  const storeCode = selectedStore ? resolveLegacyStoreCode(selectedStore) : null;
-  const sucursalActual = storeCode
-    ? sucursales.find((sucursal) => sucursal.codigo.toUpperCase() === storeCode)
+  const {
+    sucursales,
+    cargando: cargandoSucursales,
+    error: errorSucursales,
+  } = useSucursales();
+  const usarFallbackCatalogoLegacy =
+    import.meta.env.MODE !== 'production' &&
+    sucursales.length === 0 &&
+    !cargandoSucursales &&
+    Boolean(errorSucursales);
+  const availableStores: Store[] = usarFallbackCatalogoLegacy
+    ? STORES
+    : sucursales.map((sucursal) => ({
+      id: sucursal.id,
+      name: sucursal.nombre,
+      address: `Codigo ${sucursal.codigo}`,
+      phone: '',
+      schedule: '',
+    }));
+
+  const sucursalIdSeleccionada = selectedStore
+    ? resolveSucursalIdFromSelectedStore(selectedStore, sucursales)
     : undefined;
-  const { empleados: empleadosSucursal } = useEmpleadosSucursal(sucursalActual?.id);
+  const { empleados: empleadosSucursal } = useEmpleadosSucursal(sucursalIdSeleccionada);
   const availableEmployees: Employee[] = empleadosSucursal.map((empleado) => ({
     id: empleado.id,
     name: empleado.nombre,
@@ -421,6 +461,7 @@ export function useCashCounterOrchestrator({
     selectedStore, selectedCashier, selectedWitness, expectedSales, dailyExpenses,
     setSelectedStore, setSelectedCashier, setSelectedWitness, setExpectedSales,
     availableEmployees,
+    availableStores,
     canProceedToPhase1,
     hasInitialData,
 

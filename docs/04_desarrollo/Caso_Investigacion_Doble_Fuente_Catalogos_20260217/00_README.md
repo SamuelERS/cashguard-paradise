@@ -34,3 +34,6 @@ Adicionalmente, en el flujo `CorteInicio` el cajero precargado desde localStorag
 - Modulo A/B iniciado con TDD:
   - RED: test OT-18 en `src/hooks/__tests__/useCashCounterOrchestrator.test.ts`.
   - GREEN: `useCashCounterOrchestrator` migra empleados a hooks Supabase (`useSucursales` + `useEmpleadosSucursal`) y deja de usar `getEmployeesByStore`.
+- Modulo B completado:
+  - `StoreSelectionForm` recibe sucursales dinamicas (`availableStores`) desde orquestador.
+  - fallback legacy de sucursales queda controlado para entornos no-productivos y solo ante error de Supabase.

@@ -12,9 +12,8 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { STORES } from "@/data/paradise";
 import { OperationMode } from "@/types/operation-mode";
-import type { Employee } from "@/types/cash";
+import type { Employee, Store } from "@/types/cash";
 
 interface StoreSelectionFormProps {
   // State
@@ -22,6 +21,7 @@ interface StoreSelectionFormProps {
   selectedCashier: string;
   selectedWitness: string;
   expectedSales: string;
+  availableStores: Store[];
   availableEmployees: Employee[];
   canProceedToPhase1: boolean;
   operationMode: OperationMode;
@@ -40,6 +40,7 @@ export function StoreSelectionForm({
   selectedCashier,
   selectedWitness,
   expectedSales,
+  availableStores,
   availableEmployees,
   canProceedToPhase1,
   operationMode,
@@ -138,7 +139,7 @@ export function StoreSelectionForm({
                 WebkitBackdropFilter: 'blur(20px)',
                 border: '1px solid rgba(255, 255, 255, 0.15)'
               }}>
-                {STORES.map((store) => (
+                {availableStores.map((store) => (
                   <SelectItem 
                     key={store.id} 
                     value={store.id}
