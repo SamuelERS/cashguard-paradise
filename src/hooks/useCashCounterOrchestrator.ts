@@ -1,5 +1,6 @@
 /**
- * 🤖 [IA] - v1.4.1: useCashCounterOrchestrator Hook
+ * 🤖 [IA] - v1.5.0: OT-17 — Agrega hidratación + autosave debounced
+ * Previous: v1.4.1: useCashCounterOrchestrator Hook
  * Extraído de CashCounter.tsx para desmonolitización
  *
  * @description
@@ -7,7 +8,7 @@
  * efectos secundarios y handlers del flujo de corte de caja.
  * CashCounter.tsx se convierte en un componente presentacional delgado.
  */
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Calculator, Sunrise } from "lucide-react";
 import { toast } from 'sonner';
 import { TOAST_DURATIONS, TOAST_MESSAGES } from '@/config/toast';
@@ -23,7 +24,7 @@ import { useInstructionsFlow } from "@/hooks/useInstructionsFlow";
 import { useTimingConfig } from "@/hooks/useTimingConfig";
 import { usePwaScrollPrevention } from "@/hooks/usePwaScrollPrevention";
 
-// 🤖 [IA] - v1.4.1: Opciones del orquestador (espejo de CashCounterProps)
+// 🤖 [IA] - v1.5.0: OT-17 — Opciones del orquestador (espejo de CashCounterProps)
 interface CashCounterOrchestratorOptions {
   operationMode: OperationMode;
   initialStore: string;
@@ -34,6 +35,15 @@ interface CashCounterOrchestratorOptions {
   onBack?: () => void;
   onFlowCancel?: () => void;
   skipWizard?: boolean; // 🤖 [IA] - Orden #015: Saltar instrucciones en flujo auditoría
+  // 🤖 [IA] - OT-17: Hidratación + autosave
+  initialCashCount?: CashCount;
+  initialElectronicPayments?: ElectronicPayments;
+  onGuardarProgreso?: (datos: {
+    fase_actual: number;
+    conteo_parcial: CashCount;
+    pagos_electronicos: ElectronicPayments;
+    gastos_dia: DailyExpense[];
+  }) => void;
 }
 
 export function useCashCounterOrchestrator({
@@ -46,6 +56,9 @@ export function useCashCounterOrchestrator({
   onBack,
   onFlowCancel,
   skipWizard = false,
+  initialCashCount,
+  initialElectronicPayments,
+  onGuardarProgreso,
 }: CashCounterOrchestratorOptions) {
   // 🤖 [IA] - v1.0.81 - Detectar modo de operación
   const isMorningCount = operationMode === OperationMode.CASH_COUNT;
@@ -104,19 +117,52 @@ export function useCashCounterOrchestrator({
     FIELD_ORDER
   } = useGuidedCounting(operationMode); // 🤖 [IA] - v1.0.85
 
-  // Cash count state
-  const [cashCount, setCashCount] = useState<CashCount>({
-    penny: 0, nickel: 0, dime: 0, quarter: 0, dollarCoin: 0,
-    bill1: 0, bill5: 0, bill10: 0, bill20: 0, bill50: 0, bill100: 0,
-  });
+  // 🤖 [IA] - OT-17: Hidratación — si hay datos guardados, usarlos como valores iniciales
+  const [cashCount, setCashCount] = useState<CashCount>(
+    initialCashCount ?? {
+      penny: 0, nickel: 0, dime: 0, quarter: 0, dollarCoin: 0,
+      bill1: 0, bill5: 0, bill10: 0, bill20: 0, bill50: 0, bill100: 0,
+    },
+  );
 
-  // Electronic payments state
-  const [electronicPayments, setElectronicPayments] = useState<ElectronicPayments>({
-    credomatic: 0, promerica: 0, bankTransfer: 0, paypal: 0,
-  });
+  const [electronicPayments, setElectronicPayments] = useState<ElectronicPayments>(
+    initialElectronicPayments ?? {
+      credomatic: 0, promerica: 0, bankTransfer: 0, paypal: 0,
+    },
+  );
 
   const { createTimeoutWithCleanup } = useTimingConfig(); // 🤖 [IA] - Timing unificado v1.0.22
   const availableEmployees = selectedStore ? getEmployeesByStore(selectedStore) : [];
+
+  // 🤖 [IA] - OT-17: Autosave debounced (600ms) — guarda progreso en Supabase
+  const autosaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isFirstRender = useRef(true);
+  useEffect(() => {
+    // Saltar el primer render (valores iniciales / hidratación)
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    if (!onGuardarProgreso) return;
+
+    if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current);
+
+    autosaveTimerRef.current = setTimeout(() => {
+      onGuardarProgreso({
+        fase_actual: phaseState.currentPhase,
+        conteo_parcial: cashCount,
+        pagos_electronicos: electronicPayments,
+        gastos_dia: dailyExpenses,
+      });
+    }, 600);
+
+    return () => {
+      if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current);
+    };
+  // Deps: solo estado mutable que cambia con interacción del usuario.
+  // onGuardarProgreso es callback estable (memoizado en padre).
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cashCount, electronicPayments, dailyExpenses, phaseState.currentPhase]);
 
   // 🤖 [IA] - v1.4.1: PWA scroll prevention
   usePwaScrollPrevention(phaseState.currentPhase);

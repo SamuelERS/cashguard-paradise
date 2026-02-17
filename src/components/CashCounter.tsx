@@ -1,7 +1,8 @@
-// 🤖 [IA] - v1.4.1: Desmonolitización COMPLETA - Componente presentacional delgado
-// Toda la lógica extraída a useCashCounterOrchestrator hook
+// 🤖 [IA] - v1.4.2: OT-17 — Props hidratación + autosave para persistencia anti-reinicio
+// Previous: v1.4.1: Desmonolitización COMPLETA - Componente presentacional delgado
 // Previous: v1.4.0 - Integración Sistema Gastos de Caja
 import type { DailyExpense } from '@/types/expenses';
+import type { CashCount, ElectronicPayments } from '@/types/cash';
 import { GuidedInstructionsModal } from "@/components/cash-counting/GuidedInstructionsModal";
 import { Phase2Manager } from "@/components/phases/Phase2Manager";
 import { StoreSelectionForm } from "@/components/cash-counter/StoreSelectionForm";
@@ -10,7 +11,7 @@ import { Phase1CountingView } from "@/components/cash-counter/Phase1CountingView
 import { OperationMode } from "@/types/operation-mode";
 import { useCashCounterOrchestrator } from "@/hooks/useCashCounterOrchestrator";
 
-// 🤖 [IA] - v1.4.0 - Props con modo de operación y gastos
+// 🤖 [IA] - v1.4.2: OT-17 — Props con hidratación + autosave
 interface CashCounterProps {
   operationMode?: OperationMode;
   initialStore?: string;
@@ -21,6 +22,15 @@ interface CashCounterProps {
   onBack?: () => void;
   onFlowCancel?: () => void;
   skipWizard?: boolean; // 🤖 [IA] - Orden #015: Saltar instrucciones cuando datos vienen del flujo de auditoría
+  // 🤖 [IA] - OT-17: Hidratación + autosave persistencia anti-reinicio
+  initialCashCount?: CashCount;
+  initialElectronicPayments?: ElectronicPayments;
+  onGuardarProgreso?: (datos: {
+    fase_actual: number;
+    conteo_parcial: CashCount;
+    pagos_electronicos: ElectronicPayments;
+    gastos_dia: DailyExpense[];
+  }) => void;
 }
 
 // 🤖 [IA] - v1.4.1: Componente presentacional delgado - toda lógica en useCashCounterOrchestrator
@@ -34,6 +44,9 @@ const CashCounter = ({
   onBack,
   onFlowCancel,
   skipWizard = false,
+  initialCashCount,
+  initialElectronicPayments,
+  onGuardarProgreso,
 }: CashCounterProps) => {
   const state = useCashCounterOrchestrator({
     operationMode,
@@ -45,6 +58,10 @@ const CashCounter = ({
     onBack,
     onFlowCancel,
     skipWizard,
+    // 🤖 [IA] - OT-17: Hidratación + autosave
+    initialCashCount,
+    initialElectronicPayments,
+    onGuardarProgreso,
   });
 
   // 🤖 [IA] - v1.4.1: Phase 3 early return

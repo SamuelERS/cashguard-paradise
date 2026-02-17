@@ -158,3 +158,106 @@ describe('useCashCounterOrchestrator — skipWizard', () => {
     expect(mockStartPhase1).not.toHaveBeenCalled();
   });
 });
+
+// ---------------------------------------------------------------------------
+// Suite OT-17: Hidratación de estado inicial
+// ---------------------------------------------------------------------------
+
+describe('useCashCounterOrchestrator — OT-17 hidratación', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    sessionStorage.clear();
+  });
+
+  it('Acepta initialCashCount sin error', () => {
+    const initialCashCount = {
+      penny: 50, nickel: 20, dime: 33, quarter: 8, dollarCoin: 1,
+      bill1: 5, bill5: 3, bill10: 2, bill20: 1, bill50: 0, bill100: 0,
+    };
+
+    const { result } = renderHook(() =>
+      useCashCounterOrchestrator(defaultOptions({
+        skipWizard: true,
+        initialCashCount,
+      })),
+    );
+
+    // Hook se inicializa correctamente con datos hidratados
+    expect(result.current.cashCount).toBeDefined();
+    expect(result.current.cashCount.penny).toBe(50);
+    expect(result.current.cashCount.nickel).toBe(20);
+  });
+
+  it('Acepta initialElectronicPayments sin error', () => {
+    const initialElectronicPayments = {
+      credomatic: 5.32, promerica: 56.12, bankTransfer: 43.56, paypal: 0,
+    };
+
+    const { result } = renderHook(() =>
+      useCashCounterOrchestrator(defaultOptions({
+        skipWizard: true,
+        initialElectronicPayments,
+      })),
+    );
+
+    expect(result.current.electronicPayments).toBeDefined();
+    expect(result.current.electronicPayments.credomatic).toBe(5.32);
+  });
+
+  it('Sin initialCashCount usa valores por defecto (ceros)', () => {
+    const { result } = renderHook(() =>
+      useCashCounterOrchestrator(defaultOptions({ skipWizard: true })),
+    );
+
+    expect(result.current.cashCount.penny).toBe(0);
+    expect(result.current.cashCount.bill100).toBe(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Suite OT-17: onGuardarProgreso callback
+// ---------------------------------------------------------------------------
+
+describe('useCashCounterOrchestrator — OT-17 onGuardarProgreso', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    sessionStorage.clear();
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('No llama onGuardarProgreso en el primer render (isFirstRender guard)', () => {
+    const mockGuardar = vi.fn();
+
+    renderHook(() =>
+      useCashCounterOrchestrator(defaultOptions({
+        skipWizard: true,
+        onGuardarProgreso: mockGuardar,
+      })),
+    );
+
+    // Avanzar todos los timers posibles
+    vi.advanceTimersByTime(1000);
+
+    // No debe haberse llamado en el render inicial
+    expect(mockGuardar).not.toHaveBeenCalled();
+  });
+
+  it('No llama onGuardarProgreso sin callback (guard undefined)', () => {
+    renderHook(() =>
+      useCashCounterOrchestrator(defaultOptions({
+        skipWizard: true,
+        // onGuardarProgreso intencionalmente omitido
+      })),
+    );
+
+    // Avanzar todos los timers posibles
+    vi.advanceTimersByTime(1000);
+
+    // Sin callback, no debe haber errores (guard `if (!onGuardarProgreso) return`)
+    // Test implícito: no hay error → guard funciona correctamente
+  });
+});
