@@ -31,3 +31,6 @@ Adicionalmente, en el flujo `CorteInicio` el cajero precargado desde localStorag
 - Fix quirurgico aplicado para quitar filtro inicial en cajero precargado cuando hay catalogo multiple.
 - Build local y tests del flujo corte en verde.
 - Plan modular TDD preparado para unificar catalogos y cerrar deuda de doble fuente.
+- Modulo A/B iniciado con TDD:
+  - RED: test OT-18 en `src/hooks/__tests__/useCashCounterOrchestrator.test.ts`.
+  - GREEN: `useCashCounterOrchestrator` migra empleados a hooks Supabase (`useSucursales` + `useEmpleadosSucursal`) y deja de usar `getEmployeesByStore`.

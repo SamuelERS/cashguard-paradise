@@ -11,6 +11,25 @@ import { OperationMode } from '@/types/operation-mode';
 
 const mockStartPhase1 = vi.fn();
 const mockResetFlow = vi.fn();
+const {
+  mockGetEmployeesByStore,
+  mockUseSucursales,
+  mockUseEmpleadosSucursal,
+} = vi.hoisted(() => ({
+  mockGetEmployeesByStore: vi.fn(() => []),
+  mockUseSucursales: vi.fn(() => ({
+    sucursales: [],
+    cargando: false,
+    error: null,
+    recargar: vi.fn(),
+  })),
+  mockUseEmpleadosSucursal: vi.fn(() => ({
+    empleados: [],
+    cargando: false,
+    error: null,
+    recargar: vi.fn(),
+  })),
+}));
 
 vi.mock('@/hooks/usePhaseManager', () => ({
   usePhaseManager: vi.fn(() => ({
@@ -64,7 +83,15 @@ vi.mock('@/hooks/usePwaScrollPrevention', () => ({
 }));
 
 vi.mock('@/data/paradise', () => ({
-  getEmployeesByStore: vi.fn(() => []),
+  getEmployeesByStore: mockGetEmployeesByStore,
+}));
+
+vi.mock('@/hooks/useSucursales', () => ({
+  useSucursales: mockUseSucursales,
+}));
+
+vi.mock('@/hooks/useEmpleadosSucursal', () => ({
+  useEmpleadosSucursal: mockUseEmpleadosSucursal,
 }));
 
 vi.mock('@/utils/calculations', () => ({
@@ -259,5 +286,48 @@ describe('useCashCounterOrchestrator — OT-17 onGuardarProgreso', () => {
 
     // Sin callback, no debe haber errores (guard `if (!onGuardarProgreso) return`)
     // Test implícito: no hay error → guard funciona correctamente
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Suite OT-18: Fuente unificada de empleados (Supabase)
+// ---------------------------------------------------------------------------
+
+describe('useCashCounterOrchestrator — OT-18 fuente unificada empleados', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    sessionStorage.clear();
+    mockUseSucursales.mockReturnValue({
+      sucursales: [
+        { id: 'suc-h', nombre: 'Los Héroes', codigo: 'H', activa: true },
+        { id: 'suc-m', nombre: 'Plaza Merliot', codigo: 'M', activa: true },
+      ],
+      cargando: false,
+      error: null,
+      recargar: vi.fn(),
+    });
+    mockUseEmpleadosSucursal.mockReturnValue({
+      empleados: [
+        { id: 'emp-1', nombre: 'Tito Gomez' },
+        { id: 'emp-2', nombre: 'Adonay Torres' },
+      ],
+      cargando: false,
+      error: null,
+      recargar: vi.fn(),
+    });
+  });
+
+  it('Usa empleados de hooks Supabase y no consume getEmployeesByStore legacy', () => {
+    const { result } = renderHook(() =>
+      useCashCounterOrchestrator(defaultOptions({
+        initialStore: 'los-heroes',
+        skipWizard: true,
+      })),
+    );
+
+    expect(result.current.availableEmployees).toHaveLength(2);
+    expect(result.current.availableEmployees[0].name).toBe('Tito Gomez');
+    expect(result.current.availableEmployees[1].name).toBe('Adonay Torres');
+    expect(mockGetEmployeesByStore).not.toHaveBeenCalled();
   });
 });

@@ -13,9 +13,8 @@ import { Calculator, Sunrise } from "lucide-react";
 import { toast } from 'sonner';
 import { TOAST_DURATIONS, TOAST_MESSAGES } from '@/config/toast';
 import { OperationMode } from "@/types/operation-mode";
-import type { CashCount, ElectronicPayments } from "@/types/cash";
+import type { CashCount, ElectronicPayments, Employee } from "@/types/cash";
 import type { DailyExpense } from '@/types/expenses';
-import { getEmployeesByStore } from "@/data/paradise";
 import { calculateCashTotal } from "@/utils/calculations";
 import { useGuidedCounting } from "@/hooks/useGuidedCounting";
 import { usePhaseManager } from "@/hooks/usePhaseManager";
@@ -23,6 +22,21 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useInstructionsFlow } from "@/hooks/useInstructionsFlow";
 import { useTimingConfig } from "@/hooks/useTimingConfig";
 import { usePwaScrollPrevention } from "@/hooks/usePwaScrollPrevention";
+import { useSucursales } from "@/hooks/useSucursales";
+import { useEmpleadosSucursal } from "@/hooks/useEmpleadosSucursal";
+
+const LEGACY_STORE_CODE_MAP: Record<string, string> = {
+  'los-heroes': 'H',
+  'plaza-merliot': 'M',
+};
+
+function resolveLegacyStoreCode(storeValue: string): string | null {
+  const normalized = storeValue.trim().toLowerCase();
+  if (LEGACY_STORE_CODE_MAP[normalized]) return LEGACY_STORE_CODE_MAP[normalized];
+  if (normalized.includes('heroes') || normalized.includes('héroes')) return 'H';
+  if (normalized.includes('merliot')) return 'M';
+  return null;
+}
 
 // 🤖 [IA] - v1.5.0: OT-17 — Opciones del orquestador (espejo de CashCounterProps)
 interface CashCounterOrchestratorOptions {
@@ -132,7 +146,18 @@ export function useCashCounterOrchestrator({
   );
 
   const { createTimeoutWithCleanup } = useTimingConfig(); // 🤖 [IA] - Timing unificado v1.0.22
-  const availableEmployees = selectedStore ? getEmployeesByStore(selectedStore) : [];
+  const { sucursales } = useSucursales();
+  const storeCode = selectedStore ? resolveLegacyStoreCode(selectedStore) : null;
+  const sucursalActual = storeCode
+    ? sucursales.find((sucursal) => sucursal.codigo.toUpperCase() === storeCode)
+    : undefined;
+  const { empleados: empleadosSucursal } = useEmpleadosSucursal(sucursalActual?.id);
+  const availableEmployees: Employee[] = empleadosSucursal.map((empleado) => ({
+    id: empleado.id,
+    name: empleado.nombre,
+    role: 'Empleado Activo',
+    stores: selectedStore ? [selectedStore] : [],
+  }));
 
   // 🤖 [IA] - OT-17: Autosave debounced (600ms) — guarda progreso en Supabase
   const autosaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);

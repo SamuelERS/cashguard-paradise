@@ -2,17 +2,17 @@
 
 ## Modulo A - Baseline y bloqueo de regresion
 
-1. Escribir test RED que falle si un flujo consume `src/data/paradise.ts` para empleados/sucursales en modo productivo.
-2. Ejecutar test y validar fallo esperado.
-3. Crear adaptador unico de catalogos desde Supabase.
-4. Re-ejecutar test y validar GREEN.
+1. [x] Escribir test RED OT-18 para flujo legacy (`useCashCounterOrchestrator`) validando fuente unificada de empleados.
+2. [x] Ejecutar test y validar fallo esperado.
+3. [x] Migrar consumo a hooks Supabase (`useSucursales` + `useEmpleadosSucursal`).
+4. [x] Re-ejecutar test y validar GREEN.
 
 ## Modulo B - Migracion de flujos legacy
 
-1. Escribir test RED para `useCashCounterOrchestrator` verificando empleados desde proveedor unificado.
-2. Reemplazar `getEmployeesByStore` por hook/proveedor central.
-3. Validar `StoreSelectionForm` con datos dinamicos y fallback controlado solo en test/dev si aplica.
-4. Ejecutar suite del modulo.
+1. [x] Escribir test RED para `useCashCounterOrchestrator` verificando empleados desde proveedor unificado.
+2. [x] Reemplazar `getEmployeesByStore` por hook/proveedor central.
+3. [ ] Validar `StoreSelectionForm` con datos dinamicos y fallback controlado solo en test/dev si aplica.
+4. [x] Ejecutar suite del modulo.
 
 ## Modulo C - Integridad de flujo CorteInicio
 
