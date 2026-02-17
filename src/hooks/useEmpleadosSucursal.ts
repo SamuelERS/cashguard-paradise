@@ -4,6 +4,7 @@ import { tables } from '@/lib/supabase';
 export interface EmpleadoSucursal {
   id: string;
   nombre: string;
+  cargo?: string;
 }
 
 export interface UseEmpleadosSucursalReturn {
@@ -69,6 +70,9 @@ export function useEmpleadosSucursal(
         (empleadosRows ?? []).map((empleado) => ({
           id: empleado.id,
           nombre: empleado.nombre,
+          cargo: typeof (empleado as { cargo?: unknown }).cargo === 'string'
+            ? (empleado as { cargo?: string }).cargo
+            : undefined,
         })),
       );
     } catch (err: unknown) {

@@ -13,7 +13,7 @@ import { Calculator, Sunrise } from "lucide-react";
 import { toast } from 'sonner';
 import { TOAST_DURATIONS, TOAST_MESSAGES } from '@/config/toast';
 import { OperationMode } from "@/types/operation-mode";
-import type { CashCount, ElectronicPayments, Employee, Store } from "@/types/cash";
+import type { CashCount, ElectronicPayments, Employee } from "@/types/cash";
 import type { DailyExpense } from '@/types/expenses';
 import { STORES } from "@/data/paradise";
 import { calculateCashTotal } from "@/utils/calculations";
@@ -31,17 +31,25 @@ const LEGACY_STORE_CODE_MAP: Record<string, string> = {
   'plaza-merliot': 'M',
 };
 
+function normalizeText(value: string): string {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
+}
+
 function resolveLegacyStoreCode(storeValue: string): string | null {
-  const normalized = storeValue.trim().toLowerCase();
+  const normalized = normalizeText(storeValue);
   if (LEGACY_STORE_CODE_MAP[normalized]) return LEGACY_STORE_CODE_MAP[normalized];
-  if (normalized.includes('heroes') || normalized.includes('héroes')) return 'H';
+  if (normalized.includes('heroes')) return 'H';
   if (normalized.includes('merliot')) return 'M';
   return null;
 }
 
 function resolveSucursalIdFromSelectedStore(
   selectedStore: string,
-  sucursales: Array<{ id: string; codigo: string }>,
+  sucursales: Array<{ id: string; codigo: string; nombre: string }>,
 ): string | undefined {
   const normalized = selectedStore.trim();
   const byId = sucursales.find((sucursal) => sucursal.id === normalized);
@@ -51,6 +59,12 @@ function resolveSucursalIdFromSelectedStore(
     (sucursal) => sucursal.codigo.toUpperCase() === normalized.toUpperCase(),
   );
   if (byCode) return byCode.id;
+
+  const normalizedSelected = normalizeText(selectedStore);
+  const byName = sucursales.find(
+    (sucursal) => normalizeText(sucursal.nombre) === normalizedSelected,
+  );
+  if (byName) return byName.id;
 
   const legacyCode = resolveLegacyStoreCode(selectedStore);
   if (!legacyCode) return undefined;
@@ -114,8 +128,8 @@ export function useCashCounterOrchestrator({
   const [showExitConfirmation, setShowExitConfirmation] = useState(false); // 🤖 [IA] - v1.2.9
   const [showBackConfirmation, setShowBackConfirmation] = useState(false); // 🤖 [IA] - v1.2.19
 
-  // 🤖 [IA] - v1.0.3 - Iniciar directamente si hay datos del wizard
-  const hasInitialData = initialStore && initialCashier && initialWitness && initialExpectedSales;
+  // 🤖 [IA] - v1.0.3 - Iniciar directamente si hay datos mínimos de contexto
+  const hasInitialData = Boolean(initialStore && initialCashier && initialWitness);
 
   // 🤖 [IA] - v1.2.8: Estado para el modal de instrucciones
   const [showInstructionsModal, setShowInstructionsModal] = useState(false);
@@ -178,24 +192,26 @@ export function useCashCounterOrchestrator({
     sucursales.length === 0 &&
     !cargandoSucursales &&
     Boolean(errorSucursales);
-  const availableStores: Store[] = usarFallbackCatalogoLegacy
-    ? STORES
+  const availableStores = usarFallbackCatalogoLegacy
+    ? STORES.map((store) => ({
+      id: store.id,
+      name: store.name,
+      code: resolveLegacyStoreCode(store.id) ?? undefined,
+    }))
     : sucursales.map((sucursal) => ({
       id: sucursal.id,
       name: sucursal.nombre,
-      address: `Codigo ${sucursal.codigo}`,
-      phone: '',
-      schedule: '',
+      code: sucursal.codigo,
     }));
 
   const sucursalIdSeleccionada = selectedStore
-    ? resolveSucursalIdFromSelectedStore(selectedStore, sucursales)
-    : undefined;
+    ? (resolveSucursalIdFromSelectedStore(selectedStore, sucursales) ?? null)
+    : null;
   const { empleados: empleadosSucursal } = useEmpleadosSucursal(sucursalIdSeleccionada);
   const availableEmployees: Employee[] = empleadosSucursal.map((empleado) => ({
     id: empleado.id,
     name: empleado.nombre,
-    role: 'Empleado Activo',
+    role: empleado.cargo || 'Empleado Activo',
     stores: selectedStore ? [selectedStore] : [],
   }));
   const selectedStoreName =

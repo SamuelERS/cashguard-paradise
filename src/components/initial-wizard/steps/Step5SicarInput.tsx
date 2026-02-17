@@ -100,7 +100,6 @@ export function Step5SicarInput({
           <div className="flex flex-col gap-fluid-xs">
             <span className="min-w-0 text-muted-foreground">Sucursal:</span>
             <span className="font-medium text-left truncate text-primary-foreground">
-              {STORES.find(s => s.id === wizardData.selectedStore)?.name}
               {availableStores.find(s => s.id === wizardData.selectedStore)?.name}
             </span>
           </div>

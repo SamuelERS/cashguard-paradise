@@ -270,6 +270,27 @@ describe('useCashCounterOrchestrator — skipWizard', () => {
     ]);
   });
 
+  it('resuelve sucursal por nombre completo para cargar empleados registrados', () => {
+    mockUseSucursales.mockReturnValue({
+      sucursales: [
+        { id: 'suc-003', nombre: 'San Benito', codigo: 'B', activa: true },
+      ],
+      cargando: false,
+      error: null,
+      recargar: vi.fn(),
+    });
+
+    renderHook(() =>
+      useCashCounterOrchestrator(defaultOptions({
+        initialStore: 'San Benito',
+        initialCashier: '',
+        initialWitness: '',
+      })),
+    );
+
+    expect(mockUseEmpleadosSucursal).toHaveBeenCalledWith('suc-003');
+  });
+
   it('retorna empleados vacios cuando no hay datos de la sucursal', () => {
     mockUseSucursales.mockReturnValue({
       sucursales: [],
