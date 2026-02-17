@@ -147,6 +147,45 @@ export interface CorteIntento {
   finalizado_at: string | null;
 }
 
+// 🤖 [IA] - OT-17: Snapshot append-only de progreso de conteo
+/**
+ * Registro inmutable de progreso de conteo.
+ * Tabla `corte_conteo_snapshots` — append-only (trigger bloquea UPDATE/DELETE).
+ */
+export interface CorteConteoSnapshot {
+  /** UUID auto-generado */
+  id: string;
+  /** FK al corte activo */
+  corte_id: string;
+  /** Numero de intento activo al momento del snapshot */
+  attempt_number: number;
+  /** Fase actual (1-3) */
+  fase_actual: number;
+  /** Denominaciones de efectivo — mapea CashCount keys */
+  penny: number;
+  nickel: number;
+  dime: number;
+  quarter: number;
+  dollar_coin: number;
+  bill_1: number;
+  bill_5: number;
+  bill_10: number;
+  bill_20: number;
+  bill_50: number;
+  bill_100: number;
+  /** Pagos electronicos */
+  credomatic: number;
+  promerica: number;
+  bank_transfer: number;
+  paypal: number;
+  /** Gastos del dia (JSONB serializado) */
+  gastos_dia: Record<string, unknown> | null;
+  /** Origen del snapshot */
+  source: 'autosave' | 'manual' | 'fase_change';
+  /** Timestamp de captura ISO 8601 (DB default: now()) */
+  captured_at: string;
+}
+
 // ---------------------------------------------------------------------------
 // 3. Interfaces para parametros del hook
 // ---------------------------------------------------------------------------

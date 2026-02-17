@@ -38,16 +38,20 @@ describe('Suite 1 — Exportaciones', () => {
     expect(supabase).not.toBeNull();
   });
 
-  it('exporta tables con las 3 propiedades esperadas', () => {
+  it('exporta tables con las propiedades esperadas', () => {
     expect(tables).toHaveProperty('sucursales');
     expect(tables).toHaveProperty('cortes');
     expect(tables).toHaveProperty('corteIntentos');
+    expect(tables).toHaveProperty('empleados');
+    expect(tables).toHaveProperty('empleadoSucursales');
   });
 
   it('cada propiedad de tables es una función', () => {
     expect(typeof tables.sucursales).toBe('function');
     expect(typeof tables.cortes).toBe('function');
     expect(typeof tables.corteIntentos).toBe('function');
+    expect(typeof tables.empleados).toBe('function');
+    expect(typeof tables.empleadoSucursales).toBe('function');
   });
 
   it('exporta checkSupabaseConnection como función', () => {
@@ -83,19 +87,34 @@ describe('Suite 2 — Tipo Database y createClient', () => {
     expect(mockFrom).toHaveBeenCalledWith('corte_intentos');
   });
 
+  it('tables.empleados() invoca supabase.from("empleados")', () => {
+    mockFrom.mockClear();
+    tables.empleados();
+    expect(mockFrom).toHaveBeenCalledWith('empleados');
+  });
+
+  it('tables.empleadoSucursales() invoca supabase.from("empleado_sucursales")', () => {
+    mockFrom.mockClear();
+    tables.empleadoSucursales();
+    expect(mockFrom).toHaveBeenCalledWith('empleado_sucursales');
+  });
+
   // Compile-time type check: ensures Database type is usable
   it('Database type es compatible con el esquema esperado', () => {
     type CorteRow = Database['public']['Tables']['cortes']['Row'];
     type SucursalRow = Database['public']['Tables']['sucursales']['Row'];
     type IntentoRow = Database['public']['Tables']['corte_intentos']['Row'];
+    type EmpleadoRow = Database['public']['Tables']['empleados']['Row'];
 
     const _corteCheck: CorteRow['estado'] = 'INICIADO';
     const _sucCheck: SucursalRow['activa'] = true;
     const _intCheck: IntentoRow['attempt_number'] = 1;
+    const _empCheck: EmpleadoRow['activo'] = true;
 
     expect(_corteCheck).toBe('INICIADO');
     expect(_sucCheck).toBe(true);
     expect(_intCheck).toBe(1);
+    expect(_empCheck).toBe(true);
   });
 });
 

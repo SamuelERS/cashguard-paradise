@@ -1,8 +1,9 @@
-// 🤖 [IA] - v2.0.0: Cliente Supabase tipado
+// 🤖 [IA] - v2.1.0: OT-17 — Agrega tipo corte_conteo_snapshots (append-only)
+// Previous: v2.0.0: Cliente Supabase tipado
 // Capa 3 (Sincronización) — Singleton + helpers + conectividad
 
 import { createClient } from '@supabase/supabase-js';
-import type { Sucursal, Corte, CorteIntento } from '../types/auditoria';
+import type { Sucursal, Corte, CorteIntento, CorteConteoSnapshot } from '../types/auditoria';
 
 // ---------------------------------------------------------------------------
 // 1. Tipo Database (mapeo Supabase)
@@ -34,6 +35,49 @@ export type Database = {
           created_at?: string;
         };
         Update: Partial<Omit<CorteIntento, 'id' | 'created_at'>>;
+      };
+      empleados: {
+        Row: {
+          id: string;
+          nombre: string;
+          activo: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          nombre: string;
+          activo?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<{
+          nombre: string;
+          activo: boolean;
+          updated_at: string;
+        }>;
+      };
+      empleado_sucursales: {
+        Row: {
+          empleado_id: string;
+          sucursal_id: string;
+          created_at: string;
+        };
+        Insert: {
+          empleado_id: string;
+          sucursal_id: string;
+          created_at?: string;
+        };
+        Update: Partial<Record<string, never>>;
+      };
+      // 🤖 [IA] - OT-17: Tabla append-only de snapshots de conteo
+      corte_conteo_snapshots: {
+        Row: CorteConteoSnapshot;
+        Insert: Omit<CorteConteoSnapshot, 'id' | 'captured_at'> & {
+          id?: string;
+          captured_at?: string;
+        };
+        Update: Partial<Record<string, never>>;
       };
     };
     Views: Record<string, never>;
@@ -91,6 +135,9 @@ export const tables = {
   sucursales: () => supabase.from('sucursales'),
   cortes: () => supabase.from('cortes'),
   corteIntentos: () => supabase.from('corte_intentos'),
+  empleados: () => supabase.from('empleados'),
+  empleadoSucursales: () => supabase.from('empleado_sucursales'),
+  corteConteoSnapshots: () => supabase.from('corte_conteo_snapshots'),
 } as const;
 
 // ---------------------------------------------------------------------------
