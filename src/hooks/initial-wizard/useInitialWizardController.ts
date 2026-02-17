@@ -1,5 +1,5 @@
 // 🤖 [IA] - ORDEN #075: Controller hook - orquesta estado + handlers del wizard
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 import { TOAST_DURATIONS, TOAST_MESSAGES } from '@/config/toast';
 import { useWizardNavigation } from '@/hooks/useWizardNavigation';
@@ -10,14 +10,6 @@ import { useSucursales } from '@/hooks/useSucursales';
 import { useEmpleadosSucursal } from '@/hooks/useEmpleadosSucursal';
 import { calculateProgress } from '@/lib/initial-wizard/wizardRules';
 import type { InitialWizardModalProps, InitialWizardControllerReturn } from '@/types/initialWizard';
-
-const normalizeText = (value: string): string => (
-  value
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .trim()
-);
 
 export function useInitialWizardController(
   props: InitialWizardModalProps
@@ -53,6 +45,7 @@ export function useInitialWizardController(
   const { createTimeoutWithCleanup } = useTimingConfig();
   const { validateInput, getPattern, getInputMode } = useInputValidation();
   const { sucursales } = useSucursales();
+  const { empleados: empleadosSucursal } = useEmpleadosSucursal(wizardData.selectedStore || null);
 
   // ── State local ──
   const [hasVibratedForError, setHasVibratedForError] = useState(false);
@@ -93,39 +86,19 @@ export function useInitialWizardController(
   }, [isFlowCompleted, currentStep, hasVibratedForError]);
 
   // ── Computed ──
-  const availableStores = useMemo(() => (
-    sucursales.map((sucursal) => ({
-      id: sucursal.id,
-      name: sucursal.nombre,
-      code: sucursal.codigo,
-    }))
-  ), [sucursales]);
-
-  const selectedSucursalId = useMemo(() => {
-    if (!wizardData.selectedStore) return null;
-
-    const byId = availableStores.find((store) => store.id === wizardData.selectedStore);
-    if (byId) return byId.id;
-
-    const normalizedSelected = normalizeText(wizardData.selectedStore);
-
-    const byName = availableStores.find((store) => normalizeText(store.name) === normalizedSelected);
-    if (byName) return byName.id;
-
-    const byCode = availableStores.find((store) => normalizeText(store.code ?? '') === normalizedSelected);
-    return byCode?.id ?? null;
-  }, [wizardData.selectedStore, availableStores]);
-
-  const { empleados: empleadosSucursal } = useEmpleadosSucursal(selectedSucursalId);
-
-  const availableEmployees = useMemo(() => (
-    empleadosSucursal.map((empleado) => ({
-      id: empleado.id,
-      name: empleado.nombre,
-      role: empleado.cargo,
-      stores: selectedSucursalId ? [selectedSucursalId] : [],
-    }))
-  ), [empleadosSucursal, selectedSucursalId]);
+  const availableStores = sucursales.map((sucursal) => ({
+    id: sucursal.id,
+    name: sucursal.nombre,
+    address: `Codigo ${sucursal.codigo}`,
+    phone: '',
+    schedule: '',
+  }));
+  const availableEmployees = empleadosSucursal.map((empleado) => ({
+    id: empleado.id,
+    name: empleado.nombre,
+    role: 'Empleado Activo',
+    stores: wizardData.selectedStore ? [wizardData.selectedStore] : [],
+  }));
 
   const progressValue = calculateProgress(wizardData, isFlowCompleted());
 

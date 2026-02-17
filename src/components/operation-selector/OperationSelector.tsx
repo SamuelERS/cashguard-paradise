@@ -1,4 +1,4 @@
-// 🤖 [IA] - v3.2.0: Arquitectura modular post-desmonolitización (21 commits, 3 componentes desmonolitizados)
+// 🤖 [IA] - v3.2.1: Modulo A validado - entorno Supabase real en local + evidencia operativa
 // Previous: v3.0.0 - FASE 9 Vista Deliveries Pendientes en Home Screen
 // Previous: v2.8.1 - Badge versión actualizado (refinamiento UX botón WhatsApp)
 // Previous: v2.8 - Badge versión actualizado (sistema WhatsApp inteligente aplicado a Apertura)
@@ -82,7 +82,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
               }}>
                 Seleccione Operación
               </h1>
-              {/* 🤖 [IA] - v3.2.0: Arquitectura modular post-desmonolitización */}
+              {/* 🤖 [IA] - v3.2.1: Modulo A validado */}
               <span className="px-3 py-1 rounded-full text-xs font-semibold shadow-lg" style={{
                 background: 'linear-gradient(135deg, #d4af37 0%, #aa8c2d 100%)',
                 color: '#1a1a1a',
@@ -90,7 +90,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
                 boxShadow: '0 4px 6px rgba(212, 175, 55, 0.4)',
                 border: '1px solid rgba(255, 215, 0, 0.3)'
               }}>
-                v3.2.0
+                  v3.2.1
               </span>
             </div>
           </div>

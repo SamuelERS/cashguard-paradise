@@ -375,7 +375,7 @@ describe('CorteConteoAdapter', () => {
       expect(passedProps.initialExpectedSales).toBe('653.65');
       expect(passedProps.onBack).toBeDefined();
       expect(passedProps.onFlowCancel).toBeDefined();
-      expect(passedProps.skipWizard).toBe(true);
+      expect(passedProps.skipWizard).toBeUndefined();
 
       // Should NOT pass initialDailyExpenses
       expect(passedProps.initialDailyExpenses).toBeUndefined();
@@ -397,18 +397,22 @@ describe('CorteConteoAdapter', () => {
   // Suite 7: Prop skipWizard — Orden #015
   // -------------------------------------------------------------------------
   describe('Suite 7: Prop skipWizard', () => {
-    it('7.1 — Pasa skipWizard={true} a CashCounter via data attribute', () => {
+    it('7.1 — No forzar skipWizard (data attribute queda en false por ausencia de prop)', () => {
       render(<CorteConteoAdapter {...defaultProps()} />);
       const counter = screen.getByTestId('mock-cash-counter');
-      expect(counter).toHaveAttribute('data-skip-wizard', 'true');
+      expect(counter).toHaveAttribute('data-skip-wizard', 'false');
     });
 
-    it('7.2 — CashCounter mock recibe prop skipWizard=true', () => {
+    it('7.2 — CashCounter mock no recibe skipWizard=true', () => {
       render(<CorteConteoAdapter {...defaultProps()} />);
-      expect(MockCashCounter).toHaveBeenCalledWith(
-        expect.objectContaining({ skipWizard: true }),
-        expect.anything(),
-      );
+      const passedProps = MockCashCounter.mock.calls[0][0];
+      expect('skipWizard' in passedProps).toBe(false);
+    });
+
+    it('7.3 — Flujo auditoría NO debe forzar skipWizard=true (debe mostrar instrucciones)', () => {
+      render(<CorteConteoAdapter {...defaultProps()} />);
+      const passedProps = MockCashCounter.mock.calls[0][0];
+      expect(passedProps.skipWizard).toBeUndefined();
     });
   });
 

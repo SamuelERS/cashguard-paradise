@@ -15,14 +15,12 @@ export default defineConfig(({ mode }) => ({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      // 🤖 [IA] - v1.3.6c: Habilitar manifest en dev mode para evitar error "Syntax error at line 1, column 1"
-      // Razón: VitePWA genera manifest.webmanifest solo en build por defecto
-      // Solución: devOptions.enabled = true → manifest disponible en dev server
-      // 🤖 [IA] - v1.3.6d: Reducir verbose logging Workbox (183 mensajes "No route found")
-      // navigateFallback: Maneja SPA routing correctamente en dev mode
-      // suppressWarnings: Silencia logs informativos Workbox (mejora UX development)
+      // SW en desarrollo deshabilitado por defecto para evitar servir bundles obsoletos
+      // desde caché (especialmente al cambiar de ramas/worktrees).
+      // Si se requiere probar PWA en dev: VITE_ENABLE_DEV_PWA=true npm run dev
+      // navigateFallback/suppressWarnings solo aplican cuando se habilita explícitamente.
       devOptions: {
-        enabled: true,
+        enabled: process.env.VITE_ENABLE_DEV_PWA === 'true',
         type: 'module',
         navigateFallback: '/',
         suppressWarnings: true

@@ -105,16 +105,19 @@ describe('Suite 2 — Tipo Database y createClient', () => {
     type SucursalRow = Database['public']['Tables']['sucursales']['Row'];
     type IntentoRow = Database['public']['Tables']['corte_intentos']['Row'];
     type EmpleadoRow = Database['public']['Tables']['empleados']['Row'];
+    type EmpleadoSucursalRow = Database['public']['Tables']['empleado_sucursales']['Row'];
 
     const _corteCheck: CorteRow['estado'] = 'INICIADO';
     const _sucCheck: SucursalRow['activa'] = true;
     const _intCheck: IntentoRow['attempt_number'] = 1;
     const _empCheck: EmpleadoRow['activo'] = true;
+    const _empSucCheck: EmpleadoSucursalRow['activo'] = true;
 
     expect(_corteCheck).toBe('INICIADO');
     expect(_sucCheck).toBe(true);
     expect(_intCheck).toBe(1);
     expect(_empCheck).toBe(true);
+    expect(_empSucCheck).toBe(true);
   });
 });
 

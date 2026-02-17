@@ -31,12 +31,12 @@ interface CashCalculationProps {
   storeId: string;
   cashierId: string;
   witnessId: string;
-  storeName?: string;
-  cashierName?: string;
-  witnessName?: string;
   expectedSales: number;
   cashCount: CashCount;
   electronicPayments: ElectronicPayments;
+  storeName?: string;
+  cashierName?: string;
+  witnessName?: string;
   expenses?: DailyExpense[];
   deliveryCalculation?: DeliveryCalculation;
   phaseState?: PhaseState;
@@ -48,12 +48,12 @@ const CashCalculation = ({
   storeId,
   cashierId,
   witnessId,
-  storeName,
-  cashierName,
-  witnessName,
   expectedSales,
   cashCount,
   electronicPayments,
+  storeName,
+  cashierName,
+  witnessName,
   expenses = [],
   deliveryCalculation,
   phaseState,
@@ -80,9 +80,9 @@ const CashCalculation = ({
     };
   }, []);
 
-  const resolvedStoreName = storeName ?? storeId;
-  const resolvedCashierName = cashierName ?? cashierId;
-  const resolvedWitnessName = witnessName ?? witnessId;
+  const displayStoreName = storeName?.trim() || storeId;
+  const displayCashierName = cashierName?.trim() || cashierId;
+  const displayWitnessName = witnessName?.trim() || witnessId;
 
   const performCalculation = useCallback(() => {
     const totalCash = calculateCashTotal(cashCount);
@@ -148,14 +148,14 @@ const CashCalculation = ({
       storeId,
       cashierId,
       witnessId,
-      storeName: resolvedStoreName,
-      cashierName: resolvedCashierName,
-      witnessName: resolvedWitnessName,
+      storeName: displayStoreName,
+      cashierName: displayCashierName,
+      witnessName: displayWitnessName,
       expenses,
       pendingDeliveries,
     });
   }, [calculationData, cashCount, electronicPayments, expectedSales, deliveryCalculation,
-      phaseState, storeId, cashierId, witnessId, resolvedStoreName, resolvedCashierName, resolvedWitnessName, expenses, pendingDeliveries]);
+      phaseState, storeId, cashierId, witnessId, displayStoreName, displayCashierName, displayWitnessName, expenses, pendingDeliveries]);
 
   // 🤖 [IA] - v2.4.1: Handler inteligente con detección de plataforma + copia automática
   const handleWhatsAppSend = useCallback(async () => {
@@ -220,7 +220,7 @@ const CashCalculation = ({
   const generatePrintableReport = () => {
     try {
       const report = generateCompleteReport();
-      const html = generatePrintableHTML(report, resolvedStoreName);
+      const html = generatePrintableHTML(report, displayStoreName);
       const printWindow = window.open('', '_blank');
       if (printWindow) {
         printWindow.document.write(html);
@@ -316,9 +316,9 @@ const CashCalculation = ({
               expectedSales={expectedSales}
               deliveryCalculation={deliveryCalculation}
               phaseState={phaseState}
-              storeName={resolvedStoreName}
-              cashierName={resolvedCashierName}
-              witnessName={resolvedWitnessName}
+              storeName={displayStoreName}
+              cashierName={displayCashierName}
+              witnessName={displayWitnessName}
             />
           )}
 

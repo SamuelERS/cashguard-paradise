@@ -1,5 +1,6 @@
 /**
- * 🤖 [IA] - v1.4.1: useCashCounterOrchestrator Hook
+ * 🤖 [IA] - v1.5.0: OT-17 — Agrega hidratación + autosave debounced
+ * Previous: v1.4.1: useCashCounterOrchestrator Hook
  * Extraído de CashCounter.tsx para desmonolitización
  *
  * @description
@@ -7,13 +8,14 @@
  * efectos secundarios y handlers del flujo de corte de caja.
  * CashCounter.tsx se convierte en un componente presentacional delgado.
  */
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Calculator, Sunrise } from "lucide-react";
 import { toast } from 'sonner';
 import { TOAST_DURATIONS, TOAST_MESSAGES } from '@/config/toast';
 import { OperationMode } from "@/types/operation-mode";
-import type { CashCount, ElectronicPayments } from "@/types/cash";
+import type { CashCount, ElectronicPayments, Employee, Store } from "@/types/cash";
 import type { DailyExpense } from '@/types/expenses';
+import { STORES } from "@/data/paradise";
 import { calculateCashTotal } from "@/utils/calculations";
 import { useGuidedCounting } from "@/hooks/useGuidedCounting";
 import { usePhaseManager } from "@/hooks/usePhaseManager";
@@ -24,7 +26,41 @@ import { usePwaScrollPrevention } from "@/hooks/usePwaScrollPrevention";
 import { useSucursales } from "@/hooks/useSucursales";
 import { useEmpleadosSucursal } from "@/hooks/useEmpleadosSucursal";
 
-// 🤖 [IA] - v1.4.1: Opciones del orquestador (espejo de CashCounterProps)
+const LEGACY_STORE_CODE_MAP: Record<string, string> = {
+  'los-heroes': 'H',
+  'plaza-merliot': 'M',
+};
+
+function resolveLegacyStoreCode(storeValue: string): string | null {
+  const normalized = storeValue.trim().toLowerCase();
+  if (LEGACY_STORE_CODE_MAP[normalized]) return LEGACY_STORE_CODE_MAP[normalized];
+  if (normalized.includes('heroes') || normalized.includes('héroes')) return 'H';
+  if (normalized.includes('merliot')) return 'M';
+  return null;
+}
+
+function resolveSucursalIdFromSelectedStore(
+  selectedStore: string,
+  sucursales: Array<{ id: string; codigo: string }>,
+): string | undefined {
+  const normalized = selectedStore.trim();
+  const byId = sucursales.find((sucursal) => sucursal.id === normalized);
+  if (byId) return byId.id;
+
+  const byCode = sucursales.find(
+    (sucursal) => sucursal.codigo.toUpperCase() === normalized.toUpperCase(),
+  );
+  if (byCode) return byCode.id;
+
+  const legacyCode = resolveLegacyStoreCode(selectedStore);
+  if (!legacyCode) return undefined;
+  const byLegacyCode = sucursales.find(
+    (sucursal) => sucursal.codigo.toUpperCase() === legacyCode,
+  );
+  return byLegacyCode?.id;
+}
+
+// 🤖 [IA] - v1.5.0: OT-17 — Opciones del orquestador (espejo de CashCounterProps)
 interface CashCounterOrchestratorOptions {
   operationMode: OperationMode;
   initialStore: string;
@@ -35,15 +71,16 @@ interface CashCounterOrchestratorOptions {
   onBack?: () => void;
   onFlowCancel?: () => void;
   skipWizard?: boolean; // 🤖 [IA] - Orden #015: Saltar instrucciones en flujo auditoría
+  // 🤖 [IA] - OT-17: Hidratación + autosave
+  initialCashCount?: CashCount;
+  initialElectronicPayments?: ElectronicPayments;
+  onGuardarProgreso?: (datos: {
+    fase_actual: number;
+    conteo_parcial: CashCount;
+    pagos_electronicos: ElectronicPayments;
+    gastos_dia: DailyExpense[];
+  }) => void;
 }
-
-const normalizeText = (value: string): string => (
-  value
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .trim()
-);
 
 export function useCashCounterOrchestrator({
   operationMode,
@@ -55,6 +92,9 @@ export function useCashCounterOrchestrator({
   onBack,
   onFlowCancel,
   skipWizard = false,
+  initialCashCount,
+  initialElectronicPayments,
+  onGuardarProgreso,
 }: CashCounterOrchestratorOptions) {
   // 🤖 [IA] - v1.0.81 - Detectar modo de operación
   const isMorningCount = operationMode === OperationMode.CASH_COUNT;
@@ -74,11 +114,8 @@ export function useCashCounterOrchestrator({
   const [showExitConfirmation, setShowExitConfirmation] = useState(false); // 🤖 [IA] - v1.2.9
   const [showBackConfirmation, setShowBackConfirmation] = useState(false); // 🤖 [IA] - v1.2.19
 
-  // 🤖 [IA] - v1.0.3 - Iniciar directamente si hay datos iniciales.
-  // venta_esperada puede venir vacía/null (caso auditoría/Supabase) y no debe
-  // forzar regreso al formulario legacy de "Configuración Inicial".
-  const hasCoreInitialData = Boolean(initialStore && initialCashier && initialWitness);
-  const hasInitialData = hasCoreInitialData;
+  // 🤖 [IA] - v1.0.3 - Iniciar directamente si hay datos del wizard
+  const hasInitialData = initialStore && initialCashier && initialWitness && initialExpectedSales;
 
   // 🤖 [IA] - v1.2.8: Estado para el modal de instrucciones
   const [showInstructionsModal, setShowInstructionsModal] = useState(false);
@@ -116,80 +153,87 @@ export function useCashCounterOrchestrator({
     FIELD_ORDER
   } = useGuidedCounting(operationMode); // 🤖 [IA] - v1.0.85
 
-  // Cash count state
-  const [cashCount, setCashCount] = useState<CashCount>({
-    penny: 0, nickel: 0, dime: 0, quarter: 0, dollarCoin: 0,
-    bill1: 0, bill5: 0, bill10: 0, bill20: 0, bill50: 0, bill100: 0,
-  });
+  // 🤖 [IA] - OT-17: Hidratación — si hay datos guardados, usarlos como valores iniciales
+  const [cashCount, setCashCount] = useState<CashCount>(
+    initialCashCount ?? {
+      penny: 0, nickel: 0, dime: 0, quarter: 0, dollarCoin: 0,
+      bill1: 0, bill5: 0, bill10: 0, bill20: 0, bill50: 0, bill100: 0,
+    },
+  );
 
-  // Electronic payments state
-  const [electronicPayments, setElectronicPayments] = useState<ElectronicPayments>({
-    credomatic: 0, promerica: 0, bankTransfer: 0, paypal: 0,
-  });
+  const [electronicPayments, setElectronicPayments] = useState<ElectronicPayments>(
+    initialElectronicPayments ?? {
+      credomatic: 0, promerica: 0, bankTransfer: 0, paypal: 0,
+    },
+  );
 
   const { createTimeoutWithCleanup } = useTimingConfig(); // 🤖 [IA] - Timing unificado v1.0.22
-  const { sucursales } = useSucursales();
-
-  const availableStores = useMemo(() => (
-    sucursales.map((sucursal) => ({
+  const {
+    sucursales,
+    cargando: cargandoSucursales,
+    error: errorSucursales,
+  } = useSucursales();
+  const usarFallbackCatalogoLegacy =
+    import.meta.env.MODE !== 'production' &&
+    sucursales.length === 0 &&
+    !cargandoSucursales &&
+    Boolean(errorSucursales);
+  const availableStores: Store[] = usarFallbackCatalogoLegacy
+    ? STORES
+    : sucursales.map((sucursal) => ({
       id: sucursal.id,
       name: sucursal.nombre,
-      code: sucursal.codigo,
-    }))
-  ), [sucursales]);
+      address: `Codigo ${sucursal.codigo}`,
+      phone: '',
+      schedule: '',
+    }));
 
-  const selectedSucursalId = useMemo(() => {
-    if (!selectedStore || sucursales.length === 0) return null;
+  const sucursalIdSeleccionada = selectedStore
+    ? resolveSucursalIdFromSelectedStore(selectedStore, sucursales)
+    : undefined;
+  const { empleados: empleadosSucursal } = useEmpleadosSucursal(sucursalIdSeleccionada);
+  const availableEmployees: Employee[] = empleadosSucursal.map((empleado) => ({
+    id: empleado.id,
+    name: empleado.nombre,
+    role: 'Empleado Activo',
+    stores: selectedStore ? [selectedStore] : [],
+  }));
+  const selectedStoreName =
+    availableStores.find((store) => store.id === selectedStore)?.name ?? selectedStore;
+  const selectedCashierName =
+    availableEmployees.find((employee) => employee.id === selectedCashier)?.name ?? selectedCashier;
+  const selectedWitnessName =
+    availableEmployees.find((employee) => employee.id === selectedWitness)?.name ?? selectedWitness;
 
-    const byId = sucursales.find((sucursal) => sucursal.id === selectedStore);
-    if (byId) return byId.id;
+  // 🤖 [IA] - OT-17: Autosave debounced (600ms) — guarda progreso en Supabase
+  const autosaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isFirstRender = useRef(true);
+  useEffect(() => {
+    // Saltar el primer render (valores iniciales / hidratación)
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    if (!onGuardarProgreso) return;
 
-    const normalizedSelected = normalizeText(selectedStore);
+    if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current);
 
-    const byName = sucursales.find((sucursal) => normalizeText(sucursal.nombre) === normalizedSelected);
-    if (byName) return byName.id;
+    autosaveTimerRef.current = setTimeout(() => {
+      onGuardarProgreso({
+        fase_actual: phaseState.currentPhase,
+        conteo_parcial: cashCount,
+        pagos_electronicos: electronicPayments,
+        gastos_dia: dailyExpenses,
+      });
+    }, 600);
 
-    const byCode = sucursales.find((sucursal) => normalizeText(sucursal.codigo) === normalizedSelected);
-    if (byCode) return byCode.id;
-
-    return null;
-  }, [selectedStore, sucursales]);
-
-  const {
-    empleados: empleadosSucursal,
-    cargando: cargandoEmpleados,
-    error: errorEmpleados,
-  } = useEmpleadosSucursal(selectedSucursalId);
-
-  const availableEmployees = useMemo(() => (
-    empleadosSucursal.map((empleado) => ({
-      id: empleado.id,
-      name: empleado.nombre,
-      role: empleado.cargo,
-      stores: selectedSucursalId ? [selectedSucursalId] : [],
-    }))
-  ), [empleadosSucursal, selectedSucursalId]);
-
-  const selectedStoreName = useMemo(() => {
-    const byId = availableStores.find((store) => store.id === selectedStore);
-    if (byId) return byId.name;
-    const byName = availableStores.find((store) => normalizeText(store.name) === normalizeText(selectedStore));
-    return byName?.name ?? selectedStore;
-  }, [availableStores, selectedStore]);
-
-  const selectedCashierName = useMemo(() => {
-    const byId = availableEmployees.find((employee) => employee.id === selectedCashier);
-    if (byId) return byId.name;
-    const byName = availableEmployees.find((employee) => normalizeText(employee.name) === normalizeText(selectedCashier));
-    return byName?.name ?? selectedCashier;
-  }, [availableEmployees, selectedCashier]);
-
-  const selectedWitnessName = useMemo(() => {
-    const byId = availableEmployees.find((employee) => employee.id === selectedWitness);
-    if (byId) return byId.name;
-    const byName = availableEmployees.find((employee) => normalizeText(employee.name) === normalizeText(selectedWitness));
-    return byName?.name ?? selectedWitness;
-  }, [availableEmployees, selectedWitness]);
+    return () => {
+      if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current);
+    };
+  // Deps: solo estado mutable que cambia con interacción del usuario.
+  // onGuardarProgreso es callback estable (memoizado en padre).
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cashCount, electronicPayments, dailyExpenses, phaseState.currentPhase]);
 
   // 🤖 [IA] - v1.4.1: PWA scroll prevention
   usePwaScrollPrevention(phaseState.currentPhase);
@@ -422,13 +466,11 @@ export function useCashCounterOrchestrator({
     // Form state
     selectedStore, selectedCashier, selectedWitness, expectedSales, dailyExpenses,
     setSelectedStore, setSelectedCashier, setSelectedWitness, setExpectedSales,
-    availableStores,
     availableEmployees,
+    availableStores,
     selectedStoreName,
     selectedCashierName,
     selectedWitnessName,
-    cargandoEmpleados,
-    errorEmpleados,
     canProceedToPhase1,
     hasInitialData,
 

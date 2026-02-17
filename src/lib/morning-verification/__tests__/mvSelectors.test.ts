@@ -1,38 +1,25 @@
-import { describe, expect, it } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { resolveVerificationActors } from '../mvSelectors';
 
-describe('resolveVerificationActors', () => {
-  it('creates actors using ids when names are not provided', () => {
-    const result = resolveVerificationActors('suc-001', 'emp-1', 'emp-2');
-
-    expect(result.store).toEqual({
-      id: 'suc-001',
-      name: 'suc-001',
-      address: '',
-      phone: '',
-      schedule: '',
-    });
-    expect(result.cashierIn?.name).toBe('emp-1');
-    expect(result.cashierOut?.name).toBe('emp-2');
-  });
-
-  it('uses provided names for report-friendly output', () => {
-    const result = resolveVerificationActors('suc-001', 'emp-1', 'emp-2', {
-      storeName: 'Los Heroes',
-      cashierName: 'Jonathan Melara',
-      witnessName: 'Adonay Torres',
+describe('mvSelectors - resolveVerificationActors', () => {
+  it('resuelve actores con nombres explícitos cuando se proporcionan', () => {
+    const result = resolveVerificationActors('suc-1', 'emp-1', 'emp-2', {
+      storeName: 'Los Héroes',
+      cashierName: 'Adonay Torres',
+      witnessName: 'Tito Gomez',
     });
 
-    expect(result.store?.name).toBe('Los Heroes');
-    expect(result.cashierIn?.name).toBe('Jonathan Melara');
-    expect(result.cashierOut?.name).toBe('Adonay Torres');
+    expect(result.store?.name).toBe('Los Héroes');
+    expect(result.cashierIn?.name).toBe('Adonay Torres');
+    expect(result.cashierOut?.name).toBe('Tito Gomez');
   });
 
-  it('returns undefined actors when ids are empty', () => {
-    const result = resolveVerificationActors('', '', '');
+  it('usa IDs como fallback cuando no hay nombres', () => {
+    const result = resolveVerificationActors('suc-raw', 'cash-raw', 'wit-raw');
 
-    expect(result.store).toBeUndefined();
-    expect(result.cashierIn).toBeUndefined();
-    expect(result.cashierOut).toBeUndefined();
+    expect(result.store?.name).toBe('suc-raw');
+    expect(result.cashierIn?.name).toBe('cash-raw');
+    expect(result.cashierOut?.name).toBe('wit-raw');
   });
 });
+

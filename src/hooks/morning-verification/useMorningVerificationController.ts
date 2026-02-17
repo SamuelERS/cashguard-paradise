@@ -18,7 +18,6 @@ import type {
 
 import { performVerification, generateDataHash } from '@/lib/morning-verification/mvRules';
 import { generateMorningReport, downloadPrintableReport } from '@/lib/morning-verification/mvFormatters';
-import { resolveVerificationActors } from '@/lib/morning-verification/mvSelectors';
 import { copyToClipboard } from '@/utils/clipboard';
 
 // ────────────────────────────────────────────────────────────────
@@ -89,11 +88,33 @@ export function useMorningVerificationController(
   const [showWhatsAppInstructions, setShowWhatsAppInstructions] = useState(false);
 
   // ── Actors ─────────────────────────────────────────────────────
-  const { store, cashierIn, cashierOut } = resolveVerificationActors(
-    storeId,
-    cashierId,
-    witnessId,
-    { storeName, cashierName, witnessName }
+  const store = useMemo(
+    () => ({
+      id: storeId,
+      name: storeName?.trim() || storeId,
+      address: '',
+      phone: '',
+      schedule: '',
+    }),
+    [storeId, storeName],
+  );
+  const cashierIn = useMemo(
+    () => ({
+      id: cashierId,
+      name: cashierName?.trim() || cashierId,
+      role: 'Empleado Activo',
+      stores: [storeId],
+    }),
+    [cashierId, cashierName, storeId],
+  );
+  const cashierOut = useMemo(
+    () => ({
+      id: witnessId,
+      name: witnessName?.trim() || witnessId,
+      role: 'Empleado Activo',
+      stores: [storeId],
+    }),
+    [witnessId, witnessName, storeId],
   );
 
   // ── Verificación al montar ─────────────────────────────────────
@@ -134,7 +155,7 @@ export function useMorningVerificationController(
 
   const handleWhatsAppSend = useCallback(async () => {
     try {
-      if (!storeId || !cashierId || !witnessId) {
+      if (!store || !cashierIn || !cashierOut) {
         toast.error('❌ Error', {
           description: 'Faltan datos necesarios para generar el reporte',
         });
@@ -171,7 +192,7 @@ export function useMorningVerificationController(
         description: 'Por favor intente nuevamente',
       });
     }
-  }, [storeId, cashierId, witnessId, report, handleCopyToClipboard]);
+  }, [store, cashierIn, cashierOut, report, handleCopyToClipboard]);
 
   const handleConfirmSent = useCallback(() => {
     setReportSent(true);
