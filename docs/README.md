@@ -54,6 +54,11 @@ Aquí encontrarás el trabajo en curso. Las reglas están en la raíz:
     - `Caso_Logica_Envios_Delivery`
     - `Caso_Evento_NoReportado_EnVuelto`
     - `EN_PROGRESO_Caso_Reporte_Enviar_Correo`
+    - `Caso_Investigacion_Doble_Fuente_Catalogos_20260217`
+- **Casos Completos (destino interno):**
+    - `04_desarrollo/CASOS-COMPLETOS/`
+- **Planes de implementación (TDD):**
+    - `plans/`
 
 ### 🏗️ Arquitectura del Sistema (`02_arquitectura/`)
 La base técnica inmutable y decisiones de alto nivel:
