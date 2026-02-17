@@ -8,11 +8,12 @@ import type { Sucursal } from '@/types/auditoria';
 
 export interface CortePageProps {
   onSalir?: () => void;
+  sucursalInicialId?: string | null;
 }
 
-export const CortePage: React.FC<CortePageProps> = ({ onSalir }) => {
+export const CortePage: React.FC<CortePageProps> = ({ onSalir, sucursalInicialId = null }) => {
   const { sucursales, cargando, error, recargar } = useSucursales();
-  const [sucursalSeleccionada, setSucursalSeleccionada] = useState<string | null>(null);
+  const [sucursalSeleccionada, setSucursalSeleccionada] = useState<string | null>(sucursalInicialId);
 
   const nombreSucursalSeleccionada = useMemo(
     () => sucursales.find((s: Sucursal) => s.id === sucursalSeleccionada)?.nombre ?? '',
@@ -28,6 +29,18 @@ export const CortePage: React.FC<CortePageProps> = ({ onSalir }) => {
       setSucursalSeleccionada(sucursales[0].id);
     }
   }, [cargando, error, sucursales, sucursalSeleccionada]);
+
+  // Preselección opcional cuando el padre ya detectó un corte activo por sucursal.
+  useEffect(() => {
+    if (!sucursalInicialId || sucursalSeleccionada !== null) {
+      return;
+    }
+
+    const existeEnCatalogo = sucursales.some((sucursal) => sucursal.id === sucursalInicialId);
+    if (existeEnCatalogo) {
+      setSucursalSeleccionada(sucursalInicialId);
+    }
+  }, [sucursalInicialId, sucursalSeleccionada, sucursales]);
 
   const handleSeleccionar = useCallback((id: string) => {
     setSucursalSeleccionada(id);

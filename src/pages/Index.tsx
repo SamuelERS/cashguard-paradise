@@ -7,9 +7,11 @@ import InitialWizardModal from "@/components/InitialWizardModal";
 import { OperationSelector } from "@/components/operation-selector/OperationSelector";
 import { MorningCountWizard } from "@/components/morning-count/MorningCountWizard";
 import { DeliveryDashboardWrapper } from "@/components/deliveries/DeliveryDashboardWrapper";
+import { CortePage } from "@/components/corte/CortePage";
 import { useOperationMode } from "@/hooks/useOperationMode";
 import { OperationMode } from "@/types/operation-mode";
 import { DailyExpense } from '@/types/expenses'; // 🤖 [IA] - v1.4.0: Tipos gastos
+import { isSupabaseConfigured, tables } from '@/lib/supabase';
 
 const Index = () => {
   // 🤖 [IA] - v1.0.81 - Hook para manejar el modo de operación
@@ -19,6 +21,9 @@ const Index = () => {
   const [showWizard, setShowWizard] = useState(false);
   const [showMorningWizard, setShowMorningWizard] = useState(false);
   const [showCashCounter, setShowCashCounter] = useState(false);
+  const [routeCashCutToCortePage, setRouteCashCutToCortePage] = useState(false);
+  const [cashCutSessionCheckInProgress, setCashCutSessionCheckInProgress] = useState(false);
+  const [activeCashCutSucursalId, setActiveCashCutSucursalId] = useState<string | null>(null);
   const [initialData, setInitialData] = useState<{
     selectedStore: string;
     selectedCashier: string;
@@ -77,23 +82,78 @@ const Index = () => {
 
   const handleBackFromCounter = () => {
     setShowCashCounter(false);
+    setRouteCashCutToCortePage(false);
+    setActiveCashCutSucursalId(null);
     setInitialData(null);
     resetMode(); // 🤖 [IA] - v1.0.81 - Resetear modo al volver
   };
 
-  // 🤖 [IA] - v3.3.1 - Manejar selección de modo con wizard legacy para CASH_CUT
-  const handleModeSelection = (mode: OperationMode) => {
+  const detectActiveCashCutSession = async (): Promise<{ hasActive: boolean; sucursalId: string | null }> => {
+    if (!isSupabaseConfigured) {
+      return { hasActive: false, sucursalId: null };
+    }
+
+    try {
+      const { data, error } = await tables
+        .cortes()
+        .select('id,sucursal_id')
+        .in('estado', ['INICIADO', 'EN_PROGRESO'])
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (error) {
+        console.warn('[Index] Error verificando sesión activa de corte:', error.message);
+        return { hasActive: false, sucursalId: null };
+      }
+
+      return {
+        hasActive: Boolean(data),
+        sucursalId: data?.sucursal_id ?? null,
+      };
+    } catch (error) {
+      console.warn('[Index] Fallo de red verificando sesión activa de corte:', error);
+      return { hasActive: false, sucursalId: null };
+    }
+  };
+
+  // 🤖 [IA] - v3.3.2 - Ruta híbrida: wizard legacy + reanudación automática por sesión activa
+  const handleModeSelection = async (mode: OperationMode) => {
     selectMode(mode);
     if (mode === OperationMode.CASH_CUT) {
-      setShowWizard(true);
+      setCashCutSessionCheckInProgress(true);
+      const activeSession = await detectActiveCashCutSession();
+
+      if (activeSession.hasActive) {
+        setActiveCashCutSucursalId(activeSession.sucursalId);
+        setRouteCashCutToCortePage(true);
+        setShowWizard(false);
+      } else {
+        setActiveCashCutSucursalId(null);
+        setRouteCashCutToCortePage(false);
+        setShowWizard(true);
+      }
+
+      setCashCutSessionCheckInProgress(false);
     } else if (mode === OperationMode.CASH_COUNT) {
+      setRouteCashCutToCortePage(false);
+      setActiveCashCutSucursalId(null);
       setShowMorningWizard(true);
+    } else {
+      setRouteCashCutToCortePage(false);
+      setActiveCashCutSucursalId(null);
     }
     // DELIVERY_VIEW no requiere wizard, se maneja directamente en el render
   };
 
+  const handleBackFromCortePage = () => {
+    setRouteCashCutToCortePage(false);
+    setActiveCashCutSucursalId(null);
+    resetMode();
+  };
+
   // 🤖 [IA] - v1.0.88 - Mostrar OperationSelector si no hay modo O si hay wizard abierto
-  if (!currentMode || showWizard || showMorningWizard) {
+  if (!currentMode || showWizard || showMorningWizard || cashCutSessionCheckInProgress) {
     return (
       <>
         <OperationSelector onSelectMode={handleModeSelection} />
@@ -121,6 +181,11 @@ const Index = () => {
         </AnimatePresence>
       </>
     );
+  }
+
+  // CASH_CUT con sesión activa detectada: ir al flujo de reanudación/sesión.
+  if (currentMode === OperationMode.CASH_CUT && routeCashCutToCortePage) {
+    return <CortePage onSalir={handleBackFromCortePage} sucursalInicialId={activeCashCutSucursalId} />;
   }
 
   // 🤖 [IA] - v1.0.82 - Renderizar DeliveryDashboardWrapper si modo es DELIVERY_VIEW

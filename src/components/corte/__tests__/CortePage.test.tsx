@@ -199,6 +199,19 @@ describe('CortePage', () => {
       expect(screen.getByTestId('picker-sucursales')).toBeInTheDocument();
       expect(screen.queryByTestId('mock-orquestador')).not.toBeInTheDocument();
     });
+
+    it('4.3 - Con sucursalInicialId válida, monta orquestador directo con esa sucursal', async () => {
+      configurarMockSucursales();
+
+      render(<CortePage sucursalInicialId="suc-002" />);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('mock-orquestador')).toBeInTheDocument();
+      });
+
+      expect(screen.queryByTestId('picker-sucursales')).not.toBeInTheDocument();
+      expect(screen.getByTestId('mock-orquestador')).toHaveAttribute('data-sucursal-id', 'suc-002');
+    });
   });
 
   // Suite 5: Montaje de CorteOrquestador

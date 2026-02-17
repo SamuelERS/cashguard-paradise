@@ -3,6 +3,27 @@ import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import Index from '@/pages/Index';
 
+const supabaseMocks = vi.hoisted(() => {
+  const maybeSingleMock = vi.fn();
+  const limitMock = vi.fn(() => ({ maybeSingle: maybeSingleMock }));
+  const orderMock = vi.fn(() => ({ limit: limitMock }));
+  const inMock = vi.fn(() => ({ order: orderMock }));
+  const selectMock = vi.fn(() => ({ in: inMock }));
+  const cortesMock = vi.fn(() => ({ select: selectMock }));
+
+  return {
+    maybeSingleMock,
+    cortesMock,
+  };
+});
+
+vi.mock('@/lib/supabase', () => ({
+  isSupabaseConfigured: true,
+  tables: {
+    cortes: supabaseMocks.cortesMock,
+  },
+}));
+
 vi.mock('@/components/operation-selector/OperationSelector', () => ({
   OperationSelector: ({ onSelectMode }: { onSelectMode: (mode: 'cash_cut' | 'cash_count') => void }) => (
     <div data-testid="operation-selector">
@@ -39,13 +60,33 @@ vi.mock('@/components/deliveries/DeliveryDashboardWrapper', () => ({
 }));
 
 describe('Index CASH_CUT routing', () => {
-  it('opens InitialWizardModal when selecting CASH_CUT', async () => {
+  it('opens CortePage when an active CASH_CUT session exists', async () => {
+    supabaseMocks.maybeSingleMock.mockResolvedValueOnce({
+      data: { id: 'corte-activo-1' },
+      error: null,
+    });
+
     const user = userEvent.setup();
     render(<Index />);
 
     await user.click(screen.getByTestId('open-cash-cut'));
 
-    expect(screen.getByTestId('initial-wizard')).toBeInTheDocument();
+    expect(await screen.findByTestId('corte-page')).toBeInTheDocument();
+    expect(screen.queryByTestId('initial-wizard')).not.toBeInTheDocument();
+  });
+
+  it('opens InitialWizardModal when selecting CASH_CUT', async () => {
+    supabaseMocks.maybeSingleMock.mockResolvedValueOnce({
+      data: null,
+      error: null,
+    });
+
+    const user = userEvent.setup();
+    render(<Index />);
+
+    await user.click(screen.getByTestId('open-cash-cut'));
+
+    expect(await screen.findByTestId('initial-wizard')).toBeInTheDocument();
     expect(screen.queryByTestId('corte-page')).not.toBeInTheDocument();
   });
 });
