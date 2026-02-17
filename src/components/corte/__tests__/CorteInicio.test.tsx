@@ -723,6 +723,24 @@ describe('Suite 10: Persistencia empleados localStorage (OT-14)', () => {
     expect(stored.cajero).toBe('Ana Lopez');
     expect(stored.testigo).toBe('Pedro Garcia');
   });
+
+  it('10.7 - Si cajero viene precargado y hay varios empleados, limpia el filtro inicial para mostrar catálogo completo', () => {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ cajero: 'Jonathan Melara', testigo: 'Adonay Torres', updatedAt: new Date().toISOString() })
+    );
+
+    renderCorteInicio({
+      sucursalPreseleccionadaId: 'suc-1',
+      omitirPasoSucursal: true,
+      ...( {
+        empleadosDisponibles: ['Tito Gomez', 'Adonay Torres', 'Jonathan Melara'],
+      } as unknown as Partial<CorteInicioProps> ),
+    });
+
+    expect(screen.getByPlaceholderText(/nombre completo del cajero/i)).toHaveValue('');
+    expect(screen.getByText('Empleados registrados: 3')).toBeInTheDocument();
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -765,5 +783,40 @@ describe('Suite 11: Empleados registrados por sucursal (OT-16)', () => {
     const opcionesTestigo = document.querySelector('#empleados-testigo-list');
     expect(opcionesTestigo?.querySelector('option[value="Tito Gomez"]')).toBeNull();
     expect(opcionesTestigo?.querySelector('option[value="Adonay Torres"]')).toBeInTheDocument();
+  });
+
+  it('11.3 - Con valor en cajero y múltiples empleados, muestra acción para ver catálogo completo', async () => {
+    const user = userEvent.setup();
+    renderCorteInicio({
+      sucursalPreseleccionadaId: 'suc-1',
+      omitirPasoSucursal: true,
+      ...( {
+        empleadosDisponibles: ['Tito Gomez', 'Adonay Torres', 'Jonathan Melara'],
+      } as unknown as Partial<CorteInicioProps> ),
+    });
+
+    await user.type(screen.getByPlaceholderText(/nombre completo del cajero/i), 'Jonathan Melara');
+
+    expect(
+      screen.getByRole('button', { name: /mostrar todos los empleados/i }),
+    ).toBeInTheDocument();
+  });
+
+  it('11.4 - Acción "mostrar todos" limpia cajero para quitar filtro de sugerencias', async () => {
+    const user = userEvent.setup();
+    renderCorteInicio({
+      sucursalPreseleccionadaId: 'suc-1',
+      omitirPasoSucursal: true,
+      ...( {
+        empleadosDisponibles: ['Tito Gomez', 'Adonay Torres', 'Jonathan Melara'],
+      } as unknown as Partial<CorteInicioProps> ),
+    });
+
+    const inputCajero = screen.getByPlaceholderText(/nombre completo del cajero/i);
+    await user.type(inputCajero, 'Jonathan Melara');
+    await user.click(screen.getByRole('button', { name: /mostrar todos los empleados/i }));
+
+    expect(inputCajero).toHaveValue('');
+    expect(screen.getByText('Empleados registrados: 3')).toBeInTheDocument();
   });
 });

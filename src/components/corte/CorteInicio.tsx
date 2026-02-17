@@ -1,5 +1,5 @@
 // 🤖 [IA] - v1.1.0: Preselección sucursal + localStorage empleados — OT-14
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import type { Sucursal, IniciarCorteParams } from '../../types/auditoria';
 import { ConstructiveActionButton } from '../shared/ConstructiveActionButton';
 import { DestructiveActionButton } from '../shared/DestructiveActionButton';
@@ -129,7 +129,24 @@ function CorteInicio({
   const [testigo, setTestigo] = useState(
     () => leerEmpleadosCache(sucIdParaCache).testigo,
   );
+  const cajeroPrecargadoInicialRef = useRef(cajero);
+  const cajeroEditadoRef = useRef(false);
   const [ventaEsperada, setVentaEsperada] = useState<string>('');
+
+  // Si el cajero llega precargado desde cache y existe un catalogo amplio,
+  // limpiamos solo una vez para no iniciar con datalist filtrado.
+  useEffect(() => {
+    if (empleadosDisponibles.length <= 1) return;
+    if (cajeroEditadoRef.current) return;
+    const cajeroPrecargado = cajeroPrecargadoInicialRef.current.trim();
+    if (!cajeroPrecargado) return;
+    const coincideConCatalogo = empleadosDisponibles.some(
+      (nombre) => nombre.trim().toLowerCase() === cajeroPrecargado.toLowerCase(),
+    );
+    if (coincideConCatalogo && cajero === cajeroPrecargadoInicialRef.current) {
+      setCajero('');
+    }
+  }, [cajero, empleadosDisponibles]);
 
   // Validaciones derivadas
   const cajeroValido = cajero.trim().length >= NOMBRE_MIN_LENGTH;
@@ -140,6 +157,10 @@ function CorteInicio({
   const empleadosTestigo = empleadosDisponibles.filter(
     (nombre) => nombre.trim().toLowerCase() !== cajero.trim().toLowerCase(),
   );
+  const puedeMostrarTodosCajero =
+    empleadosDisponibles.length > 1 && cajero.trim().length > 0;
+  const puedeMostrarTodosTestigo =
+    empleadosTestigo.length > 1 && testigo.trim().length > 0;
 
   const handleSiguiente = () => {
     if (paso < totalPasos) setPaso(paso + 1);
@@ -288,7 +309,10 @@ function CorteInicio({
               list="empleados-cajero-list"
               placeholder="Nombre completo del cajero"
               value={cajero}
-              onChange={(e) => setCajero(e.target.value)}
+              onChange={(e) => {
+                cajeroEditadoRef.current = true;
+                setCajero(e.target.value);
+              }}
               disabled={cargando}
               className="w-full bg-slate-800/60 border border-slate-700 rounded-lg p-3 text-sm text-[#e1e8ed] placeholder-slate-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none disabled:opacity-50"
             />
@@ -312,6 +336,16 @@ function CorteInicio({
               <p className="text-xs text-slate-400">
                 Empleados registrados: {empleadosDisponibles.length}
               </p>
+            )}
+
+            {puedeMostrarTodosCajero && (
+              <button
+                type="button"
+                onClick={() => setCajero('')}
+                className="text-xs text-blue-300 hover:text-blue-200 underline underline-offset-2 transition-colors"
+              >
+                Mostrar todos los empleados
+              </button>
             )}
 
             {cajero.trim().length > 0 && !cajeroValido && (
@@ -381,6 +415,16 @@ function CorteInicio({
               <p className="text-xs text-slate-500">
                 Minimo {NOMBRE_MIN_LENGTH} caracteres ({testigo.trim().length}/{NOMBRE_MIN_LENGTH})
               </p>
+            )}
+
+            {puedeMostrarTodosTestigo && (
+              <button
+                type="button"
+                onClick={() => setTestigo('')}
+                className="text-xs text-blue-300 hover:text-blue-200 underline underline-offset-2 transition-colors"
+              >
+                Mostrar todos los testigos
+              </button>
             )}
 
             {/* Botones */}
