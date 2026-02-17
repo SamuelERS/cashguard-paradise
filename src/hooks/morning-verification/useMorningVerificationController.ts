@@ -67,7 +67,17 @@ async function copyReportToClipboard(report: string): Promise<void> {
 export function useMorningVerificationController(
   props: MorningVerificationProps
 ): MorningVerificationControllerReturn {
-  const { storeId, cashierId, witnessId, cashCount, onBack, onComplete } = props;
+  const {
+    storeId,
+    cashierId,
+    witnessId,
+    storeName,
+    cashierName,
+    witnessName,
+    cashCount,
+    onBack,
+    onComplete,
+  } = props;
 
   // ── State ──────────────────────────────────────────────────────
   const [verificationData, setVerificationData] = useState(
@@ -80,7 +90,10 @@ export function useMorningVerificationController(
 
   // ── Actors ─────────────────────────────────────────────────────
   const { store, cashierIn, cashierOut } = resolveVerificationActors(
-    storeId, cashierId, witnessId
+    storeId,
+    cashierId,
+    witnessId,
+    { storeName, cashierName, witnessName }
   );
 
   // ── Verificación al montar ─────────────────────────────────────
@@ -121,7 +134,7 @@ export function useMorningVerificationController(
 
   const handleWhatsAppSend = useCallback(async () => {
     try {
-      if (!store || !cashierIn || !cashierOut) {
+      if (!storeId || !cashierId || !witnessId) {
         toast.error('❌ Error', {
           description: 'Faltan datos necesarios para generar el reporte',
         });
@@ -158,7 +171,7 @@ export function useMorningVerificationController(
         description: 'Por favor intente nuevamente',
       });
     }
-  }, [store, cashierIn, cashierOut, report, handleCopyToClipboard]);
+  }, [storeId, cashierId, witnessId, report, handleCopyToClipboard]);
 
   const handleConfirmSent = useCallback(() => {
     setReportSent(true);

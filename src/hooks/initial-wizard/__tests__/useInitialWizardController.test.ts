@@ -94,6 +94,8 @@ const mockValidateInput = vi.fn((value: string, type: string) => ({
 }));
 const mockGetPattern = vi.fn(() => '[0-9.]+');
 const mockGetInputMode = vi.fn((): 'decimal' => 'decimal');
+const mockUseSucursales = vi.fn();
+const mockUseEmpleadosSucursal = vi.fn();
 
 vi.mock('@/hooks/useInputValidation', () => ({
   useInputValidation: () => ({
@@ -103,23 +105,19 @@ vi.mock('@/hooks/useInputValidation', () => ({
   }),
 }));
 
+vi.mock('@/hooks/useSucursales', () => ({
+  useSucursales: () => mockUseSucursales(),
+}));
+
+vi.mock('@/hooks/useEmpleadosSucursal', () => ({
+  useEmpleadosSucursal: (sucursalId: string | null) => mockUseEmpleadosSucursal(sucursalId),
+}));
+
 vi.mock('sonner', () => ({
   toast: {
     success: vi.fn(),
     error: vi.fn(),
     info: vi.fn(),
-  },
-}));
-
-vi.mock('@/lib/initial-wizard/wizardSelectors', () => ({
-  getAvailableEmployees: (storeId: string) => {
-    if (storeId === 'los-heroes') {
-      return [
-        { id: 'emp1', name: 'Tito Gomez', role: 'cashier', stores: ['los-heroes'] },
-        { id: 'emp2', name: 'Adonay Torres', role: 'cashier', stores: ['los-heroes'] },
-      ];
-    }
-    return [];
   },
 }));
 
@@ -147,6 +145,21 @@ function makeProps(overrides: Partial<InitialWizardModalProps> = {}): InitialWiz
 describe('useInitialWizardController', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockUseSucursales.mockReturnValue({
+      sucursales: [
+        { id: 'suc-001', nombre: 'Los Héroes', codigo: 'H', activa: true },
+        { id: 'suc-002', nombre: 'Plaza Merliot', codigo: 'M', activa: true },
+      ],
+      cargando: false,
+      error: null,
+      recargar: vi.fn(),
+    });
+    mockUseEmpleadosSucursal.mockReturnValue({
+      empleados: [],
+      cargando: false,
+      error: null,
+      recargar: vi.fn(),
+    });
   });
 
   // ── Estado inicial ──
@@ -177,6 +190,17 @@ describe('useInitialWizardController', () => {
       );
 
       expect(result.current.availableEmployees).toEqual([]);
+    });
+
+    it('expone availableStores desde sucursales', () => {
+      const { result } = renderHook(() =>
+        useInitialWizardController(makeProps())
+      );
+
+      expect(result.current.availableStores).toEqual([
+        { id: 'suc-001', name: 'Los Héroes', code: 'H' },
+        { id: 'suc-002', name: 'Plaza Merliot', code: 'M' },
+      ]);
     });
 
     it('inicializa flow de reglas cuando isOpen=true', () => {

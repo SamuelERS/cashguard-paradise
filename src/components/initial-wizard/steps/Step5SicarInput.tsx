@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 import { DollarSign, ArrowRight, CheckCircle } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { ConstructiveActionButton } from '@/components/shared/ConstructiveActionButton';
-import { STORES } from '@/data/paradise';
 import { cn } from '@/lib/utils';
 import type { Step5Props } from '@/types/initialWizard';
 
@@ -17,6 +16,7 @@ export function Step5SicarInput({
   canGoNext,
   currentStep,
   totalSteps,
+  availableStores,
   availableEmployees,
 }: Step5Props) {
   return (
@@ -100,7 +100,7 @@ export function Step5SicarInput({
           <div className="flex flex-col gap-fluid-xs">
             <span className="min-w-0 text-muted-foreground">Sucursal:</span>
             <span className="font-medium text-left truncate text-primary-foreground">
-              {STORES.find(s => s.id === wizardData.selectedStore)?.name}
+              {availableStores.find((s) => s.id === wizardData.selectedStore)?.name}
             </span>
           </div>
           <div className="flex flex-col gap-fluid-xs">

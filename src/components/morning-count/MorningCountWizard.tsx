@@ -6,7 +6,7 @@
 // 🤖 [IA] - v1.2.41h - Glass Morphism Enhanced: 72% móvil/62% desktop + blur responsivo
 // 🤖 [IA] - v1.2.41i - Fix móvil definitivo: !important + bg-background removido
 // 🤖 [IA] - v1.2.41T: Removido override amarillo-ámbar - usa verde default ConstructiveActionButton
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, MapPin, Users, CheckCircle, Sunrise, ArrowLeft, ArrowRight } from 'lucide-react';
 // 🤖 [IA] - v1.2.41S: Flechas direccionales para navegación profesional
@@ -17,8 +17,9 @@ import { NeutralActionButton } from '@/components/ui/neutral-action-button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { ConfirmationModal } from "@/components/ui/confirmation-modal"; // 🤖 [IA] - v1.2.41f: Modal de confirmación
-import { STORES, getEmployeesByStore } from '@/data/paradise';
 import { useTimingConfig } from '@/hooks/useTimingConfig';
+import { useSucursales } from '@/hooks/useSucursales';
+import { useEmpleadosSucursal } from '@/hooks/useEmpleadosSucursal';
 import { WizardGlassCard } from '@/components/wizards/WizardGlassCard';
 import { useMorningRulesFlow } from '@/hooks/useMorningRulesFlow'; // 🤖 [IA] - v1.2.38: Hook para protocolo matutino
 import { morningProtocolRules } from '@/config/flows/initialWizardFlow'; // 🤖 [IA] - v1.2.38: Configuración reglas matutino
@@ -40,6 +41,14 @@ interface MorningCountWizardProps {
   }) => void;
 }
 
+const normalizeText = (value: string): string => (
+  value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim()
+);
+
 export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCountWizardProps) {
   const [currentStep, setCurrentStep] = useState(0); // 🤖 [IA] - v1.2.38: Paso inicial 0 (Protocolo)
   const [selectedStore, setSelectedStore] = useState('');
@@ -49,6 +58,7 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
   const [showCancelConfirmation, setShowCancelConfirmation] = useState(false); // 🤖 [IA] - v1.2.41f: Estado para modal de confirmación
 
   const { createTimeoutWithCleanup } = useTimingConfig();
+  const { sucursales } = useSucursales();
 
   // 🤖 [IA] - v1.2.38: Hook para flujo guiado del Protocolo Matutino
   const {
@@ -60,8 +70,37 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
     resetFlow
   } = useMorningRulesFlow();
 
-  // Obtener empleados disponibles según la sucursal
-  const availableEmployees = selectedStore ? getEmployeesByStore(selectedStore) : [];
+  const availableStores = useMemo(() => (
+    sucursales.map((sucursal) => ({
+      id: sucursal.id,
+      name: sucursal.nombre,
+      code: sucursal.codigo,
+    }))
+  ), [sucursales]);
+
+  const selectedSucursalId = useMemo(() => {
+    if (!selectedStore) return null;
+
+    const byId = availableStores.find((store) => store.id === selectedStore);
+    if (byId) return byId.id;
+
+    const normalizedSelected = normalizeText(selectedStore);
+    const byName = availableStores.find((store) => normalizeText(store.name) === normalizedSelected);
+    if (byName) return byName.id;
+
+    const byCode = availableStores.find((store) => normalizeText(store.code ?? '') === normalizedSelected);
+    return byCode?.id ?? null;
+  }, [availableStores, selectedStore]);
+
+  const { empleados: empleadosSucursal } = useEmpleadosSucursal(selectedSucursalId);
+
+  const availableEmployees = useMemo(() => (
+    empleadosSucursal.map((empleado) => ({
+      id: empleado.id,
+      name: empleado.nombre,
+      role: empleado.cargo,
+    }))
+  ), [empleadosSucursal]);
 
   // 🤖 [IA] - v1.2.38: Inicializar flujo de reglas cuando se abre el modal
   useEffect(() => {
@@ -200,7 +239,7 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
                 <SelectValue placeholder="Seleccione una sucursal" />
               </SelectTrigger>
               <SelectContent className="wizard-select-content">
-                {STORES.map((store) => (
+                {availableStores.map((store) => (
                   <SelectItem 
                     key={store.id} 
                     value={store.id}

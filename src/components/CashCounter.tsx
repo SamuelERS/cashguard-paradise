@@ -72,6 +72,9 @@ const CashCounter = ({
         selectedStore={state.selectedStore}
         selectedCashier={state.selectedCashier}
         selectedWitness={state.selectedWitness}
+        selectedStoreName={state.selectedStoreName}
+        selectedCashierName={state.selectedCashierName}
+        selectedWitnessName={state.selectedWitnessName}
         expectedSales={state.expectedSales}
         cashCount={state.cashCount}
         electronicPayments={state.electronicPayments}
@@ -93,12 +96,15 @@ const CashCounter = ({
           {/* 🤖 [IA] - v1.0.3 - Saltar selección si viene del wizard */}
           {state.phaseState.currentPhase === 1 && !state.phaseState.phase1Completed && !state.hasInitialData && (
             <StoreSelectionForm
+              stores={state.availableStores}
               selectedStore={state.selectedStore}
               selectedCashier={state.selectedCashier}
               selectedWitness={state.selectedWitness}
               expectedSales={state.expectedSales}
               availableStores={state.availableStores}
               availableEmployees={state.availableEmployees}
+              loadingEmployees={state.cargandoEmpleados}
+              employeesError={state.errorEmpleados}
               canProceedToPhase1={state.canProceedToPhase1}
               operationMode={operationMode}
               onStoreChange={state.setSelectedStore}

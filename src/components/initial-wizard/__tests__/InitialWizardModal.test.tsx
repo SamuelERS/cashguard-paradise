@@ -18,6 +18,7 @@ const mockCtrl: InitialWizardControllerReturn = {
   canGoPrevious: false,
   isCompleted: false,
   updateWizardData: vi.fn(),
+  availableStores: [],
   availableEmployees: [],
   rulesFlowState: { currentRuleIndex: 0 },
   isFlowCompleted: vi.fn(() => false),

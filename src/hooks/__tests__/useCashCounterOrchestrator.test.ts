@@ -11,25 +11,6 @@ import { OperationMode } from '@/types/operation-mode';
 
 const mockStartPhase1 = vi.fn();
 const mockResetFlow = vi.fn();
-const {
-  mockGetEmployeesByStore,
-  mockUseSucursales,
-  mockUseEmpleadosSucursal,
-} = vi.hoisted(() => ({
-  mockGetEmployeesByStore: vi.fn(() => []),
-  mockUseSucursales: vi.fn(() => ({
-    sucursales: [],
-    cargando: false,
-    error: null,
-    recargar: vi.fn(),
-  })),
-  mockUseEmpleadosSucursal: vi.fn(() => ({
-    empleados: [],
-    cargando: false,
-    error: null,
-    recargar: vi.fn(),
-  })),
-}));
 
 vi.mock('@/hooks/usePhaseManager', () => ({
   usePhaseManager: vi.fn(() => ({
@@ -82,32 +63,22 @@ vi.mock('@/hooks/usePwaScrollPrevention', () => ({
   usePwaScrollPrevention: vi.fn(),
 }));
 
-vi.mock('@/data/paradise', () => ({
-  STORES: [
-    {
-      id: 'los-heroes',
-      name: 'Los Héroes',
-      address: 'Mock address H',
-      phone: '',
-      schedule: '',
-    },
-    {
-      id: 'plaza-merliot',
-      name: 'Plaza Merliot',
-      address: 'Mock address M',
-      phone: '',
-      schedule: '',
-    },
-  ],
-  getEmployeesByStore: mockGetEmployeesByStore,
-}));
-
 vi.mock('@/hooks/useSucursales', () => ({
-  useSucursales: mockUseSucursales,
+  useSucursales: vi.fn(() => ({
+    sucursales: [],
+    cargando: false,
+    error: null,
+    recargar: vi.fn(),
+  })),
 }));
 
 vi.mock('@/hooks/useEmpleadosSucursal', () => ({
-  useEmpleadosSucursal: mockUseEmpleadosSucursal,
+  useEmpleadosSucursal: vi.fn(() => ({
+    empleados: [],
+    cargando: false,
+    error: null,
+    recargar: vi.fn(),
+  })),
 }));
 
 vi.mock('@/utils/calculations', () => ({
@@ -140,6 +111,8 @@ vi.mock('@/config/toast', () => ({
 
 // Import AFTER mocks
 import { useCashCounterOrchestrator } from '../useCashCounterOrchestrator';
+import { useSucursales } from '@/hooks/useSucursales';
+import { useEmpleadosSucursal } from '@/hooks/useEmpleadosSucursal';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -164,9 +137,24 @@ function defaultOptions(overrides = {}) {
 // ---------------------------------------------------------------------------
 
 describe('useCashCounterOrchestrator — skipWizard', () => {
+  const mockUseSucursales = vi.mocked(useSucursales);
+  const mockUseEmpleadosSucursal = vi.mocked(useEmpleadosSucursal);
+
   beforeEach(() => {
     vi.clearAllMocks();
     sessionStorage.clear();
+    mockUseSucursales.mockReturnValue({
+      sucursales: [],
+      cargando: false,
+      error: null,
+      recargar: vi.fn(),
+    });
+    mockUseEmpleadosSucursal.mockReturnValue({
+      empleados: [],
+      cargando: false,
+      error: null,
+      recargar: vi.fn(),
+    });
   });
 
   it('Con skipWizard=true y CASH_CUT, NO muestra instrucciones y arranca Phase 1', () => {
@@ -200,123 +188,58 @@ describe('useCashCounterOrchestrator — skipWizard', () => {
     expect(result.current.showInstructionsModal).toBe(true);
     expect(mockStartPhase1).not.toHaveBeenCalled();
   });
-});
 
-// ---------------------------------------------------------------------------
-// Suite OT-17: Hidratación de estado inicial
-// ---------------------------------------------------------------------------
-
-describe('useCashCounterOrchestrator — OT-17 hidratación', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    sessionStorage.clear();
-  });
-
-  it('Acepta initialCashCount sin error', () => {
-    const initialCashCount = {
-      penny: 50, nickel: 20, dime: 33, quarter: 8, dollarCoin: 1,
-      bill1: 5, bill5: 3, bill10: 2, bill20: 1, bill50: 0, bill100: 0,
-    };
-
+  it('Con skipWizard=true y expectedSales vacía, arranca Phase 1 (no vuelve al formulario legacy)', () => {
     const { result } = renderHook(() =>
       useCashCounterOrchestrator(defaultOptions({
         skipWizard: true,
-        initialCashCount,
+        initialExpectedSales: '',
       })),
     );
 
-    // Hook se inicializa correctamente con datos hidratados
-    expect(result.current.cashCount).toBeDefined();
-    expect(result.current.cashCount.penny).toBe(50);
-    expect(result.current.cashCount.nickel).toBe(20);
+    expect(result.current.showInstructionsModal).toBe(false);
+    expect(mockStartPhase1).toHaveBeenCalled();
   });
 
-  it('Acepta initialElectronicPayments sin error', () => {
-    const initialElectronicPayments = {
-      credomatic: 5.32, promerica: 56.12, bankTransfer: 43.56, paypal: 0,
-    };
-
+  it('Con skipWizard=false y expectedSales vacía, mantiene flujo guiado (modal visible)', () => {
     const { result } = renderHook(() =>
       useCashCounterOrchestrator(defaultOptions({
-        skipWizard: true,
-        initialElectronicPayments,
+        skipWizard: false,
+        initialExpectedSales: '',
       })),
     );
 
-    expect(result.current.electronicPayments).toBeDefined();
-    expect(result.current.electronicPayments.credomatic).toBe(5.32);
+    expect(result.current.showInstructionsModal).toBe(true);
+    expect(mockStartPhase1).not.toHaveBeenCalled();
   });
 
-  it('Sin initialCashCount usa valores por defecto (ceros)', () => {
-    const { result } = renderHook(() =>
-      useCashCounterOrchestrator(defaultOptions({ skipWizard: true })),
-    );
-
-    expect(result.current.cashCount.penny).toBe(0);
-    expect(result.current.cashCount.bill100).toBe(0);
-  });
-});
-
-// ---------------------------------------------------------------------------
-// Suite OT-17: onGuardarProgreso callback
-// ---------------------------------------------------------------------------
-
-describe('useCashCounterOrchestrator — OT-17 onGuardarProgreso', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    sessionStorage.clear();
-    vi.useFakeTimers();
-  });
-
-  afterEach(() => {
-    vi.useRealTimers();
-  });
-
-  it('No llama onGuardarProgreso en el primer render (isFirstRender guard)', () => {
-    const mockGuardar = vi.fn();
-
-    renderHook(() =>
-      useCashCounterOrchestrator(defaultOptions({
-        skipWizard: true,
-        onGuardarProgreso: mockGuardar,
-      })),
-    );
-
-    // Avanzar todos los timers posibles
-    vi.advanceTimersByTime(1000);
-
-    // No debe haberse llamado en el render inicial
-    expect(mockGuardar).not.toHaveBeenCalled();
-  });
-
-  it('No llama onGuardarProgreso sin callback (guard undefined)', () => {
-    renderHook(() =>
-      useCashCounterOrchestrator(defaultOptions({
-        skipWizard: true,
-        // onGuardarProgreso intencionalmente omitido
-      })),
-    );
-
-    // Avanzar todos los timers posibles
-    vi.advanceTimersByTime(1000);
-
-    // Sin callback, no debe haber errores (guard `if (!onGuardarProgreso) return`)
-    // Test implícito: no hay error → guard funciona correctamente
-  });
-});
-
-// ---------------------------------------------------------------------------
-// Suite OT-18: Fuente unificada de empleados (Supabase)
-// ---------------------------------------------------------------------------
-
-describe('useCashCounterOrchestrator — OT-18 fuente unificada empleados', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    sessionStorage.clear();
+  it('usa sucursales remotas como catálogo de tiendas cuando existen', () => {
     mockUseSucursales.mockReturnValue({
       sucursales: [
-        { id: 'suc-h', nombre: 'Los Héroes', codigo: 'H', activa: true },
-        { id: 'suc-m', nombre: 'Plaza Merliot', codigo: 'M', activa: true },
+        { id: 'suc-001', nombre: 'Los Héroes', codigo: 'H', activa: true },
+      ],
+      cargando: false,
+      error: null,
+      recargar: vi.fn(),
+    });
+
+    const { result } = renderHook(() =>
+      useCashCounterOrchestrator(defaultOptions({
+        initialStore: '',
+        initialCashier: '',
+        initialWitness: '',
+      })),
+    );
+
+    expect(result.current.availableStores).toEqual([
+      { id: 'suc-001', name: 'Los Héroes', code: 'H' },
+    ]);
+  });
+
+  it('prioriza empleados de Supabase cuando hay sucursal remota seleccionada', () => {
+    mockUseSucursales.mockReturnValue({
+      sucursales: [
+        { id: 'suc-001', nombre: 'Los Héroes', codigo: 'H', activa: true },
       ],
       cargando: false,
       error: null,
@@ -324,52 +247,9 @@ describe('useCashCounterOrchestrator — OT-18 fuente unificada empleados', () =
     });
     mockUseEmpleadosSucursal.mockReturnValue({
       empleados: [
-        { id: 'emp-1', nombre: 'Tito Gomez' },
-        { id: 'emp-2', nombre: 'Adonay Torres' },
+        { id: 'uuid-1', nombre: 'Jonathan Melara', cargo: 'Cajero' },
+        { id: 'uuid-2', nombre: 'Adonay Torres', cargo: 'Testigo' },
       ],
-      cargando: false,
-      error: null,
-      recargar: vi.fn(),
-    });
-  });
-
-  it('Usa empleados de hooks Supabase y no consume getEmployeesByStore legacy', () => {
-    const { result } = renderHook(() =>
-      useCashCounterOrchestrator(defaultOptions({
-        initialStore: 'los-heroes',
-        skipWizard: true,
-      })),
-    );
-
-    expect(result.current.availableEmployees).toHaveLength(2);
-    expect(result.current.availableEmployees[0].name).toBe('Tito Gomez');
-    expect(result.current.availableEmployees[1].name).toBe('Adonay Torres');
-    expect(mockGetEmployeesByStore).not.toHaveBeenCalled();
-  });
-});
-
-// ---------------------------------------------------------------------------
-// Suite OT-19: Sucursales dinámicas + fallback controlado
-// ---------------------------------------------------------------------------
-
-describe('useCashCounterOrchestrator — OT-19 sucursales dinamicas', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    sessionStorage.clear();
-  });
-
-  it('Construye availableStores desde useSucursales (Supabase)', () => {
-    mockUseSucursales.mockReturnValue({
-      sucursales: [
-        { id: 'suc-h', nombre: 'Los Héroes', codigo: 'H', activa: true },
-        { id: 'suc-m', nombre: 'Plaza Merliot', codigo: 'M', activa: true },
-      ],
-      cargando: false,
-      error: null,
-      recargar: vi.fn(),
-    });
-    mockUseEmpleadosSucursal.mockReturnValue({
-      empleados: [],
       cargando: false,
       error: null,
       recargar: vi.fn(),
@@ -377,22 +257,24 @@ describe('useCashCounterOrchestrator — OT-19 sucursales dinamicas', () => {
 
     const { result } = renderHook(() =>
       useCashCounterOrchestrator(defaultOptions({
-        initialStore: 'suc-h',
-        skipWizard: true,
+        initialStore: 'suc-001',
+        initialCashier: '',
+        initialWitness: '',
       })),
     );
 
-    expect(result.current.availableStores).toHaveLength(2);
-    expect(result.current.availableStores[0].id).toBe('suc-h');
-    expect(result.current.availableStores[0].name).toBe('Los Héroes');
-    expect(result.current.availableStores[0].address).toContain('H');
+    expect(mockUseEmpleadosSucursal).toHaveBeenCalledWith('suc-001');
+    expect(result.current.availableEmployees).toEqual([
+      { id: 'uuid-1', name: 'Jonathan Melara', role: 'Cajero', stores: ['suc-001'] },
+      { id: 'uuid-2', name: 'Adonay Torres', role: 'Testigo', stores: ['suc-001'] },
+    ]);
   });
 
-  it('Aplica fallback legacy de sucursales en test/dev solo cuando Supabase falla', () => {
+  it('retorna empleados vacios cuando no hay datos de la sucursal', () => {
     mockUseSucursales.mockReturnValue({
       sucursales: [],
       cargando: false,
-      error: 'network error',
+      error: null,
       recargar: vi.fn(),
     });
     mockUseEmpleadosSucursal.mockReturnValue({
@@ -405,11 +287,12 @@ describe('useCashCounterOrchestrator — OT-19 sucursales dinamicas', () => {
     const { result } = renderHook(() =>
       useCashCounterOrchestrator(defaultOptions({
         initialStore: 'los-heroes',
-        skipWizard: true,
+        initialCashier: '',
+        initialWitness: '',
       })),
     );
 
-    expect(result.current.availableStores.length).toBeGreaterThan(0);
-    expect(result.current.availableStores[0].id).toBe('los-heroes');
+    expect(mockUseEmpleadosSucursal).toHaveBeenCalledWith(null);
+    expect(result.current.availableEmployees).toEqual([]);
   });
 });

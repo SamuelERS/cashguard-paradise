@@ -13,16 +13,24 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { OperationMode } from "@/types/operation-mode";
-import type { Employee, Store } from "@/types/cash";
+import type { Employee } from "@/types/cash";
+
+interface SelectableStore {
+  id: string;
+  name: string;
+  code?: string;
+}
 
 interface StoreSelectionFormProps {
   // State
+  stores: SelectableStore[];
   selectedStore: string;
   selectedCashier: string;
   selectedWitness: string;
   expectedSales: string;
-  availableStores: Store[];
   availableEmployees: Employee[];
+  loadingEmployees?: boolean;
+  employeesError?: string | null;
   canProceedToPhase1: boolean;
   operationMode: OperationMode;
   
@@ -36,12 +44,14 @@ interface StoreSelectionFormProps {
 }
 
 export function StoreSelectionForm({
+  stores,
   selectedStore,
   selectedCashier,
   selectedWitness,
   expectedSales,
-  availableStores,
   availableEmployees,
+  loadingEmployees = false,
+  employeesError = null,
   canProceedToPhase1,
   operationMode,
   onStoreChange,
@@ -139,14 +149,16 @@ export function StoreSelectionForm({
                 WebkitBackdropFilter: 'blur(20px)',
                 border: '1px solid rgba(255, 255, 255, 0.15)'
               }}>
-                {availableStores.map((store) => (
+                {stores.map((store) => (
                   <SelectItem 
                     key={store.id} 
                     value={store.id}
                     className="hover:bg-white/10 focus:bg-white/15"
                   >
                     <div className="font-medium" style={{ color: '#e1e8ed' }}>{store.name}</div>
-                    <div className="text-sm" style={{ color: '#8899a6' }}>{store.address}</div>
+                    {store.code ? (
+                      <div className="text-sm" style={{ color: '#8899a6' }}>Código: {store.code}</div>
+                    ) : null}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -233,7 +245,7 @@ export function StoreSelectionForm({
                     border: '1px solid rgba(255, 255, 255, 0.15)'
                   }}>
                     {availableEmployees
-                      .filter(emp => emp.id !== selectedCashier)
+                      .filter((emp) => emp.id !== selectedCashier)
                       .map((employee) => (
                         <SelectItem 
                           key={employee.id} 
@@ -265,6 +277,18 @@ export function StoreSelectionForm({
                     ⚠️ El cajero y el testigo deben ser personas diferentes (protocolo de seguridad)
                   </p>
                 </motion.div>
+              )}
+
+              {loadingEmployees && (
+                <p className="text-xs" style={{ color: '#8899a6' }}>
+                  Cargando empleados...
+                </p>
+              )}
+
+              {!!employeesError && (
+                <p className="text-xs" style={{ color: '#f4212e' }}>
+                  {employeesError}
+                </p>
               )}
             </div>
           </div>

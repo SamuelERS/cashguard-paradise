@@ -38,6 +38,10 @@ export interface Step1Props extends WizardStepProps {
   handleRuleAcknowledge: (ruleId: string, index: number) => void;
 }
 
+export interface Step2Props extends WizardStepProps {
+  availableStores: Array<{ id: string; name: string; code?: string }>;
+}
+
 export interface Step3Props extends WizardStepProps {
   availableEmployees: Array<{ id: string; name: string; role: string; stores: string[] }>;
 }
@@ -55,6 +59,7 @@ export interface Step5Props extends WizardStepProps {
   canGoNext: boolean;
   currentStep: number;
   totalSteps: number;
+  availableStores: Array<{ id: string; name: string; code?: string }>;
   availableEmployees: Array<{ id: string; name: string; role: string; stores: string[] }>;
 }
 
@@ -71,6 +76,7 @@ export interface InitialWizardControllerReturn {
   canGoPrevious: boolean;
   isCompleted: boolean;
   updateWizardData: (updates: Partial<WizardData>) => void;
+  availableStores: Array<{ id: string; name: string; code?: string }>;
   availableEmployees: Array<{ id: string; name: string; role: string; stores: string[] }>;
 
   // Rules flow

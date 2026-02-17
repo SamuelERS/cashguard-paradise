@@ -20,7 +20,6 @@ import { toast } from "sonner";
 import type { CashCount, ElectronicPayments } from "@/types/cash";
 import type { PhaseState, DeliveryCalculation } from "@/types/phases";
 import type { DailyExpense } from '@/types/expenses';
-import { getStoreById, getEmployeeById } from "@/data/paradise";
 import { useDeliveries } from "@/hooks/useDeliveries";
 // 🤖 [IA] - Desmonolitado: Tipos e interfaces movidos a generate-evening-report.ts
 import type { CalculationData } from '@/utils/generate-evening-report';
@@ -32,6 +31,9 @@ interface CashCalculationProps {
   storeId: string;
   cashierId: string;
   witnessId: string;
+  storeName?: string;
+  cashierName?: string;
+  witnessName?: string;
   expectedSales: number;
   cashCount: CashCount;
   electronicPayments: ElectronicPayments;
@@ -46,6 +48,9 @@ const CashCalculation = ({
   storeId,
   cashierId,
   witnessId,
+  storeName,
+  cashierName,
+  witnessName,
   expectedSales,
   cashCount,
   electronicPayments,
@@ -75,9 +80,9 @@ const CashCalculation = ({
     };
   }, []);
 
-  const store = getStoreById(storeId);
-  const cashier = getEmployeeById(cashierId);
-  const witness = getEmployeeById(witnessId);
+  const resolvedStoreName = storeName ?? storeId;
+  const resolvedCashierName = cashierName ?? cashierId;
+  const resolvedWitnessName = witnessName ?? witnessId;
 
   const performCalculation = useCallback(() => {
     const totalCash = calculateCashTotal(cashCount);
@@ -143,19 +148,19 @@ const CashCalculation = ({
       storeId,
       cashierId,
       witnessId,
-      storeName: store?.name,
-      cashierName: cashier?.name,
-      witnessName: witness?.name,
+      storeName: resolvedStoreName,
+      cashierName: resolvedCashierName,
+      witnessName: resolvedWitnessName,
       expenses,
       pendingDeliveries,
     });
   }, [calculationData, cashCount, electronicPayments, expectedSales, deliveryCalculation,
-      phaseState, storeId, cashierId, witnessId, store, cashier, witness, expenses, pendingDeliveries]);
+      phaseState, storeId, cashierId, witnessId, resolvedStoreName, resolvedCashierName, resolvedWitnessName, expenses, pendingDeliveries]);
 
   // 🤖 [IA] - v2.4.1: Handler inteligente con detección de plataforma + copia automática
   const handleWhatsAppSend = useCallback(async () => {
     try {
-      if (!calculationData || !store || !cashier || !witness) {
+      if (!calculationData) {
         toast.error("❌ Error", {
           description: "Faltan datos necesarios para generar el reporte"
         });
@@ -202,7 +207,7 @@ const CashCalculation = ({
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [calculationData, store, cashier, witness, reportSent]);
+  }, [calculationData, reportSent]);
 
   // 🤖 [IA] - v1.3.7: Handler confirmación explícita usuario
   const handleConfirmSent = useCallback(() => {
@@ -215,7 +220,7 @@ const CashCalculation = ({
   const generatePrintableReport = () => {
     try {
       const report = generateCompleteReport();
-      const html = generatePrintableHTML(report, store?.name);
+      const html = generatePrintableHTML(report, resolvedStoreName);
       const printWindow = window.open('', '_blank');
       if (printWindow) {
         printWindow.document.write(html);
@@ -311,9 +316,9 @@ const CashCalculation = ({
               expectedSales={expectedSales}
               deliveryCalculation={deliveryCalculation}
               phaseState={phaseState}
-              storeName={store?.name}
-              cashierName={cashier?.name}
-              witnessName={witness?.name}
+              storeName={resolvedStoreName}
+              cashierName={resolvedCashierName}
+              witnessName={resolvedWitnessName}
             />
           )}
 

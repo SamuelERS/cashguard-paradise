@@ -39,6 +39,7 @@ const InitialWizardModalView = (props: InitialWizardModalProps) => {
           <Step2StoreSelection
             wizardData={ctrl.wizardData}
             updateWizardData={ctrl.updateWizardData}
+            availableStores={ctrl.availableStores}
           />
         );
       case 3:
@@ -70,6 +71,7 @@ const InitialWizardModalView = (props: InitialWizardModalProps) => {
             canGoNext={navState.canGoNext}
             currentStep={ctrl.currentStep}
             totalSteps={ctrl.totalSteps}
+            availableStores={ctrl.availableStores}
             availableEmployees={ctrl.availableEmployees}
           />
         );

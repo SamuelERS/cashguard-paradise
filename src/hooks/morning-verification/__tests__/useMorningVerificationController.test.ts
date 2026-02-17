@@ -28,18 +28,6 @@ vi.mock('@/utils/clipboard', () => ({
   copyToClipboard: vi.fn().mockResolvedValue({ success: true }),
 }));
 
-vi.mock('@/data/paradise', () => ({
-  getStoreById: (id: string) => {
-    if (id === 'store1') return { id: 'store1', name: 'Los Heroes', address: '', phone: '', schedule: '' };
-    return undefined;
-  },
-  getEmployeeById: (id: string) => {
-    if (id === 'emp1') return { id: 'emp1', name: 'Adonay Torres', role: 'cashier', stores: ['store1'] };
-    if (id === 'emp2') return { id: 'emp2', name: 'Tito Gomez', role: 'cashier', stores: ['store1'] };
-    return undefined;
-  },
-}));
-
 vi.mock('../../../lib/morning-verification/mvFormatters', () => ({
   formatVerificationTimestamp: () => '07/02/2026, 08:30 a. m.',
   generateMorningReport: vi.fn(() => 'MOCK_REPORT_TEXT'),
@@ -73,6 +61,9 @@ function makeProps(overrides: Partial<MorningVerificationProps> = {}): MorningVe
     storeId: 'store1',
     cashierId: 'emp1',
     witnessId: 'emp2',
+    storeName: 'Los Heroes',
+    cashierName: 'Adonay Torres',
+    witnessName: 'Tito Gomez',
     cashCount: EXACT_50,
     onBack: vi.fn(),
     onComplete: vi.fn(),
@@ -275,11 +266,11 @@ describe('useMorningVerificationController - handleWhatsAppSend (desktop)', () =
 describe('useMorningVerificationController - handleWhatsAppSend (validación)', () => {
   beforeEach(() => { vi.clearAllMocks(); });
 
-  it('muestra error si store no resuelto', async () => {
+  it('muestra error si faltan ids requeridos', async () => {
     const { toast } = await import('sonner');
 
     const { result } = renderHook(() =>
-      useMorningVerificationController(makeProps({ storeId: 'invalid' }))
+      useMorningVerificationController(makeProps({ storeId: '' }))
     );
 
     await act(async () => {

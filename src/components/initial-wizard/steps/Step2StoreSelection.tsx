@@ -2,11 +2,10 @@
 import { motion } from 'framer-motion';
 import { MapPin, CheckCircle } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { STORES } from '@/data/paradise';
 import { cn } from '@/lib/utils';
-import type { WizardStepProps } from '@/types/initialWizard';
+import type { Step2Props } from '@/types/initialWizard';
 
-export function Step2StoreSelection({ wizardData, updateWizardData }: WizardStepProps) {
+export function Step2StoreSelection({ wizardData, updateWizardData, availableStores }: Step2Props) {
   return (
     <div className="glass-morphism-panel space-y-fluid-lg">
       <div className="glass-morphism-panel header-section">
@@ -33,7 +32,7 @@ export function Step2StoreSelection({ wizardData, updateWizardData }: WizardStep
           <SelectValue placeholder="Elegir sucursal" />
         </SelectTrigger>
         <SelectContent className="wizard-select-content">
-          {STORES.map((store) => (
+          {availableStores.map((store) => (
             <SelectItem key={store.id} value={store.id}>
               {store.name}
             </SelectItem>

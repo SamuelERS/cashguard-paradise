@@ -3,11 +3,15 @@
  * Extraído de MorningVerification.tsx (líneas 57-59)
  *
  * @description
- * Resuelve IDs de store/employee a objetos completos.
- * Aislable con vi.mock('@/data/paradise') en tests (Ajuste #4 ORDEN #074).
+ * Resuelve IDs de store/employee a objetos para reporte.
  */
 import type { ResolvedActors } from '@/types/morningVerification';
-import { getStoreById, getEmployeeById } from '@/data/paradise';
+
+type ResolveActorsOptions = {
+  storeName?: string;
+  cashierName?: string;
+  witnessName?: string;
+};
 
 /**
  * Resuelve IDs de actores a objetos Store/Employee.
@@ -20,11 +24,40 @@ import { getStoreById, getEmployeeById } from '@/data/paradise';
 export function resolveVerificationActors(
   storeId: string,
   cashierId: string,
-  witnessId: string
+  witnessId: string,
+  options: ResolveActorsOptions = {}
 ): ResolvedActors {
+  const store = storeId
+    ? {
+        id: storeId,
+        name: options.storeName ?? storeId,
+        address: '',
+        phone: '',
+        schedule: '',
+      }
+    : undefined;
+
+  const cashierIn = cashierId
+    ? {
+        id: cashierId,
+        name: options.cashierName ?? cashierId,
+        role: 'Cajero',
+        stores: storeId ? [storeId] : [],
+      }
+    : undefined;
+
+  const cashierOut = witnessId
+    ? {
+        id: witnessId,
+        name: options.witnessName ?? witnessId,
+        role: 'Testigo',
+        stores: storeId ? [storeId] : [],
+      }
+    : undefined;
+
   return {
-    store: getStoreById(storeId),
-    cashierIn: getEmployeeById(cashierId),
-    cashierOut: getEmployeeById(witnessId),
+    store,
+    cashierIn,
+    cashierOut,
   };
 }
