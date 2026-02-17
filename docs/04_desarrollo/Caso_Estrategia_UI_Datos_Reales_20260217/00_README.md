@@ -23,6 +23,7 @@ Tambien existe una UI nueva de corte en el repositorio, con arquitectura distint
 | `02_Plan_Arquitectonico_Modular_TDD.md` | Plan de ejecucion por modulos, con tests primero y gates de calidad | ✅ |
 | `03_Matriz_Decision_Go_NoGo.md` | Criterios de decision y control de riesgos por etapa | ✅ |
 | `04_Evidencia_Modulo_A_Validacion_Local.md` | Evidencia tecnica de ejecucion Modulo A (tests, build, Supabase real, Playwright) | ✅ |
+| `05_Ruta_Estabilizacion_Modelo_Propio.md` | Ruta de estabilizacion antes de modernizacion (con evidencia y gates) | ✅ |
 
 ## Resultado
 Parcial:

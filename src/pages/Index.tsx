@@ -48,6 +48,17 @@ const Index = () => {
     };
   }, [showWizard, showMorningWizard]);
 
+  // Prevent a blank screen when CASH_COUNT is selected but no sub-flow is visible.
+  useEffect(() => {
+    if (
+      currentMode === OperationMode.CASH_COUNT &&
+      !showMorningWizard &&
+      !showCashCounter
+    ) {
+      setShowMorningWizard(true);
+    }
+  }, [currentMode, showMorningWizard, showCashCounter]);
+
   const handleWizardComplete = (data: {
     selectedStore: string;
     selectedCashier: string;
@@ -136,9 +147,8 @@ const Index = () => {
     );
   }
 
-  // 🤖 [IA] - v1.0.88 - Landing page viejo eliminado, ahora solo retornamos null si llegamos aquí
-  // Esto no debería pasar, pero lo dejamos como fallback de seguridad
-  return null;
+  // Fallback seguro: nunca dejar pantalla negra.
+  return <OperationSelector onSelectMode={handleModeSelection} />;
 };
 
 export default Index;
