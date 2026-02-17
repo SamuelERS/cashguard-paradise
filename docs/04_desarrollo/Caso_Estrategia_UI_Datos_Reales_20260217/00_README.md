@@ -24,6 +24,7 @@ Tambien existe una UI nueva de corte en el repositorio, con arquitectura distint
 | `03_Matriz_Decision_Go_NoGo.md` | Criterios de decision y control de riesgos por etapa | ✅ |
 | `04_Evidencia_Modulo_A_Validacion_Local.md` | Evidencia tecnica de ejecucion Modulo A (tests, build, Supabase real, Playwright) | ✅ |
 | `05_Ruta_Estabilizacion_Modelo_Propio.md` | Ruta de estabilizacion antes de modernizacion (con evidencia y gates) | ✅ |
+| `06_ORDEN_TECNICA_Traslado_Agente_Nuevo.md` | Orden de continuidad con contexto operativo para sesion nueva | ✅ |
 
 ## Resultado
 Parcial:
