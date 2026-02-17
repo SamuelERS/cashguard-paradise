@@ -1,5 +1,5 @@
-// 🤖 [IA] - v3.3.0 - OT-11: Activar CortePage para CASH_CUT (reemplaza wizard legacy)
-// Previous: v3.2.0 - FIX: Pass onGoBack to DeliveryDashboardWrapper (fixes PIN modal stuck)
+// 🤖 [IA] - v3.3.1 - Restaurar wizard legacy para CASH_CUT conservando guard de estabilidad
+// Previous: v3.3.0 - OT-11: Activar CortePage para CASH_CUT (reemplaza wizard legacy)
 import { useState, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import CashCounter from "@/components/CashCounter";
@@ -7,7 +7,6 @@ import InitialWizardModal from "@/components/InitialWizardModal";
 import { OperationSelector } from "@/components/operation-selector/OperationSelector";
 import { MorningCountWizard } from "@/components/morning-count/MorningCountWizard";
 import { DeliveryDashboardWrapper } from "@/components/deliveries/DeliveryDashboardWrapper";
-import { CortePage } from "@/components/corte/CortePage"; // 🤖 [IA] - OT-11: Flujo nuevo Corte
 import { useOperationMode } from "@/hooks/useOperationMode";
 import { OperationMode } from "@/types/operation-mode";
 import { DailyExpense } from '@/types/expenses'; // 🤖 [IA] - v1.4.0: Tipos gastos
@@ -82,13 +81,15 @@ const Index = () => {
     resetMode(); // 🤖 [IA] - v1.0.81 - Resetear modo al volver
   };
 
-  // 🤖 [IA] - v3.3.0 OT-11 - Manejar selección de modo
+  // 🤖 [IA] - v3.3.1 - Manejar selección de modo con wizard legacy para CASH_CUT
   const handleModeSelection = (mode: OperationMode) => {
     selectMode(mode);
-    if (mode === OperationMode.CASH_COUNT) {
+    if (mode === OperationMode.CASH_CUT) {
+      setShowWizard(true);
+    } else if (mode === OperationMode.CASH_COUNT) {
       setShowMorningWizard(true);
     }
-    // CASH_CUT y DELIVERY_VIEW se manejan directamente en el render (sin wizard legacy)
+    // DELIVERY_VIEW no requiere wizard, se maneja directamente en el render
   };
 
   // 🤖 [IA] - v1.0.88 - Mostrar OperationSelector si no hay modo O si hay wizard abierto
@@ -120,11 +121,6 @@ const Index = () => {
         </AnimatePresence>
       </>
     );
-  }
-
-  // 🤖 [IA] - OT-11: Renderizar CortePage si modo es CASH_CUT
-  if (currentMode === OperationMode.CASH_CUT) {
-    return <CortePage onSalir={resetMode} />;
   }
 
   // 🤖 [IA] - v1.0.82 - Renderizar DeliveryDashboardWrapper si modo es DELIVERY_VIEW
