@@ -1,6 +1,6 @@
-// 🤖 [IA] - v1.4.2: OT-17 — Props hidratación + autosave para persistencia anti-reinicio
+// 🤖 [IA] - DACC-CIERRE-SYNC-UX: CorteStatusBanner + props sincronización Supabase
+// Previous: v1.4.2: OT-17 — Props hidratación + autosave para persistencia anti-reinicio
 // Previous: v1.4.1: Desmonolitización COMPLETA - Componente presentacional delgado
-// Previous: v1.4.0 - Integración Sistema Gastos de Caja
 import type { DailyExpense } from '@/types/expenses';
 import type { CashCount, ElectronicPayments } from '@/types/cash';
 import { GuidedInstructionsModal } from "@/components/cash-counting/GuidedInstructionsModal";
@@ -10,6 +10,7 @@ import { Phase3ReportView } from "@/components/cash-counter/Phase3ReportView";
 import { Phase1CountingView } from "@/components/cash-counter/Phase1CountingView";
 import { OperationMode } from "@/types/operation-mode";
 import { useCashCounterOrchestrator } from "@/hooks/useCashCounterOrchestrator";
+import { CorteStatusBanner } from "@/components/corte/CorteStatusBanner";
 
 // 🤖 [IA] - v1.4.2: OT-17 — Props con hidratación + autosave
 interface CashCounterProps {
@@ -31,6 +32,10 @@ interface CashCounterProps {
     pagos_electronicos: ElectronicPayments;
     gastos_dia: DailyExpense[];
   }) => void;
+  // 🤖 [IA] - DACC-CIERRE-SYNC-UX: Props sincronización visual
+  syncEstado?: 'sincronizado' | 'sincronizando' | 'error';
+  ultimaSync?: string | null;
+  syncError?: string | null;
 }
 
 // 🤖 [IA] - v1.4.1: Componente presentacional delgado - toda lógica en useCashCounterOrchestrator
@@ -47,6 +52,9 @@ const CashCounter = ({
   initialCashCount,
   initialElectronicPayments,
   onGuardarProgreso,
+  syncEstado,
+  ultimaSync,
+  syncError,
 }: CashCounterProps) => {
   const state = useCashCounterOrchestrator({
     operationMode,
@@ -93,6 +101,18 @@ const CashCounter = ({
            style={{ touchAction: 'none', overscrollBehavior: 'none', WebkitOverflowScrolling: 'touch' }}>
 
         <div className="relative z-10 container mx-auto px-4 py-2 max-w-4xl">
+          {/* 🤖 [IA] - DACC-CIERRE-SYNC-UX: Banner de sincronización Supabase */}
+          {syncEstado && (
+            <div className="mb-2">
+              <CorteStatusBanner
+                estadoConexion="online"
+                estadoSync={syncEstado}
+                ultimaSync={ultimaSync ?? null}
+                pendientes={0}
+                mensajeError={syncError}
+              />
+            </div>
+          )}
           {/* 🤖 [IA] - v1.0.3 - Saltar selección si viene del wizard */}
           {state.phaseState.currentPhase === 1 && !state.phaseState.phase1Completed && !state.hasInitialData && (
             <StoreSelectionForm

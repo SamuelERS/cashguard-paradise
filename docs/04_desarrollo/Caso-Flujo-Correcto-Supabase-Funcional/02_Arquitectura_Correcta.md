@@ -121,36 +121,84 @@ tables.cortes()
   .maybeSingle()
 ```
 
-**Comportamiento post-DACC-CIERRE:**
+**Comportamiento post-DACC-R2:**
 - Sesión activa → `activeCashCutSucursalId = sucursalId` → wizard se abre → **sucursal pre-seleccionada automáticamente** via `initialSucursalId` prop (implementado DACC-CIERRE)
+- **POLÍTICA A (DACC-R2):** Si hay sesión activa, su `sucursal_id` gobierna la sincronización, independientemente de la selección del wizard. El usuario puede cambiar sucursal en el wizard para datos locales, pero la sync Supabase sigue vinculada a la sesión activa.
 - Sin sesión → wizard se abre normalmente (sin pre-selección)
 - Estado muerto `routeCashCutToCortePage` **eliminado** de Index.tsx (DACC-CIERRE)
+- **DACC-CLEANUP:** `CortePage.tsx`, `CorteOrquestador.tsx` y 4 componentes huérfanos **eliminados** definitivamente. Todas las referencias en código y tests limpiadas.
 
 ---
 
-### Persistencia de Sesión al Completar Wizard
+### Persistencia de Sesión al Completar Wizard — ✅ IMPLEMENTADO (DACC-CIERRE-SYNC-UX + DACC-R2)
 
 | Componente Anterior | Componente Correcto | Hook |
 |---------------------|---------------------|------|
 | `CorteOrquestador.tsx` | `handleWizardComplete()` en `Index.tsx` | `useCorteSesion()` |
 
-**Integración futura (no implementada aún):**
+**Implementación actual (`Index.tsx` — post DACC-R2):**
 ```typescript
 const handleWizardComplete = async (data) => {
-  // 1. Crear corte en Supabase
-  const sesion = await corteSesion.crearCorte({
-    sucursal_id: data.selectedStore,
-    cajero_id: data.selectedCashier,
-    testigo_id: data.selectedWitness,
-    venta_esperada: parseFloat(data.expectedSales),
-  });
-
-  // 2. Pasar datos al CashCounter (flujo existente sin cambios)
   setInitialData({ ...data, dailyExpenses: data.dailyExpenses || [] });
   setShowWizard(false);
   setShowCashCounter(true);
+
+  if (isSupabaseConfigured && currentMode === OperationMode.CASH_CUT) {
+    // POLÍTICA A: sesión activa → su sucursal gobierna sync
+    const sucursalParaSync = activeCashCutSucursalId ?? data.selectedStore;
+    setSyncSucursalId(sucursalParaSync);
+
+    if (!activeCashCutSucursalId) {
+      // Ciclo de vida correcto: sincronizando → sincronizado | error
+      setSyncEstado('sincronizando');
+      try {
+        await iniciarCorte({ sucursal_id: sucursalParaSync, ... });
+        setSyncEstado('sincronizado');
+        setUltimaSync(new Date().toISOString());
+      } catch (err) {
+        setSyncEstado('error');
+      }
+    } else {
+      // Sesión activa reanudada — sync ya existe en Supabase
+      setSyncEstado('sincronizado');
+    }
+  }
 };
 ```
+
+---
+
+### Sincronización Progreso en CashCounter — ✅ IMPLEMENTADO (DACC-CIERRE-SYNC-UX)
+
+**Flujo de autosave:**
+```
+CashCounter (Phase 1 conteo)
+  │
+  ├─ useCashCounterOrchestrator (debounce 600ms)
+  │     └─ onGuardarProgreso(datos) callback
+  │
+  └─ Index.tsx handleGuardarProgreso()
+        └─ corteSesion.guardarProgreso(datosProgreso)
+              └─ Supabase tabla cortes (JSONB)
+```
+
+**Props de sincronización visual:**
+```typescript
+<CashCounter
+  // ...datos iniciales...
+  onGuardarProgreso={isCashCut ? handleGuardarProgreso : undefined}
+  syncEstado={isCashCut && syncSucursalId ? syncEstado : undefined}
+  ultimaSync={ultimaSync}
+  syncError={syncError}
+/>
+```
+
+**CashCounter muestra `CorteStatusBanner`** con estados:
+- `sincronizado` → verde "Guardado"
+- `sincronizando` → animación
+- `error` → rojo con mensaje
+
+**Degradación graceful:** Si Supabase no está configurado, no se pasan props sync → banner no se renderiza → conteo funciona 100% offline.
 
 ---
 
@@ -161,22 +209,29 @@ const handleWizardComplete = async (data) => {
 | `Step1ProtocolRules.tsx` | Sin fuente de datos externa |
 | `Step5SicarInput.tsx` | Input manual, sin datos externos |
 | `Step6Expenses.tsx` | Input manual con `DailyExpensesManager` |
-| `CashCounter.tsx` + phases | Flujo de conteo independiente de datos iniciales |
 | `CashCalculation.tsx` | Reporte final independiente |
 
 ---
 
-## Componentes a Desactivar / Integrar
+## Componentes Eliminados (DACC-CLEANUP 2026-02-17)
 
-| Componente | Acción | Justificación |
+| Componente | Estado | Justificación |
 |-----------|--------|---------------|
-| `CortePage.tsx` | Desactivar | Detección de sesión ya migrada a `Index.tsx` |
-| `CorteOrquestador.tsx` | Desactivar | Fases se mapean al wizard + phases existente |
-| `CorteInicio.tsx` | Desactivar | Creación de corte migra a `handleWizardComplete` |
-| `CorteReanudacion.tsx` | Desactivar | Reanudación migra al wizard (pre-selección sucursal) |
+| `CortePage.tsx` | **ELIMINADO** | Detección de sesión ya migrada a `Index.tsx` |
+| `CorteOrquestador.tsx` | **ELIMINADO** | Fases se mapean al wizard + phases existente |
+| `CorteInicio.tsx` | **ELIMINADO** | Huérfano de CorteOrquestador (creación migrada a `handleWizardComplete`) |
+| `CorteReanudacion.tsx` | **ELIMINADO** | Huérfano de CorteOrquestador (reanudación migrada al wizard) |
+| `CorteResumen.tsx` | **ELIMINADO** | Huérfano de CorteOrquestador |
+| `CorteConteoAdapter.tsx` | **ELIMINADO** | Huérfano de CorteOrquestador |
+
+**Preservados (vivos):**
+| Componente | Razón |
+|-----------|-------|
+| `CorteStatusBanner.tsx` | Importado por `CashCounter.tsx` — banner visual sincronización |
+| `useCorteSesion.ts` | Importado por `Index.tsx` — persistencia Supabase |
 
 ---
 
 ## Siguiente Paso
 
-→ Ver `03_Plan_Implementacion.md` — Task list paso a paso
+→ Ver `03_Plan_Implementacion.md` — Task list paso a paso (todas las fases COMPLETADAS)

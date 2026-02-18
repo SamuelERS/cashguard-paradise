@@ -47,8 +47,12 @@ vi.mock('@/components/morning-count/MorningCountWizard', () => ({
     isOpen ? <div data-testid="morning-wizard">MorningCountWizard</div> : null,
 }));
 
-vi.mock('@/components/corte/CortePage', () => ({
-  CortePage: () => <div data-testid="corte-page">CortePage</div>,
+vi.mock('@/hooks/useCorteSesion', () => ({
+  useCorteSesion: () => ({
+    iniciarCorte: vi.fn().mockResolvedValue(undefined),
+    guardarProgreso: vi.fn().mockResolvedValue(undefined),
+    error: null,
+  }),
 }));
 
 vi.mock('@/components/CashCounter', () => ({

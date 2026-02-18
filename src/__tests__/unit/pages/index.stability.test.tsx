@@ -32,8 +32,12 @@ vi.mock('@/components/InitialWizardModal', () => ({
   default: () => <div data-testid="initial-wizard">InitialWizardModal</div>,
 }));
 
-vi.mock('@/components/corte/CortePage', () => ({
-  CortePage: () => <div data-testid="corte-page">CortePage</div>,
+vi.mock('@/hooks/useCorteSesion', () => ({
+  useCorteSesion: () => ({
+    iniciarCorte: vi.fn().mockResolvedValue(undefined),
+    guardarProgreso: vi.fn().mockResolvedValue(undefined),
+    error: null,
+  }),
 }));
 
 vi.mock('@/components/deliveries/DeliveryDashboardWrapper', () => ({
