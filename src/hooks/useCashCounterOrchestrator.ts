@@ -15,7 +15,7 @@ import { TOAST_DURATIONS, TOAST_MESSAGES } from '@/config/toast';
 import { OperationMode } from "@/types/operation-mode";
 import type { CashCount, ElectronicPayments, Employee } from "@/types/cash";
 import type { DailyExpense } from '@/types/expenses';
-import { STORES } from "@/data/paradise";
+// 🤖 [IA] - DACC-FIX-2: Eliminado import STORES legacy — datos vienen de Supabase
 import { calculateCashTotal } from "@/utils/calculations";
 import { useGuidedCounting } from "@/hooks/useGuidedCounting";
 import { usePhaseManager } from "@/hooks/usePhaseManager";
@@ -187,22 +187,12 @@ export function useCashCounterOrchestrator({
     cargando: cargandoSucursales,
     error: errorSucursales,
   } = useSucursales();
-  const usarFallbackCatalogoLegacy =
-    import.meta.env.MODE !== 'production' &&
-    sucursales.length === 0 &&
-    !cargandoSucursales &&
-    Boolean(errorSucursales);
-  const availableStores = usarFallbackCatalogoLegacy
-    ? STORES.map((store) => ({
-      id: store.id,
-      name: store.name,
-      code: resolveLegacyStoreCode(store.id) ?? undefined,
-    }))
-    : sucursales.map((sucursal) => ({
-      id: sucursal.id,
-      name: sucursal.nombre,
-      code: sucursal.codigo,
-    }));
+  // 🤖 [IA] - DACC-FIX-2: Datos siempre de Supabase (sin fallback paradise.ts)
+  const availableStores = sucursales.map((sucursal) => ({
+    id: sucursal.id,
+    name: sucursal.nombre,
+    code: sucursal.codigo,
+  }));
 
   const sucursalIdSeleccionada = selectedStore
     ? (resolveSucursalIdFromSelectedStore(selectedStore, sucursales) ?? null)

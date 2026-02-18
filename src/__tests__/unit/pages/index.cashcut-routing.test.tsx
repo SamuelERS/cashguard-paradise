@@ -38,8 +38,8 @@ vi.mock('@/components/operation-selector/OperationSelector', () => ({
 }));
 
 vi.mock('@/components/InitialWizardModal', () => ({
-  default: ({ isOpen }: { isOpen: boolean }) =>
-    isOpen ? <div data-testid="initial-wizard">InitialWizardModal</div> : null,
+  default: ({ isOpen, initialSucursalId }: { isOpen: boolean; initialSucursalId?: string | null }) =>
+    isOpen ? <div data-testid="initial-wizard" data-initial-sucursal-id={initialSucursalId || ''}>InitialWizardModal</div> : null,
 }));
 
 vi.mock('@/components/morning-count/MorningCountWizard', () => ({
@@ -60,9 +60,10 @@ vi.mock('@/components/deliveries/DeliveryDashboardWrapper', () => ({
 }));
 
 describe('Index CASH_CUT routing', () => {
-  it('opens CortePage when an active CASH_CUT session exists', async () => {
+  // 🤖 [IA] - DACC-FIX-1: Wizard es UX única para CASH_CUT, incluso con sesión activa
+  it('opens InitialWizardModal even when an active CASH_CUT session exists', async () => {
     supabaseMocks.maybeSingleMock.mockResolvedValueOnce({
-      data: { id: 'corte-activo-1' },
+      data: { id: 'corte-activo-1', sucursal_id: 'suc-1' },
       error: null,
     });
 
@@ -71,8 +72,11 @@ describe('Index CASH_CUT routing', () => {
 
     await user.click(screen.getByTestId('open-cash-cut'));
 
-    expect(await screen.findByTestId('corte-page')).toBeInTheDocument();
-    expect(screen.queryByTestId('initial-wizard')).not.toBeInTheDocument();
+    const wizard = await screen.findByTestId('initial-wizard');
+    expect(wizard).toBeInTheDocument();
+    // 🤖 [IA] - DACC-CIERRE: Wizard recibe sucursalId de sesión activa para preselección
+    expect(wizard.getAttribute('data-initial-sucursal-id')).toBe('suc-1');
+    expect(screen.queryByTestId('corte-page')).not.toBeInTheDocument();
   });
 
   it('opens InitialWizardModal when selecting CASH_CUT', async () => {
@@ -86,7 +90,10 @@ describe('Index CASH_CUT routing', () => {
 
     await user.click(screen.getByTestId('open-cash-cut'));
 
-    expect(await screen.findByTestId('initial-wizard')).toBeInTheDocument();
+    const wizard = await screen.findByTestId('initial-wizard');
+    expect(wizard).toBeInTheDocument();
+    // 🤖 [IA] - DACC-CIERRE: Sin sesión activa, initialSucursalId es vacío
+    expect(wizard.getAttribute('data-initial-sucursal-id')).toBe('');
     expect(screen.queryByTestId('corte-page')).not.toBeInTheDocument();
   });
 });

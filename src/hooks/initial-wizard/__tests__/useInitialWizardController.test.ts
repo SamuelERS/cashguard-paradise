@@ -197,9 +197,10 @@ describe('useInitialWizardController', () => {
         useInitialWizardController(makeProps())
       );
 
+      // 🤖 [IA] - DACC-FIX-4: Contrato real del controller mapea { id, name, address, phone, schedule }
       expect(result.current.availableStores).toEqual([
-        { id: 'suc-001', name: 'Los Héroes', code: 'H' },
-        { id: 'suc-002', name: 'Plaza Merliot', code: 'M' },
+        { id: 'suc-001', name: 'Los Héroes', address: 'Codigo H', phone: '', schedule: '' },
+        { id: 'suc-002', name: 'Plaza Merliot', address: 'Codigo M', phone: '', schedule: '' },
       ]);
     });
 
@@ -443,6 +444,43 @@ describe('useInitialWizardController', () => {
       result.current.validateInput('100', 'currency');
 
       expect(mockValidateInput).toHaveBeenCalledWith('100', 'currency');
+    });
+  });
+
+  // ── Preselección sucursal (DACC-CIERRE) ──
+
+  describe('preselección sucursal desde sesión activa', () => {
+    it('preselecciona store cuando initialSucursalId proporcionado y selectedStore vacío', () => {
+      renderHook(() =>
+        useInitialWizardController(makeProps({ isOpen: true, initialSucursalId: 'suc-001' }))
+      );
+
+      expect(mockUpdateWizardData).toHaveBeenCalledWith({ selectedStore: 'suc-001' });
+    });
+
+    it('NO preselecciona cuando initialSucursalId es null', () => {
+      renderHook(() =>
+        useInitialWizardController(makeProps({ isOpen: true, initialSucursalId: null }))
+      );
+
+      // mockUpdateWizardData may be called for other reasons, but NOT with selectedStore
+      const calls = mockUpdateWizardData.mock.calls;
+      const preselectionCalls = calls.filter(
+        (c: [Record<string, unknown>]) => c[0] && 'selectedStore' in c[0]
+      );
+      expect(preselectionCalls).toHaveLength(0);
+    });
+
+    it('NO preselecciona cuando wizard no está abierto', () => {
+      renderHook(() =>
+        useInitialWizardController(makeProps({ isOpen: false, initialSucursalId: 'suc-001' }))
+      );
+
+      const calls = mockUpdateWizardData.mock.calls;
+      const preselectionCalls = calls.filter(
+        (c: [Record<string, unknown>]) => c[0] && 'selectedStore' in c[0]
+      );
+      expect(preselectionCalls).toHaveLength(0);
     });
   });
 

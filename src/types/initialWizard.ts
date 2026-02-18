@@ -16,6 +16,8 @@ export interface InitialWizardModalProps {
     expectedSales: string;
     dailyExpenses: DailyExpense[];
   }) => void;
+  /** 🤖 [IA] - DACC-CIERRE: ID de sucursal para preselección desde sesión activa Supabase */
+  initialSucursalId?: string | null;
 }
 
 // ────────────────────────────────────────────────────────────────

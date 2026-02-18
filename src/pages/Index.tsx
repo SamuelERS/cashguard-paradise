@@ -1,5 +1,5 @@
-// 🤖 [IA] - v3.3.1 - Restaurar wizard legacy para CASH_CUT conservando guard de estabilidad
-// Previous: v3.3.0 - OT-11: Activar CortePage para CASH_CUT (reemplaza wizard legacy)
+// 🤖 [IA] - DACC-FIX-1: Eliminar bifurcación CortePage — wizard es UX única para CASH_CUT
+// Previous: v3.3.1 - Restaurar wizard legacy para CASH_CUT conservando guard de estabilidad
 import { useState, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import CashCounter from "@/components/CashCounter";
@@ -7,7 +7,6 @@ import InitialWizardModal from "@/components/InitialWizardModal";
 import { OperationSelector } from "@/components/operation-selector/OperationSelector";
 import { MorningCountWizard } from "@/components/morning-count/MorningCountWizard";
 import { DeliveryDashboardWrapper } from "@/components/deliveries/DeliveryDashboardWrapper";
-import { CortePage } from "@/components/corte/CortePage";
 import { useOperationMode } from "@/hooks/useOperationMode";
 import { OperationMode } from "@/types/operation-mode";
 import { DailyExpense } from '@/types/expenses'; // 🤖 [IA] - v1.4.0: Tipos gastos
@@ -21,7 +20,6 @@ const Index = () => {
   const [showWizard, setShowWizard] = useState(false);
   const [showMorningWizard, setShowMorningWizard] = useState(false);
   const [showCashCounter, setShowCashCounter] = useState(false);
-  const [routeCashCutToCortePage, setRouteCashCutToCortePage] = useState(false);
   const [cashCutSessionCheckInProgress, setCashCutSessionCheckInProgress] = useState(false);
   const [activeCashCutSucursalId, setActiveCashCutSucursalId] = useState<string | null>(null);
   const [initialData, setInitialData] = useState<{
@@ -82,7 +80,6 @@ const Index = () => {
 
   const handleBackFromCounter = () => {
     setShowCashCounter(false);
-    setRouteCashCutToCortePage(false);
     setActiveCashCutSucursalId(null);
     setInitialData(null);
     resetMode(); // 🤖 [IA] - v1.0.81 - Resetear modo al volver
@@ -124,32 +121,20 @@ const Index = () => {
       setCashCutSessionCheckInProgress(true);
       const activeSession = await detectActiveCashCutSession();
 
-      if (activeSession.hasActive) {
-        setActiveCashCutSucursalId(activeSession.sucursalId);
-        setRouteCashCutToCortePage(true);
-        setShowWizard(false);
-      } else {
-        setActiveCashCutSucursalId(null);
-        setRouteCashCutToCortePage(false);
-        setShowWizard(true);
-      }
+      // 🤖 [IA] - DACC-FIX-1: Wizard es la UX única para CASH_CUT.
+      // Si hay sesión activa, guardamos sucursalId para que el wizard la use,
+      // pero SIEMPRE abrimos el wizard (nunca CortePage).
+      setActiveCashCutSucursalId(activeSession.hasActive ? activeSession.sucursalId : null);
+      setShowWizard(true);
 
       setCashCutSessionCheckInProgress(false);
     } else if (mode === OperationMode.CASH_COUNT) {
-      setRouteCashCutToCortePage(false);
       setActiveCashCutSucursalId(null);
       setShowMorningWizard(true);
     } else {
-      setRouteCashCutToCortePage(false);
       setActiveCashCutSucursalId(null);
     }
     // DELIVERY_VIEW no requiere wizard, se maneja directamente en el render
-  };
-
-  const handleBackFromCortePage = () => {
-    setRouteCashCutToCortePage(false);
-    setActiveCashCutSucursalId(null);
-    resetMode();
   };
 
   // 🤖 [IA] - v1.0.88 - Mostrar OperationSelector si no hay modo O si hay wizard abierto
@@ -166,6 +151,7 @@ const Index = () => {
                 resetMode(); // 🤖 [IA] - v1.0.88 - Resetear modo para volver a OperationSelector
               }}
               onComplete={handleWizardComplete}
+              initialSucursalId={activeCashCutSucursalId}
             />
           )}
           {showMorningWizard && (
@@ -181,11 +167,6 @@ const Index = () => {
         </AnimatePresence>
       </>
     );
-  }
-
-  // CASH_CUT con sesión activa detectada: ir al flujo de reanudación/sesión.
-  if (currentMode === OperationMode.CASH_CUT && routeCashCutToCortePage) {
-    return <CortePage onSalir={handleBackFromCortePage} sucursalInicialId={activeCashCutSucursalId} />;
   }
 
   // 🤖 [IA] - v1.0.82 - Renderizar DeliveryDashboardWrapper si modo es DELIVERY_VIEW

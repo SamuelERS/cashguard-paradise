@@ -14,7 +14,7 @@ import type { InitialWizardModalProps, InitialWizardControllerReturn } from '@/t
 export function useInitialWizardController(
   props: InitialWizardModalProps
 ): InitialWizardControllerReturn {
-  const { isOpen, onClose, onComplete } = props;
+  const { isOpen, onClose, onComplete, initialSucursalId } = props;
 
   // ── Hooks existentes (consumidos, NO reemplazados) ──
   const {
@@ -84,6 +84,14 @@ export function useInitialWizardController(
       setHasVibratedForError(false);
     }
   }, [isFlowCompleted, currentStep, hasVibratedForError]);
+
+  // 🤖 [IA] - DACC-CIERRE: Preseleccionar sucursal si hay sesión activa Supabase
+  useEffect(() => {
+    if (isOpen && initialSucursalId && !wizardData.selectedStore) {
+      updateWizardData({ selectedStore: initialSucursalId });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, initialSucursalId]);
 
   // ── Computed ──
   const availableStores = sucursales.map((sucursal) => ({
