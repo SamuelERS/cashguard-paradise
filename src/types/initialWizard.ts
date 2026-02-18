@@ -18,6 +18,8 @@ export interface InitialWizardModalProps {
   }) => void;
   /** 🤖 [IA] - DACC-CIERRE: ID de sucursal para preselección desde sesión activa Supabase */
   initialSucursalId?: string | null;
+  /** [IA] - CASO-SANN: Indica si se detectó sesión activa en Supabase para mostrar banner informativo */
+  hasActiveSession?: boolean;
 }
 
 // ────────────────────────────────────────────────────────────────
