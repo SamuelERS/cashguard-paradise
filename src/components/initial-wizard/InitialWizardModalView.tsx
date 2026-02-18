@@ -139,8 +139,8 @@ const InitialWizardModalView = (props: InitialWizardModalProps) => {
             </span>
           </div>
 
-          {/* [IA] - CASO-SANN: Banner informativo de sesión activa detectada */}
-          {props.hasActiveSession && props.initialSucursalId != null && (() => {
+          {/* [IA] - CASO-SANN-R1: Banner solo desde Paso 2 (contexto sucursal disponible) */}
+          {props.hasActiveSession && props.initialSucursalId != null && ctrl.currentStep >= 2 && (() => {
             const sucursalName = ctrl.availableStores.find(s => s.id === props.initialSucursalId)?.name;
             return (
               <div

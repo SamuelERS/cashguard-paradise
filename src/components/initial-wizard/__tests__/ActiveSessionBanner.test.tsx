@@ -1,5 +1,6 @@
 // [IA] - CASO-SANN: TDD RED phase — tests para banner de sesión activa en wizard
 // Todos estos tests DEBEN fallar hasta que se implemente el banner (Orden #2)
+// [IA] - CASO-SANN-R1: Actualizado — banner solo visible desde Paso 2 (currentStep >= 2)
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import type { InitialWizardControllerReturn } from '@/types/initialWizard';
@@ -140,8 +141,10 @@ describe('CASO-SANN: Active Session Banner', () => {
     expect(screen.queryByText(/sesión activa/i)).not.toBeInTheDocument();
   });
 
-  // [IA] - CASO-SANN CA-01: Banner SÍ se renderiza con sesión activa + sucursalId válido
+  // [IA] - CASO-SANN CA-01: Banner SÍ se renderiza con sesión activa + sucursalId válido (Paso 2)
   it('renders active session banner when hasActiveSession is true and initialSucursalId is valid', () => {
+    // [IA] - CASO-SANN-R1: Paso 2 — contexto de sucursal disponible
+    resetMockCtrl({ currentStep: 2 });
     render(
       <InitialWizardModalView
         {...baseProps}
@@ -153,8 +156,10 @@ describe('CASO-SANN: Active Session Banner', () => {
     expect(screen.getByText(/sesión activa/i)).toBeInTheDocument();
   });
 
-  // [IA] - CASO-SANN CU-01: Banner muestra texto descriptivo claro
+  // [IA] - CASO-SANN CU-01: Banner muestra texto descriptivo claro (Paso 2)
   it('banner displays "Se detectó una sesión activa" text', () => {
+    // [IA] - CASO-SANN-R1: Paso 2 — banner visible con contexto completo
+    resetMockCtrl({ currentStep: 2 });
     render(
       <InitialWizardModalView
         {...baseProps}
@@ -166,8 +171,10 @@ describe('CASO-SANN: Active Session Banner', () => {
     expect(screen.getByText(/Se detectó una sesión activa/i)).toBeInTheDocument();
   });
 
-  // [IA] - CASO-SANN CA-01: Banner muestra nombre de sucursal resuelto
+  // [IA] - CASO-SANN CA-01: Banner muestra nombre de sucursal resuelto (Paso 2)
   it('banner displays the resolved sucursal name', () => {
+    // [IA] - CASO-SANN-R1: Paso 2 — nombre de sucursal disponible en banner
+    resetMockCtrl({ currentStep: 2 });
     render(
       <InitialWizardModalView
         {...baseProps}
@@ -186,6 +193,21 @@ describe('CASO-SANN: Active Session Banner', () => {
         {...baseProps}
         hasActiveSession={true}
         initialSucursalId={null}
+      />
+    );
+
+    expect(screen.queryByText(/sesión activa/i)).not.toBeInTheDocument();
+  });
+
+  // [IA] - CASO-SANN-R1 CA-01: Banner NO se renderiza en Paso 1 aunque haya sesión activa
+  // Razón: Paso 1 es Protocolo Anti-Fraude — usuario aún no ha elegido sucursal
+  it('does NOT render active session banner on Step 1 (Protocolo) even with active session', () => {
+    // currentStep queda en 1 (default de resetMockCtrl — ver beforeEach)
+    render(
+      <InitialWizardModalView
+        {...baseProps}
+        hasActiveSession={true}
+        initialSucursalId="los-heroes"
       />
     );
 
