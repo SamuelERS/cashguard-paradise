@@ -1,6 +1,7 @@
-// 🤖 [IA] - DACC-CLEANUP: Wizard es la UX única para CASH_CUT
-// Previous: v3.3.1 - Restaurar wizard legacy para CASH_CUT conservando guard de estabilidad
+// 🤖 [IA] - R3-B1 GREEN: handleResumeSession llama recuperarSesion y salta wizard a CashCounter
+// Previous: DACC-CLEANUP - Wizard es la UX única para CASH_CUT
 import { useState, useEffect, useCallback } from "react";
+import { toast } from 'sonner';
 import { AnimatePresence } from "framer-motion";
 import CashCounter from "@/components/CashCounter";
 import InitialWizardModal from "@/components/InitialWizardModal";
@@ -27,6 +28,13 @@ const Index = () => {
   const [activeCashCutSucursalId, setActiveCashCutSucursalId] = useState<string | null>(null);
   // [IA] - CASO-SANN: Estado booleano para notificar sesión activa al wizard
   const [hasActiveCashCutSession, setHasActiveCashCutSession] = useState(false);
+  // [IA] - R3-B2: Info enriquecida de sesión activa para identificador en Step 5
+  const [activeSessionInfo, setActiveSessionInfo] = useState<{
+    correlativo: string | null;
+    createdAt: string | null;
+    cajero: string | null;
+    estado: string | null;
+  } | null>(null);
   const [initialData, setInitialData] = useState<{
     selectedStore: string;
     selectedCashier: string;
@@ -50,6 +58,8 @@ const Index = () => {
   // [IA] - CASO-SANN-R2: Segunda instancia para gestionar sesión activa durante wizard
   const {
     abortarCorte: abortarCorteActivo,
+    // [IA] - R3-B1 GREEN: recuperarSesion para saltar wizard directamente a CashCounter
+    recuperarSesion: recuperarSesionActiva,
   } = useCorteSesion(activeCashCutSucursalId || '');
 
   // 🤖 [IA] - v1.2.23: OPERATION-MODAL-CONTAINMENT - Prevención de selección de texto y scroll en background
@@ -172,31 +182,66 @@ const Index = () => {
     resetMode(); // 🤖 [IA] - v1.0.81 - Resetear modo al volver
   };
 
-  // [IA] - CASO-SANN-R2: Handler reanudar sesión — desbloquea panel Step 5
-  const handleResumeSession = useCallback(() => {
-    setHasActiveCashCutSession(false);
-  }, []);
+  // [IA] - R3-B1 GREEN: Handler reanudar sesión — llama recuperarSesion y salta wizard a CashCounter
+  const handleResumeSession = useCallback(async () => {
+    try {
+      const corte = await recuperarSesionActiva();
+      if (!corte) {
+        toast.error('No se encontró la sesión activa');
+        return;
+      }
+      setInitialData({
+        selectedStore: corte.sucursal_id,
+        selectedCashier: corte.cajero,
+        selectedWitness: '',
+        expectedSales: corte.venta_esperada != null ? String(corte.venta_esperada) : '',
+        dailyExpenses: [],
+      });
+      if (isSupabaseConfigured) {
+        setSyncSucursalId(corte.sucursal_id);
+        setSyncEstado('sincronizado');
+      }
+      setHasActiveCashCutSession(false);
+      setShowWizard(false);
+      setShowCashCounter(true);
+    } catch (err: unknown) {
+      console.warn('[Index] recuperarSesion falló:', err);
+      toast.error('Error al reanudar sesión');
+    }
+  }, [recuperarSesionActiva]);
 
   // [IA] - CASO-SANN-R2: Handler abortar sesión — marca ABORTADO en Supabase y desbloquea
+  // [IA] - R3-B5 FIX: Cleanup de estado SOLO en éxito; re-throw en error para que Step5 muestre toast.error
   const handleAbortSession = useCallback(async () => {
     try {
       await abortarCorteActivo('Sesión abortada por usuario desde wizard');
+      setActiveCashCutSucursalId(null);
+      setHasActiveCashCutSession(false);
     } catch (err: unknown) {
-      console.warn('[Index] abortarCorte falló (graceful degradation):', err);
+      console.warn('[Index] abortarCorte falló:', err);
+      throw err;
     }
-    setActiveCashCutSucursalId(null);
-    setHasActiveCashCutSession(false);
   }, [abortarCorteActivo]);
 
-  const detectActiveCashCutSession = async (): Promise<{ hasActive: boolean; sucursalId: string | null }> => {
+  // [IA] - R3-B2: Tipo extendido con sessionInfo para propagar identificador al wizard
+  const detectActiveCashCutSession = async (): Promise<{
+    hasActive: boolean;
+    sucursalId: string | null;
+    sessionInfo: {
+      correlativo: string | null;
+      createdAt: string | null;
+      cajero: string | null;
+      estado: string | null;
+    } | null;
+  }> => {
     if (!isSupabaseConfigured) {
-      return { hasActive: false, sucursalId: null };
+      return { hasActive: false, sucursalId: null, sessionInfo: null };
     }
 
     try {
       const { data, error } = await tables
         .cortes()
-        .select('id,sucursal_id')
+        .select('id,sucursal_id,correlativo,created_at,cajero,estado')
         .in('estado', ['INICIADO', 'EN_PROGRESO'])
         .order('created_at', { ascending: false })
         .limit(1)
@@ -204,16 +249,22 @@ const Index = () => {
 
       if (error) {
         console.warn('[Index] Error verificando sesión activa de corte:', error.message);
-        return { hasActive: false, sucursalId: null };
+        return { hasActive: false, sucursalId: null, sessionInfo: null };
       }
 
       return {
         hasActive: Boolean(data),
         sucursalId: data?.sucursal_id ?? null,
+        sessionInfo: data ? {
+          correlativo: data.correlativo ?? null,
+          createdAt: data.created_at ?? null,
+          cajero: data.cajero ?? null,
+          estado: data.estado ?? null,
+        } : null,
       };
     } catch (error) {
       console.warn('[Index] Fallo de red verificando sesión activa de corte:', error);
-      return { hasActive: false, sucursalId: null };
+      return { hasActive: false, sucursalId: null, sessionInfo: null };
     }
   };
 
@@ -229,6 +280,8 @@ const Index = () => {
       // [IA] - CASO-SANN: Notificar al wizard si hay sesión activa para mostrar banner informativo
       setHasActiveCashCutSession(activeSession.hasActive);
       setActiveCashCutSucursalId(activeSession.hasActive ? activeSession.sucursalId : null);
+      // [IA] - R3-B2: Propagar info enriquecida para identificador en Step 5
+      setActiveSessionInfo(activeSession.hasActive ? activeSession.sessionInfo : null);
       setShowWizard(true);
 
       setCashCutSessionCheckInProgress(false);
@@ -260,6 +313,8 @@ const Index = () => {
               // [IA] - CASO-SANN-R2: Callbacks para panel sesión activa Step 5
               onResumeSession={handleResumeSession}
               onAbortSession={handleAbortSession}
+              // [IA] - R3-B2: Info enriquecida para identificador en Step 5
+              activeSessionInfo={activeSessionInfo}
             />
           )}
           {showMorningWizard && (

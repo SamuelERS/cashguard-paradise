@@ -1,6 +1,9 @@
 // 🤖 [IA] - ORDEN #075: Step 5 - Venta Esperada (SICAR)
+import { useState } from 'react';
+import { toast } from 'sonner';
+import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { motion } from 'framer-motion';
-import { DollarSign, ArrowRight, CheckCircle } from 'lucide-react';
+import { DollarSign, ArrowRight, CheckCircle, Cloud } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { ConstructiveActionButton } from '@/components/shared/ConstructiveActionButton';
 import { cn } from '@/lib/utils';
@@ -21,7 +24,10 @@ export function Step5SicarInput({
   hasActiveSession,
   onResumeSession,
   onAbortSession,
+  activeSessionInfo,
 }: Step5Props) {
+  const [showAbortConfirm, setShowAbortConfirm] = useState(false);
+
   return (
     <div className="glass-morphism-panel space-y-fluid-lg">
 
@@ -31,12 +37,27 @@ export function Step5SicarInput({
           className="rounded-lg p-4 border border-amber-500/40"
           style={{ background: 'rgba(245, 158, 11, 0.08)' }}
         >
-          <h4 className="font-semibold text-amber-400 text-fluid-sm mb-2">
+          <h4 className="font-semibold text-amber-400 text-fluid-sm mb-2 flex items-center gap-2">
+            <Cloud className="w-4 h-4 text-green-400" aria-hidden="true" />
             Sesión en Progreso
           </h4>
           <p className="text-muted-foreground text-fluid-xs mb-4">
             Hay un corte de caja que no se completó en esta sucursal. Elige cómo continuar.
           </p>
+          {/* [IA] - R3-B2: Identificador de sesión activa */}
+          {activeSessionInfo && (
+            <div className="text-fluid-xs text-muted-foreground space-y-1 mb-3">
+              {activeSessionInfo.correlativo && (
+                <p>{activeSessionInfo.correlativo}</p>
+              )}
+              {activeSessionInfo.createdAt && (
+                <p>Iniciado: {new Date(activeSessionInfo.createdAt).toLocaleString('es-SV')}</p>
+              )}
+              {activeSessionInfo.cajero && (
+                <p>Cajero: {activeSessionInfo.cajero}</p>
+              )}
+            </div>
+          )}
           <div className="flex gap-3">
             <button
               type="button"
@@ -48,13 +69,34 @@ export function Step5SicarInput({
             </button>
             <button
               type="button"
-              onClick={onAbortSession}
+              onClick={() => setShowAbortConfirm(true)}
               aria-label="Abortar Sesión"
               className="flex-1 rounded-lg px-3 py-2 text-fluid-xs font-medium bg-red-500/20 text-red-300 border border-red-500/40 hover:bg-red-500/30 transition-colors"
             >
               Abortar Sesión
             </button>
           </div>
+          <ConfirmationModal
+            open={showAbortConfirm}
+            onOpenChange={setShowAbortConfirm}
+            title="¿Abortar Sesión Activa?"
+            description="Se marcará como ABORTADO en el sistema. Esta acción no se puede deshacer."
+            warningText="Los datos del corte anterior se perderán permanentemente."
+            confirmText="Sí, Abortar"
+            cancelText="Cancelar"
+            onConfirm={() => {
+              setShowAbortConfirm(false);
+              void (async () => {
+                try {
+                  await onAbortSession?.();
+                  toast.success('Sesión abortada correctamente');
+                } catch {
+                  toast.error('No se pudo abortar la sesión. Intente de nuevo.');
+                }
+              })();
+            }}
+            onCancel={() => setShowAbortConfirm(false)}
+          />
         </div>
       )}
       <div className="glass-morphism-panel header-section">

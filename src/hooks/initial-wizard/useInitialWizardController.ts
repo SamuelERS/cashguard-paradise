@@ -85,14 +85,6 @@ export function useInitialWizardController(
     }
   }, [isFlowCompleted, currentStep, hasVibratedForError]);
 
-  // 🤖 [IA] - DACC-CIERRE: Preseleccionar sucursal si hay sesión activa Supabase
-  useEffect(() => {
-    if (isOpen && initialSucursalId && !wizardData.selectedStore) {
-      updateWizardData({ selectedStore: initialSucursalId });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen, initialSucursalId]);
-
   // ── Computed ──
   const availableStores = sucursales.map((sucursal) => ({
     id: sucursal.id,

@@ -27,6 +27,14 @@ de comunicacion UX: el wizard NO muestra al usuario que detecto una sesion activ
 | 03 | `03_GUIA_SOLUCION_UX.md` | Guia arquitectonica de la solucion UX | Completo |
 | 04 | `04_CRITERIOS_ACEPTACION.md` | Criterios medibles para validar la solucion | Completo |
 
+## Subcasos / Refinamientos
+
+| # | Carpeta | Alcance | Estado |
+|---|---------|---------|--------|
+| 05 | `05_REFINAMIENTO_UBICACION_BANNER/` | R1: Ubicacion optima del banner de notificacion | Completo |
+| 06 | `06_REDISEÑO_NOTIFICACION_SESION/` | R2: Panel anti-fraude en Step 5 (reemplaza banner) | Completo |
+| 07 | `07_DEUDA_FUNCIONAL_R3/` | R3: 5 bugs funcionales post-testing R2 | En Investigacion |
+
 ## Regla de Oro DIRM
 > Un archivo representa una sola tarea especifica que debe ser validada
 > antes de pasar al siguiente modulo. No se permite codigo funcional,

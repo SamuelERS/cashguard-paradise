@@ -77,6 +77,8 @@ const InitialWizardModalView = (props: InitialWizardModalProps) => {
             hasActiveSession={props.hasActiveSession}
             onResumeSession={props.onResumeSession}
             onAbortSession={props.onAbortSession}
+            // [IA] - R3-B2: Info enriquecida para identificador de sesión
+            activeSessionInfo={props.activeSessionInfo}
           />
         );
       case 6:

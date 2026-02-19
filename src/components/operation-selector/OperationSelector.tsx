@@ -1,4 +1,5 @@
-// 🤖 [IA] - v3.3.1: CASO-SANN-R1 - Banner sesión activa oculto en Paso 1 (Protocolo)
+// 🤖 [IA] - v3.3.2: CASO-SANN-R2 - Panel interactivo sesión activa en Step 5 (reanudar/abortar)
+// Previous: v3.3.1 - CASO-SANN-R1 - Banner sesión activa oculto en Paso 1 (Protocolo)
 // Previous: v3.3.0 - CASO-SANN - Banner sesión activa en wizard CASH_CUT
 // Previous: v3.0.0 - FASE 9 Vista Deliveries Pendientes en Home Screen
 // Previous: v2.8.1 - Badge versión actualizado (refinamiento UX botón WhatsApp)
@@ -83,7 +84,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
               }}>
                 Seleccione Operación
               </h1>
-              {/* 🤖 [IA] - v3.3.1: CASO-SANN-R1 banner oculto en Paso 1 */}
+              {/* 🤖 [IA] - v3.3.2: CASO-SANN-R2 panel interactivo Step 5 */}
               <span className="px-3 py-1 rounded-full text-xs font-semibold shadow-lg" style={{
                 background: 'linear-gradient(135deg, #d4af37 0%, #aa8c2d 100%)',
                 color: '#1a1a1a',
@@ -91,7 +92,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
                 boxShadow: '0 4px 6px rgba(212, 175, 55, 0.4)',
                 border: '1px solid rgba(255, 215, 0, 0.3)'
               }}>
-                  v3.3.1
+                  v3.3.2
               </span>
             </div>
           </div>
