@@ -1,5 +1,7 @@
 // 🤖 [IA] - R3-B1 GREEN: handleResumeSession llama recuperarSesion y salta wizard a CashCounter
 // Previous: DACC-CLEANUP - Wizard es la UX única para CASH_CUT
+// 🤖 [IA] - ORDEN #27 M4: extrae datos_conteo.conteo_parcial → initialCashCount y pagos_electronicos → initialElectronicPayments
+// 🤖 [IA] - ORDEN #28 M6: extrae datos_conteo.gastos_dia.items → dailyExpenses al reanudar
 import { useState, useEffect, useCallback } from "react";
 import { toast } from 'sonner';
 import { AnimatePresence } from "framer-motion";
@@ -10,11 +12,26 @@ import { MorningCountWizard } from "@/components/morning-count/MorningCountWizar
 import { DeliveryDashboardWrapper } from "@/components/deliveries/DeliveryDashboardWrapper";
 import { useOperationMode } from "@/hooks/useOperationMode";
 import { OperationMode } from "@/types/operation-mode";
-import { DailyExpense } from '@/types/expenses'; // 🤖 [IA] - v1.4.0: Tipos gastos
+import { DailyExpense, isDailyExpense } from '@/types/expenses'; // 🤖 [IA] - v1.4.0 + ORDEN #28 M6
 import { isSupabaseConfigured, tables } from '@/lib/supabase';
 import { useCorteSesion } from '@/hooks/useCorteSesion';
 import type { DatosProgreso } from '@/types/auditoria';
 import type { CashCount, ElectronicPayments } from '@/types/cash';
+
+// 🤖 [IA] - ORDEN #27 M4: type guards defensivos para datos_conteo (null-safe, corrupt-safe)
+function isCashCountLike(value: unknown): value is CashCount {
+  if (typeof value !== 'object' || value === null) return false;
+  const o = value as Record<string, unknown>;
+  return ['penny','nickel','dime','quarter','dollarCoin','bill1','bill5','bill10','bill20','bill50','bill100']
+    .every(k => typeof o[k] === 'number');
+}
+
+function isElectronicPaymentsLike(value: unknown): value is ElectronicPayments {
+  if (typeof value !== 'object' || value === null) return false;
+  const o = value as Record<string, unknown>;
+  return ['credomatic','promerica','bankTransfer','paypal']
+    .every(k => typeof o[k] === 'number');
+}
 
 const Index = () => {
   // 🤖 [IA] - v1.0.81 - Hook para manejar el modo de operación
@@ -24,6 +41,11 @@ const Index = () => {
   const [showWizard, setShowWizard] = useState(false);
   const [showMorningWizard, setShowMorningWizard] = useState(false);
   const [showCashCounter, setShowCashCounter] = useState(false);
+  // 🤖 [IA] - ORDEN #25 M2: skipWizard=true cuando CashCounter se abre desde reanudación de sesión activa
+  const [skipWizardOnResume, setSkipWizardOnResume] = useState(false);
+  // 🤖 [IA] - ORDEN #27 M4: conteo parcial y pagos electrónicos extraídos de datos_conteo al reanudar
+  const [initialCashCount, setInitialCashCount] = useState<CashCount | undefined>(undefined);
+  const [initialElectronicPayments, setInitialElectronicPayments] = useState<ElectronicPayments | undefined>(undefined);
   const [cashCutSessionCheckInProgress, setCashCutSessionCheckInProgress] = useState(false);
   const [activeCashCutSucursalId, setActiveCashCutSucursalId] = useState<string | null>(null);
   // [IA] - CASO-SANN: Estado booleano para notificar sesión activa al wizard
@@ -172,6 +194,9 @@ const Index = () => {
 
   const handleBackFromCounter = () => {
     setShowCashCounter(false);
+    setSkipWizardOnResume(false); // 🤖 [IA] - ORDEN #25 M2: reset flag al volver de reanudación
+    setInitialCashCount(undefined); // 🤖 [IA] - ORDEN #27 M4: limpiar conteo parcial al volver
+    setInitialElectronicPayments(undefined); // 🤖 [IA] - ORDEN #27 M4: limpiar pagos al volver
     setActiveCashCutSucursalId(null);
     setHasActiveCashCutSession(false); // [IA] - CASO-SANN: Reset estado sesión activa
     setInitialData(null);
@@ -190,19 +215,41 @@ const Index = () => {
         toast.error('No se encontró la sesión activa');
         return;
       }
+      // 🤖 [IA] - ORDEN #27+28: extraer datos_conteo ANTES de setInitialData para uso inmediato
+      // Acceso defensivo: datos_conteo puede ser null o tener estructura inesperada (tipo Json en Supabase)
+      const rawDatosConteo: unknown = (corte as Record<string, unknown>)['datos_conteo'];
+      const rawConteo: unknown = typeof rawDatosConteo === 'object' && rawDatosConteo !== null
+        ? (rawDatosConteo as Record<string, unknown>)['conteo_parcial']
+        : undefined;
+      const rawPagos: unknown = typeof rawDatosConteo === 'object' && rawDatosConteo !== null
+        ? (rawDatosConteo as Record<string, unknown>)['pagos_electronicos']
+        : undefined;
+      // 🤖 [IA] - ORDEN #28 M6: gastos_dia se almacena como { items: DailyExpense[] } en Supabase
+      const rawGastosDiaWrapper: unknown = typeof rawDatosConteo === 'object' && rawDatosConteo !== null
+        ? (rawDatosConteo as Record<string, unknown>)['gastos_dia']
+        : undefined;
+      const rawGastosDiaItems: unknown = typeof rawGastosDiaWrapper === 'object' && rawGastosDiaWrapper !== null
+        ? (rawGastosDiaWrapper as Record<string, unknown>)['items']
+        : undefined;
+      const extractedDailyExpenses: DailyExpense[] = Array.isArray(rawGastosDiaItems)
+        ? rawGastosDiaItems.filter(isDailyExpense)
+        : [];
       setInitialData({
         selectedStore: corte.sucursal_id,
         selectedCashier: corte.cajero,
-        selectedWitness: '',
+        selectedWitness: corte.testigo || '', // 🤖 [IA] - ORDEN #25 M1: poblar testigo desde sesión activa
         expectedSales: corte.venta_esperada != null ? String(corte.venta_esperada) : '',
-        dailyExpenses: [],
+        dailyExpenses: extractedDailyExpenses, // 🤖 [IA] - ORDEN #28 M6: gastos del día desde datos_conteo
       });
+      setInitialCashCount(isCashCountLike(rawConteo) ? rawConteo : undefined);
+      setInitialElectronicPayments(isElectronicPaymentsLike(rawPagos) ? rawPagos : undefined);
       if (isSupabaseConfigured) {
         setSyncSucursalId(corte.sucursal_id);
         setSyncEstado('sincronizado');
       }
       setHasActiveCashCutSession(false);
       setShowWizard(false);
+      setSkipWizardOnResume(true); // 🤖 [IA] - ORDEN #25 M2: saltar instrucciones guiadas en reanudación
       setShowCashCounter(true);
     } catch (err: unknown) {
       console.warn('[Index] recuperarSesion falló:', err);
@@ -346,6 +393,8 @@ const Index = () => {
         initialWitness={initialData.selectedWitness}
         initialExpectedSales={initialData.expectedSales}
         initialDailyExpenses={initialData.dailyExpenses} // 🤖 [IA] - v1.4.0: Gastos del día
+        initialCashCount={initialCashCount} // 🤖 [IA] - ORDEN #27 M4: conteo parcial desde datos_conteo
+        initialElectronicPayments={initialElectronicPayments} // 🤖 [IA] - ORDEN #27 M4: pagos desde datos_conteo
         onBack={handleBackFromCounter}
         onFlowCancel={handleBackFromCounter} // 🤖 [IA] - SAFE-RETURN: Navegación segura en cancelación
         // 🤖 [IA] - DACC-CIERRE-SYNC-UX: Props sincronización Supabase
@@ -353,6 +402,7 @@ const Index = () => {
         syncEstado={currentMode === OperationMode.CASH_CUT && syncSucursalId ? syncEstado : undefined}
         ultimaSync={ultimaSync}
         syncError={syncError}
+        skipWizard={skipWizardOnResume} // 🤖 [IA] - ORDEN #25 M2: saltar wizard guiado en reanudación
       />
     );
   }
