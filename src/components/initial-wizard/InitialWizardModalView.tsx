@@ -1,6 +1,6 @@
 // 🤖 [IA] - ORDEN #075: View orchestrator — presentación + routing entre 6 steps
 import { motion, AnimatePresence } from 'framer-motion';
-import { Moon, X, ArrowLeft, ArrowRight, CheckCircle, Info } from 'lucide-react';
+import { Moon, X, ArrowLeft, ArrowRight, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
@@ -73,6 +73,10 @@ const InitialWizardModalView = (props: InitialWizardModalProps) => {
             totalSteps={ctrl.totalSteps}
             availableStores={ctrl.availableStores}
             availableEmployees={ctrl.availableEmployees}
+            // [IA] - CASO-SANN-R2: Props sesión activa para panel anti-fraude Step 5
+            hasActiveSession={props.hasActiveSession}
+            onResumeSession={props.onResumeSession}
+            onAbortSession={props.onAbortSession}
           />
         );
       case 6:
@@ -138,32 +142,6 @@ const InitialWizardModalView = (props: InitialWizardModalProps) => {
               Paso {ctrl.currentStep} de {ctrl.totalSteps}
             </span>
           </div>
-
-          {/* [IA] - CASO-SANN-R1: Banner solo desde Paso 2 (contexto sucursal disponible) */}
-          {props.hasActiveSession && props.initialSucursalId != null && ctrl.currentStep >= 2 && (() => {
-            const sucursalName = ctrl.availableStores.find(s => s.id === props.initialSucursalId)?.name;
-            return (
-              <div
-                className="rounded-lg p-3 flex items-start gap-3"
-                style={{
-                  background: 'rgba(10, 132, 255, 0.15)',
-                  border: '1px solid rgba(10, 132, 255, 0.3)',
-                }}
-              >
-                <Info
-                  className="flex-shrink-0 w-5 h-5 mt-0.5"
-                  style={{ color: 'rgba(10, 132, 255, 0.9)' }}
-                />
-                <div className="text-sm text-[#e1e8ed]">
-                  <p className="font-medium">Se detectó una sesión activa</p>
-                  {sucursalName && (
-                    <p className="text-[#8899a6] mt-1">Sucursal: {sucursalName}</p>
-                  )}
-                  <p className="text-[#8899a6] mt-1">La sesión se reanudará automáticamente.</p>
-                </div>
-              </div>
-            );
-          })()}
 
           {/* Step Content with transitions */}
           <AnimatePresence mode="wait">

@@ -20,6 +20,10 @@ export interface InitialWizardModalProps {
   initialSucursalId?: string | null;
   /** [IA] - CASO-SANN: Indica si se detectó sesión activa en Supabase para mostrar banner informativo */
   hasActiveSession?: boolean;
+  /** [IA] - CASO-SANN-R2: Callback cuando usuario elige reanudar sesión activa */
+  onResumeSession?: () => void;
+  /** [IA] - CASO-SANN-R2: Callback cuando usuario elige abortar sesión activa */
+  onAbortSession?: () => void;
 }
 
 // ────────────────────────────────────────────────────────────────
@@ -65,6 +69,10 @@ export interface Step5Props extends WizardStepProps {
   totalSteps: number;
   availableStores: Array<{ id: string; name: string }>;
   availableEmployees: Array<{ id: string; name: string; role: string; stores: string[] }>;
+  // [IA] - CASO-SANN-R2: Props para panel de sesión activa (bloqueo anti-fraude en Step 5)
+  hasActiveSession?: boolean;
+  onResumeSession?: () => void;
+  onAbortSession?: () => void;
 }
 
 // ────────────────────────────────────────────────────────────────

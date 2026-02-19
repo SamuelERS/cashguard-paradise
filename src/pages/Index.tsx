@@ -47,6 +47,11 @@ const Index = () => {
     error: syncError,
   } = useCorteSesion(syncSucursalId);
 
+  // [IA] - CASO-SANN-R2: Segunda instancia para gestionar sesión activa durante wizard
+  const {
+    abortarCorte: abortarCorteActivo,
+  } = useCorteSesion(activeCashCutSucursalId || '');
+
   // 🤖 [IA] - v1.2.23: OPERATION-MODAL-CONTAINMENT - Prevención de selección de texto y scroll en background
   useEffect(() => {
     const isAnyModalOpen = showWizard || showMorningWizard;
@@ -167,6 +172,22 @@ const Index = () => {
     resetMode(); // 🤖 [IA] - v1.0.81 - Resetear modo al volver
   };
 
+  // [IA] - CASO-SANN-R2: Handler reanudar sesión — desbloquea panel Step 5
+  const handleResumeSession = useCallback(() => {
+    setHasActiveCashCutSession(false);
+  }, []);
+
+  // [IA] - CASO-SANN-R2: Handler abortar sesión — marca ABORTADO en Supabase y desbloquea
+  const handleAbortSession = useCallback(async () => {
+    try {
+      await abortarCorteActivo('Sesión abortada por usuario desde wizard');
+    } catch (err: unknown) {
+      console.warn('[Index] abortarCorte falló (graceful degradation):', err);
+    }
+    setActiveCashCutSucursalId(null);
+    setHasActiveCashCutSession(false);
+  }, [abortarCorteActivo]);
+
   const detectActiveCashCutSession = async (): Promise<{ hasActive: boolean; sucursalId: string | null }> => {
     if (!isSupabaseConfigured) {
       return { hasActive: false, sucursalId: null };
@@ -236,6 +257,9 @@ const Index = () => {
               onComplete={handleWizardComplete}
               initialSucursalId={activeCashCutSucursalId}
               hasActiveSession={hasActiveCashCutSession}
+              // [IA] - CASO-SANN-R2: Callbacks para panel sesión activa Step 5
+              onResumeSession={handleResumeSession}
+              onAbortSession={handleAbortSession}
             />
           )}
           {showMorningWizard && (

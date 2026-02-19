@@ -18,9 +18,45 @@ export function Step5SicarInput({
   totalSteps,
   availableStores,
   availableEmployees,
+  hasActiveSession,
+  onResumeSession,
+  onAbortSession,
 }: Step5Props) {
   return (
     <div className="glass-morphism-panel space-y-fluid-lg">
+
+      {/* [IA] - CASO-SANN-R2: Panel de sesión activa — bloqueo anti-fraude en Step 5 */}
+      {hasActiveSession === true && currentStep === 5 && (
+        <div
+          className="rounded-lg p-4 border border-amber-500/40"
+          style={{ background: 'rgba(245, 158, 11, 0.08)' }}
+        >
+          <h4 className="font-semibold text-amber-400 text-fluid-sm mb-2">
+            Sesión en Progreso
+          </h4>
+          <p className="text-muted-foreground text-fluid-xs mb-4">
+            Hay un corte de caja que no se completó en esta sucursal. Elige cómo continuar.
+          </p>
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={onResumeSession}
+              aria-label="Reanudar Sesión"
+              className="flex-1 rounded-lg px-3 py-2 text-fluid-xs font-medium bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 transition-colors"
+            >
+              Reanudar Sesión
+            </button>
+            <button
+              type="button"
+              onClick={onAbortSession}
+              aria-label="Abortar Sesión"
+              className="flex-1 rounded-lg px-3 py-2 text-fluid-xs font-medium bg-red-500/20 text-red-300 border border-red-500/40 hover:bg-red-500/30 transition-colors"
+            >
+              Abortar Sesión
+            </button>
+          </div>
+        </div>
+      )}
       <div className="glass-morphism-panel header-section">
         <DollarSign className="flex-shrink-0 w-[clamp(1.25rem,5vw,1.5rem)] h-[clamp(1.25rem,5vw,1.5rem)] bg-gradient-to-br from-green-400 to-emerald-400 bg-clip-text text-transparent" />
         <div className="flex-1 min-w-0">
@@ -51,6 +87,7 @@ export function Step5SicarInput({
               }}
               placeholder="0.00"
               aria-label="Ingrese el monto de la venta esperada"
+              disabled={hasActiveSession === true}
               className={cn(
                 'font-semibold bg-transparent border-none text-primary-foreground pl-[clamp(3rem,12vw,3.5rem)] h-[clamp(2.25rem,9vw,2.75rem)] text-fluid-lg neon-glow-success',
                 wizardData.expectedSales && parseFloat(wizardData.expectedSales) > 0 && 'border-green-500/50'
@@ -62,7 +99,7 @@ export function Step5SicarInput({
           {currentStep < totalSteps && (
             <ConstructiveActionButton
               onClick={handleNext}
-              disabled={!canGoNext}
+              disabled={!canGoNext || hasActiveSession === true}
               aria-label="Continuar al siguiente paso"
               type="button"
               className="h-[clamp(2.25rem,9vw,2.75rem)]"
