@@ -33,7 +33,8 @@ de comunicacion UX: el wizard NO muestra al usuario que detecto una sesion activ
 |---|---------|---------|--------|
 | 05 | `05_REFINAMIENTO_UBICACION_BANNER/` | R1: Ubicacion optima del banner de notificacion | Completo |
 | 06 | `06_REDISEÑO_NOTIFICACION_SESION/` | R2: Panel anti-fraude en Step 5 (reemplaza banner) | Completo |
-| 07 | `07_DEUDA_FUNCIONAL_R3/` | R3: 5 bugs funcionales post-testing R2 | En Investigacion |
+| 07 | `07_DEUDA_FUNCIONAL_R3/` | R3: 5 bugs funcionales post-testing R2 | Completo (commit a6eff8f) |
+| 08 | `08_RESTAURACION_PROGRESO_R4/` | R4: Resume session no restaura progreso | FASE 2 — Esperando aprobacion |
 
 ## Regla de Oro DIRM
 > Un archivo representa una sola tarea especifica que debe ser validada
