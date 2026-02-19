@@ -67,7 +67,7 @@ export const DENOMINATION_IMAGE_MAP: Record<keyof CashCount, string> = {
 export function getDenominationImageElement(
   denominationKey: keyof CashCount,
   label: string,
-  className: string = "w-[clamp(1.5rem,6vw,2rem)] h-[clamp(1.5rem,6vw,2rem)]"
+  className: string = "w-[clamp(1.5rem,6vw,2rem)] h-[clamp(1.5rem,6vw,2rem)] object-contain"
 ): React.ReactNode {
   const imageSrc = DENOMINATION_IMAGE_MAP[denominationKey];
 

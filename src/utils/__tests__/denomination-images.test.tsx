@@ -52,6 +52,13 @@ describe('getDenominationImageElement — función generadora', () => {
     expect(img!.className).toContain('clamp');
   });
 
+  it('className default incluye object-contain para respetar aspect ratio', () => {
+    const element = getDenominationImageElement('dime', 'Diez centavos');
+    const { container } = render(<>{element}</>);
+    const img = container.querySelector('img');
+    expect(img!.className).toContain('object-contain');
+  });
+
   it('acepta className custom cuando se provee', () => {
     const element = getDenominationImageElement('bill1', 'Un dólar', 'w-8 h-8');
     const { container } = render(<>{element}</>);
