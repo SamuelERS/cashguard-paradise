@@ -3,11 +3,9 @@
  * Extraído de MorningVerification.tsx (líneas 57-59)
  *
  * @description
- * Resuelve IDs de store/employee a objetos completos.
- * Aislable con vi.mock('@/data/paradise') en tests (Ajuste #4 ORDEN #074).
+ * Resuelve actores de verificación sin depender de catálogos estáticos legacy.
  */
 import type { ResolvedActors } from '@/types/morningVerification';
-import { getStoreById, getEmployeeById } from '@/data/paradise';
 
 /**
  * Resuelve IDs de actores a objetos Store/Employee.
@@ -15,16 +13,37 @@ import { getStoreById, getEmployeeById } from '@/data/paradise';
  * @param storeId - ID de sucursal
  * @param cashierId - ID de cajero entrante
  * @param witnessId - ID de cajero saliente (testigo)
- * @returns Objetos resueltos o undefined si ID no encontrado
+ * @returns Objetos resueltos usando nombres explícitos o IDs como fallback
  */
 export function resolveVerificationActors(
   storeId: string,
   cashierId: string,
-  witnessId: string
+  witnessId: string,
+  names?: {
+    storeName?: string;
+    cashierName?: string;
+    witnessName?: string;
+  },
 ): ResolvedActors {
   return {
-    store: getStoreById(storeId),
-    cashierIn: getEmployeeById(cashierId),
-    cashierOut: getEmployeeById(witnessId),
+    store: {
+      id: storeId,
+      name: names?.storeName?.trim() || storeId,
+      address: '',
+      phone: '',
+      schedule: '',
+    },
+    cashierIn: {
+      id: cashierId,
+      name: names?.cashierName?.trim() || cashierId,
+      role: 'Empleado Activo',
+      stores: [storeId],
+    },
+    cashierOut: {
+      id: witnessId,
+      name: names?.witnessName?.trim() || witnessId,
+      role: 'Empleado Activo',
+      stores: [storeId],
+    },
   };
 }

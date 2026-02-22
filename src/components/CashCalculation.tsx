@@ -20,7 +20,6 @@ import { toast } from "sonner";
 import type { CashCount, ElectronicPayments } from "@/types/cash";
 import type { PhaseState, DeliveryCalculation } from "@/types/phases";
 import type { DailyExpense } from '@/types/expenses';
-import { getStoreById, getEmployeeById } from "@/data/paradise";
 import { useDeliveries } from "@/hooks/useDeliveries";
 // 🤖 [IA] - Desmonolitado: Tipos e interfaces movidos a generate-evening-report.ts
 import type { CalculationData } from '@/utils/generate-evening-report';
@@ -35,6 +34,9 @@ interface CashCalculationProps {
   expectedSales: number;
   cashCount: CashCount;
   electronicPayments: ElectronicPayments;
+  storeName?: string;
+  cashierName?: string;
+  witnessName?: string;
   expenses?: DailyExpense[];
   deliveryCalculation?: DeliveryCalculation;
   phaseState?: PhaseState;
@@ -49,6 +51,9 @@ const CashCalculation = ({
   expectedSales,
   cashCount,
   electronicPayments,
+  storeName,
+  cashierName,
+  witnessName,
   expenses = [],
   deliveryCalculation,
   phaseState,
@@ -75,9 +80,9 @@ const CashCalculation = ({
     };
   }, []);
 
-  const store = getStoreById(storeId);
-  const cashier = getEmployeeById(cashierId);
-  const witness = getEmployeeById(witnessId);
+  const displayStoreName = storeName?.trim() || storeId;
+  const displayCashierName = cashierName?.trim() || cashierId;
+  const displayWitnessName = witnessName?.trim() || witnessId;
 
   const performCalculation = useCallback(() => {
     const totalCash = calculateCashTotal(cashCount);
@@ -143,19 +148,19 @@ const CashCalculation = ({
       storeId,
       cashierId,
       witnessId,
-      storeName: store?.name,
-      cashierName: cashier?.name,
-      witnessName: witness?.name,
+      storeName: displayStoreName,
+      cashierName: displayCashierName,
+      witnessName: displayWitnessName,
       expenses,
       pendingDeliveries,
     });
   }, [calculationData, cashCount, electronicPayments, expectedSales, deliveryCalculation,
-      phaseState, storeId, cashierId, witnessId, store, cashier, witness, expenses, pendingDeliveries]);
+      phaseState, storeId, cashierId, witnessId, displayStoreName, displayCashierName, displayWitnessName, expenses, pendingDeliveries]);
 
   // 🤖 [IA] - v2.4.1: Handler inteligente con detección de plataforma + copia automática
   const handleWhatsAppSend = useCallback(async () => {
     try {
-      if (!calculationData || !store || !cashier || !witness) {
+      if (!calculationData) {
         toast.error("❌ Error", {
           description: "Faltan datos necesarios para generar el reporte"
         });
@@ -202,7 +207,7 @@ const CashCalculation = ({
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [calculationData, store, cashier, witness, reportSent]);
+  }, [calculationData, reportSent]);
 
   // 🤖 [IA] - v1.3.7: Handler confirmación explícita usuario
   const handleConfirmSent = useCallback(() => {
@@ -215,7 +220,7 @@ const CashCalculation = ({
   const generatePrintableReport = () => {
     try {
       const report = generateCompleteReport();
-      const html = generatePrintableHTML(report, store?.name);
+      const html = generatePrintableHTML(report, displayStoreName);
       const printWindow = window.open('', '_blank');
       if (printWindow) {
         printWindow.document.write(html);
@@ -271,7 +276,6 @@ const CashCalculation = ({
         {/* 🤖 [IA] - v1.3.6Z: FIX iOS Safari - div estático (sin motion.div) */}
         <div
           className="space-y-[clamp(1rem,4vw,1.5rem)]"
-          style={{ opacity: 1 }}
         >
           {/* 🤖 [IA] - v1.3.7: Header siempre visible */}
           <div className="text-center mb-[clamp(1.5rem,6vw,2rem)]">
@@ -285,7 +289,7 @@ const CashCalculation = ({
           {/* 🤖 [IA] - v1.3.7: RENDERIZADO CONDICIONAL - Resultados bloqueados hasta confirmación */}
           {!reportSent ? (
             <div style={{
-              background: 'rgba(36, 36, 36, 0.4)',
+              background: 'var(--glass-bg-primary)',
               backdropFilter: `blur(clamp(12px, 4vw, 20px))`,
               WebkitBackdropFilter: `blur(clamp(12px, 4vw, 20px))`,
               border: '1px solid rgba(255, 255, 255, 0.15)',
@@ -311,15 +315,15 @@ const CashCalculation = ({
               expectedSales={expectedSales}
               deliveryCalculation={deliveryCalculation}
               phaseState={phaseState}
-              storeName={store?.name}
-              cashierName={cashier?.name}
-              witnessName={witness?.name}
+              storeName={displayStoreName}
+              cashierName={displayCashierName}
+              witnessName={displayWitnessName}
             />
           )}
 
           {/* 🤖 [IA] - v1.3.7: ANTI-FRAUDE - Bloque de acción SIEMPRE visible */}
           <div style={{
-            background: 'rgba(36, 36, 36, 0.4)',
+            background: 'var(--glass-bg-primary)',
             backdropFilter: `blur(clamp(12px, 4vw, 20px))`,
             WebkitBackdropFilter: `blur(clamp(12px, 4vw, 20px))`,
             border: '1px solid rgba(255, 255, 255, 0.15)',

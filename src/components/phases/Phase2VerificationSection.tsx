@@ -13,7 +13,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Building, ChevronRight, Check, Banknote, Target, CheckCircle, Coins } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { ConstructiveActionButton } from '@/components/shared/ConstructiveActionButton';
 import { DestructiveActionButton } from '@/components/shared/DestructiveActionButton';
 import { NeutralActionButton } from '@/components/ui/neutral-action-button';
@@ -489,7 +488,7 @@ export function Phase2VerificationSection({
                   }}
                 >
                   {/* 🤖 [IA] - FASE 5 PASO 2: Usando getDenominationImageElement() utility */}
-                  {getDenominationImageElement(currentStep.key as keyof CashCount, currentStep.label)}
+                  {getDenominationImageElement(currentStep.key as keyof CashCount, currentStep.label, "object-contain w-full h-full")}
                 </div>
 
                 {/* 🔒 Badge condicional QUEDA EN CAJA (conteo ciego producción) */}

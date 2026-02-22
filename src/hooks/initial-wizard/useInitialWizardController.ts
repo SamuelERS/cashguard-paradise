@@ -6,14 +6,15 @@ import { useWizardNavigation } from '@/hooks/useWizardNavigation';
 import { useRulesFlow } from '@/hooks/useRulesFlow';
 import { useTimingConfig } from '@/hooks/useTimingConfig';
 import { useInputValidation } from '@/hooks/useInputValidation';
-import { getAvailableEmployees } from '@/lib/initial-wizard/wizardSelectors';
+import { useSucursales } from '@/hooks/useSucursales';
+import { useEmpleadosSucursal } from '@/hooks/useEmpleadosSucursal';
 import { calculateProgress } from '@/lib/initial-wizard/wizardRules';
 import type { InitialWizardModalProps, InitialWizardControllerReturn } from '@/types/initialWizard';
 
 export function useInitialWizardController(
   props: InitialWizardModalProps
 ): InitialWizardControllerReturn {
-  const { isOpen, onClose, onComplete } = props;
+  const { isOpen, onClose, onComplete, initialSucursalId } = props;
 
   // ── Hooks existentes (consumidos, NO reemplazados) ──
   const {
@@ -43,6 +44,8 @@ export function useInitialWizardController(
 
   const { createTimeoutWithCleanup } = useTimingConfig();
   const { validateInput, getPattern, getInputMode } = useInputValidation();
+  const { sucursales } = useSucursales();
+  const { empleados: empleadosSucursal } = useEmpleadosSucursal(wizardData.selectedStore || null);
 
   // ── State local ──
   const [hasVibratedForError, setHasVibratedForError] = useState(false);
@@ -83,9 +86,19 @@ export function useInitialWizardController(
   }, [isFlowCompleted, currentStep, hasVibratedForError]);
 
   // ── Computed ──
-  const availableEmployees = wizardData.selectedStore
-    ? getAvailableEmployees(wizardData.selectedStore)
-    : [];
+  const availableStores = sucursales.map((sucursal) => ({
+    id: sucursal.id,
+    name: sucursal.nombre,
+    address: `Codigo ${sucursal.codigo}`,
+    phone: '',
+    schedule: '',
+  }));
+  const availableEmployees = empleadosSucursal.map((empleado) => ({
+    id: empleado.id,
+    name: empleado.nombre,
+    role: 'Empleado Activo',
+    stores: wizardData.selectedStore ? [wizardData.selectedStore] : [],
+  }));
 
   const progressValue = calculateProgress(wizardData, isFlowCompleted());
 
@@ -153,6 +166,7 @@ export function useInitialWizardController(
     canGoPrevious,
     isCompleted,
     updateWizardData,
+    availableStores,
     availableEmployees,
     rulesFlowState,
     isFlowCompleted,

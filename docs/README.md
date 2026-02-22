@@ -50,10 +50,19 @@ docs/
 ### 👷‍♂️ Para Desarrolladores (`04_desarrollo/`)
 Aquí encontrarás el trabajo en curso. Las reglas están en la raíz:
 - **Testing y QA:** `04_desarrollo/Caso_Plan_Testing_Control_Calidad/`
+- **Plan modular activo:** `04_desarrollo/Caso_Plan_Modular_Unificacion_Catalogos_20260217/`
+- **Estrategia UI + datos reales (Modulo A validado):** `04_desarrollo/Caso_Estrategia_UI_Datos_Reales_20260217/`
+- **Mapeo integral persistencia Supabase (corte):** `04_desarrollo/Caso_Mapeo_Integral_Persistencia_Supabase_Corte_20260217/`
+- **Casos cerrados operativos:** `04_desarrollo/CASOS-COMPLETOS/`
 - **Casos Activos:**
     - `Caso_Logica_Envios_Delivery`
     - `Caso_Evento_NoReportado_EnVuelto`
     - `EN_PROGRESO_Caso_Reporte_Enviar_Correo`
+    - `Caso_Investigacion_Doble_Fuente_Catalogos_20260217`
+- **Casos Completos (destino interno):**
+    - `04_desarrollo/CASOS-COMPLETOS/`
+- **Planes de implementación (TDD):**
+    - `plans/`
 
 ### 🏗️ Arquitectura del Sistema (`02_arquitectura/`)
 La base técnica inmutable y decisiones de alto nivel:

@@ -35,6 +35,47 @@ export type Database = {
         };
         Update: Partial<Omit<CorteIntento, 'id' | 'created_at'>>;
       };
+      empleados: {
+        Row: {
+          id: string;
+          nombre: string;
+          rol: string | null;
+          cargo: string | null;
+          activo: boolean;
+        };
+        Insert: {
+          id?: string;
+          nombre: string;
+          rol?: string | null;
+          cargo?: string | null;
+          activo?: boolean;
+        };
+        Update: {
+          nombre?: string;
+          rol?: string | null;
+          cargo?: string | null;
+          activo?: boolean;
+        };
+      };
+      empleado_sucursales: {
+        Row: {
+          id: string;
+          empleado_id: string;
+          sucursal_id: string;
+          activo: boolean;
+        };
+        Insert: {
+          id?: string;
+          empleado_id: string;
+          sucursal_id: string;
+          activo?: boolean;
+        };
+        Update: {
+          empleado_id?: string;
+          sucursal_id?: string;
+          activo?: boolean;
+        };
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
@@ -91,6 +132,8 @@ export const tables = {
   sucursales: () => supabase.from('sucursales'),
   cortes: () => supabase.from('cortes'),
   corteIntentos: () => supabase.from('corte_intentos'),
+  empleados: () => supabase.from('empleados'),
+  empleadoSucursales: () => supabase.from('empleado_sucursales'),
 } as const;
 
 // ---------------------------------------------------------------------------

@@ -131,7 +131,7 @@ export const GuidedDenominationSection = ({
   // Vista desktop (grid tradicional)
   return (
     <div style={{
-      backgroundColor: 'rgba(36, 36, 36, 0.4)',
+      backgroundColor: 'var(--glass-bg-primary)',
       backdropFilter: 'blur(20px)',
       WebkitBackdropFilter: 'blur(20px)',
       border: '1px solid rgba(255, 255, 255, 0.15)',

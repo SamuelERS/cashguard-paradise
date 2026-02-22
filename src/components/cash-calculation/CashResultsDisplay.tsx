@@ -21,16 +21,6 @@ interface CashResultsDisplayProps {
   witnessName?: string;
 }
 
-// 🤖 [IA] - Glass morphism card style constant (avoids repetition in JSX)
-const glassCard = {
-  background: 'rgba(36, 36, 36, 0.4)',
-  backdropFilter: 'blur(clamp(12px, 4vw, 20px))',
-  WebkitBackdropFilter: 'blur(clamp(12px, 4vw, 20px))',
-  border: '1px solid rgba(255, 255, 255, 0.15)',
-  borderRadius: 'clamp(8px, 3vw, 16px)',
-  padding: 'clamp(1rem, 5vw, 1.5rem)',
-} as const;
-
 // --- Helper: Display remaining denominations when Phase 2 was skipped ---
 function RemainingDenominationsDisplay({ denominations }: { denominations: CashCount }) {
   return <DenominationsList denominations={denominations} />;
@@ -90,7 +80,7 @@ export function CashResultsDisplay({
       {/* Store and Personnel Info + Calculation Results */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-[clamp(1rem,4vw,1.5rem)]">
         {/* Información de la sucursal y personal */}
-        <div style={glassCard}>
+        <div className="glass-morphism-panel">
           <h3 className="text-[clamp(1rem,4.5vw,1.25rem)] font-bold mb-[clamp(0.75rem,3vw,1rem)]" style={{ color: '#e1e8ed' }}>
             Información del Corte
           </h3>
@@ -117,7 +107,7 @@ export function CashResultsDisplay({
         </div>
 
         {/* Totales Calculados */}
-        <div style={glassCard}>
+        <div className="glass-morphism-panel">
           <h3 className="text-[clamp(1rem,4.5vw,1.25rem)] font-bold mb-[clamp(0.75rem,3vw,1rem)]" style={{ color: '#e1e8ed' }}>
             Totales Calculados
           </h3>
@@ -185,7 +175,7 @@ export function CashResultsDisplay({
       </div>
 
       {/* Deliveries COD Section */}
-      <div style={glassCard}>
+      <div className="glass-morphism-panel">
         <h3 className="text-[clamp(1rem,4.5vw,1.25rem)] font-bold mb-[clamp(0.75rem,3vw,1rem)]" style={{ color: '#e1e8ed' }}>
           📦 Deliveries Pendientes (COD)
         </h3>
@@ -196,7 +186,7 @@ export function CashResultsDisplay({
       </div>
 
       {/* Cambio para Mañana */}
-      <div style={glassCard}>
+      <div className="glass-morphism-panel">
         <h3 className="text-[clamp(1rem,4.5vw,1.25rem)] font-bold mb-[clamp(0.75rem,3vw,1rem)]" style={{ color: '#e1e8ed' }}>
           Cambio para Mañana
         </h3>

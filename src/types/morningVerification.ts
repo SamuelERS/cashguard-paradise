@@ -16,6 +16,9 @@ export interface MorningVerificationProps {
   storeId: string;
   cashierId: string;   // Cajero entrante
   witnessId: string;   // Cajero saliente
+  storeName?: string;
+  cashierName?: string;
+  witnessName?: string;
   cashCount: CashCount;
   onBack: () => void;
   onComplete: () => void;

@@ -16,6 +16,21 @@ export interface InitialWizardModalProps {
     expectedSales: string;
     dailyExpenses: DailyExpense[];
   }) => void;
+  /** 🤖 [IA] - DACC-CIERRE: ID de sucursal para preselección desde sesión activa Supabase */
+  initialSucursalId?: string | null;
+  /** [IA] - CASO-SANN: Indica si se detectó sesión activa en Supabase para mostrar banner informativo */
+  hasActiveSession?: boolean;
+  /** [IA] - CASO-SANN-R2: Callback cuando usuario elige reanudar sesión activa */
+  onResumeSession?: () => void;
+  /** [IA] - CASO-SANN-R2: Callback cuando usuario elige abortar sesión activa */
+  onAbortSession?: () => void;
+  /** [IA] - R3-B2: Info enriquecida de sesión activa para mostrar identificador en Step 5 */
+  activeSessionInfo?: {
+    correlativo: string | null;
+    createdAt: string | null;
+    cajero: string | null;
+    estado: string | null;
+  } | null;
 }
 
 // ────────────────────────────────────────────────────────────────
@@ -38,6 +53,10 @@ export interface Step1Props extends WizardStepProps {
   handleRuleAcknowledge: (ruleId: string, index: number) => void;
 }
 
+export interface Step2Props extends WizardStepProps {
+  availableStores: Array<{ id: string; name: string }>;
+}
+
 export interface Step3Props extends WizardStepProps {
   availableEmployees: Array<{ id: string; name: string; role: string; stores: string[] }>;
 }
@@ -55,7 +74,19 @@ export interface Step5Props extends WizardStepProps {
   canGoNext: boolean;
   currentStep: number;
   totalSteps: number;
+  availableStores: Array<{ id: string; name: string }>;
   availableEmployees: Array<{ id: string; name: string; role: string; stores: string[] }>;
+  // [IA] - CASO-SANN-R2: Props para panel de sesión activa (bloqueo anti-fraude en Step 5)
+  hasActiveSession?: boolean;
+  onResumeSession?: () => void;
+  onAbortSession?: () => void;
+  /** [IA] - R3-B2: Info enriquecida de sesión activa para mostrar identificador en Step 5 */
+  activeSessionInfo?: {
+    correlativo: string | null;
+    createdAt: string | null;
+    cajero: string | null;
+    estado: string | null;
+  } | null;
 }
 
 // ────────────────────────────────────────────────────────────────
@@ -71,6 +102,7 @@ export interface InitialWizardControllerReturn {
   canGoPrevious: boolean;
   isCompleted: boolean;
   updateWizardData: (updates: Partial<WizardData>) => void;
+  availableStores: Array<{ id: string; name: string; address: string; phone: string; schedule: string }>;
   availableEmployees: Array<{ id: string; name: string; role: string; stores: string[] }>;
 
   // Rules flow

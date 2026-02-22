@@ -18,7 +18,6 @@ import type {
 
 import { performVerification, generateDataHash } from '@/lib/morning-verification/mvRules';
 import { generateMorningReport, downloadPrintableReport } from '@/lib/morning-verification/mvFormatters';
-import { resolveVerificationActors } from '@/lib/morning-verification/mvSelectors';
 import { copyToClipboard } from '@/utils/clipboard';
 
 // ────────────────────────────────────────────────────────────────
@@ -67,7 +66,17 @@ async function copyReportToClipboard(report: string): Promise<void> {
 export function useMorningVerificationController(
   props: MorningVerificationProps
 ): MorningVerificationControllerReturn {
-  const { storeId, cashierId, witnessId, cashCount, onBack, onComplete } = props;
+  const {
+    storeId,
+    cashierId,
+    witnessId,
+    storeName,
+    cashierName,
+    witnessName,
+    cashCount,
+    onBack,
+    onComplete,
+  } = props;
 
   // ── State ──────────────────────────────────────────────────────
   const [verificationData, setVerificationData] = useState(
@@ -79,8 +88,33 @@ export function useMorningVerificationController(
   const [showWhatsAppInstructions, setShowWhatsAppInstructions] = useState(false);
 
   // ── Actors ─────────────────────────────────────────────────────
-  const { store, cashierIn, cashierOut } = resolveVerificationActors(
-    storeId, cashierId, witnessId
+  const store = useMemo(
+    () => ({
+      id: storeId,
+      name: storeName?.trim() || storeId,
+      address: '',
+      phone: '',
+      schedule: '',
+    }),
+    [storeId, storeName],
+  );
+  const cashierIn = useMemo(
+    () => ({
+      id: cashierId,
+      name: cashierName?.trim() || cashierId,
+      role: 'Empleado Activo',
+      stores: [storeId],
+    }),
+    [cashierId, cashierName, storeId],
+  );
+  const cashierOut = useMemo(
+    () => ({
+      id: witnessId,
+      name: witnessName?.trim() || witnessId,
+      role: 'Empleado Activo',
+      stores: [storeId],
+    }),
+    [witnessId, witnessName, storeId],
   );
 
   // ── Verificación al montar ─────────────────────────────────────

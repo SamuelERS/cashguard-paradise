@@ -57,6 +57,12 @@ vi.mock('../../lib/supabase', () => ({
   },
 }));
 
+// 🤖 [IA] - OT-17: Mock append-only snapshot service (fire-and-forget)
+const mockInsertSnapshot = vi.fn().mockResolvedValue(null);
+vi.mock('../../lib/snapshots', () => ({
+  insertSnapshot: (...args: unknown[]) => mockInsertSnapshot(...args),
+}));
+
 // NOW import the module under test
 import { useCorteSesion, generarCorrelativo } from '../useCorteSesion';
 
@@ -554,6 +560,39 @@ describe('Suite 4: guardarProgreso', () => {
         });
       }),
     ).rejects.toThrow('No hay corte activo para guardar progreso');
+  });
+
+  // 🤖 [IA] - OT-17: Snapshot fire-and-forget después de guardarProgreso exitoso
+  it('4.5 - Llama insertSnapshot fire-and-forget tras guardar exitoso', async () => {
+    mockInsertSnapshot.mockClear();
+
+    const result = await renderWithCorte();
+
+    // Mock para que guardarProgreso resuelva exitosamente
+    const corteActualizado = { ...CORTE_MOCK, fase_actual: 2, estado: 'EN_PROGRESO' as const };
+    mockChain.cortes.single.mockResolvedValueOnce({
+      data: corteActualizado,
+      error: null,
+    });
+
+    await act(async () => {
+      await result.current.guardarProgreso({
+        fase_actual: 2,
+        conteo_parcial: { penny: 10 },
+        pagos_electronicos: { credomatic: 5 },
+        gastos_dia: null,
+      });
+    });
+
+    expect(mockInsertSnapshot).toHaveBeenCalledTimes(1);
+    expect(mockInsertSnapshot).toHaveBeenCalledWith(
+      expect.objectContaining({
+        corte_id: expect.any(String),
+        attempt_number: expect.any(Number),
+        fase_actual: 2,
+        source: 'manual',
+      }),
+    );
   });
 });
 

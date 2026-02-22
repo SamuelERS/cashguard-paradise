@@ -63,8 +63,22 @@ vi.mock('@/hooks/usePwaScrollPrevention', () => ({
   usePwaScrollPrevention: vi.fn(),
 }));
 
-vi.mock('@/data/paradise', () => ({
-  getEmployeesByStore: vi.fn(() => []),
+vi.mock('@/hooks/useSucursales', () => ({
+  useSucursales: vi.fn(() => ({
+    sucursales: [],
+    cargando: false,
+    error: null,
+    recargar: vi.fn(),
+  })),
+}));
+
+vi.mock('@/hooks/useEmpleadosSucursal', () => ({
+  useEmpleadosSucursal: vi.fn(() => ({
+    empleados: [],
+    cargando: false,
+    error: null,
+    recargar: vi.fn(),
+  })),
 }));
 
 vi.mock('@/utils/calculations', () => ({
@@ -97,6 +111,8 @@ vi.mock('@/config/toast', () => ({
 
 // Import AFTER mocks
 import { useCashCounterOrchestrator } from '../useCashCounterOrchestrator';
+import { useSucursales } from '@/hooks/useSucursales';
+import { useEmpleadosSucursal } from '@/hooks/useEmpleadosSucursal';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -121,9 +137,24 @@ function defaultOptions(overrides = {}) {
 // ---------------------------------------------------------------------------
 
 describe('useCashCounterOrchestrator — skipWizard', () => {
+  const mockUseSucursales = vi.mocked(useSucursales);
+  const mockUseEmpleadosSucursal = vi.mocked(useEmpleadosSucursal);
+
   beforeEach(() => {
     vi.clearAllMocks();
     sessionStorage.clear();
+    mockUseSucursales.mockReturnValue({
+      sucursales: [],
+      cargando: false,
+      error: null,
+      recargar: vi.fn(),
+    });
+    mockUseEmpleadosSucursal.mockReturnValue({
+      empleados: [],
+      cargando: false,
+      error: null,
+      recargar: vi.fn(),
+    });
   });
 
   it('Con skipWizard=true y CASH_CUT, NO muestra instrucciones y arranca Phase 1', () => {
@@ -156,5 +187,133 @@ describe('useCashCounterOrchestrator — skipWizard', () => {
     // Default: muestra instrucciones para CASH_CUT
     expect(result.current.showInstructionsModal).toBe(true);
     expect(mockStartPhase1).not.toHaveBeenCalled();
+  });
+
+  it('Con skipWizard=true y expectedSales vacía, arranca Phase 1 (no vuelve al formulario legacy)', () => {
+    const { result } = renderHook(() =>
+      useCashCounterOrchestrator(defaultOptions({
+        skipWizard: true,
+        initialExpectedSales: '',
+      })),
+    );
+
+    expect(result.current.showInstructionsModal).toBe(false);
+    expect(mockStartPhase1).toHaveBeenCalled();
+  });
+
+  it('Con skipWizard=false y expectedSales vacía, mantiene flujo guiado (modal visible)', () => {
+    const { result } = renderHook(() =>
+      useCashCounterOrchestrator(defaultOptions({
+        skipWizard: false,
+        initialExpectedSales: '',
+      })),
+    );
+
+    expect(result.current.showInstructionsModal).toBe(true);
+    expect(mockStartPhase1).not.toHaveBeenCalled();
+  });
+
+  it('usa sucursales remotas como catálogo de tiendas cuando existen', () => {
+    mockUseSucursales.mockReturnValue({
+      sucursales: [
+        { id: 'suc-001', nombre: 'Los Héroes', codigo: 'H', activa: true },
+      ],
+      cargando: false,
+      error: null,
+      recargar: vi.fn(),
+    });
+
+    const { result } = renderHook(() =>
+      useCashCounterOrchestrator(defaultOptions({
+        initialStore: '',
+        initialCashier: '',
+        initialWitness: '',
+      })),
+    );
+
+    expect(result.current.availableStores).toEqual([
+      { id: 'suc-001', name: 'Los Héroes', code: 'H' },
+    ]);
+  });
+
+  it('prioriza empleados de Supabase cuando hay sucursal remota seleccionada', () => {
+    mockUseSucursales.mockReturnValue({
+      sucursales: [
+        { id: 'suc-001', nombre: 'Los Héroes', codigo: 'H', activa: true },
+      ],
+      cargando: false,
+      error: null,
+      recargar: vi.fn(),
+    });
+    mockUseEmpleadosSucursal.mockReturnValue({
+      empleados: [
+        { id: 'uuid-1', nombre: 'Jonathan Melara', cargo: 'Cajero' },
+        { id: 'uuid-2', nombre: 'Adonay Torres', cargo: 'Testigo' },
+      ],
+      cargando: false,
+      error: null,
+      recargar: vi.fn(),
+    });
+
+    const { result } = renderHook(() =>
+      useCashCounterOrchestrator(defaultOptions({
+        initialStore: 'suc-001',
+        initialCashier: '',
+        initialWitness: '',
+      })),
+    );
+
+    expect(mockUseEmpleadosSucursal).toHaveBeenCalledWith('suc-001');
+    expect(result.current.availableEmployees).toEqual([
+      { id: 'uuid-1', name: 'Jonathan Melara', role: 'Cajero', stores: ['suc-001'] },
+      { id: 'uuid-2', name: 'Adonay Torres', role: 'Testigo', stores: ['suc-001'] },
+    ]);
+  });
+
+  it('resuelve sucursal por nombre completo para cargar empleados registrados', () => {
+    mockUseSucursales.mockReturnValue({
+      sucursales: [
+        { id: 'suc-003', nombre: 'San Benito', codigo: 'B', activa: true },
+      ],
+      cargando: false,
+      error: null,
+      recargar: vi.fn(),
+    });
+
+    renderHook(() =>
+      useCashCounterOrchestrator(defaultOptions({
+        initialStore: 'San Benito',
+        initialCashier: '',
+        initialWitness: '',
+      })),
+    );
+
+    expect(mockUseEmpleadosSucursal).toHaveBeenCalledWith('suc-003');
+  });
+
+  it('retorna empleados vacios cuando no hay datos de la sucursal', () => {
+    mockUseSucursales.mockReturnValue({
+      sucursales: [],
+      cargando: false,
+      error: null,
+      recargar: vi.fn(),
+    });
+    mockUseEmpleadosSucursal.mockReturnValue({
+      empleados: [],
+      cargando: false,
+      error: null,
+      recargar: vi.fn(),
+    });
+
+    const { result } = renderHook(() =>
+      useCashCounterOrchestrator(defaultOptions({
+        initialStore: 'los-heroes',
+        initialCashier: '',
+        initialWitness: '',
+      })),
+    );
+
+    expect(mockUseEmpleadosSucursal).toHaveBeenCalledWith(null);
+    expect(result.current.availableEmployees).toEqual([]);
   });
 });

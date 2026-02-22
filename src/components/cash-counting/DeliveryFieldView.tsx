@@ -11,6 +11,7 @@ import { NeutralActionButton } from '@/components/ui/neutral-action-button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';  // 🤖 [IA] - v1.2.52: WCAG 2.1 SC 3.3.2 compliance
 import { DENOMINATIONS } from '@/types/cash';
+import { DENOMINATION_IMAGE_MAP } from '@/utils/denomination-images';
 import { formatCurrency } from '@/utils/calculations';
 import { useInputValidation } from '@/hooks/useInputValidation';
 import { useTimingConfig } from '@/hooks/useTimingConfig';
@@ -173,17 +174,9 @@ export function DeliveryFieldView({
   const getIcon = () => {
     switch (currentFieldType) {
       case 'coin': {
-        let coinImage = '/monedas-recortadas-dolares/moneda-centavo-front-inlay.webp';
-
-        if (currentFieldName === 'nickel') {
-          coinImage = '/monedas-recortadas-dolares/moneda-cinco-centavos-dos-caras.webp';
-        } else if (currentFieldName === 'dime') {
-          coinImage = '/monedas-recortadas-dolares/moneda-diez-centavos.webp';
-        } else if (currentFieldName === 'quarter') {
-          coinImage = '/monedas-recortadas-dolares/moneda-25-centavos-dos-caras.webp';
-        } else if (currentFieldName === 'dollar' || currentFieldName === 'dollarCoin') {
-          coinImage = '/monedas-recortadas-dolares/moneda-un-dollar-nueva.webp';
-        }
+        // 🤖 [IA] - OT #078: Migrado a DENOMINATION_IMAGE_MAP (SSOT) — eliminada duplicación
+        const denomKey = (currentFieldName === 'dollar' ? 'dollarCoin' : currentFieldName) as keyof typeof DENOMINATION_IMAGE_MAP;
+        const coinImage = DENOMINATION_IMAGE_MAP[denomKey] ?? DENOMINATION_IMAGE_MAP.penny;
 
         return (
           <img
@@ -194,41 +187,20 @@ export function DeliveryFieldView({
               width: 'clamp(234.375px, 58.59vw, 390.625px)',
               aspectRatio: '2.4 / 1'
             }}
+            onError={(e) => { e.currentTarget.src = '/placeholder.svg'; }}
           />
         );
       }
       case 'bill': {
-        // 🤖 [IA] - v1.3.7T: Imágenes con fallback a placeholder.svg
-        // Rutas originales preservadas para cuando se agreguen assets profesionales
-        let billImage = '/monedas-recortadas-dolares/billete-1.webp';
-
-        // Estándar canónico: solo verificar identificador único
-        if (currentFieldName === 'bill1') {
-          billImage = '/monedas-recortadas-dolares/billete-1.webp';
-        } else if (currentFieldName === 'bill5') {
-          billImage = '/monedas-recortadas-dolares/billete-5.webp';
-        } else if (currentFieldName === 'bill10') {
-          billImage = '/monedas-recortadas-dolares/billete-10.webp';
-        } else if (currentFieldName === 'bill20') {
-          billImage = '/monedas-recortadas-dolares/billete-20.webp';
-        } else if (currentFieldName === 'bill50') {
-          billImage = '/monedas-recortadas-dolares/billete-cincuenta-dolares-sobre-fondo-blanco(1).webp';
-        } else if (currentFieldName === 'bill100') {
-          billImage = '/monedas-recortadas-dolares/billete-100.webp';
-        }
+        // 🤖 [IA] - OT #078: Migrado a DENOMINATION_IMAGE_MAP (SSOT) — eliminada duplicación
+        const billImage = DENOMINATION_IMAGE_MAP[currentFieldName as keyof typeof DENOMINATION_IMAGE_MAP] ?? DENOMINATION_IMAGE_MAP.bill1;
 
         return (
           <img
             src={billImage}
             alt={`Billete de ${currentFieldLabel}`}
             className="object-contain w-full h-full"
-            onError={(e) => {
-              // 🤖 [IA] - v1.3.7T: Fallback a placeholder.svg si imagen no existe
-              const target = e.target as HTMLImageElement;
-              if (target.src !== '/placeholder.svg') {
-                target.src = '/placeholder.svg';
-              }
-            }}
+            onError={(e) => { e.currentTarget.src = '/placeholder.svg'; }}
           />
         );
       }

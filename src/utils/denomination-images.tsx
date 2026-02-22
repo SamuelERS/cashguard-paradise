@@ -23,10 +23,10 @@ import type { CashCount } from '@/types/cash';
  * ```
  */
 export const DENOMINATION_IMAGE_MAP: Record<keyof CashCount, string> = {
-  penny: '/monedas-recortadas-dolares/penny.webp',
-  nickel: '/monedas-recortadas-dolares/nickel.webp',
+  penny: '/monedas-recortadas-dolares/moneda-centavo-front-inlay.webp',
+  nickel: '/monedas-recortadas-dolares/moneda-cinco-centavos-dos-caras.webp',
   dime: '/monedas-recortadas-dolares/dime.webp',
-  quarter: '/monedas-recortadas-dolares/quarter.webp',
+  quarter: '/monedas-recortadas-dolares/moneda-25-centavos-dos-caras.webp',
   dollarCoin: '/monedas-recortadas-dolares/dollar-coin.webp',
   bill1: '/monedas-recortadas-dolares/billete-1.webp',
   bill5: '/monedas-recortadas-dolares/billete-5.webp',
@@ -55,7 +55,7 @@ export const DENOMINATION_IMAGE_MAP: Record<keyof CashCount, string> = {
  * ```typescript
  * // Uso básico con tamaño responsive default
  * getDenominationImageElement('penny', 'Un centavo')
- * // => <img src="/monedas-recortadas-dolares/penny.webp" alt="Un centavo" ... />
+ * // => <img src="/monedas-recortadas-dolares/moneda-centavo-front-inlay.webp" alt="Un centavo" ... />
  *
  * // Con className custom
  * getDenominationImageElement('bill1', 'Billete de un dólar', 'w-8 h-8')
@@ -67,7 +67,7 @@ export const DENOMINATION_IMAGE_MAP: Record<keyof CashCount, string> = {
 export function getDenominationImageElement(
   denominationKey: keyof CashCount,
   label: string,
-  className: string = "w-[clamp(1.5rem,6vw,2rem)] h-[clamp(1.5rem,6vw,2rem)]"
+  className: string = "w-[clamp(1.5rem,6vw,2rem)] h-[clamp(1.5rem,6vw,2rem)] object-contain"
 ): React.ReactNode {
   const imageSrc = DENOMINATION_IMAGE_MAP[denominationKey];
 
@@ -83,6 +83,7 @@ export function getDenominationImageElement(
       className={className}
       loading="lazy"
       decoding="async"
+      onError={(e) => { e.currentTarget.src = '/placeholder.svg'; }}
     />
   );
 }

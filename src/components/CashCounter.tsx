@@ -1,7 +1,8 @@
-// 🤖 [IA] - v1.4.1: Desmonolitización COMPLETA - Componente presentacional delgado
-// Toda la lógica extraída a useCashCounterOrchestrator hook
-// Previous: v1.4.0 - Integración Sistema Gastos de Caja
+// 🤖 [IA] - DACC-CIERRE-SYNC-UX: CorteStatusBanner + props sincronización Supabase
+// Previous: v1.4.2: OT-17 — Props hidratación + autosave para persistencia anti-reinicio
+// Previous: v1.4.1: Desmonolitización COMPLETA - Componente presentacional delgado
 import type { DailyExpense } from '@/types/expenses';
+import type { CashCount, ElectronicPayments } from '@/types/cash';
 import { GuidedInstructionsModal } from "@/components/cash-counting/GuidedInstructionsModal";
 import { Phase2Manager } from "@/components/phases/Phase2Manager";
 import { StoreSelectionForm } from "@/components/cash-counter/StoreSelectionForm";
@@ -9,8 +10,9 @@ import { Phase3ReportView } from "@/components/cash-counter/Phase3ReportView";
 import { Phase1CountingView } from "@/components/cash-counter/Phase1CountingView";
 import { OperationMode } from "@/types/operation-mode";
 import { useCashCounterOrchestrator } from "@/hooks/useCashCounterOrchestrator";
+import { CorteStatusBanner } from "@/components/corte/CorteStatusBanner";
 
-// 🤖 [IA] - v1.4.0 - Props con modo de operación y gastos
+// 🤖 [IA] - v1.4.2: OT-17 — Props con hidratación + autosave
 interface CashCounterProps {
   operationMode?: OperationMode;
   initialStore?: string;
@@ -21,6 +23,19 @@ interface CashCounterProps {
   onBack?: () => void;
   onFlowCancel?: () => void;
   skipWizard?: boolean; // 🤖 [IA] - Orden #015: Saltar instrucciones cuando datos vienen del flujo de auditoría
+  // 🤖 [IA] - OT-17: Hidratación + autosave persistencia anti-reinicio
+  initialCashCount?: CashCount;
+  initialElectronicPayments?: ElectronicPayments;
+  onGuardarProgreso?: (datos: {
+    fase_actual: number;
+    conteo_parcial: CashCount;
+    pagos_electronicos: ElectronicPayments;
+    gastos_dia: DailyExpense[];
+  }) => void;
+  // 🤖 [IA] - DACC-CIERRE-SYNC-UX: Props sincronización visual
+  syncEstado?: 'sincronizado' | 'sincronizando' | 'error';
+  ultimaSync?: string | null;
+  syncError?: string | null;
 }
 
 // 🤖 [IA] - v1.4.1: Componente presentacional delgado - toda lógica en useCashCounterOrchestrator
@@ -34,6 +49,12 @@ const CashCounter = ({
   onBack,
   onFlowCancel,
   skipWizard = false,
+  initialCashCount,
+  initialElectronicPayments,
+  onGuardarProgreso,
+  syncEstado,
+  ultimaSync,
+  syncError,
 }: CashCounterProps) => {
   const state = useCashCounterOrchestrator({
     operationMode,
@@ -45,6 +66,10 @@ const CashCounter = ({
     onBack,
     onFlowCancel,
     skipWizard,
+    // 🤖 [IA] - OT-17: Hidratación + autosave
+    initialCashCount,
+    initialElectronicPayments,
+    onGuardarProgreso,
   });
 
   // 🤖 [IA] - v1.4.1: Phase 3 early return
@@ -55,6 +80,9 @@ const CashCounter = ({
         selectedStore={state.selectedStore}
         selectedCashier={state.selectedCashier}
         selectedWitness={state.selectedWitness}
+        selectedStoreName={state.selectedStoreName}
+        selectedCashierName={state.selectedCashierName}
+        selectedWitnessName={state.selectedWitnessName}
         expectedSales={state.expectedSales}
         cashCount={state.cashCount}
         electronicPayments={state.electronicPayments}
@@ -73,14 +101,30 @@ const CashCounter = ({
            style={{ touchAction: 'none', overscrollBehavior: 'none', WebkitOverflowScrolling: 'touch' }}>
 
         <div className="relative z-10 container mx-auto px-4 py-2 max-w-4xl">
+          {/* 🤖 [IA] - DACC-CIERRE-SYNC-UX: Banner de sincronización Supabase */}
+          {syncEstado && (
+            <div className="mb-2">
+              <CorteStatusBanner
+                estadoConexion="online"
+                estadoSync={syncEstado}
+                ultimaSync={ultimaSync ?? null}
+                pendientes={0}
+                mensajeError={syncError}
+              />
+            </div>
+          )}
           {/* 🤖 [IA] - v1.0.3 - Saltar selección si viene del wizard */}
           {state.phaseState.currentPhase === 1 && !state.phaseState.phase1Completed && !state.hasInitialData && (
             <StoreSelectionForm
+              stores={state.availableStores}
               selectedStore={state.selectedStore}
               selectedCashier={state.selectedCashier}
               selectedWitness={state.selectedWitness}
               expectedSales={state.expectedSales}
+              availableStores={state.availableStores}
               availableEmployees={state.availableEmployees}
+              loadingEmployees={state.cargandoEmpleados}
+              employeesError={state.errorEmpleados}
               canProceedToPhase1={state.canProceedToPhase1}
               operationMode={operationMode}
               onStoreChange={state.setSelectedStore}

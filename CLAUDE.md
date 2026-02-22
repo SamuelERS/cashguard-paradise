@@ -1,3 +1,57 @@
+### v3.5.0 - Caso UX/UI Módulo Nocturno Feb-19: Auditoría y Limpieza [22 FEB 2026] ✅
+**OPERACIÓN UX/UI AUDIT COMPLETADA:** Auditoría completa del módulo nocturno con metodología TDD (Red→Green). 11 inconsistencias corregidas en 4 módulos prioritarios usando protocolo DACC — tests estáticos como contrato de calidad, verificación independiente en cada checkpoint.
+
+**Metodología aplicada:**
+- ✅ **DACC (Directiva de Auditoría y Control de Calidad):** Director inspecciona, programador ejecuta, Director verifica independientemente antes de cada veredicto
+- ✅ **TDD estático:** Tests con `readFileSync` + regex — sin render, sin jsdom, máxima velocidad
+- ✅ **5 órdenes modulares** con checkpoint entre cada una
+
+**4 Módulos corregidos:**
+
+**P0 — Glass Morphism Unificado (Orden 2/5)**
+- ❌ `rgba(36, 36, 36, 0.4)` hardcodeado en 3+ archivos migrados
+- ❌ Constante `glassCard` duplicando valor en `CashResultsDisplay.tsx`
+- ❌ `!important` en `.glass-morphism-panel` bloqueando override
+- ✅ Todo unificado bajo `--glass-bg-primary` (single source of truth en `index.css`)
+
+**P1 — Botones Estandarizados + Dead Import (Orden 3/5)**
+- ❌ 2 `<button>` raw en `Step5SicarInput.tsx` (sin sistema de diseño)
+- ❌ Import muerto `Button` de shadcn/ui en `Phase2VerificationSection.tsx`
+- ✅ Reemplazados por `ConstructiveActionButton` + `DestructiveActionButton`
+- ✅ `aria-label` y `onClick` handlers preservados (tests de regresión guardianes)
+
+**P2 — OperationSelector: viewportScale + style blocks (Orden 4/5)**
+- ❌ `const viewportScale = Math.min(window.innerWidth / 430, 1)` — cálculo JS en runtime
+- ❌ 7 template literals con `${X * viewportScale}px` — padding calculado dinámicamente
+- ❌ 64 bloques `style={{}}` — 26 convertibles a Tailwind
+- ✅ `viewportScale` e `isMobileDevice` (dead code) eliminados
+- ✅ 7 paddings → `clamp()` puro (A×3: `7.4vw`, B×3: `0.9vw/2.8vw`, C×1: `5.6vw`)
+- ✅ Nueva clase `.ops-feature-text` en `index.css` (9 spans idénticos unificados)
+- ✅ 64 → **38** bloques `style={{}}` (-40.6%)
+
+**P3 — Cosméticos (Orden 5/5)**
+- ❌ `style={{ opacity: 1 }}` residual en `CashCalculation.tsx` (herencia v1.3.6Z iOS fix)
+- ✅ Eliminado — `opacity: 1` es valor default, no necesita declaración explícita
+
+**Commits del caso (rama feature/ot11-activar-corte-page-ui):**
+```
+82e2473  test(ux-audit): RED — failing tests for P0/P1/P2/P3 modules
+e8e235e  fix(ux-audit): GREEN P0 — glass morphism unificado con --glass-bg-primary
+64f8ccb  fix(ux-audit): GREEN P1 — botones estandarizados + dead import eliminado
+a68452b  fix(ux-audit): GREEN P2 — viewportScale eliminado + style blocks ≤40
+75ec427  fix(ux-audit): GREEN P3 — style opacity residual eliminado (caso cerrado)
+```
+
+**Validación técnica final:**
+- ✅ TypeScript: `npx tsc --noEmit` → 0 errors
+- ✅ Tests UX-Audit: **13/13 GREEN** (4 test files)
+- ✅ Build: exitoso en 1.96s
+- ✅ Sin regresiones en suite base
+
+**Archivos modificados:** `index.css`, `CashResultsDisplay.tsx`, `InitialWizardModal.tsx`, `Phase2Manager.tsx`, `Step5SicarInput.tsx`, `Phase2VerificationSection.tsx`, `OperationSelector.tsx`, `CashCalculation.tsx`
+
+---
+
 ### v3.0.1 - Fix Colores PIN Modal: Botones Estandarizados [24 OCT 2025] ✅
 **OPERACIÓN UX/UI CONSISTENCY:** Corrección de colores de botones en PIN Modal para alinearlos con sistema de diseño estándar de CashGuard Paradise - reemplazados Button genéricos por ConstructiveActionButton (verde) y DestructiveActionButton (rojo).
 
@@ -582,6 +636,31 @@ Production Tests:        555 (561 - 6 debug)
 ---
 
 ## 📝 Recent Updates
+
+### v3.5.1 - Consolidación denomination-images SSOT [22 FEB 2026] ✅
+
+**Caso:** Consolidación de imágenes de denominaciones — Eliminación de duplicación en `getIcon()`
+
+**Problema:** `DeliveryFieldView.tsx` y `GuidedFieldView.tsx` tenían funciones `getIcon()` locales
+que duplicaban las 11 rutas de imágenes ya gestionadas por `denomination-images.tsx`.
+Cualquier cambio de ruta requería modificar **3 archivos** en lugar de 1.
+
+**Solución (TDD + 4 OTs):**
+- OT #076 — TDD RED: Suite 4 con test `onError` escrito y fallando (`9413df5`)
+- OT #077 — TDD GREEN: `onError` añadido a `getDenominationImageElement()`, 8/8 tests (`8ba111a`)
+- OT #078 — REFACTOR: `DeliveryFieldView.tsx` migrado a `DENOMINATION_IMAGE_MAP` (`b249a27`)
+- OT #079 — REFACTOR: `GuidedFieldView.tsx` migrado, `case 'electronic'` preservado (`ad5d154`)
+
+**Resultado:**
+- ✅ TypeScript: 0 errores
+- ✅ Tests: 8/8 passing
+- ✅ `case 'electronic'` (4 logos electrónicos) preservado intacto
+- ✅ Reducción: ~80 líneas de código duplicado eliminadas
+
+**Archivos:** `denomination-images.tsx`, `denomination-images.test.tsx`, `DeliveryFieldView.tsx`, `GuidedFieldView.tsx`
+
+---
+
 
 ### v1.3.6AD2 - Fix Crítico: Diferencia Vuelto NO Restada en Reporte [13 OCT 2025 ~22:00 PM] ✅
 **OPERACIÓN FIX MATEMÁTICO CRÍTICO COMPLETADO:** Resolución definitiva del bug donde sistema aceptaba errores en Phase 2 Verification (conteo ciego) PERO reporte final NO descuenta la diferencia del total "Quedó en Caja" - totales financieros ahora reflejan cantidades ACEPTADAS (no esperadas).

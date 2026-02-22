@@ -1,0 +1,173 @@
+// [IA] - R3-B5 TDD RED: Verificar feedback al abortar sesión activa en Step 5
+// Módulo M3 del plan R3 — falta modal confirmación + toast + estado consistente en error.
+// Estos 5 tests DEBEN FALLAR con el código actual (eso es correcto en fase RED).
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { useState } from 'react';
+import { toast } from 'sonner';
+import { Step5SicarInput } from '@/components/initial-wizard/steps/Step5SicarInput';
+
+// ── Mock sonner (necesario para tests 4-5) ────────────────────────────────────
+
+vi.mock('sonner', () => ({
+  toast: {
+    success: vi.fn(),
+    error: vi.fn(),
+  },
+}));
+
+// ── Props mínimas válidas ─────────────────────────────────────────────────────
+
+const baseProps = {
+  wizardData: {
+    rulesAccepted: false,
+    selectedStore: '',
+    selectedCashier: '',
+    selectedWitness: '',
+    expectedSales: '',
+    dailyExpenses: [],
+  },
+  updateWizardData: vi.fn(),
+  validateInput: vi.fn().mockReturnValue({ isValid: true, cleanValue: '' }),
+  getPattern: vi.fn().mockReturnValue(''),
+  getInputMode: vi.fn().mockReturnValue('decimal' as const),
+  handleNext: vi.fn(),
+  canGoNext: false,
+  currentStep: 5,
+  totalSteps: 6,
+  availableStores: [],
+  availableEmployees: [],
+};
+
+// ── Helper ────────────────────────────────────────────────────────────────────
+
+function renderWithActiveSession(
+  onAbortSession = vi.fn(),
+  onResumeSession = vi.fn(),
+) {
+  return render(
+    <Step5SicarInput
+      {...baseProps}
+      hasActiveSession={true}
+      onResumeSession={onResumeSession}
+      onAbortSession={onAbortSession}
+    />
+  );
+}
+
+// ── Suite ─────────────────────────────────────────────────────────────────────
+
+describe('R3-B5: Step5SicarInput — feedback al abortar sesión', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  // ── Test 1 ─────────────────────────────────────────────────────────────────
+
+  it('muestra modal de confirmación al presionar Abortar', async () => {
+    const user = userEvent.setup();
+    renderWithActiveSession();
+
+    await user.click(screen.getByRole('button', { name: /abortar/i }));
+
+    // FALLA: onAbortSession se ejecuta directamente sin mostrar modal de confirmación.
+    // En GREEN, deberá aparecer texto del modal de confirmación.
+    const modalText =
+      screen.queryByText(/esta acción no se puede deshacer/i) ??
+      screen.queryByText(/abortar sesión activa/i);
+    expect(modalText).toBeInTheDocument();
+  });
+
+  // ── Test 2 ─────────────────────────────────────────────────────────────────
+
+  it('cancelar en modal cierra sin abortar', async () => {
+    const user = userEvent.setup();
+    const onAbortSession = vi.fn();
+    renderWithActiveSession(onAbortSession);
+
+    await user.click(screen.getByRole('button', { name: /abortar/i }));
+
+    // FALLA: no hay modal, por lo que no existe botón "Cancelar" en él.
+    // En GREEN, el botón "Cancelar" del modal cerrará sin ejecutar la acción.
+    const cancelBtn = screen.getByRole('button', { name: /^cancelar$/i });
+    await user.click(cancelBtn);
+
+    expect(onAbortSession).not.toHaveBeenCalled();
+  });
+
+  // ── Test 3 ─────────────────────────────────────────────────────────────────
+
+  it('confirmar en modal ejecuta onAbortSession exactamente una vez', async () => {
+    const user = userEvent.setup();
+    const onAbortSession = vi.fn().mockResolvedValue(undefined);
+    renderWithActiveSession(onAbortSession);
+
+    await user.click(screen.getByRole('button', { name: /abortar/i }));
+
+    // FALLA: no hay modal — el botón "Sí, Abortar" no existe todavía.
+    // En GREEN, confirmar en el modal ejecutará onAbortSession una sola vez.
+    const confirmBtn = screen.getByRole('button', { name: /sí, abortar/i });
+    await user.click(confirmBtn);
+
+    expect(onAbortSession).toHaveBeenCalledTimes(1);
+  });
+
+  // ── Test 4 ─────────────────────────────────────────────────────────────────
+
+  it('muestra toast de éxito cuando el abort es exitoso', async () => {
+    const user = userEvent.setup();
+    const onAbortSession = vi.fn().mockResolvedValue(undefined);
+    renderWithActiveSession(onAbortSession);
+
+    await user.click(screen.getByRole('button', { name: /abortar/i }));
+
+    // FALLA: no hay modal — el botón "Sí, Abortar" no existe todavía.
+    // Adicionalmente, el flujo actual no llama toast.success en ningún caso.
+    const confirmBtn = screen.getByRole('button', { name: /sí, abortar/i });
+    await user.click(confirmBtn);
+
+    expect(toast.success).toHaveBeenCalled();
+  });
+
+  // ── Test 5 ─────────────────────────────────────────────────────────────────
+
+  it('el panel persiste cuando abort falla (estado no se limpia en error)', async () => {
+    const user = userEvent.setup();
+    const onAbortSession = vi.fn().mockRejectedValue(new Error('Supabase error'));
+
+    // Wrapper con estado local que replica el comportamiento de Index.tsx:
+    // en GREEN, el estado solo se limpia DENTRO del bloque de éxito.
+    function StatefulWrapper() {
+      const [hasActive, setHasActive] = useState(true);
+      const handleAbort = async () => {
+        try {
+          await onAbortSession();
+          setHasActive(false); // solo en éxito
+        } catch {
+          // error: panel debe permanecer visible
+        }
+      };
+      return (
+        <Step5SicarInput
+          {...baseProps}
+          hasActiveSession={hasActive}
+          onResumeSession={vi.fn()}
+          onAbortSession={handleAbort}
+        />
+      );
+    }
+
+    render(<StatefulWrapper />);
+    expect(screen.getByText('Sesión en Progreso')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: /abortar/i }));
+
+    // FALLA: no hay modal — el botón "Sí, Abortar" no existe todavía.
+    // En GREEN, tras fallo de Supabase el panel debe seguir visible.
+    const confirmBtn = screen.getByRole('button', { name: /sí, abortar/i });
+    await user.click(confirmBtn);
+
+    expect(screen.getByText('Sesión en Progreso')).toBeInTheDocument();
+  });
+});

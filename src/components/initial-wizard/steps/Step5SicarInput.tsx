@@ -1,9 +1,12 @@
 // 🤖 [IA] - ORDEN #075: Step 5 - Venta Esperada (SICAR)
+import { useState } from 'react';
+import { toast } from 'sonner';
+import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { motion } from 'framer-motion';
-import { DollarSign, ArrowRight, CheckCircle } from 'lucide-react';
+import { DollarSign, ArrowRight, CheckCircle, Cloud } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { ConstructiveActionButton } from '@/components/shared/ConstructiveActionButton';
-import { STORES } from '@/data/paradise';
+import { DestructiveActionButton } from '@/components/shared/DestructiveActionButton';
 import { cn } from '@/lib/utils';
 import type { Step5Props } from '@/types/initialWizard';
 
@@ -17,10 +20,84 @@ export function Step5SicarInput({
   canGoNext,
   currentStep,
   totalSteps,
+  availableStores,
   availableEmployees,
+  hasActiveSession,
+  onResumeSession,
+  onAbortSession,
+  activeSessionInfo,
 }: Step5Props) {
+  const [showAbortConfirm, setShowAbortConfirm] = useState(false);
+
   return (
     <div className="glass-morphism-panel space-y-fluid-lg">
+
+      {/* [IA] - CASO-SANN-R2: Panel de sesión activa — bloqueo anti-fraude en Step 5 */}
+      {hasActiveSession === true && currentStep === 5 && (
+        <div
+          className="rounded-lg p-4 border border-amber-500/40"
+          style={{ background: 'rgba(245, 158, 11, 0.08)' }}
+        >
+          <h4 className="font-semibold text-amber-400 text-fluid-sm mb-2 flex items-center gap-2">
+            <Cloud className="w-4 h-4 text-green-400" aria-hidden="true" />
+            Sesión en Progreso
+          </h4>
+          <p className="text-muted-foreground text-fluid-xs mb-4">
+            Hay un corte de caja que no se completó en esta sucursal. Elige cómo continuar.
+          </p>
+          {/* [IA] - R3-B2: Identificador de sesión activa */}
+          {activeSessionInfo && (
+            <div className="text-fluid-xs text-muted-foreground space-y-1 mb-3">
+              {activeSessionInfo.correlativo && (
+                <p>{activeSessionInfo.correlativo}</p>
+              )}
+              {activeSessionInfo.createdAt && (
+                <p>Iniciado: {new Date(activeSessionInfo.createdAt).toLocaleString('es-SV')}</p>
+              )}
+              {activeSessionInfo.cajero && (
+                <p>Cajero: {activeSessionInfo.cajero}</p>
+              )}
+            </div>
+          )}
+          <div className="flex gap-3">
+            <ConstructiveActionButton
+              onClick={onResumeSession}
+              aria-label="Reanudar Sesión"
+              className="flex-1"
+            >
+              Reanudar Sesión
+            </ConstructiveActionButton>
+            <DestructiveActionButton
+              onClick={() => setShowAbortConfirm(true)}
+              aria-label="Abortar Sesión"
+              className="flex-1"
+            >
+              Abortar Sesión
+            </DestructiveActionButton>
+          </div>
+          <ConfirmationModal
+            open={showAbortConfirm}
+            onOpenChange={setShowAbortConfirm}
+            title="¿Abortar Sesión Activa?"
+            description="Se marcará como ABORTADO en el sistema. Esta acción no se puede deshacer."
+            warningText="Los datos del corte anterior se perderán permanentemente."
+            confirmText="Sí, Abortar"
+            cancelText="Cancelar"
+            onConfirm={() => {
+              setShowAbortConfirm(false);
+              void (async () => {
+                try {
+                  await onAbortSession?.();
+                  toast.success('Sesión abortada correctamente');
+                } catch {
+                  toast.error('No se pudo abortar la sesión. Intente de nuevo.');
+                }
+              })();
+            }}
+            onCancel={() => setShowAbortConfirm(false)}
+          />
+        </div>
+      )}
       <div className="glass-morphism-panel header-section">
         <DollarSign className="flex-shrink-0 w-[clamp(1.25rem,5vw,1.5rem)] h-[clamp(1.25rem,5vw,1.5rem)] bg-gradient-to-br from-green-400 to-emerald-400 bg-clip-text text-transparent" />
         <div className="flex-1 min-w-0">
@@ -51,6 +128,7 @@ export function Step5SicarInput({
               }}
               placeholder="0.00"
               aria-label="Ingrese el monto de la venta esperada"
+              disabled={hasActiveSession === true}
               className={cn(
                 'font-semibold bg-transparent border-none text-primary-foreground pl-[clamp(3rem,12vw,3.5rem)] h-[clamp(2.25rem,9vw,2.75rem)] text-fluid-lg neon-glow-success',
                 wizardData.expectedSales && parseFloat(wizardData.expectedSales) > 0 && 'border-green-500/50'
@@ -62,7 +140,7 @@ export function Step5SicarInput({
           {currentStep < totalSteps && (
             <ConstructiveActionButton
               onClick={handleNext}
-              disabled={!canGoNext}
+              disabled={!canGoNext || hasActiveSession === true}
               aria-label="Continuar al siguiente paso"
               type="button"
               className="h-[clamp(2.25rem,9vw,2.75rem)]"
@@ -100,7 +178,7 @@ export function Step5SicarInput({
           <div className="flex flex-col gap-fluid-xs">
             <span className="min-w-0 text-muted-foreground">Sucursal:</span>
             <span className="font-medium text-left truncate text-primary-foreground">
-              {STORES.find(s => s.id === wizardData.selectedStore)?.name}
+              {availableStores.find(s => s.id === wizardData.selectedStore)?.name}
             </span>
           </div>
           <div className="flex flex-col gap-fluid-xs">

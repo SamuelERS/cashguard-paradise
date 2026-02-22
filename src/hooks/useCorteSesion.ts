@@ -1,8 +1,11 @@
-// 🤖 [IA] - v1.0.0: Hook de sesión de corte — capa de sincronización Supabase
+// 🤖 [IA] - v1.1.0: OT-17 — Agrega insert snapshot append-only en guardarProgreso
+// Previous: v1.0.0: Hook de sesión de corte — capa de sincronización Supabase
 // Orden de Trabajo #004 — Director General de Proyecto
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { tables } from '../lib/supabase';
+import { insertSnapshot } from '../lib/snapshots';
+import type { CashCount, ElectronicPayments } from '../types/cash';
 import type {
   Corte,
   CorteIntento,
@@ -240,6 +243,20 @@ export function useCorteSesion(sucursal_id: string): UseCorteSesionReturn {
       if (updateError || !corteActualizado) {
         throw new Error(updateError?.message ?? 'Error al guardar progreso');
       }
+
+      // 🤖 [IA] - OT-17: Insertar snapshot append-only (fire-and-forget, no bloquea flujo)
+      insertSnapshot({
+        corte_id: corteActual.id,
+        attempt_number: corteActual.intento_actual,
+        fase_actual: datos.fase_actual,
+        cashCount: (datos.conteo_parcial ?? {}) as CashCount,
+        electronicPayments: (datos.pagos_electronicos ?? {}) as ElectronicPayments,
+        gastos_dia: datos.gastos_dia,
+        source: 'manual',
+      }).catch((snapshotErr: unknown) => {
+        // Snapshot es audit trail — NO debe bloquear el flujo principal
+        console.warn('[useCorteSesion] Snapshot fallido (no-blocking):', snapshotErr);
+      });
 
       setCorteActual(corteActualizado);
     } catch (err: unknown) {

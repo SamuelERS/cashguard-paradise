@@ -17,6 +17,9 @@ interface Phase3ReportViewProps {
   selectedStore: string;
   selectedCashier: string;
   selectedWitness: string;
+  selectedStoreName?: string;
+  selectedCashierName?: string;
+  selectedWitnessName?: string;
   expectedSales: string;
   cashCount: CashCount;
   electronicPayments: ElectronicPayments;
@@ -32,6 +35,9 @@ export function Phase3ReportView({
   selectedStore,
   selectedCashier,
   selectedWitness,
+  selectedStoreName,
+  selectedCashierName,
+  selectedWitnessName,
   expectedSales,
   cashCount,
   electronicPayments,
@@ -48,6 +54,9 @@ export function Phase3ReportView({
         storeId={selectedStore}
         cashierId={selectedCashier}
         witnessId={selectedWitness}
+        storeName={selectedStoreName}
+        cashierName={selectedCashierName}
+        witnessName={selectedWitnessName}
         cashCount={cashCount}
         onComplete={onComplete}
         onBack={onBack}
@@ -65,6 +74,9 @@ export function Phase3ReportView({
       storeId={selectedStore}
       cashierId={selectedCashier}
       witnessId={selectedWitness}
+      storeName={selectedStoreName}
+      cashierName={selectedCashierName}
+      witnessName={selectedWitnessName}
       expectedSales={parseFloat(expectedSales)}
       cashCount={cashCount}
       electronicPayments={electronicPayments}

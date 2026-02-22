@@ -39,6 +39,7 @@ const InitialWizardModalView = (props: InitialWizardModalProps) => {
           <Step2StoreSelection
             wizardData={ctrl.wizardData}
             updateWizardData={ctrl.updateWizardData}
+            availableStores={ctrl.availableStores}
           />
         );
       case 3:
@@ -70,7 +71,14 @@ const InitialWizardModalView = (props: InitialWizardModalProps) => {
             canGoNext={navState.canGoNext}
             currentStep={ctrl.currentStep}
             totalSteps={ctrl.totalSteps}
+            availableStores={ctrl.availableStores}
             availableEmployees={ctrl.availableEmployees}
+            // [IA] - CASO-SANN-R2: Props sesión activa para panel anti-fraude Step 5
+            hasActiveSession={props.hasActiveSession}
+            onResumeSession={props.onResumeSession}
+            onAbortSession={props.onAbortSession}
+            // [IA] - R3-B2: Info enriquecida para identificador de sesión
+            activeSessionInfo={props.activeSessionInfo}
           />
         );
       case 6:

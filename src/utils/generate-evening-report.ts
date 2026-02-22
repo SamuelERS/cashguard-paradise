@@ -420,7 +420,7 @@ ${denominationDetails}
 ${WHATSAPP_SEPARATOR}
 
 📅 ${calculationData.timestamp}
-🔐 CashGuard Paradise v3.0.0
+🔐 CashGuard Paradise v3.4.1
 🔒 NIST SP 800-115 | PCI DSS 12.10.1
 
 ✅ Reporte automático
