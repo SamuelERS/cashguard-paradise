@@ -3,7 +3,7 @@
 // Suite 3 debe FALLAR (6 archivos con nombres incorrectos — confirma el bug)
 
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import { existsSync } from 'fs';
 import { resolve } from 'path';
 import { DENOMINATION_IMAGE_MAP, getDenominationImageElement } from '@/utils/denomination-images';
@@ -80,5 +80,20 @@ describe('DENOMINATION_IMAGE_MAP — existencia física en /public/', () => {
         `Falta archivo para "${key}": ${fullPath}`
       ).toBe(true);
     }
+  });
+});
+
+// ── Suite 4: onError fallback ────────────────────────────
+describe('getDenominationImageElement — onError fallback', () => {
+  it('el <img> tiene onError que cambia src a /placeholder.svg al fallar', () => {
+    const element = getDenominationImageElement('penny', 'Un centavo');
+    expect(element).not.toBeNull();
+    const { container } = render(<>{element}</>);
+    const img = container.querySelector('img') as HTMLImageElement;
+    expect(img).not.toBeNull();
+    // Simular error de carga de imagen
+    fireEvent.error(img);
+    // El src debe cambiar a /placeholder.svg
+    expect(img.src).toContain('placeholder.svg');
   });
 });
