@@ -13,7 +13,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Building, ChevronRight, Check, Banknote, Target, CheckCircle, Coins } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { ConstructiveActionButton } from '@/components/shared/ConstructiveActionButton';
 import { DestructiveActionButton } from '@/components/shared/DestructiveActionButton';
 import { NeutralActionButton } from '@/components/ui/neutral-action-button';

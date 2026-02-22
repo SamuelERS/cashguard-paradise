@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { DollarSign, ArrowRight, CheckCircle, Cloud } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { ConstructiveActionButton } from '@/components/shared/ConstructiveActionButton';
+import { DestructiveActionButton } from '@/components/shared/DestructiveActionButton';
 import { cn } from '@/lib/utils';
 import type { Step5Props } from '@/types/initialWizard';
 
@@ -59,22 +60,20 @@ export function Step5SicarInput({
             </div>
           )}
           <div className="flex gap-3">
-            <button
-              type="button"
+            <ConstructiveActionButton
               onClick={onResumeSession}
               aria-label="Reanudar Sesión"
-              className="flex-1 rounded-lg px-3 py-2 text-fluid-xs font-medium bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 transition-colors"
+              className="flex-1"
             >
               Reanudar Sesión
-            </button>
-            <button
-              type="button"
+            </ConstructiveActionButton>
+            <DestructiveActionButton
               onClick={() => setShowAbortConfirm(true)}
               aria-label="Abortar Sesión"
-              className="flex-1 rounded-lg px-3 py-2 text-fluid-xs font-medium bg-red-500/20 text-red-300 border border-red-500/40 hover:bg-red-500/30 transition-colors"
+              className="flex-1"
             >
               Abortar Sesión
-            </button>
+            </DestructiveActionButton>
           </div>
           <ConfirmationModal
             open={showAbortConfirm}
