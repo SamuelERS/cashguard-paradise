@@ -199,11 +199,11 @@ export function GuidedFieldView({
         if (currentFieldName === 'nickel') {
           coinImage = '/monedas-recortadas-dolares/moneda-cinco-centavos-dos-caras.webp';
         } else if (currentFieldName === 'dime') {
-          coinImage = '/monedas-recortadas-dolares/moneda-diez-centavos.webp';
+          coinImage = '/monedas-recortadas-dolares/dime.webp';
         } else if (currentFieldName === 'quarter') {
           coinImage = '/monedas-recortadas-dolares/moneda-25-centavos-dos-caras.webp';
         } else if (currentFieldName === 'dollar' || currentFieldName === 'dollarCoin') {
-          coinImage = '/monedas-recortadas-dolares/moneda-un-dollar-nueva.webp';
+          coinImage = '/monedas-recortadas-dolares/dollar-coin.webp';
         }
 
         return (
@@ -233,7 +233,7 @@ export function GuidedFieldView({
         } else if (currentFieldName === 'bill20') {
           billImage = '/monedas-recortadas-dolares/billete-20.webp';
         } else if (currentFieldName === 'bill50') {
-          billImage = '/monedas-recortadas-dolares/billete-cincuenta-dolares-sobre-fondo-blanco(1).webp';
+          billImage = '/monedas-recortadas-dolares/billete-50.webp';
         } else if (currentFieldName === 'bill100') {
           billImage = '/monedas-recortadas-dolares/billete-100.webp';
         }
