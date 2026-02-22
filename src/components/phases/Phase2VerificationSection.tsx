@@ -488,7 +488,7 @@ export function Phase2VerificationSection({
                   }}
                 >
                   {/* 🤖 [IA] - FASE 5 PASO 2: Usando getDenominationImageElement() utility */}
-                  {getDenominationImageElement(currentStep.key as keyof CashCount, currentStep.label)}
+                  {getDenominationImageElement(currentStep.key as keyof CashCount, currentStep.label, "object-contain w-full h-full")}
                 </div>
 
                 {/* 🔒 Badge condicional QUEDA EN CAJA (conteo ciego producción) */}
