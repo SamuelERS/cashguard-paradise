@@ -492,12 +492,12 @@
   /* Propuesta C: Mejor legibilidad + Performance móvil + Accesibilidad WCAG 2.1 AA */
   /* 🤖 [IA] - v1.2.41i: Fix móvil - !important para prevenir override de bg-background */
   .glass-morphism-panel {
-    /* Fondo más sólido para mejor legibilidad (72% móvil) */
-    background-color: rgba(28, 28, 32, 0.72) !important;
+    /* 🤖 [IA] - OT11: Unificado con --glass-bg-primary (elimina fractura glass morphism) */
+    background-color: var(--glass-bg-primary);
 
     /* Blur reducido para mejor FPS en móviles (12px) */
-    backdrop-filter: blur(12px) !important;
-    -webkit-backdrop-filter: blur(12px) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
 
     /* Borde más visible (22% opacidad) */
     border: 1px solid rgba(255, 255, 255, 0.22);

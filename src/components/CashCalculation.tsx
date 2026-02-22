@@ -290,7 +290,7 @@ const CashCalculation = ({
           {/* 🤖 [IA] - v1.3.7: RENDERIZADO CONDICIONAL - Resultados bloqueados hasta confirmación */}
           {!reportSent ? (
             <div style={{
-              background: 'rgba(36, 36, 36, 0.4)',
+              background: 'var(--glass-bg-primary)',
               backdropFilter: `blur(clamp(12px, 4vw, 20px))`,
               WebkitBackdropFilter: `blur(clamp(12px, 4vw, 20px))`,
               border: '1px solid rgba(255, 255, 255, 0.15)',
@@ -324,7 +324,7 @@ const CashCalculation = ({
 
           {/* 🤖 [IA] - v1.3.7: ANTI-FRAUDE - Bloque de acción SIEMPRE visible */}
           <div style={{
-            background: 'rgba(36, 36, 36, 0.4)',
+            background: 'var(--glass-bg-primary)',
             backdropFilter: `blur(clamp(12px, 4vw, 20px))`,
             WebkitBackdropFilter: `blur(clamp(12px, 4vw, 20px))`,
             border: '1px solid rgba(255, 255, 255, 0.15)',

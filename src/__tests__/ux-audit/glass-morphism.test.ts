@@ -17,7 +17,7 @@ const MIGRATED_FILES = [
   'src/components/operation-selector/OperationSelector.tsx',
   'src/components/cash-calculation/CashResultsDisplay.tsx',
   'src/components/CashCalculation.tsx',
-  'src/components/cash-counting/guided/GuidedDenominationSection.tsx',
+  'src/components/cash-counting/GuidedDenominationSection.tsx',
 ];
 
 describe('Glass Morphism Unificado (Módulo 02)', () => {

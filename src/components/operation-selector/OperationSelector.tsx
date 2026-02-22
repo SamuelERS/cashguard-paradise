@@ -117,7 +117,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
             onClick={() => onSelectMode(OperationMode.CASH_COUNT)}
             className="cursor-pointer group"
             style={{
-              background: 'rgba(36, 36, 36, 0.4)',
+              background: 'var(--glass-bg-primary)',
               backdropFilter: 'blur(20px)',
               WebkitBackdropFilter: 'blur(20px)',
               border: '1px solid rgba(255, 255, 255, 0.15)',
@@ -234,7 +234,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
             onClick={() => onSelectMode(OperationMode.CASH_CUT)}
             className="cursor-pointer group"
             style={{
-              background: 'rgba(36, 36, 36, 0.4)',
+              background: 'var(--glass-bg-primary)',
               backdropFilter: 'blur(20px)',
               WebkitBackdropFilter: 'blur(20px)',
               border: '1px solid rgba(255, 255, 255, 0.15)',
@@ -351,7 +351,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
             onClick={() => onSelectMode(OperationMode.DELIVERY_VIEW)}
             className="cursor-pointer group"
             style={{
-              background: 'rgba(36, 36, 36, 0.4)',
+              background: 'var(--glass-bg-primary)',
               backdropFilter: 'blur(20px)',
               WebkitBackdropFilter: 'blur(20px)',
               border: '1px solid rgba(255, 255, 255, 0.15)',
@@ -479,7 +479,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
           className="mt-12 max-w-2xl mx-auto rounded-xl"
           style={{ 
             padding: `clamp(16px, ${24 * viewportScale}px, 24px)`,
-            backgroundColor: 'rgba(36, 36, 36, 0.4)',
+            backgroundColor: 'var(--glass-bg-primary)',
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
             border: '1px solid rgba(255, 255, 255, 0.15)',
