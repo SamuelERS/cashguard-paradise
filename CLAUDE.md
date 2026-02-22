@@ -637,6 +637,31 @@ Production Tests:        555 (561 - 6 debug)
 
 ## 📝 Recent Updates
 
+### v3.5.1 - Consolidación denomination-images SSOT [22 FEB 2026] ✅
+
+**Caso:** Consolidación de imágenes de denominaciones — Eliminación de duplicación en `getIcon()`
+
+**Problema:** `DeliveryFieldView.tsx` y `GuidedFieldView.tsx` tenían funciones `getIcon()` locales
+que duplicaban las 11 rutas de imágenes ya gestionadas por `denomination-images.tsx`.
+Cualquier cambio de ruta requería modificar **3 archivos** en lugar de 1.
+
+**Solución (TDD + 4 OTs):**
+- OT #076 — TDD RED: Suite 4 con test `onError` escrito y fallando (`9413df5`)
+- OT #077 — TDD GREEN: `onError` añadido a `getDenominationImageElement()`, 8/8 tests (`8ba111a`)
+- OT #078 — REFACTOR: `DeliveryFieldView.tsx` migrado a `DENOMINATION_IMAGE_MAP` (`b249a27`)
+- OT #079 — REFACTOR: `GuidedFieldView.tsx` migrado, `case 'electronic'` preservado (`ad5d154`)
+
+**Resultado:**
+- ✅ TypeScript: 0 errores
+- ✅ Tests: 8/8 passing
+- ✅ `case 'electronic'` (4 logos electrónicos) preservado intacto
+- ✅ Reducción: ~80 líneas de código duplicado eliminadas
+
+**Archivos:** `denomination-images.tsx`, `denomination-images.test.tsx`, `DeliveryFieldView.tsx`, `GuidedFieldView.tsx`
+
+---
+
+
 ### v1.3.6AD2 - Fix Crítico: Diferencia Vuelto NO Restada en Reporte [13 OCT 2025 ~22:00 PM] ✅
 **OPERACIÓN FIX MATEMÁTICO CRÍTICO COMPLETADO:** Resolución definitiva del bug donde sistema aceptaba errores en Phase 2 Verification (conteo ciego) PERO reporte final NO descuenta la diferencia del total "Quedó en Caja" - totales financieros ahora reflejan cantidades ACEPTADAS (no esperadas).
 
