@@ -83,6 +83,7 @@ export function getDenominationImageElement(
       className={className}
       loading="lazy"
       decoding="async"
+      onError={(e) => { e.currentTarget.src = '/placeholder.svg'; }}
     />
   );
 }
