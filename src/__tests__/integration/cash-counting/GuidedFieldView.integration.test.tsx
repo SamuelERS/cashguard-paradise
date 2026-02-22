@@ -293,9 +293,9 @@ describe('🎯 GuidedFieldView - Integration Tests', () => {
       const coins = [
         { name: 'penny', label: '$0.01', imgSrc: '/monedas-recortadas-dolares/moneda-centavo-front-inlay.webp', altText: 'Moneda de $0.01' },
         { name: 'nickel', label: '$0.05', imgSrc: '/monedas-recortadas-dolares/moneda-cinco-centavos-dos-caras.webp', altText: 'Moneda de $0.05' },
-        { name: 'dime', label: '$0.10', imgSrc: '/monedas-recortadas-dolares/moneda-diez-centavos.webp', altText: 'Moneda de $0.10' },
+        { name: 'dime', label: '$0.10', imgSrc: '/monedas-recortadas-dolares/dime.webp', altText: 'Moneda de $0.10' },
         { name: 'quarter', label: '$0.25', imgSrc: '/monedas-recortadas-dolares/moneda-25-centavos-dos-caras.webp', altText: 'Moneda de $0.25' },
-        { name: 'dollarCoin', label: '$1.00', imgSrc: '/monedas-recortadas-dolares/moneda-un-dollar-nueva.webp', altText: 'Moneda de $1.00' }
+        { name: 'dollarCoin', label: '$1.00', imgSrc: '/monedas-recortadas-dolares/dollar-coin.webp', altText: 'Moneda de $1.00' }
       ];
 
       coins.forEach(coin => {
@@ -320,7 +320,7 @@ describe('🎯 GuidedFieldView - Integration Tests', () => {
         { name: 'bill5', label: '$5', imgSrc: '/monedas-recortadas-dolares/billete-5.webp', altText: 'Billete de $5' },
         { name: 'bill10', label: '$10', imgSrc: '/monedas-recortadas-dolares/billete-10.webp', altText: 'Billete de $10' },
         { name: 'bill20', label: '$20', imgSrc: '/monedas-recortadas-dolares/billete-20.webp', altText: 'Billete de $20' },
-        { name: 'bill50', label: '$50', imgSrc: '/monedas-recortadas-dolares/billete-cincuenta-dolares-sobre-fondo-blanco(1).webp', altText: 'Billete de $50' },
+        { name: 'bill50', label: '$50', imgSrc: '/monedas-recortadas-dolares/billete-50.webp', altText: 'Billete de $50' },
         { name: 'bill100', label: '$100', imgSrc: '/monedas-recortadas-dolares/billete-100.webp', altText: 'Billete de $100' }
       ];
 
