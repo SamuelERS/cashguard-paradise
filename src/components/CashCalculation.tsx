@@ -276,7 +276,6 @@ const CashCalculation = ({
         {/* 🤖 [IA] - v1.3.6Z: FIX iOS Safari - div estático (sin motion.div) */}
         <div
           className="space-y-[clamp(1rem,4vw,1.5rem)]"
-          style={{ opacity: 1 }}
         >
           {/* 🤖 [IA] - v1.3.7: Header siempre visible */}
           <div className="text-center mb-[clamp(1.5rem,6vw,2rem)]">
