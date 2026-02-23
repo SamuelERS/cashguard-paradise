@@ -1,4 +1,5 @@
-// 🤖 [IA] - v1.2.0: CASO #3 RESILIENCIA OFFLINE — guardarProgreso encola offline si falla red
+// 🤖 [IA] - v1.3.0: CASO #3 RESILIENCIA OFFLINE (Iteración 2) — reconexión automática con procesarCola
+// Previous: v1.2.0: CASO #3 RESILIENCIA OFFLINE — guardarProgreso encola offline si falla red
 // Previous: v1.1.0: OT-17 — Agrega insert snapshot append-only en guardarProgreso
 // Previous: v1.0.0: Hook de sesión de corte — capa de sincronización Supabase
 // Orden de Trabajo #004 — Director General de Proyecto
@@ -6,7 +7,12 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { tables } from '../lib/supabase';
 import { insertSnapshot } from '../lib/snapshots';
-import { agregarOperacion } from '../lib/offlineQueue';
+import {
+  agregarOperacion,
+  escucharConectividad,
+  procesarCola,
+} from '../lib/offlineQueue';
+import type { OperacionOffline } from '../lib/offlineQueue';
 import type { CashCount, ElectronicPayments } from '../types/cash';
 import type {
   Corte,
@@ -583,6 +589,47 @@ export function useCorteSesion(sucursal_id: string): UseCorteSesionReturn {
       });
     }
   }, [sucursal_id, recuperarSesion]);
+
+  // -------------------------------------------------------------------------
+  // 🤖 [IA] - v1.3.0: Reconexión automática — procesar cola offline al volver online
+  // -------------------------------------------------------------------------
+
+  useEffect(() => {
+    if (!corteActual) return;
+
+    const ejecutor = async (op: OperacionOffline): Promise<void> => {
+      if (op.tipo === 'GUARDAR_PROGRESO') {
+        const payload = op.payload as {
+          fase_actual: number;
+          datos_conteo: Record<string, unknown>;
+        };
+
+        const { error: updateError } = await tables
+          .cortes()
+          .update({
+            fase_actual: payload.fase_actual,
+            estado: 'EN_PROGRESO',
+            datos_conteo: payload.datos_conteo,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', op.corteId)
+          .select()
+          .single();
+
+        if (updateError) {
+          throw new Error(updateError.message);
+        }
+      }
+    };
+
+    const cleanup = escucharConectividad(() => {
+      procesarCola(ejecutor).catch(() => {
+        // 🤖 [IA] - v1.3.0: Degradación elegante — fallo en cola no rompe UI
+      });
+    });
+
+    return cleanup;
+  }, [corteActual]);
 
   // -------------------------------------------------------------------------
   // Return

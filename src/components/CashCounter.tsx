@@ -1,4 +1,5 @@
-// 🤖 [IA] - DACC-CIERRE-SYNC-UX: CorteStatusBanner + props sincronización Supabase
+// 🤖 [IA] - v1.5.0: CASO #3 RESILIENCIA OFFLINE (Iteración 2) — conexión real vía useConnectionStatus
+// Previous: DACC-CIERRE-SYNC-UX: CorteStatusBanner + props sincronización Supabase
 // Previous: v1.4.2: OT-17 — Props hidratación + autosave para persistencia anti-reinicio
 // Previous: v1.4.1: Desmonolitización COMPLETA - Componente presentacional delgado
 import type { DailyExpense } from '@/types/expenses';
@@ -11,6 +12,8 @@ import { Phase1CountingView } from "@/components/cash-counter/Phase1CountingView
 import { OperationMode } from "@/types/operation-mode";
 import { useCashCounterOrchestrator } from "@/hooks/useCashCounterOrchestrator";
 import { CorteStatusBanner } from "@/components/corte/CorteStatusBanner";
+import { useConnectionStatus } from "@/hooks/useConnectionStatus";
+import { obtenerEstadoCola } from "@/lib/offlineQueue";
 
 // 🤖 [IA] - v1.4.2: OT-17 — Props con hidratación + autosave
 interface CashCounterProps {
@@ -56,6 +59,10 @@ const CashCounter = ({
   ultimaSync,
   syncError,
 }: CashCounterProps) => {
+  // 🤖 [IA] - v1.5.0: Estado de conexión real (reemplaza hardcode "online")
+  const { estadoConexion } = useConnectionStatus();
+  const pendientesOffline = obtenerEstadoCola().pendientes;
+
   const state = useCashCounterOrchestrator({
     operationMode,
     initialStore,
@@ -105,10 +112,10 @@ const CashCounter = ({
           {syncEstado && (
             <div className="mb-2">
               <CorteStatusBanner
-                estadoConexion="online"
+                estadoConexion={estadoConexion}
                 estadoSync={syncEstado}
                 ultimaSync={ultimaSync ?? null}
-                pendientes={0}
+                pendientes={pendientesOffline}
                 mensajeError={syncError}
               />
             </div>
