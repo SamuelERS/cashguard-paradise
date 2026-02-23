@@ -16,7 +16,7 @@ Se implemento y valido el modulo Supervisor con autenticacion por PIN, vistas de
 
 Con SANN-R4 completado, cada corte de caja guarda datos ricos en Supabase (JSONB): conteo, entrega, verificacion ciega, reporte. Este caso cierra la brecha de consumo supervisorial de esos datos desde UI.
 
-## Alcance Entregado (v1.0.0)
+## Alcance Entregado (v1.0.1)
 
 - Acceso desde pantalla principal: card "Dashboard Supervisor" en OperationSelector (grid 2x2).
 - Rutas supervisor activas:
