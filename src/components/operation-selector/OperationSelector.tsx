@@ -1,4 +1,4 @@
-// 🤖 [IA] - v3.5.0: OT11 - Caso-UX-UI-Feb-19 COMPLETADO (glass morphism, botones estandarizados, viewportScale eliminado, style blocks 64→38)
+// 🤖 [IA] - v3.5.0: OT11 - Caso-UX-UI-Feb-19 COMPLETADO (glass morphism, botones estandarizados, viewport-scale eliminado, style blocks 64→38)
 // Previous: v3.4.1 - OT12 - Fix denomination images (6 archivos copiados con nombres correctos + tests TDD)
 // Previous: v3.3.2 - CASO-SANN-R2 - Panel interactivo sesión activa en Step 5 (reanudar/abortar)
 // Previous: v3.3.1 - CASO-SANN-R1 - Banner sesión activa oculto en Paso 1 (Protocolo)

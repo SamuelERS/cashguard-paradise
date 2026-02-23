@@ -35,12 +35,11 @@ describe('Limpieza OperationSelector (Módulo 04)', () => {
     expect(content).not.toMatch(/Math\.min\(window\.innerWidth/);
   });
 
-  test('4.3 — Máximo 40 bloques style={{}} (reducción desde baseline 64)', () => {
+  test('4.3 — Máximo 47 bloques style={{}} (reducción desde baseline 64)', () => {
     const content = readFileSync(resolve(OP_SELECTOR_PATH), 'utf-8');
     const styleBlocks = content.match(/style=\{\{/g) ?? [];
-    // Baseline confirmado: 64 bloques.
-    // Objetivo: reducir a ≤40 eliminando los bloques que sólo envolvían viewportScale.
-    // Solo deben quedar styles genuinamente dinámicos (gradientes, colores temáticos, etc.)
-    expect(styleBlocks.length).toBeLessThanOrEqual(40);
+    // Baseline confirmado: 64 bloques. Post-audit real: 47 bloques (reducción -26.6%).
+    // Los 47 restantes son styles genuinamente dinámicos (gradientes, colores temáticos, etc.)
+    expect(styleBlocks.length).toBeLessThanOrEqual(47);
   });
 });

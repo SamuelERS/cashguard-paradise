@@ -450,12 +450,17 @@ describe('useInitialWizardController', () => {
   // ── Preselección sucursal (DACC-CIERRE) ──
 
   describe('preselección sucursal desde sesión activa', () => {
-    it('preselecciona store cuando initialSucursalId proporcionado y selectedStore vacío', () => {
+    // R3-B4: El hook NO debe preseleccionar sucursal — el usuario elige manualmente en Step 2
+    it('NO preselecciona store cuando initialSucursalId proporcionado (R3-B4)', () => {
       renderHook(() =>
         useInitialWizardController(makeProps({ isOpen: true, initialSucursalId: 'suc-001' }))
       );
 
-      expect(mockUpdateWizardData).toHaveBeenCalledWith({ selectedStore: 'suc-001' });
+      const calls = mockUpdateWizardData.mock.calls;
+      const preselectionCalls = calls.filter(
+        (c: [Record<string, unknown>]) => c[0] && 'selectedStore' in c[0]
+      );
+      expect(preselectionCalls).toHaveLength(0);
     });
 
     it('NO preselecciona cuando initialSucursalId es null', () => {

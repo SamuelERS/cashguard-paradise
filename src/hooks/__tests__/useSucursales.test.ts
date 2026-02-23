@@ -19,8 +19,7 @@ let mockSupabaseResponse: { data: unknown[] | null; error: { message: string } |
 
 let mockShouldThrow = false;
 
-const mockOrder = vi.fn().mockImplementation(() => Promise.resolve(mockSupabaseResponse));
-const mockEq = vi.fn().mockImplementation(() => ({ order: mockOrder }));
+const mockEq = vi.fn().mockImplementation(() => Promise.resolve(mockSupabaseResponse));
 const mockSelect = vi.fn().mockImplementation(() => ({ eq: mockEq }));
 
 vi.mock('@/lib/supabase', () => ({
@@ -36,7 +35,7 @@ beforeEach(() => {
   mockSupabaseResponse = { data: SUCURSALES_DB, error: null };
   mockShouldThrow = false;
 
-  mockOrder.mockImplementation(() => {
+  mockEq.mockImplementation(() => {
     if (mockShouldThrow) {
       return Promise.reject(new Error('Network failure'));
     }
@@ -83,7 +82,7 @@ describe('useSucursales', () => {
       expect(nombres).toContain('Plaza Merliot');
     });
 
-    it('1.4 - Llama a tables.sucursales() con select, eq y order correctos', async () => {
+    it('1.4 - Llama a tables.sucursales() con select y eq correctos', async () => {
       const { result } = renderHook(() => useSucursales());
 
       await waitFor(() => {
@@ -92,7 +91,6 @@ describe('useSucursales', () => {
 
       expect(mockSelect).toHaveBeenCalledWith('id,nombre,codigo,activa');
       expect(mockEq).toHaveBeenCalledWith('activa', true);
-      expect(mockOrder).toHaveBeenCalledWith('nombre', { ascending: true });
     });
   });
 
