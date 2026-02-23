@@ -136,8 +136,12 @@ export function useSupervisorQueries(): UseSupervisorQueriesReturn {
   // ── Helpers internos ───────────────────────────────────────────────────────
 
   function iniciarQuery() {
-    setPendientes(prev => prev + 1);
-    setError(null);
+    setPendientes(prev => {
+      // Solo limpiar error al iniciar batch fresco (0 queries en vuelo).
+      // Si ya hay queries pendientes, preservar error existente.
+      if (prev === 0) setError(null);
+      return prev + 1;
+    });
   }
 
   function finalizarQuery(err?: Error) {
