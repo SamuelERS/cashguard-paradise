@@ -24,7 +24,11 @@ Nuestro enfoque es simple: crear sistemas robustos y profesionales sin la comple
 ### 2. NO CREAR DOCUMENTOS SUELTOS EN RAÍZ
 - **PROHIBIDO** crear archivos `.md` directamente en `docs/`
 - Todo documento nuevo va dentro de una carpeta `Caso_*`
-- Excepciones: `README.md`, `REGLAS_DOCUMENTACION.md`, `REGLAS_MOLDE_ORDENES_DE_TRABAJO.md`, `La_Receta_Maestra_by_SamuelERS/`
+- Excepciones (archivos base oficiales del sistema):
+  - **Índices y navegación:** `README.md`, `EL_PUNTO_DE_PARTIDA_by_SamuelERS.md` (mapa de mapas)
+  - **Reglas normativas:** `REGLAS_DOCUMENTACION.md`, `REGLAS_DE_LA_CASA.md`, `REGLAS_DESARROLLO.md`, `REGLAS_PROGRAMADOR.md`, `REGLAS_INSPECCION.md`, `REGLAS_MOLDE_ORDENES_DE_TRABAJO.md`
+  - **Plantillas de reglas (para nuevos proyectos):** `REGLAS_DOCUMENTACION.template.md`, `REGLAS_DESARROLLO.template.md`, `REGLAS_PROGRAMADOR.template.md`, `REGLAS_INSPECCION.template.md`
+  - **Carpetas especiales:** `La_Receta_Maestra_by_SamuelERS/`, `plans/`
 
 ### 3. ESTRUCTURA MODULAR OBLIGATORIA
 - Un problema = Una carpeta `Caso_*`
@@ -428,14 +432,20 @@ docs/
 
 ---
 
-**Versión:** 1.2
+**Versión:** 1.3
 **Creado:** 2025-12-08
-**Última actualización:** 2026-01-23
+**Última actualización:** 2026-02-23
 **Propósito:** Estandarizar documentación y evitar caos
 
 ---
 
 ## 📝 HISTORIAL DE CAMBIOS
+
+### v1.3 (2026-02-23)
+- ✅ PUAR ejecutado: `EL_PUNTO_DE_PARTIDA_by_SamuelERS.md` auditado y confirmado en ubicación correcta (raíz)
+- ✅ Excepciones Regla #2 reorganizadas en categorías (índices, normativas, plantillas, carpetas)
+- ✅ Las 4 plantillas `.template.md` formalizadas como excepciones oficiales de raíz
+- ✅ `plans/` añadida como carpeta especial oficial de raíz
 
 ### v1.2 (2026-01-23)
 - ✅ Adaptado para CashGuard Paradise (PWA anti-fraude para retail)

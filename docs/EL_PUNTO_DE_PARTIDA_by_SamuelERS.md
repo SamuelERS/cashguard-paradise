@@ -41,7 +41,7 @@ Elige tu misión de la lista de abajo y lee **únicamente** los documentos reque
 *Tu misión es encontrar la causa raíz de un problema o bug. Eres un detective.*
 
 1.  🏛️ **La Constitución:** [REGLAS_DE_LA_CASA.md](./REGLAS_DE_LA_CASA.md) -> **Estudia especialmente la sección 'Protocolo de Debugging'.**
-2.  📈 **El Estado Actual:** [CLAUDE.md](./CLAUDE.md)
+2.  📈 **El Estado Actual:** [CLAUDE.md](../CLAUDE.md)
 3.  🛠️ **Los Estándares (para entender el código que lees):** [REGLAS_DESARROLLO.md](./REGLAS_DESARROLLO.md)
 
 ---
@@ -61,7 +61,7 @@ Elige tu misión de la lista de abajo y lee **únicamente** los documentos reque
 
 1.  🏛️ **La Constitución:** [REGLAS_DE_LA_CASA.md](./REGLAS_DE_LA_CASA.md) -> **Estudia especialmente las secciones 'PM2', 'Docker' y 'Seguridad'.**
 2.  📜 **Los Scripts de Operaciones:** Revisa la carpeta `/scripts` en busca de herramientas de despliegue, backup o mantenimiento.
-3.  📈 **El Estado Actual:** [CLAUDE.md](./CLAUDE.md) (para entender el contexto del despliegue).
+3.  📈 **El Estado Actual:** [CLAUDE.md](../CLAUDE.md) (para entender el contexto del despliegue).
 
 ---
 

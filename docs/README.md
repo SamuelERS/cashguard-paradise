@@ -61,6 +61,7 @@ Aquí encontrarás el trabajo en curso. Las reglas están en la raíz:
     - `Caso_Investigacion_Doble_Fuente_Catalogos_20260217`
 - **Casos Completos (destino interno):**
     - `04_desarrollo/CASOS-COMPLETOS/`
+    - `04_desarrollo/CASOS-COMPLETOS/Caso_Consolidacion_DenominationImages_20260222_COMPLETADO/` ← 2026-02-22
 - **Planes de implementación (TDD):**
     - `plans/`
 
