@@ -1,6 +1,7 @@
 // 🤖 [IA] - Orden #2b DACC Dashboard Supervisor — Hook de queries Supabase
 // Read-only: Encapsula los 4 queries del dashboard supervisor.
 // Criterios: 0 errores TypeScript, 0 any, patrón tables.xxx() del proyecto.
+// FIX: filtros usan finalizado_at (no created_at) + estado concurrente con contador.
 
 import { useState, useCallback } from 'react';
 import { tables } from '../lib/supabase';
@@ -128,18 +129,19 @@ function toCorteConSucursal(raw: unknown): CorteConSucursal {
  * ```
  */
 export function useSupervisorQueries(): UseSupervisorQueriesReturn {
-  const [cargando, setCargando] = useState<boolean>(false);
+  const [pendientes, setPendientes] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const cargando = pendientes > 0;
 
   // ── Helpers internos ───────────────────────────────────────────────────────
 
   function iniciarQuery() {
-    setCargando(true);
+    setPendientes(prev => prev + 1);
     setError(null);
   }
 
   function finalizarQuery(err?: Error) {
-    setCargando(false);
+    setPendientes(prev => prev - 1);
     if (err) {
       setError(err.message);
     }
@@ -160,8 +162,8 @@ export function useSupervisorQueries(): UseSupervisorQueriesReturn {
         .cortes()
         .select('*, sucursales(id, nombre, codigo, activa)')
         .eq('estado', 'FINALIZADO')
-        .gte('created_at', inicio)
-        .lte('created_at', fin)
+        .gte('finalizado_at', inicio)
+        .lte('finalizado_at', fin)
         .order('finalizado_at', { ascending: false });
 
       if (supabaseError) {
@@ -225,8 +227,8 @@ export function useSupervisorQueries(): UseSupervisorQueriesReturn {
         .cortes()
         .select('*, sucursales(id, nombre, codigo, activa)', { count: 'exact' })
         .eq('estado', 'FINALIZADO')
-        .gte('created_at', rangoDesde.inicio)
-        .lte('created_at', rangoHasta.fin)
+        .gte('finalizado_at', rangoDesde.inicio)
+        .lte('finalizado_at', rangoHasta.fin)
         .order('finalizado_at', { ascending: false })
         .range(desde, hasta);
 

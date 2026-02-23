@@ -110,11 +110,11 @@ export function CorteHistorial() {
   }, []);
 
   const handlePaginaAnterior = useCallback(() => {
-    setFiltrosActivos(prev => ({ ...prev, pagina: prev.pagina - 1 }));
+    setFiltrosActivos(prev => ({ ...prev, pagina: (prev.pagina ?? 1) - 1 }));
   }, []);
 
   const handlePaginaSiguiente = useCallback(() => {
-    setFiltrosActivos(prev => ({ ...prev, pagina: prev.pagina + 1 }));
+    setFiltrosActivos(prev => ({ ...prev, pagina: (prev.pagina ?? 1) + 1 }));
   }, []);
 
   const irADetalle = useCallback(
@@ -127,7 +127,7 @@ export function CorteHistorial() {
   const totalPaginas = resultado
     ? Math.max(1, Math.ceil(resultado.total / RESULTADOS_POR_PAGINA))
     : 1;
-  const paginaActual = filtrosActivos.pagina;
+  const paginaActual = filtrosActivos.pagina ?? 1;
 
   // ── Render ───────────────────────────────────────────────────────────────
 
