@@ -12,17 +12,16 @@ test.describe('Smoke Tests @smoke', () => {
   });
 
   test('App loads and shows operation selector', async ({ page }) => {
-    // Verify main UI elements are visible
-    // Using more forgiving selectors for stability
-    const hasOperationSelector = await page.locator('text=/selecciona/i').isVisible();
-    const hasDeliveryOption = await page.locator('text=/corte/i').isVisible();
-    const hasMorningOption = await page.locator('text=/matutino/i').isVisible();
+    // Verify operation cards are visible (exact text avoids strict-mode ambiguity)
+    const hasCashCount = await page.getByText('Conteo de Caja').isVisible();
+    const hasCashCut = await page.getByText('Corte de Caja').isVisible();
+    const hasMorningOption = await page.getByText('Inicio de Turno').isVisible();
 
-    expect(hasOperationSelector || hasDeliveryOption || hasMorningOption).toBeTruthy();
+    expect(hasCashCount || hasCashCut || hasMorningOption).toBeTruthy();
   });
 
   test('Morning count: starts without PIN', async ({ page }) => {
-    await page.getByText(/conteo.*matutino/i).click();
+    await page.getByText('Conteo de Caja').click();
 
     // Should proceed directly to wizard (no PIN required)
     await expect(page.getByText(/protocolo|seguridad/i)).toBeVisible({ timeout: 5000 });
