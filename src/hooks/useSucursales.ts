@@ -77,8 +77,9 @@ export const useSucursales = (): UseSucursalesReturn => {
             setSucursales([]);
             setError(mensaje);
           } finally {
-            if (!isMounted) return;
-            setCargando(false);
+            if (isMounted) {
+              setCargando(false);
+            }
           }
         })();
       }, 300);
