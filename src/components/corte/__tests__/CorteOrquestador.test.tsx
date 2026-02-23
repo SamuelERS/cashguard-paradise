@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { EmpleadoSucursal } from '@/hooks/useEmpleadosSucursal';
-import CorteOrquestador from '../CorteOrquestador';
+import CorteOrquestador, { LAST_CASHIER_KEY } from '../CorteOrquestador';
 
 // ---------------------------------------------------------------------------
 // Mocks
@@ -99,6 +99,11 @@ vi.mock('@/hooks/useCorteSesion', () => ({
 
 const EXPECTED_CASHIER_KEY = 'cashguard_last_cashier';
 
+// DEBUG: Verify vitest loads updated component code
+if (LAST_CASHIER_KEY !== EXPECTED_CASHIER_KEY) {
+  throw new Error(`KEY MISMATCH: component exports "${LAST_CASHIER_KEY}" but test expects "${EXPECTED_CASHIER_KEY}"`);
+}
+
 // ---------------------------------------------------------------------------
 // Default props
 // ---------------------------------------------------------------------------
@@ -192,10 +197,19 @@ describe('CorteOrquestador — Suite E: Orquestación', () => {
 // Suite F — Prefill key canónica
 // ---------------------------------------------------------------------------
 
+// Backing store for localStorage mock (global setup replaces localStorage with vi.fn() no-ops)
+const storageMap = new Map<string, string>();
+
 describe('CorteOrquestador — Suite F: Prefill key canónica', () => {
   beforeEach(() => {
-    localStorage.clear();
+    storageMap.clear();
     vi.clearAllMocks();
+    vi.mocked(localStorage.getItem).mockImplementation(
+      (key: string) => storageMap.get(key) ?? null,
+    );
+    vi.mocked(localStorage.setItem).mockImplementation(
+      (key: string, value: string) => { storageMap.set(key, value); },
+    );
   });
 
   it('F1: localStorage con key canónica matchea empleado → empleadoPrecargado llega al presentacional', () => {
@@ -203,6 +217,7 @@ describe('CorteOrquestador — Suite F: Prefill key canónica', () => {
     render(<CorteOrquestador {...defaultProps} />);
 
     const el = screen.getByTestId('corte-inicio');
+
     const precargado = JSON.parse(
       el.getAttribute('data-precargado') ?? 'null',
     ) as EmpleadoSucursal | null;

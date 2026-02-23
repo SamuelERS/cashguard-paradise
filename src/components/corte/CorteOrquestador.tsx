@@ -1,10 +1,12 @@
-// 🤖 [IA] - v1.0.0: CorteOrquestador — Wires hooks Supabase → CorteInicio (TDD GREEN)
+// 🤖 [IA] - v1.1.0: CorteOrquestador — Prefill canónico + persistencia cajero (TDD GREEN)
 import { useState, useCallback } from 'react';
 import type { Corte } from '@/types/auditoria';
 import type { EmpleadoSucursal } from '@/hooks/useEmpleadosSucursal';
 import { useEmpleadosSucursal } from '@/hooks/useEmpleadosSucursal';
 import { useCorteSesion } from '@/hooks/useCorteSesion';
 import CorteInicio from './CorteInicio';
+
+export const LAST_CASHIER_KEY = 'cashguard_last_cashier';
 
 interface CorteOrquestadorProps {
   sucursalId: string;
@@ -26,7 +28,7 @@ export default function CorteOrquestador({
   // Prefill: buscar último cajero en localStorage
   const nombreGuardado =
     typeof window !== 'undefined'
-      ? localStorage.getItem('lastCashier')
+      ? localStorage.getItem(LAST_CASHIER_KEY)
       : null;
   const empleadoPrecargado =
     nombreGuardado != null
@@ -43,6 +45,7 @@ export default function CorteOrquestador({
           testigo: testigo.nombre,
           venta_esperada: ventaEsperada,
         });
+        localStorage.setItem(LAST_CASHIER_KEY, cajero.nombre);
         onCorteIniciado(corte);
       } catch (err: unknown) {
         const msg =
