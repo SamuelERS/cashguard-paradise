@@ -60,7 +60,10 @@ Aquí encontrarás el trabajo en curso. Las reglas están en la raíz:
     - `Caso_Investigacion_Doble_Fuente_Catalogos_20260217`
 - **Casos Completos (destino interno):**
     - `04_desarrollo/CASOS-COMPLETOS/`
+    - `04_desarrollo/CASOS-COMPLETOS/Caso_Investigacion_Priorizacion_UX_UI_20260223_COMPLETADO/` ← 2026-02-23 (Investigación DACC — priorización de 4 candidatos; caso canónico implementado)
     - `04_desarrollo/CASOS-COMPLETOS/Caso_Logica_Envios_Delivery_COMPLETADO/` ← 2026-02-23 (COD SICAR adjustment + DeliveryDashboard + D-01)
+    - `04_desarrollo/CASOS-COMPLETOS/Caso_Desmonolitizacion_MorningVerification_20260207_COMPLETADO/` ← 2026-02-07
+    - `04_desarrollo/CASOS-COMPLETOS/Caso_Desmonolitizacion_CashCounter_20260207_COMPLETADO/` ← 2026-02-07
     - `04_desarrollo/CASOS-COMPLETOS/Caso_Consolidacion_DenominationImages_20260222_COMPLETADO/` ← 2026-02-22
     - `04_desarrollo/CASOS-COMPLETOS/Caso-Sesion-Activa-No-Notifica_COMPLETADO/` ← 2026-02-19 (CASO-SANN: R1+R2+R3+R4)
 - **Planes de implementación (TDD):**
