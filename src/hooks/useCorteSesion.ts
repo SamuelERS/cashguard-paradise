@@ -1,6 +1,7 @@
-// 🤖 [IA] - v1.3.0: CASO #3 RESILIENCIA OFFLINE (Iteración 2) — reconexión automática con procesarCola
-// Previous: v1.2.0: CASO #3 RESILIENCIA OFFLINE — guardarProgreso encola offline si falla red
-// Previous: v1.1.0: OT-17 — Agrega insert snapshot append-only en guardarProgreso
+// 🤖 [IA] - v1.4.0: CASO #3 RESILIENCIA OFFLINE (Iteración 3a) — clasificador robusto esErrorDeRed
+// Previous: v1.3.0: reconexión automática con procesarCola
+// Previous: v1.2.0: guardarProgreso encola offline si falla red
+// Previous: v1.1.0: OT-17 — insert snapshot append-only
 // Previous: v1.0.0: Hook de sesión de corte — capa de sincronización Supabase
 // Orden de Trabajo #004 — Director General de Proyecto
 
@@ -13,6 +14,7 @@ import {
   procesarCola,
 } from '../lib/offlineQueue';
 import type { OperacionOffline } from '../lib/offlineQueue';
+import { esErrorDeRed } from '../lib/esErrorDeRed';
 import type { CashCount, ElectronicPayments } from '../types/cash';
 import type {
   Corte,
@@ -268,8 +270,8 @@ export function useCorteSesion(sucursal_id: string): UseCorteSesionReturn {
 
       setCorteActual(corteActualizado);
     } catch (err: unknown) {
-      // 🤖 [IA] - CASO #3 RESILIENCIA OFFLINE: Detectar error de red y encolar
-      if (err instanceof TypeError && err.message === 'Failed to fetch' && corteActual) {
+      // 🤖 [IA] - CASO #3 RESILIENCIA OFFLINE (Iter 3a): Clasificador robusto de errores de red
+      if (esErrorDeRed(err) && corteActual) {
         agregarOperacion({
           tipo: 'GUARDAR_PROGRESO',
           payload: {

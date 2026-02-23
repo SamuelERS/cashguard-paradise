@@ -1,6 +1,6 @@
-// 🤖 [IA] - CASO #3 RESILIENCIA OFFLINE (Iteración 2) — Test estático CashCounter
-// TDD RED: Verifica que CashCounter usa useConnectionStatus en vez de hardcode.
-// Patrón readFileSync + regex — sin render, sin jsdom, máxima velocidad.
+// 🤖 [IA] - CASO #3 RESILIENCIA OFFLINE (Iteración 3b) — Test estático CashCounter
+// Verifica que CashCounter usa hooks reactivos (useConnectionStatus + useOfflineQueueStatus)
+// en vez de hardcode o lecturas puntuales. Patrón readFileSync + regex — máxima velocidad.
 
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
@@ -32,5 +32,15 @@ describe('CashCounter — estadoConexion real (no hardcoded)', () => {
   it('NO contiene pendientes={0} hardcodeado en CorteStatusBanner', () => {
     // pendientes debe venir de la cola offline real, no ser 0 fijo.
     expect(source).not.toMatch(/pendientes\s*=\s*\{0\}/);
+  });
+
+  it('importa useOfflineQueueStatus (cola reactiva, no lectura puntual)', () => {
+    // 🤖 [IA] - Iteración 3b: Reemplaza obtenerEstadoCola() puntual por hook reactivo
+    expect(source).toMatch(/import\s+.*useOfflineQueueStatus.*from/);
+  });
+
+  it('NO importa obtenerEstadoCola directamente (lectura puntual eliminada)', () => {
+    // La lectura puntual obtenerEstadoCola().pendientes no es reactiva.
+    expect(source).not.toMatch(/import\s+.*obtenerEstadoCola.*from/);
   });
 });

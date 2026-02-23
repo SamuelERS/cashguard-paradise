@@ -1133,6 +1133,67 @@ describe('Suite 10: guardarProgreso — offline fallback', () => {
     // cargando debe ser false
     expect(result.current.cargando).toBe(false);
   });
+
+  // 🤖 [IA] - CASO #3 Iteración 3a: Verificar que el clasificador robusto
+  // detecta Error genérico con mensaje de red (Supabase wrapping)
+  it('10.4 - Error genérico con mensaje de red también encola (Supabase wrap)', async () => {
+    const result = await renderWithCorte();
+
+    // Supabase envuelve errores: throw new Error(pgError.message)
+    // Esto NO es TypeError, pero contiene 'Failed to fetch' en el mensaje
+    mockChain.cortes.single.mockRejectedValueOnce(
+      new Error('Failed to fetch'),
+    );
+
+    let thrown = false;
+    await act(async () => {
+      try {
+        await result.current.guardarProgreso({
+          fase_actual: 1,
+          conteo_parcial: { penny: 5 },
+          pagos_electronicos: null,
+          gastos_dia: null,
+        });
+      } catch {
+        thrown = true;
+      }
+    });
+
+    // Debe encolarse igual que TypeError — degradación elegante
+    expect(thrown).toBe(false);
+    expect(mockAgregarOperacion).toHaveBeenCalledTimes(1);
+    expect(mockAgregarOperacion).toHaveBeenCalledWith(
+      expect.objectContaining({
+        tipo: 'GUARDAR_PROGRESO',
+        corteId: CORTE_MOCK.id,
+      }),
+    );
+  });
+
+  it('10.5 - Error de Firefox NetworkError también encola', async () => {
+    const result = await renderWithCorte();
+
+    mockChain.cortes.single.mockRejectedValueOnce(
+      new TypeError('NetworkError when attempting to fetch resource'),
+    );
+
+    let thrown = false;
+    await act(async () => {
+      try {
+        await result.current.guardarProgreso({
+          fase_actual: 1,
+          conteo_parcial: { penny: 3 },
+          pagos_electronicos: null,
+          gastos_dia: null,
+        });
+      } catch {
+        thrown = true;
+      }
+    });
+
+    expect(thrown).toBe(false);
+    expect(mockAgregarOperacion).toHaveBeenCalledTimes(1);
+  });
 });
 
 // ---------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-// 🤖 [IA] - v1.5.0: CASO #3 RESILIENCIA OFFLINE (Iteración 2) — conexión real vía useConnectionStatus
+// 🤖 [IA] - v1.5.1: CASO #3 RESILIENCIA OFFLINE (Iteración 3b) — cola reactiva vía useOfflineQueueStatus
 // Previous: DACC-CIERRE-SYNC-UX: CorteStatusBanner + props sincronización Supabase
 // Previous: v1.4.2: OT-17 — Props hidratación + autosave para persistencia anti-reinicio
 // Previous: v1.4.1: Desmonolitización COMPLETA - Componente presentacional delgado
@@ -13,7 +13,7 @@ import { OperationMode } from "@/types/operation-mode";
 import { useCashCounterOrchestrator } from "@/hooks/useCashCounterOrchestrator";
 import { CorteStatusBanner } from "@/components/corte/CorteStatusBanner";
 import { useConnectionStatus } from "@/hooks/useConnectionStatus";
-import { obtenerEstadoCola } from "@/lib/offlineQueue";
+import { useOfflineQueueStatus } from "@/lib/useOfflineQueueStatus";
 
 // 🤖 [IA] - v1.4.2: OT-17 — Props con hidratación + autosave
 interface CashCounterProps {
@@ -61,7 +61,8 @@ const CashCounter = ({
 }: CashCounterProps) => {
   // 🤖 [IA] - v1.5.0: Estado de conexión real (reemplaza hardcode "online")
   const { estadoConexion } = useConnectionStatus();
-  const pendientesOffline = obtenerEstadoCola().pendientes;
+  // 🤖 [IA] - v1.5.1: Cola reactiva (polling 2s) reemplaza lectura puntual obtenerEstadoCola()
+  const { pendientes: pendientesOffline } = useOfflineQueueStatus();
 
   const state = useCashCounterOrchestrator({
     operationMode,
