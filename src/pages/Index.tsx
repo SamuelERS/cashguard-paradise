@@ -15,6 +15,7 @@ import { OperationMode } from "@/types/operation-mode";
 import { DailyExpense, isDailyExpense } from '@/types/expenses'; // 🤖 [IA] - v1.4.0 + ORDEN #28 M6
 import { isSupabaseConfigured, tables } from '@/lib/supabase';
 import { useCorteSesion } from '@/hooks/useCorteSesion';
+import CorteOrquestador from '@/components/corte/CorteOrquestador'; // 🤖 [IA] - DIRM V2 Task 5: Flujo CorteInicio → Supabase
 import type { DatosProgreso } from '@/types/auditoria';
 import type { CashCount, ElectronicPayments } from '@/types/cash';
 
@@ -41,6 +42,8 @@ const Index = () => {
   const [showWizard, setShowWizard] = useState(false);
   const [showMorningWizard, setShowMorningWizard] = useState(false);
   const [showCashCounter, setShowCashCounter] = useState(false);
+  // 🤖 [IA] - DIRM V2 Task 5: CorteOrquestador intermedio entre wizard y CashCounter
+  const [showCorteInicio, setShowCorteInicio] = useState(false);
   // 🤖 [IA] - ORDEN #25 M2: skipWizard=true cuando CashCounter se abre desde reanudación de sesión activa
   const [skipWizardOnResume, setSkipWizardOnResume] = useState(false);
   // 🤖 [IA] - ORDEN #27 M4: conteo parcial y pagos electrónicos extraídos de datos_conteo al reanudar
@@ -158,6 +161,14 @@ const Index = () => {
     });
     setShowWizard(false);
     setShowMorningWizard(false);
+
+    // 🤖 [IA] - DIRM V2 Task 5: Nuevo flujo CASH_CUT sin sesión activa → CorteOrquestador
+    // CorteOrquestador maneja selección cajero/testigo desde Supabase y llama iniciarCorte
+    if (currentMode === OperationMode.CASH_CUT && !activeCashCutSucursalId) {
+      setShowCorteInicio(true);
+      return;
+    }
+
     setShowCashCounter(true);
 
     // 🤖 [IA] - DACC-R2 Gap 1: Política explícita de sucursal para sincronización.
@@ -168,32 +179,14 @@ const Index = () => {
       const sucursalParaSync = activeCashCutSucursalId ?? data.selectedStore;
       setSyncSucursalId(sucursalParaSync);
 
-      if (!activeCashCutSucursalId) {
-        // 🤖 [IA] - DACC-R2 Gap 2: Ciclo de vida sync correcto (sincronizando → sincronizado | error)
-        setSyncEstado('sincronizando');
-        const ventaEsperada = parseFloat(data.expectedSales);
-        try {
-          await iniciarCorte({
-            sucursal_id: sucursalParaSync,
-            cajero: data.selectedCashier,
-            testigo: data.selectedWitness,
-            venta_esperada: !isNaN(ventaEsperada) ? ventaEsperada : undefined,
-          });
-          setSyncEstado('sincronizado');
-          setUltimaSync(new Date().toISOString());
-        } catch (err: unknown) {
-          setSyncEstado('error');
-          console.warn('[Index] iniciarCorte falló (graceful degradation):', err);
-        }
-      } else {
-        // Sesión activa reanudada — sync ya existe en Supabase
-        setSyncEstado('sincronizado');
-      }
+      // Sesión activa reanudada — sync ya existe en Supabase
+      setSyncEstado('sincronizado');
     }
   };
 
   const handleBackFromCounter = () => {
     setShowCashCounter(false);
+    setShowCorteInicio(false); // 🤖 [IA] - DIRM V2 Task 5: reset CorteOrquestador
     setSkipWizardOnResume(false); // 🤖 [IA] - ORDEN #25 M2: reset flag al volver de reanudación
     setInitialCashCount(undefined); // 🤖 [IA] - ORDEN #27 M4: limpiar conteo parcial al volver
     setInitialElectronicPayments(undefined); // 🤖 [IA] - ORDEN #27 M4: limpiar pagos al volver
@@ -382,6 +375,35 @@ const Index = () => {
   // 🤖 [IA] - v1.0.82 - Renderizar DeliveryDashboardWrapper si modo es DELIVERY_VIEW
   if (currentMode === OperationMode.DELIVERY_VIEW) {
     return <DeliveryDashboardWrapper requirePin={true} onGoBack={resetMode} />;
+  }
+
+  // 🤖 [IA] - DIRM V2 Task 5: CorteOrquestador — selección cajero/testigo desde Supabase
+  if (currentMode === OperationMode.CASH_CUT && showCorteInicio && initialData) {
+    return (
+      <CorteOrquestador
+        sucursalId={initialData.selectedStore}
+        ventaEsperada={parseFloat(initialData.expectedSales) || undefined}
+        onCorteIniciado={(corte) => {
+          // Actualizar initialData con cajero/testigo reales del corte
+          setInitialData(prev => prev ? {
+            ...prev,
+            selectedCashier: corte.cajero,
+            selectedWitness: corte.testigo,
+          } : prev);
+          setShowCorteInicio(false);
+          setShowCashCounter(true);
+          if (isSupabaseConfigured) {
+            setSyncSucursalId(corte.sucursal_id);
+            setSyncEstado('sincronizado');
+            setUltimaSync(new Date().toISOString());
+          }
+        }}
+        onCancelar={() => {
+          setShowCorteInicio(false);
+          setShowWizard(true);
+        }}
+      />
+    );
   }
 
   if (showCashCounter && initialData) {
