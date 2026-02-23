@@ -3,8 +3,8 @@
 // Reemplaza lectura puntual obtenerEstadoCola() en cada render.
 
 import { useState, useEffect } from 'react';
-import { obtenerEstadoCola } from './offlineQueue';
-import type { EstadoCola } from './offlineQueue';
+import { obtenerEstadoCola } from '../lib/offlineQueue';
+import type { EstadoCola } from '../lib/offlineQueue';
 
 /** Intervalo de polling en milisegundos. */
 const POLLING_INTERVAL_MS = 2000;

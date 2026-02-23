@@ -13,7 +13,7 @@ import { OperationMode } from "@/types/operation-mode";
 import { useCashCounterOrchestrator } from "@/hooks/useCashCounterOrchestrator";
 import { CorteStatusBanner } from "@/components/corte/CorteStatusBanner";
 import { useConnectionStatus } from "@/hooks/useConnectionStatus";
-import { useOfflineQueueStatus } from "@/lib/useOfflineQueueStatus";
+import { useOfflineQueueStatus } from "@/hooks/useOfflineQueueStatus";
 
 // 🤖 [IA] - v1.4.2: OT-17 — Props con hidratación + autosave
 interface CashCounterProps {

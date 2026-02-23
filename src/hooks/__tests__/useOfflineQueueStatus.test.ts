@@ -4,13 +4,13 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useOfflineQueueStatus } from '../useOfflineQueueStatus';
-import type { EstadoCola } from '../offlineQueue';
+import type { EstadoCola } from '../../lib/offlineQueue';
 
 // ─── Mock de offlineQueue ───────────────────────────────────────────────────
 
 const mockObtenerEstadoCola = vi.fn<[], EstadoCola>();
 
-vi.mock('../offlineQueue', () => ({
+vi.mock('../../lib/offlineQueue', () => ({
   obtenerEstadoCola: () => mockObtenerEstadoCola(),
 }));
 
