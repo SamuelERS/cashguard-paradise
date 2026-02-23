@@ -10,7 +10,8 @@
 // Previous: v2.6 - Badge versión actualizado (sistema inteligente WhatsApp + optimización UX)
 // Previous: v2.5 - Badge versión actualizado (formato tabla compacto + fix fondo $50 + SICAR)
 import { motion } from 'framer-motion';
-import { Sunrise, Moon, Package, ArrowRight, Calculator, Fish, Heart } from 'lucide-react';
+import { Sunrise, Moon, Package, ArrowRight, Calculator, Fish, Heart, BarChart3 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 // 🤖 [IA] - v1.2.24 - FloatingParticles eliminado para mejorar rendimiento
 import { OperationMode, OPERATION_MODES } from '@/types/operation-mode';
 import { AppFooter } from '@/components/AppFooter';
@@ -20,6 +21,7 @@ interface OperationSelectorProps {
 }
 
 export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
+  const navigate = useNavigate();
   const cashCount = OPERATION_MODES[OperationMode.CASH_COUNT];
   const cashCut = OPERATION_MODES[OperationMode.CASH_CUT];
   const deliveryView = OPERATION_MODES[OperationMode.DELIVERY_VIEW];
@@ -103,7 +105,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
         </motion.div>
 
         {/* Contenedor de las tres opciones */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-6 max-w-6xl mx-auto">
           {/* Card de Conteo de Caja (Mañana) */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -420,6 +422,112 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
               </span>
               <ArrowRight
                 className="w-5 h-5 group-hover:translate-x-1 transition-transform text-[#10b981]"
+              />
+            </div>
+          </motion.div>
+
+          {/* 🤖 [IA] - Card Dashboard Supervisor (acceso directo a /supervisor) */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            whileHover={{ scale: 1.02 }}
+            onClick={() => navigate('/supervisor')}
+            className="cursor-pointer group"
+            style={{
+              background: 'var(--glass-bg-primary)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              borderRadius: '16px',
+              padding: 'clamp(20px, 7.4vw, 32px)',
+              boxShadow: '0 4px 24px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+            }}
+          >
+            {/* Ícono y badge */}
+            <div className="flex items-start justify-between mb-6">
+              <BarChart3
+                style={{
+                  width: `clamp(48px, 12vw, 64px)`,
+                  height: `clamp(48px, 12vw, 64px)`,
+                  background: 'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text'
+                }}
+              />
+              <span
+                className="rounded-full font-semibold"
+                style={{
+                  padding: 'clamp(2px, 0.9vw, 4px) clamp(7px, 2.8vw, 12px)',
+                  fontSize: `clamp(0.625rem, 2.5vw, 0.75rem)`,
+                  background: 'rgba(139, 92, 246, 0.2)',
+                  border: '1px solid rgba(139, 92, 246, 0.4)',
+                  color: '#8b5cf6'
+                }}
+              >
+                Supervisión
+              </span>
+            </div>
+
+            {/* Título y descripción */}
+            <h3 className="font-bold mb-3" style={{
+              fontSize: `clamp(1.25rem, 5vw, 1.5rem)`,
+              color: '#e1e8ed'
+            }}>
+              Dashboard Supervisor
+            </h3>
+            <p className="mb-6" style={{
+              fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
+              color: '#8899a6'
+            }}>
+              Consulta cortes del día, historial y desempeño de cajeros
+            </p>
+
+            {/* Características */}
+            <div className="mb-6 flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <div className="rounded-full" style={{
+                  width: `clamp(5px, 1.5vw, 6px)`,
+                  height: `clamp(5px, 1.5vw, 6px)`,
+                  background: '#8b5cf6'
+                }} />
+                <span className="ops-feature-text">
+                  Cortes del día con semáforo de estado
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="rounded-full" style={{
+                  width: `clamp(5px, 1.5vw, 6px)`,
+                  height: `clamp(5px, 1.5vw, 6px)`,
+                  background: '#8b5cf6'
+                }} />
+                <span className="ops-feature-text">
+                  Historial con filtros por fecha y sucursal
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="rounded-full" style={{
+                  width: `clamp(5px, 1.5vw, 6px)`,
+                  height: `clamp(5px, 1.5vw, 6px)`,
+                  background: '#8b5cf6'
+                }} />
+                <span className="ops-feature-text">
+                  Acceso protegido con PIN de supervisor
+                </span>
+              </div>
+            </div>
+
+            {/* Botón de acción */}
+            <div className="flex items-center justify-between">
+              <span className="font-medium" style={{
+                fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
+                color: '#8b5cf6'
+              }}>
+                Acceder
+              </span>
+              <ArrowRight
+                className="w-5 h-5 group-hover:translate-x-1 transition-transform text-[#8b5cf6]"
               />
             </div>
           </motion.div>
