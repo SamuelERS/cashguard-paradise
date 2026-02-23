@@ -63,10 +63,18 @@ vi.mock('../../lib/snapshots', () => ({
   insertSnapshot: (...args: unknown[]) => mockInsertSnapshot(...args),
 }));
 
-// 🤖 [IA] - CASO #3 RESILIENCIA OFFLINE: Mock cola offline (agregarOperacion)
+// 🤖 [IA] - CASO #3 RESILIENCIA OFFLINE: Mock cola offline
 const mockAgregarOperacion = vi.fn().mockReturnValue('offline-op-001');
+// 🤖 [IA] - Iteración 2: Mocks reconexión — escucharConectividad + procesarCola
+const mockCleanupConectividad = vi.fn();
+const mockEscucharConectividad = vi.fn().mockReturnValue(mockCleanupConectividad);
+const mockProcesarCola = vi.fn().mockResolvedValue({
+  exitosas: 0, fallidas: 0, pendientes: 0, errores: [],
+});
 vi.mock('../../lib/offlineQueue', () => ({
   agregarOperacion: (...args: unknown[]) => mockAgregarOperacion(...args),
+  escucharConectividad: (...args: unknown[]) => mockEscucharConectividad(...args),
+  procesarCola: (...args: unknown[]) => mockProcesarCola(...args),
 }));
 
 // NOW import the module under test
@@ -1124,5 +1132,76 @@ describe('Suite 10: guardarProgreso — offline fallback', () => {
 
     // cargando debe ser false
     expect(result.current.cargando).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Suite 11: Reconexión automática — procesarCola al volver online
+// 🤖 [IA] - CASO #3 RESILIENCIA OFFLINE (Iteración 2)
+// TDD RED: fallan hasta que useCorteSesion integre escucharConectividad + procesarCola
+// ---------------------------------------------------------------------------
+
+describe('Suite 11: Reconexión automática — procesarCola al volver online', () => {
+  beforeEach(() => {
+    resetMockChain();
+    mockAgregarOperacion.mockClear();
+    mockEscucharConectividad.mockClear();
+    mockCleanupConectividad.mockClear();
+    mockProcesarCola.mockClear();
+    mockProcesarCola.mockResolvedValue({
+      exitosas: 0, fallidas: 0, pendientes: 0, errores: [],
+    });
+  });
+
+  it('11.1 - Al montar con corte activo, registra listener de reconexión', async () => {
+    // Renderizar hook con corte activo (via renderWithCorte)
+    await renderWithCorte();
+
+    // escucharConectividad debe haberse llamado exactamente 1 vez
+    // con una función callback como argumento
+    expect(mockEscucharConectividad).toHaveBeenCalledTimes(1);
+    expect(mockEscucharConectividad).toHaveBeenCalledWith(expect.any(Function));
+  });
+
+  it('11.2 - Callback de reconexión ejecuta procesarCola con executor', async () => {
+    await renderWithCorte();
+
+    // Extraer el callback que se pasó a escucharConectividad
+    const onOnlineCallback = mockEscucharConectividad.mock.calls[0][0] as () => void;
+
+    // Simular evento de reconexión
+    await act(async () => {
+      onOnlineCallback();
+    });
+
+    // procesarCola debe haberse llamado con un ejecutor (función)
+    expect(mockProcesarCola).toHaveBeenCalledTimes(1);
+    expect(mockProcesarCola).toHaveBeenCalledWith(expect.any(Function));
+  });
+
+  it('11.3 - Si procesarCola falla, no rompe la UI (degradación elegante)', async () => {
+    // procesarCola lanza error
+    mockProcesarCola.mockRejectedValueOnce(new Error('Cola corrupta'));
+
+    const result = await renderWithCorte();
+
+    // Extraer callback
+    const onOnlineCallback = mockEscucharConectividad.mock.calls[0][0] as () => void;
+
+    // Simular reconexión — NO debe lanzar al usuario
+    let thrown = false;
+    await act(async () => {
+      try {
+        onOnlineCallback();
+      } catch {
+        thrown = true;
+      }
+    });
+
+    expect(thrown).toBe(false);
+
+    // El hook debe seguir funcionando normalmente
+    expect(result.current.corte_actual).not.toBeNull();
+    expect(result.current.error).toBeNull();
   });
 });
