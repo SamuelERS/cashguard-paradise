@@ -1,10 +1,12 @@
-// 🤖 [IA] - v1.1.0: OT-17 — Agrega insert snapshot append-only en guardarProgreso
+// 🤖 [IA] - v1.2.0: CASO #3 RESILIENCIA OFFLINE — guardarProgreso encola offline si falla red
+// Previous: v1.1.0: OT-17 — Agrega insert snapshot append-only en guardarProgreso
 // Previous: v1.0.0: Hook de sesión de corte — capa de sincronización Supabase
 // Orden de Trabajo #004 — Director General de Proyecto
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { tables } from '../lib/supabase';
 import { insertSnapshot } from '../lib/snapshots';
+import { agregarOperacion } from '../lib/offlineQueue';
 import type { CashCount, ElectronicPayments } from '../types/cash';
 import type {
   Corte,
@@ -260,6 +262,24 @@ export function useCorteSesion(sucursal_id: string): UseCorteSesionReturn {
 
       setCorteActual(corteActualizado);
     } catch (err: unknown) {
+      // 🤖 [IA] - CASO #3 RESILIENCIA OFFLINE: Detectar error de red y encolar
+      if (err instanceof TypeError && err.message === 'Failed to fetch' && corteActual) {
+        agregarOperacion({
+          tipo: 'GUARDAR_PROGRESO',
+          payload: {
+            fase_actual: datos.fase_actual,
+            datos_conteo: {
+              conteo_parcial: datos.conteo_parcial,
+              pagos_electronicos: datos.pagos_electronicos,
+              gastos_dia: datos.gastos_dia,
+            },
+          },
+          corteId: corteActual.id,
+        });
+        // No setError, no throw — degradación elegante, estado local preservado
+        return;
+      }
+
       const message = err instanceof Error ? err.message : 'Error desconocido';
       setError(message);
       throw err;
