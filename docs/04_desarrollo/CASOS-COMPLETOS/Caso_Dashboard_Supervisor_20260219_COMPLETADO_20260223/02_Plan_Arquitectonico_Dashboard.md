@@ -207,6 +207,9 @@ Si un corte cumple condiciones de multiples colores, se aplica el mas severo:
 
 ## 6. Criterios de Aceptacion
 
+> Nota de archivo historico: este checklist corresponde al plan previo a implementacion.
+> El estado de ejecucion real y su evidencia TDD se documentan en `04_Plan_Implementacion.md`.
+
 ### Vista Lista del Dia (Vista A)
 
 - [ ] Muestra todos los cortes completados del dia actual
@@ -279,7 +282,7 @@ Si un corte cumple condiciones de multiples colores, se aplica el mas severo:
 | Riesgo | Probabilidad | Impacto | Mitigacion |
 |--------|-------------|---------|------------|
 | JSONB fields vacios en cortes antiguos | Alta | Medio | Defensive checks en UI: si campo es null, mostrar "Datos no disponibles" |
-| Performance con muchos cortes en historial | Baja | Medio | Paginacion de 50 + indice en `created_at` |
+| Performance con muchos cortes en historial | Baja | Medio | Paginacion de 50 + indice en `finalizado_at` |
 | PIN de supervisor no configurado | Media | Alto | Documentar proceso de setup en README del dashboard |
 | RLS de Supabase bloquea queries | Media | Alto | Verificar politicas ANTES de implementar. Crear politica si no existe |
 | Timezone inconsistente en filtros | Media | Medio | Usar `America/El_Salvador` consistentemente en todas las queries |

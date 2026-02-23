@@ -30,7 +30,7 @@ Documento origen: `Faltantes-Nueva-Version.md` — análisis conversacional de q
 | # | Carpeta | Problema | Prioridad | Estado | Impacto |
 |---|---------|----------|-----------|--------|---------|
 | 1 | `Caso_Pruebas_Vida_Real_20260219/` | Pruebas en tienda real con datos reales | 🔴 Crítica | 🔴 Pendiente | Bloquea producción |
-| 2 | `Caso_Dashboard_Supervisor_20260219/` | Dashboard gerencial para consultar cortes | 🔴 Alta | 🔴 Pendiente | Sin visibilidad supervisorial |
+| 2 | `../CASOS-COMPLETOS/Caso_Dashboard_Supervisor_20260219_COMPLETADO_20260223/` | Dashboard gerencial para consultar cortes | 🔴 Alta | ✅ Completado | Visibilidad supervisorial habilitada |
 | 3 | `Caso_Resiliencia_Offline_20260219/` | Modo offline robusto (internet intermitente) | 🔴 Crítica | 🔴 Pendiente | Bloquea operación tienda |
 | 4 | `Caso_Imagenes_Denominaciones_20260219/` | Renombrar imágenes (6 mismatches, NO faltan) | 🟡 Media | 🔴 Pendiente | UX visual incompleta |
 | 5 | `Caso_Migracion_WhatsApp_Matutino_20260219/` | Consolidar código WhatsApp duplicado (~147 líneas) | 🟡 Media | 🔴 Pendiente | Código duplicado |
