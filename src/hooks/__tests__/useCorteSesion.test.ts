@@ -63,6 +63,12 @@ vi.mock('../../lib/snapshots', () => ({
   insertSnapshot: (...args: unknown[]) => mockInsertSnapshot(...args),
 }));
 
+// 🤖 [IA] - CASO #3 RESILIENCIA OFFLINE: Mock cola offline (agregarOperacion)
+const mockAgregarOperacion = vi.fn().mockReturnValue('offline-op-001');
+vi.mock('../../lib/offlineQueue', () => ({
+  agregarOperacion: (...args: unknown[]) => mockAgregarOperacion(...args),
+}));
+
 // NOW import the module under test
 import { useCorteSesion, generarCorrelativo } from '../useCorteSesion';
 
@@ -1013,5 +1019,110 @@ describe('Suite 9: Manejo de errores', () => {
     });
 
     expect(result.current.error).toBeNull();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Suite 10: guardarProgreso — offline fallback
+// 🤖 [IA] - CASO #3 RESILIENCIA OFFLINE (Iteración 1)
+// Tests TDD RED: fallan hasta que useCorteSesion integre offlineQueue
+// ---------------------------------------------------------------------------
+
+describe('Suite 10: guardarProgreso — offline fallback', () => {
+  beforeEach(() => {
+    resetMockChain();
+    mockAgregarOperacion.mockClear();
+  });
+
+  it('10.1 - Online exitoso NO encola operación offline', async () => {
+    const result = await renderWithCorte();
+
+    const corteActualizado = { ...CORTE_MOCK, fase_actual: 1, estado: 'EN_PROGRESO' as const };
+    mockChain.cortes.single.mockResolvedValueOnce({
+      data: corteActualizado,
+      error: null,
+    });
+
+    await act(async () => {
+      await result.current.guardarProgreso({
+        fase_actual: 1,
+        conteo_parcial: { penny: 10 },
+        pagos_electronicos: null,
+        gastos_dia: null,
+      });
+    });
+
+    expect(mockAgregarOperacion).not.toHaveBeenCalled();
+  });
+
+  it('10.2 - Fallo de red encola GUARDAR_PROGRESO sin lanzar error', async () => {
+    const result = await renderWithCorte();
+
+    // Simular error de red: TypeError('Failed to fetch') — error canónico de browser
+    mockChain.cortes.single.mockRejectedValueOnce(
+      new TypeError('Failed to fetch'),
+    );
+
+    let thrown = false;
+    await act(async () => {
+      try {
+        await result.current.guardarProgreso({
+          fase_actual: 1,
+          conteo_parcial: { penny: 10 },
+          pagos_electronicos: null,
+          gastos_dia: null,
+        });
+      } catch {
+        thrown = true;
+      }
+    });
+
+    // No debe lanzar error al usuario (degradación elegante)
+    expect(thrown).toBe(false);
+
+    // Debe encolar la operación offline
+    expect(mockAgregarOperacion).toHaveBeenCalledTimes(1);
+    expect(mockAgregarOperacion).toHaveBeenCalledWith({
+      tipo: 'GUARDAR_PROGRESO',
+      payload: expect.objectContaining({
+        fase_actual: 1,
+        datos_conteo: expect.objectContaining({
+          conteo_parcial: { penny: 10 },
+        }),
+      }),
+      corteId: CORTE_MOCK.id,
+    });
+  });
+
+  it('10.3 - Fallo de red preserva corteActual y no expone error', async () => {
+    const result = await renderWithCorte();
+
+    // Simular error de red
+    mockChain.cortes.single.mockRejectedValueOnce(
+      new TypeError('Failed to fetch'),
+    );
+
+    await act(async () => {
+      try {
+        await result.current.guardarProgreso({
+          fase_actual: 2,
+          conteo_parcial: { penny: 10, nickel: 5 },
+          pagos_electronicos: { credomatic: 100 },
+          gastos_dia: null,
+        });
+      } catch {
+        // Capturar error para permitir assertions post-call
+      }
+    });
+
+    // corteActual debe preservarse (no null, no perdido)
+    expect(result.current.corte_actual).not.toBeNull();
+    expect(result.current.corte_actual?.id).toBe(CORTE_MOCK.id);
+
+    // error debe ser null (operación encolada, no error para el usuario)
+    expect(result.current.error).toBeNull();
+
+    // cargando debe ser false
+    expect(result.current.cargando).toBe(false);
   });
 });
