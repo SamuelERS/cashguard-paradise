@@ -62,6 +62,7 @@ Aquí encontrarás el trabajo en curso. Las reglas están en la raíz:
 - **Casos Completos (destino interno):**
     - `04_desarrollo/CASOS-COMPLETOS/`
     - `04_desarrollo/CASOS-COMPLETOS/Caso_Consolidacion_DenominationImages_20260222_COMPLETADO/` ← 2026-02-22
+    - `04_desarrollo/CASOS-COMPLETOS/Caso-Sesion-Activa-No-Notifica_COMPLETADO/` ← 2026-02-19 (CASO-SANN: R1+R2+R3+R4)
 - **Planes de implementación (TDD):**
     - `plans/`
 
