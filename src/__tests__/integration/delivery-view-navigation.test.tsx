@@ -28,13 +28,10 @@ describe('Delivery View Navigation', () => {
       </MemoryRouter>
     );
     
-    const deliveryCard = screen.getByText('Deliveries Pendientes').closest('div[class*="cursor-pointer"]');
+    const deliveryCard = screen.getByTestId('operation-card-delivery');
     expect(deliveryCard).toBeInTheDocument();
-    
-    if (deliveryCard) {
-      fireEvent.click(deliveryCard);
-      expect(handleSelectMode).toHaveBeenCalledWith(OperationMode.DELIVERY_VIEW);
-    }
+    fireEvent.click(deliveryCard);
+    expect(handleSelectMode).toHaveBeenCalledWith(OperationMode.DELIVERY_VIEW);
   });
 
   it('muestra 3 tarjetas en pantalla inicial', () => {
@@ -87,7 +84,7 @@ describe('Delivery View Navigation', () => {
       </MemoryRouter>
     );
     
-    const deliveryCard = screen.getByText('Deliveries Pendientes').closest('div[class*="cursor-pointer"]');
+    const deliveryCard = screen.getByTestId('operation-card-delivery');
     expect(deliveryCard).toHaveClass('group');
   });
 

@@ -602,28 +602,22 @@ export async function selectOperation(
   // 🤖 [IA] - v1.3.7e-FT: Wait for animations (compatible con fake timers)
   await waitForAnimation(300);
 
-  // Find the specific operation card by title text first
-  const titleText = operation === 'morning' ? 'Conteo de Caja' : 'Corte de Caja';
-  const titleElement = await screen.findByText(titleText);
-
-  // Get the card container (div with onClick and cursor-pointer)
-  const cardContainer = titleElement.closest('div.cursor-pointer');
-
-  if (!cardContainer) {
-    throw new Error(`No se encontró el card container para ${operation}`);
-  }
+  // 🤖 [IA] - DACC-STABLE-SELECTORS: Usar data-testid en lugar de closest('div.cursor-pointer')
+  // Root cause fix: motion.button renders as <button>, not <div> — closest('div.cursor-pointer') siempre retorna null
+  const testId = operation === 'morning' ? 'operation-card-cash-count' : 'operation-card-cash-cut';
+  const cardContainer = screen.getByTestId(testId);
 
   // Múltiples estrategias para asegurar el click funcione
   try {
     // Estrategia 1: user.click (preferida)
     await act(async () => {
-      await user.click(cardContainer as HTMLElement);
+      await user.click(cardContainer);
     });
   } catch (error1) {
     try {
       // Estrategia 2: fireEvent.click como fallback
       await act(() => {
-        fireEvent.click(cardContainer as HTMLElement);
+        fireEvent.click(cardContainer);
       });
     } catch (error2) {
       // Estrategia 3: Dispatch manual de evento
