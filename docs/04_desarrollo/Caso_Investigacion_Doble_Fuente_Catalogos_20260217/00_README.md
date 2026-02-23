@@ -27,13 +27,25 @@ Adicionalmente, en el flujo `CorteInicio` el cajero precargado desde localStorag
   - `src/components/corte/CorteInicio.tsx`
   - `src/components/corte/__tests__/CorteInicio.test.tsx`
 
-## Estado Actual
-- Fix quirurgico aplicado para quitar filtro inicial en cajero precargado cuando hay catalogo multiple.
-- Build local y tests del flujo corte en verde.
-- Plan modular TDD preparado para unificar catalogos y cerrar deuda de doble fuente.
-- Modulo A/B iniciado con TDD:
-  - RED: test OT-18 en `src/hooks/__tests__/useCashCounterOrchestrator.test.ts`.
-  - GREEN: `useCashCounterOrchestrator` migra empleados a hooks Supabase (`useSucursales` + `useEmpleadosSucursal`) y deja de usar `getEmployeesByStore`.
-- Modulo B completado:
-  - `StoreSelectionForm` recibe sucursales dinamicas (`availableStores`) desde orquestador.
-  - fallback legacy de sucursales queda controlado para entornos no-productivos y solo ante error de Supabase.
+## Progreso
+
+| Módulo | Descripción | Estado |
+|--------|-------------|--------|
+| A — Baseline y bloqueo de regresión | Test RED OT-18 + migración `useCashCounterOrchestrator` a hooks Supabase | ✅ Completado |
+| B — Migración de flujos legacy | `StoreSelectionForm` con sucursales dinámicas + fallback controlado | ✅ Completado |
+| C — Integridad de flujo CorteInicio | Tests de prefill + sugerencias + caso "Mostrar todos" | ⏳ Pendiente |
+| D — Verificación de release | Build + tests corte + smoke manual en localhost | ⏳ Pendiente |
+
+**Criterio de cierre:** No existe consumo productivo de catálogos estáticos para empleados/sucursales y todos los flujos usan proveedor unificado con tests en verde.
+
+> Ver pendientes detallados en: `99_PENDIENTES_POR_REALIZAR.md`
+
+## Contexto Técnico Completado
+
+- Fix quirúrgico aplicado para quitar filtro inicial en cajero precargado cuando hay catálogo múltiple.
+- Build local y tests del flujo corte en verde tras módulos A y B.
+- Módulo A (TDD): test OT-18 en `src/hooks/__tests__/useCashCounterOrchestrator.test.ts` — RED → GREEN.
+  - `useCashCounterOrchestrator` migra empleados a hooks Supabase (`useSucursales` + `useEmpleadosSucursal`) y deja de usar `getEmployeesByStore`.
+- Módulo B completado:
+  - `StoreSelectionForm` recibe sucursales dinámicas (`availableStores`) desde orquestador.
+  - Fallback legacy de sucursales queda controlado para entornos no-productivos y solo ante error de Supabase.
