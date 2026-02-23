@@ -107,14 +107,18 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
         {/* Contenedor de las tres opciones */}
         <div className="grid md:grid-cols-2 gap-6 max-w-6xl mx-auto">
           {/* Card de Conteo de Caja (Mañana) */}
-          <motion.div
+          <motion.button
+            type="button"
+            data-testid="operation-card-cash-count"
+            aria-label={`Iniciar ${cashCount.title}`}
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.1 }}
             whileHover={{ scale: 1.02 }}
             onClick={() => onSelectMode(OperationMode.CASH_COUNT)}
-            className="cursor-pointer group"
+            className="cursor-pointer group text-left w-full"
             style={{
+              appearance: 'none',
               background: 'var(--glass-bg-primary)',
               backdropFilter: 'blur(20px)',
               WebkitBackdropFilter: 'blur(20px)',
@@ -211,17 +215,21 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
                 className="w-5 h-5 group-hover:translate-x-1 transition-transform text-[#f4a52a]"
               />
             </div>
-          </motion.div>
+          </motion.button>
 
           {/* Card de Corte de Caja (Noche) */}
-          <motion.div
+          <motion.button
+            type="button"
+            data-testid="operation-card-cash-cut"
+            aria-label={`Iniciar ${cashCut.title}`}
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
             whileHover={{ scale: 1.02 }}
             onClick={() => onSelectMode(OperationMode.CASH_CUT)}
-            className="cursor-pointer group"
+            className="cursor-pointer group text-left w-full"
             style={{
+              appearance: 'none',
               background: 'var(--glass-bg-primary)',
               backdropFilter: 'blur(20px)',
               WebkitBackdropFilter: 'blur(20px)',
@@ -318,17 +326,21 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
                 className="w-5 h-5 group-hover:translate-x-1 transition-transform text-[#0a84ff]"
               />
             </div>
-          </motion.div>
+          </motion.button>
 
           {/* Card de Deliveries Pendientes (NUEVA) */}
-          <motion.div
+          <motion.button
+            type="button"
+            data-testid="operation-card-delivery"
+            aria-label={`Ver ${deliveryView.title}`}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
             whileHover={{ scale: 1.02 }}
             onClick={() => onSelectMode(OperationMode.DELIVERY_VIEW)}
-            className="cursor-pointer group"
+            className="cursor-pointer group text-left w-full"
             style={{
+              appearance: 'none',
               background: 'var(--glass-bg-primary)',
               backdropFilter: 'blur(20px)',
               WebkitBackdropFilter: 'blur(20px)',
@@ -424,17 +436,20 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
                 className="w-5 h-5 group-hover:translate-x-1 transition-transform text-[#10b981]"
               />
             </div>
-          </motion.div>
+          </motion.button>
 
           {/* 🤖 [IA] - Card Dashboard Supervisor (acceso directo a /supervisor) */}
-          <motion.div
+          <motion.button
+            type="button"
+            aria-label="Acceder al Dashboard Supervisor"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
             whileHover={{ scale: 1.02 }}
             onClick={() => navigate('/supervisor')}
-            className="cursor-pointer group"
+            className="cursor-pointer group text-left w-full"
             style={{
+              appearance: 'none',
               background: 'var(--glass-bg-primary)',
               backdropFilter: 'blur(20px)',
               WebkitBackdropFilter: 'blur(20px)',
@@ -530,7 +545,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
                 className="w-5 h-5 group-hover:translate-x-1 transition-transform text-[#8b5cf6]"
               />
             </div>
-          </motion.div>
+          </motion.button>
         </div>
 
         {/* Mensaje informativo */}
