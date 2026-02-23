@@ -179,8 +179,16 @@ export function CashResultsDisplay({
         <h3 className="text-[clamp(1rem,4.5vw,1.25rem)] font-bold mb-[clamp(0.75rem,3vw,1rem)]" style={{ color: '#e1e8ed' }}>
           📦 Deliveries Pendientes (COD)
         </h3>
-        <p className="text-[clamp(0.75rem,3vw,0.875rem)] mb-[clamp(1rem,4vw,1.5rem)]" style={{ color: '#8899a6' }}>
+        <p className="text-[clamp(0.75rem,3vw,0.875rem)] mb-2" style={{ color: '#8899a6' }}>
           Gestiona entregas pendientes que deben restarse del efectivo esperado
+        </p>
+        {/* 🤖 [IA] - D-01 GREEN: Nota explícita ajuste SICAR automático por deliveries COD */}
+        <p
+          data-testid="delivery-sicar-note"
+          className="text-[clamp(0.7rem,2.8vw,0.8rem)] mb-[clamp(1rem,4vw,1.5rem)] px-2 py-1 rounded"
+          style={{ color: '#00ba7c', background: 'rgba(0,186,124,0.08)' }}
+        >
+          Los deliveries COD registrados aquí ajustan el SICAR automáticamente al calcular la diferencia del corte.
         </p>
         <DeliveryManager />
       </div>

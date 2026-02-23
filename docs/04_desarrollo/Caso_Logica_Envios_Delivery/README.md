@@ -3,9 +3,9 @@
 **Proyecto:** CashGuard Paradise
 **Empresa:** Acuarios Paradise
 **Fecha creación:** 23 Oct 2025
-**Última actualización:** 24 Oct 2025
-**Status:** ✅ DOCUMENTACIÓN COMPLETA + FASE 9 INTEGRADA
-**Prioridad:** ALTA (Frustración equipo masiva + Reportes distorsionados)
+**Última actualización:** 23 Feb 2026
+**Status:** ✅ IMPLEMENTADO — Core logic completo. UX communication pendiente (D-01).
+**Prioridad:** MEDIA (Lógica implementada; pendiente claridad UX para cajero)
 **Progreso:** 9/9 archivos base + 5 docs FASE 9 (~18,000 líneas totales)
 
 ---
@@ -46,18 +46,25 @@
 
 > **"nos tiramos el problema unos a otros... entre tanto papel con lapicero... poco se puede hacer"**
 
-### Propuesta Solución
+### Estado de Implementación (Feb 2026)
 
-**Módulo Envíos Básico + Dashboard Acumulado (Opción B) + FASE 9 🆕:**
-- ✅ Registro envíos en corte del día
-- ✅ Ajuste automático esperado SICAR
-- ✅ Vista histórica envíos pendientes
-- ✅ Alertas automáticas (>7, >15, >30 días)
-- ✅ Tracking por encomendista (C807/Melos)
-- ✅ Elimina workaround 100%
-- ✅ **🆕 Acceso directo desde pantalla inicial (FASE 9)**
+> **Nota 2026-02-23:** La lógica core ya está implementada en producción.
+> La documentación original (Oct 2025) describía decisiones pendientes que ya se tomaron.
 
-**ROI Estimado:** 4-6 meses payback | **Desarrollo:** 26-35 horas (incluye FASE 9)
+**Implementado (COMPLETO):**
+- ✅ Registro envíos en corte del día → `DeliveryManager` v3.0
+- ✅ Ajuste automático esperado SICAR → `src/utils/sicarAdjustment.ts` (25 tests TIER 0)
+- ✅ Vista histórica envíos pendientes → Dashboard supervisor
+- ✅ Alertas automáticas (>7, >15, >30 días) → DeliveryManager UI
+- ✅ Tracking por encomendista (C807/Melos) → modelo Supabase
+- ✅ Acceso directo desde pantalla inicial → OperationSelector FASE 9
+
+**Pendiente (UX Communication):**
+- ⏳ Orden D-01 (2026-02-23): Nota explícita en Phase 3 conectando deliveries → ajuste SICAR automático
+  - Implementado: `CashResultsDisplay.tsx` `data-testid="delivery-sicar-note"`
+  - Tests: `CashResultsDisplay.delivery-ux.test.tsx` (2/2 ✅)
+
+**ROI Estimado:** 4-6 meses payback | **Desarrollo original:** 26-35 horas | **Completado en:** ~4 meses
 
 ---
 
