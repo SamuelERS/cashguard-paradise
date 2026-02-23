@@ -26,11 +26,27 @@ Tambien existe una UI nueva de corte en el repositorio, con arquitectura distint
 | `05_Ruta_Estabilizacion_Modelo_Propio.md` | Ruta de estabilizacion antes de modernizacion (con evidencia y gates) | ✅ |
 | `06_ORDEN_TECNICA_Traslado_Agente_Nuevo.md` | Orden de continuidad con contexto operativo para sesion nueva | ✅ |
 
-## Resultado
-Parcial:
-- Se concluye estrategia recomendada: mantener UI tradicional como canon operativo y conectar primero datos reales.
-- Se define ruta de modernizacion por capas con criterios de salida verificables.
-- Se ejecuta y valida Modulo A en local con evidencia reproducible (PASS).
+## Progreso
+
+| Módulo | Descripción | Estado |
+|--------|-------------|--------|
+| A — Entorno y fuente real | Configurar `.env` + validar Supabase real vs mock; 57 tests passing | ✅ Completado |
+| B — Canon de datos en UI tradicional | Tests de selección cajero/testigo/sucursal; IDs propagados end-to-end | ⏳ Pendiente |
+| C — Observabilidad y diagnóstico operativo | Banner de conectividad real (real/fallback); indicador técnico dev | ⏳ Pendiente |
+| D — Preparación de modernización (sin switch de UI) | Matriz de paridad UI tradicional vs nueva; tests RED comparativos | ⏳ Pendiente |
+| E — Activación gradual (Go/NoGo) | Feature flag de enrutamiento; smoke tests; veredicto formal PASS | ⏳ Pendiente |
+
+**Criterio de cierre:** UI tradicional corre con datos reales de Supabase con evidencia de pruebas, existe plan cerrado de modernización con gates técnicos, y no hay decisiones de UI tomadas por intuición.
+
+> Ver pendientes detallados en: `99_PENDIENTES_POR_REALIZAR.md`
+> Ver evidencia del Módulo A en: `04_Evidencia_Modulo_A_Validacion_Local.md`
+> Ver handoff de contexto para agente nuevo en: `06_ORDEN_TECNICA_Traslado_Agente_Nuevo.md`
+
+## Resultado (Módulo A)
+
+- Estrategia definida: mantener UI tradicional como canon operativo y conectar primero datos reales.
+- Ruta de modernización por capas con criterios de salida verificables documentada.
+- Módulo A ejecutado y validado en local con evidencia reproducible (57 tests PASS, build OK, Playwright OK).
 
 ## Referencias
 - `docs/REGLAS_DOCUMENTACION.md`
