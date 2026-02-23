@@ -1,4 +1,4 @@
-// 🤖 [IA] - v1.0.0: Tests TDD RED para CorteOrquestador — 5 escenarios (render, props, iniciarCorte, onCorteIniciado, error)
+// 🤖 [IA] - v1.1.0: Tests TDD RED para CorteOrquestador — 8 escenarios (5 orquestación + 3 prefill key canónica)
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -45,6 +45,7 @@ vi.mock('../CorteInicio', () => ({
       data-cargando={String(props.cargandoEmpleados)}
       data-error={props.errorEmpleados ?? ''}
       data-empleados={JSON.stringify(props.empleadosDeSucursal)}
+      data-precargado={JSON.stringify(props.empleadoPrecargado ?? null)}
     >
       <button
         data-testid="confirmar-mock"
@@ -93,6 +94,12 @@ vi.mock('@/hooks/useCorteSesion', () => ({
 }));
 
 // ---------------------------------------------------------------------------
+// Key canónica — debe coincidir con la constante exportada por CorteOrquestador
+// ---------------------------------------------------------------------------
+
+const EXPECTED_CASHIER_KEY = 'cashguard_last_cashier';
+
+// ---------------------------------------------------------------------------
 // Default props
 // ---------------------------------------------------------------------------
 
@@ -108,6 +115,7 @@ const defaultProps = {
 
 describe('CorteOrquestador — Suite E: Orquestación', () => {
   beforeEach(() => {
+    localStorage.clear();
     vi.clearAllMocks();
   });
 
@@ -177,5 +185,55 @@ describe('CorteOrquestador — Suite E: Orquestación', () => {
 
     // Verify error message is visible
     expect(screen.getByText(/sesión duplicada/i)).toBeInTheDocument();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Suite F — Prefill key canónica
+// ---------------------------------------------------------------------------
+
+describe('CorteOrquestador — Suite F: Prefill key canónica', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    vi.clearAllMocks();
+  });
+
+  it('F1: localStorage con key canónica matchea empleado → empleadoPrecargado llega al presentacional', () => {
+    localStorage.setItem(EXPECTED_CASHIER_KEY, 'Adonay Torres');
+    render(<CorteOrquestador {...defaultProps} />);
+
+    const el = screen.getByTestId('corte-inicio');
+    const precargado = JSON.parse(
+      el.getAttribute('data-precargado') ?? 'null',
+    ) as EmpleadoSucursal | null;
+
+    expect(precargado).not.toBeNull();
+    expect(precargado!.nombre).toBe('Adonay Torres');
+    expect(precargado!.id).toBe('emp-001');
+  });
+
+  it('F2: localStorage vacío → empleadoPrecargado es null', () => {
+    render(<CorteOrquestador {...defaultProps} />);
+
+    const el = screen.getByTestId('corte-inicio');
+    const precargado = JSON.parse(
+      el.getAttribute('data-precargado') ?? 'null',
+    ) as EmpleadoSucursal | null;
+
+    expect(precargado).toBeNull();
+  });
+
+  it('F3: iniciarCorte exitoso → persiste cajero en localStorage con key canónica', async () => {
+    const user = userEvent.setup();
+    render(<CorteOrquestador {...defaultProps} />);
+
+    // Pre-condición: key no existe
+    expect(localStorage.getItem(EXPECTED_CASHIER_KEY)).toBeNull();
+
+    await user.click(screen.getByTestId('confirmar-mock'));
+
+    await waitFor(() => {
+      expect(localStorage.getItem(EXPECTED_CASHIER_KEY)).toBe('Adonay Torres');
+    });
   });
 });
