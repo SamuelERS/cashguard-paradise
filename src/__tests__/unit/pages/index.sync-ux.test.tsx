@@ -1,5 +1,5 @@
 // 🤖 [IA] - DACC-CIERRE-SYNC-UX: Tests persistencia Supabase + sync visual
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import Index from '@/pages/Index';
@@ -21,7 +21,7 @@ const supabaseMocks = vi.hoisted(() => {
 });
 
 const corteSesionMocks = vi.hoisted(() => ({
-  iniciarCorte: vi.fn<[], Promise<void>>().mockResolvedValue(undefined),
+  iniciarCorte: vi.fn<[{ sucursal_id: string; cajero: string; testigo: string; venta_esperada?: number }], Promise<void>>().mockResolvedValue(undefined),
   guardarProgreso: vi.fn<[], Promise<void>>().mockResolvedValue(undefined),
   error: null as string | null,
   // 🤖 [IA] - DACC-R2 Gap 3: Capturar sucursalId pasado a useCorteSesion
@@ -141,12 +141,52 @@ vi.mock('@/components/deliveries/DeliveryDashboardWrapper', () => ({
   DeliveryDashboardWrapper: () => <div data-testid="delivery-page">DeliveryDashboardWrapper</div>,
 }));
 
+// 🤖 [IA] - DIRM V2: CorteOrquestador mock — intercepts DIRM flow, calls corteSesionMocks.iniciarCorte directly
+// Root cause fix: real CorteOrquestador calls useEmpleadosSucursal → tables.empleadoSucursales (not mocked)
+vi.mock('@/components/corte/CorteOrquestador', () => ({
+  default: ({
+    sucursalId,
+    ventaEsperada,
+    onCorteIniciado,
+  }: {
+    sucursalId: string;
+    ventaEsperada?: number;
+    onCorteIniciado: (corte: { cajero: string; testigo: string; sucursal_id: string }) => void;
+    onCancelar: () => void;
+  }) => {
+    const handleConfirmar = async () => {
+      try {
+        await corteSesionMocks.iniciarCorte({
+          sucursal_id: sucursalId,
+          cajero: 'cashier-1',
+          testigo: 'witness-1',
+          venta_esperada: ventaEsperada,
+        });
+        onCorteIniciado({ cajero: 'cashier-1', testigo: 'witness-1', sucursal_id: sucursalId });
+      } catch {
+        // iniciarCorte rejected — CorteOrquestador stays visible, CashCounter NOT shown
+      }
+    };
+    return (
+      <div data-testid="corte-orquestador">
+        <button type="button" data-testid="corte-confirmar" onClick={() => void handleConfirmar()}>
+          Confirmar
+        </button>
+      </div>
+    );
+  },
+}));
+
 // --- Helper: select CASH_CUT and complete wizard ---
 
 async function completeCashCutWizard(user: ReturnType<typeof userEvent.setup>) {
   await user.click(screen.getByTestId('open-cash-cut'));
   await screen.findByTestId('initial-wizard');
   await user.click(screen.getByTestId('wizard-complete'));
+  // 🤖 [IA] - DIRM V2: no-active-session CASH_CUT → CorteOrquestador; active-session → CashCounter directly
+  if (screen.queryByTestId('corte-orquestador')) {
+    await user.click(screen.getByTestId('corte-confirmar'));
+  }
   return screen.findByTestId('cash-counter');
 }
 
@@ -237,18 +277,25 @@ describe('DACC-CIERRE-SYNC-UX: Persistence & Sync UX', () => {
     expect(wizard).toBeInTheDocument();
   });
 
-  // 🤖 [IA] - DACC-R2 Gap 2+3: iniciarCorte rejection → syncEstado = 'error'
-  it('sets syncEstado to error when iniciarCorte rejects', async () => {
+  // 🤖 [IA] - DIRM V2: iniciarCorte rejection → CorteOrquestador stays visible (CashCounter NOT shown)
+  // Architecture change: iniciarCorte is called inside CorteOrquestador (not Index.tsx),
+  // so rejection keeps CorteOrquestador on screen rather than setting syncEstado='error'
+  it('keeps CorteOrquestador visible when iniciarCorte rejects', async () => {
     corteSesionMocks.iniciarCorte.mockRejectedValueOnce(new Error('Supabase network error'));
 
     const user = userEvent.setup();
     render(<Index />);
 
-    const counter = await completeCashCutWizard(user);
+    await user.click(screen.getByTestId('open-cash-cut'));
+    await screen.findByTestId('initial-wizard');
+    await user.click(screen.getByTestId('wizard-complete'));
+    await screen.findByTestId('corte-orquestador');
+    await user.click(screen.getByTestId('corte-confirmar'));
 
-    expect(corteSesionMocks.iniciarCorte).toHaveBeenCalledOnce();
-    expect(counter.getAttribute('data-sync-estado')).toBe('error');
-    expect(counter.getAttribute('data-ultima-sync')).toBe('');
+    await waitFor(() => {
+      expect(corteSesionMocks.iniciarCorte).toHaveBeenCalledOnce();
+    });
+    expect(screen.queryByTestId('cash-counter')).not.toBeInTheDocument();
   });
 
   // 🤖 [IA] - DACC-R2 Gap 1+3: Política A — sesión activa fuerza su sucursal para sync
