@@ -192,7 +192,7 @@ export function useMorningVerificationController(
         description: 'Por favor intente nuevamente',
       });
     }
-  }, [store, cashierIn, cashierOut, report, handleCopyToClipboard]);
+  }, [storeId, cashierId, witnessId, report, handleCopyToClipboard]);
 
   const handleConfirmSent = useCallback(() => {
     setReportSent(true);
