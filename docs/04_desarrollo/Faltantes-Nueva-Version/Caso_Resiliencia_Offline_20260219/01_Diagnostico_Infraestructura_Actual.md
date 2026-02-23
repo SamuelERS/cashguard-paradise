@@ -1,6 +1,7 @@
 # 01 - Diagnostico de Infraestructura Actual: Resiliencia Offline
 
 > ⚠️ Corregido 2026-02-19: Nombres de funciones y tablas actualizados contra codigo fuente real
+> ⚠️ Corregido 2026-02-22 (DACC forense): Brecha 3 actualizada — CorteStatusBanner.tsx YA EXISTE (175 líneas), la brecha real es falta de hook useConnectionStatus
 
 **Caso:** Resiliencia Offline
 **Fecha:** 19 de febrero 2026
@@ -173,14 +174,18 @@ Estado DESEADO:
 - **Que falta:** Reglas de runtime caching con strategy `NetworkFirst` para endpoints de Supabase (`*.supabase.co/rest/v1/*`)
 - **Esfuerzo estimado:** Bajo (configuracion en `vite.config.ts`)
 
-### Brecha 3: Sin deteccion visual de estado de conexion
+### Brecha 3: Banner de conexion existe pero recibe datos hardcodeados
 
-- **Que existe:** `escucharConectividad()` en offlineQueue que registra `addEventListener('online')` y retorna funcion de cleanup. Sin embargo, esta funcion no es importada por ningun archivo de la aplicacion.
+- **Que existe:**
+  - `escucharConectividad()` en offlineQueue que registra `addEventListener('online')` y retorna funcion de cleanup. No importada por ningun archivo de produccion.
+  - `CorteStatusBanner.tsx` en `src/components/corte/` (175 lineas) con 6 estados visuales (error, offline, reconectando, sincronizando, pendiente, online), boton reintentar, helper `formatearUltimaSync()`, types exportados (`EstadoConexion`, `EstadoSync`). **Importado y renderizado** en `CashCounter.tsx` linea 13.
+  - Tests existentes: `src/components/corte/__tests__/CorteStatusBanner.test.tsx`
+- **Problema real:** `estadoConexion` esta **hardcodeado** a `"online"` en `CashCounter.tsx` linea 108 — el banner siempre muestra verde independientemente del estado real de la red.
 - **Que falta:**
-  - Hook `useConnectionStatus` que consuma `escucharConectividad()` con event listeners para `online`/`offline`
-  - Componente banner visual que informe al cajero si esta sin conexion
-  - Trigger automatico de `procesarCola()` cuando la conexion regresa (conectar ambas funciones existentes)
-- **Esfuerzo estimado:** Bajo (componentes nuevos pequenos, infraestructura de listener ya existe)
+  - Hook `useConnectionStatus` que detecte estado real de conexion y alimente al banner existente con props reales
+  - Conectar `escucharConectividad()` con `procesarCola()` para sincronizacion automatica al reconectar
+  - Reemplazar `estadoConexion="online"` hardcodeado en CashCounter.tsx con valor real del hook
+- **Esfuerzo estimado:** Bajo (banner ya existe con 6 estados, solo falta hook que lo alimente)
 
 ### Brecha 4: Sin estrategia de conflictos
 
@@ -200,7 +205,7 @@ Estado DESEADO:
 |---|---|---|---|---|
 | 1 | offlineQueue desconectada | Cola completa con tests | Integracion con useCorteSesion | Bajo-Medio |
 | 2 | Sin runtime caching API | Workbox para static assets | NetworkFirst para Supabase | Bajo |
-| 3 | Sin UI de conexion | `escucharConectividad()` (no integrada) | Hook + Banner visual que consuma listener existente | Bajo |
+| 3 | Banner existe pero hardcodeado | `CorteStatusBanner.tsx` (175 lineas, 6 estados) + `escucharConectividad()` (no integrada) | Hook `useConnectionStatus` que alimente banner existente con datos reales | Bajo |
 | 4 | Sin manejo de conflictos | Nada | Estrategia last-write-wins | Bajo |
 | 5 | guardarProgreso() sin fallback | Funcion funcional | Try/catch + enqueue | Bajo |
 
@@ -260,13 +265,13 @@ El reporte WhatsApp (la pieza mas critica para gerencia) se genera localmente y 
 - `offlineQueue` es codigo funcional muerto: exportada pero nunca importada (incluyendo `procesarCola()` y `escucharConectividad()`)
 - `useCorteSesion` hace todas sus llamadas directamente a Supabase sin fallback
 - No existe runtime caching para llamadas API en la configuracion de Workbox
-- No hay indicador visual de estado de conexion para el cajero
+- `CorteStatusBanner.tsx` existe y se renderiza, pero `estadoConexion` hardcodeado a `"online"` — nunca muestra estado real
 - No hay sincronizacion automatica cuando la conexion regresa (`escucharConectividad()` existe pero no esta conectada a `procesarCola()`)
 - `guardarProgreso()` puede fallar silenciosamente perdiendo datos
 
 ### Veredicto
 
-El 70% de la solucion ya esta construida. La cola offline tiene la logica de encolado, procesamiento FIFO, retry con backoff exponencial, persistencia en localStorage, y deteccion de reconexion (`escucharConectividad()` con `addEventListener('online')`). Lo que falta es el "pegamento" entre esta infraestructura y el flujo real de la aplicacion: integrar offlineQueue con useCorteSesion, conectar `escucharConectividad()` con `procesarCola()`, agregar runtime caching para APIs, y proporcionar feedback visual al cajero.
+El 75% de la solucion ya esta construida. La cola offline tiene la logica de encolado, procesamiento FIFO, retry con backoff exponencial, persistencia en localStorage, y deteccion de reconexion (`escucharConectividad()` con `addEventListener('online')`). Ademas, `CorteStatusBanner.tsx` (175 lineas) ya implementa 6 estados visuales con colores del design system. Lo que falta es el "pegamento" entre esta infraestructura y el flujo real de la aplicacion: integrar offlineQueue con useCorteSesion, conectar `escucharConectividad()` con `procesarCola()`, crear hook `useConnectionStatus` que alimente al banner existente con datos reales (reemplazar `estadoConexion="online"` hardcodeado), y agregar runtime caching para APIs.
 
 El esfuerzo para cerrar esta brecha es **significativamente menor** que si se tuviera que construir desde cero.
 

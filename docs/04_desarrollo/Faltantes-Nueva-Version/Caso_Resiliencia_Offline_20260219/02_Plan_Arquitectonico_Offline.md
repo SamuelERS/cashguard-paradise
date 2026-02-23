@@ -1,6 +1,7 @@
 # 02 - Plan Arquitectonico: Resiliencia Offline
 
 > ⚠️ Corregido 2026-02-19: Nombres de funciones y tablas actualizados contra codigo fuente real
+> ⚠️ Corregido 2026-02-22 (DACC forense): ConnectionStatusBanner → usar CorteStatusBanner.tsx existente (175 líneas, 6 estados), solo crear hook useConnectionStatus
 
 **Caso:** Resiliencia Offline
 **Fecha:** 19 de febrero 2026
@@ -138,23 +139,29 @@ Un hook que encapsula la deteccion de conectividad:
   - Muestra notificacion de sincronizacion exitosa
 - Debounce de 2 segundos para evitar falsos positivos en conexiones inestables
 
-**Componente 2: ConnectionStatusBanner**
+**Componente 2: CorteStatusBanner (YA EXISTE — solo conectar)**
 
-Un banner visual sutil pero claro que aparece cuando el cajero pierde conexion:
+> ⚠️ Corregido 2026-02-22: Este componente YA EXISTE en `src/components/corte/CorteStatusBanner.tsx` (175 lineas). NO crear componente nuevo.
 
-| Estado | Apariencia | Mensaje |
+El banner **ya implementa 6 estados visuales** mas completos que los 4 propuestos originalmente:
+
+| Estado existente | Color | Funcionalidad |
 |---|---|---|
-| Online | No visible (oculto) | - |
-| Offline | Banner amarillo/ambar fijo en parte superior | "Sin conexion - Los datos se guardan localmente" |
-| Sincronizando | Banner azul con spinner | "Conexion restaurada - Sincronizando datos..." |
-| Error de sincronizacion | Banner rojo | "Error al sincronizar - Se reintentara automaticamente" |
+| online | Verde | Oculto o indicador minimo |
+| offline | Rojo | Banner fijo con mensaje de desconexion |
+| reconectando | Amber | Banner con indicador de reconexion |
+| sincronizando | Azul | Banner con spinner de sincronizacion |
+| pendiente | Amber | Operaciones pendientes de sincronizar |
+| error | Rojo | Error con boton "Reintentar" opcional |
 
-**Comportamiento del banner:**
+**Problema actual:** En `CashCounter.tsx` linea 108, `estadoConexion` esta **hardcodeado** a `"online"` — el banner nunca muestra estado real.
 
-- No intrusivo: no bloquea la interfaz ni requiere accion del usuario
-- Automatico: aparece y desaparece segun el estado de la red
-- Informativo: el cajero sabe que sus datos estan seguros localmente
-- Consistente: usa el patron de colores del design system existente (ambar para warning, azul para info, rojo para error)
+**Lo que falta:** Reemplazar `estadoConexion="online"` con el valor real del hook `useConnectionStatus` (Componente 1).
+
+**Archivos existentes del banner:**
+- Componente: `src/components/corte/CorteStatusBanner.tsx` (175 lineas)
+- Tests: `src/components/corte/__tests__/CorteStatusBanner.test.tsx`
+- Types exportados: `EstadoConexion`, `EstadoSync`, `CorteStatusBannerProps`
 
 **Sincronizacion automatica:**
 
@@ -236,7 +243,8 @@ Cada operacion encolada incluye un campo `timestamp` (ISO 8601) que registra **c
 | Archivo | Tipo | Descripcion |
 |---|---|---|
 | `src/hooks/useConnectionStatus.ts` | Hook | Hook de deteccion de estado online/offline. Escucha eventos del navegador. Expone `isOnline` reactivo. Ejecuta `procesarCola()` automaticamente al reconectar con debounce de 2 segundos. |
-| `src/components/shared/ConnectionStatusBanner.tsx` | Componente UI | Banner visual que informa al cajero sobre el estado de conexion. Cuatro estados: oculto (online), amarillo (offline), azul (sincronizando), rojo (error). No intrusivo, posicion fija superior. |
+
+> ~~`src/components/shared/ConnectionStatusBanner.tsx`~~ — **NO CREAR.** `CorteStatusBanner.tsx` ya existe en `src/components/corte/` con 175 lineas y 6 estados visuales. Solo conectar hook `useConnectionStatus` al banner existente en `CashCounter.tsx`.
 
 ### Archivos de tests a crear o modificar
 
@@ -245,7 +253,7 @@ Cada operacion encolada incluye un campo `timestamp` (ISO 8601) que registra **c
 | Tests existentes de offlineQueue | Extender | Agregar tests para los nuevos tipos de operaciones Supabase y la logica de comparacion de timestamps |
 | Tests de useCorteSesion | Extender | Agregar tests que simulen fallo de red y verifiquen que la operacion se encola correctamente |
 | Tests de useConnectionStatus | Crear | Tests para transiciones online/offline, debounce, y trigger de procesarCola |
-| Tests de ConnectionStatusBanner | Crear | Tests de renderizado condicional segun estado de conexion |
+| Tests de CorteStatusBanner | Extender | Tests existentes en `src/components/corte/__tests__/CorteStatusBanner.test.tsx` — extender para verificar integracion con hook useConnectionStatus |
 
 ---
 
@@ -405,9 +413,9 @@ Tareas:
 1. Crear hook useConnectionStatus
 2. Implementar debounce de 2 segundos
 3. Conectar procesarCola() al evento de reconexion
-4. Crear componente ConnectionStatusBanner
-5. Integrar banner en layout principal de la app
-6. Tests de hook y componente
+4. Conectar hook useConnectionStatus al CorteStatusBanner existente en CashCounter.tsx (reemplazar `estadoConexion="online"` hardcodeado)
+5. Tests de hook + verificar tests existentes del banner no se rompen
+6. Validacion visual de 6 estados del banner con datos reales
 
 ### Fase 3: Capa 2 - Runtime caching Workbox (Prioridad media)
 
