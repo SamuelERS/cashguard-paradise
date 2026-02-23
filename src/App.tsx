@@ -1,9 +1,13 @@
 import { Toaster as Sonner } from "@/components/ui/sonner"; // 🤖 [IA] - v1.1.15 - Single toast system
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import SupervisorDashboard from "./pages/SupervisorDashboard"; // 🤖 [IA] - Orden #4 DACC
+import { CortesDelDia } from "@/components/supervisor/CortesDelDia"; // 🤖 [IA] - Orden #3 DACC
+import { CorteDetalle } from "@/components/supervisor/CorteDetalle"; // 🤖 [IA] - Orden #5 DACC
+import { CorteHistorial } from "@/components/supervisor/CorteHistorial"; // 🤖 [IA] - Orden #5 DACC
 import { FloatingOrbs } from "@/components/FloatingOrbs";
 import { useIsMobile } from "@/hooks/use-mobile"; // 🤖 [IA] - v2.0.0: Hook unificado de detección móvil
 import { ErrorBoundary } from "@/components/ErrorBoundary"; // 🤖 [IA] - v1.0.0: Global error handling
@@ -63,6 +67,14 @@ const App = () => {
           }}>
             <Routes>
               <Route path="/" element={<Index />} />
+              {/* 🤖 [IA] - Orden #4 DACC: Rutas del módulo supervisor */}
+              <Route path="/supervisor" element={<SupervisorDashboard />}>
+                <Route index element={<Navigate to="/supervisor/cortes" replace />} />
+                <Route path="cortes" element={<CortesDelDia />} />
+                {/* Próximamente — ORDEN #5: Vista B y Vista C */}
+                <Route path="corte/:id" element={<CorteDetalle />} />
+                <Route path="historial" element={<CorteHistorial />} />
+              </Route>
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
