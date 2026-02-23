@@ -5,7 +5,7 @@
 | Campo | Valor |
 |-------|-------|
 | **Fecha inicio** | 2026-02-19 |
-| **Fecha actualización** | 2026-02-19 |
+| **Fecha actualización** | 2026-02-23 |
 | **Estado** | 🔴 Pendiente |
 | **Prioridad** | Alta |
 | **Responsable** | Claude Code (Opus 4.6) + SamuelERS |
@@ -32,11 +32,11 @@ Documento origen: `Faltantes-Nueva-Version.md` — análisis conversacional de q
 | 1 | `Caso_Pruebas_Vida_Real_20260219/` | Pruebas en tienda real con datos reales | 🔴 Crítica | 🔴 Pendiente | Bloquea producción |
 | 2 | `../CASOS-COMPLETOS/Caso_Dashboard_Supervisor_20260219_COMPLETADO_20260223/` | Dashboard gerencial para consultar cortes | 🔴 Alta | ✅ Completado | Visibilidad supervisorial habilitada |
 | 3 | `Caso_Resiliencia_Offline_20260219/` | Modo offline robusto (internet intermitente) | 🔴 Crítica | 🔴 Pendiente | Bloquea operación tienda |
-| 4 | `Caso_Imagenes_Denominaciones_20260219/` | Renombrar imágenes (6 mismatches, NO faltan) | 🟡 Media | 🔴 Pendiente | UX visual incompleta |
+| 4 | `../CASOS-COMPLETOS/Caso_Imagenes_Denominaciones_20260219_COMPLETADO/` | Renombrar imágenes (6 mismatches, NO faltan) | 🟡 Media | ✅ Completado | 6 imágenes renombradas + consolidación SSOT (v3.4.1/v3.5.1) |
 | 5 | `Caso_Migracion_WhatsApp_Matutino_20260219/` | Consolidar código WhatsApp duplicado (~147 líneas) | 🟡 Media | 🔴 Pendiente | Código duplicado |
 | 6 | `Caso_Testing_Phase2_Verificacion_20260219/` | Tests Phase2VerificationSection (~28%) | 🟡 Media | 🔴 Pendiente | Deuda técnica anti-fraude |
 | 7 | `Caso_PWA_Produccion_20260219/` | Experiencia PWA en producción (SW, cache, updates) | 🟠 Alta | 🔴 Pendiente | Usuarios con versión obsoleta |
-| 8 | `Caso_UX_UI_Modulo_Nocturno_20260219/` | Inconsistencia visual glass morphism + botones raw + dead code | 🟠 Alta | 🔴 Pendiente | UX inconsistente entre pantallas |
+| 8 | `../CASOS-COMPLETOS/Caso-UX-UI-Feb-19_COMPLETADO/` | Inconsistencia visual glass morphism + botones raw + dead code | 🟠 Alta | ✅ Completado | Glass morphism unificado, botones estandarizados, dead code eliminado |
 
 ## Documentación Completada
 
@@ -57,13 +57,13 @@ BLOQUE A — Bloquean producción (hacer primero):
   #1. Caso_Pruebas_Vida_Real       → Después de offline+PWA, probar en tienda real
 
 BLOQUE B — Funcionalidad supervisor (segundo):
-  #2. Caso_Dashboard_Supervisor    → Datos ya existen en Supabase, falta UI
+  #2. Caso_Dashboard_Supervisor    → ✅ COMPLETADO (v3.4.0, 23 Feb 2026)
 
 BLOQUE C — Completar experiencia (tercero):
-  #4. Caso_Imagenes_Denominaciones → 16 minutos: renombrar 6 archivos
+  #4. Caso_Imagenes_Denominaciones → ✅ COMPLETADO (v3.4.1/v3.5.1, 22 Feb 2026)
   #5. Caso_Migracion_WhatsApp      → Consolidar ~147 líneas duplicadas con hook existente
   #6. Caso_Testing_Phase2          → Deuda técnica, 7-10h para 100% passing
-  #8. Caso_UX_UI_Modulo_Nocturno   → Solo visual, 2-3h: glass morphism + botones + dead code
+  #8. Caso_UX_UI_Modulo_Nocturno   → ✅ COMPLETADO (v3.5.0, 22 Feb 2026)
 ```
 
 ## Skills Aplicados

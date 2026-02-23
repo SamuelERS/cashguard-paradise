@@ -3,8 +3,8 @@
 | Campo | Valor |
 |-------|-------|
 | **Fecha inicio** | 2026-02-19 |
-| **Fecha actualización** | 2026-02-19 |
-| **Estado** | 🔴 Pendiente |
+| **Fecha actualización** | 2026-02-23 |
+| **Estado** | ✅ Completado (v3.4.1 + v3.5.1 — 22 Feb 2026) |
 | **Prioridad** | Media |
 | **Responsable** | Claude Code (integración) |
 
@@ -57,12 +57,26 @@ La investigación profunda reveló que los 11 archivos necesarios **ya existen e
 | `01_Diagnostico_Imagenes.md` | Inventario completo de 24 archivos + mapeo exacto rutas | ✅ Completado |
 | `02_Plan_Generacion_Integracion.md` | Plan de renombrado (Opción A) + fallback DALL-E | ✅ Completado |
 
-## Resultado
+## Resultado — Implementación Completada
 
-[Completar cuando todas las imágenes carguen correctamente — 0 errores 404]
+**Caso cerrado el 22 Feb 2026.** Resuelto en dos fases:
+
+**Fase 1 — v3.4.1 (OT12): 6 imágenes copiadas con nombres correctos**
+- Commit: `485295b fix(images): OT12 — copy 6 denomination images with correct names + TDD tests`
+- 6 archivos renombrados/copiados para que coincidan con las rutas esperadas por `denomination-images.tsx`
+- Tests TDD verificando existencia de archivos
+
+**Fase 2 — v3.5.1: Consolidación SSOT (Single Source of Truth)**
+- OT #076–079: Eliminación de funciones `getIcon()` duplicadas en `DeliveryFieldView.tsx` y `GuidedFieldView.tsx`
+- Ambos componentes migrados a usar `DENOMINATION_IMAGE_MAP` desde `denomination-images.tsx`
+- ~80 líneas de código duplicado eliminadas
+- 8/8 tests passing
+
+**Validación:** 0 errores 404 en imágenes de denominaciones.
 
 ## Referencias
 
 - `src/utils/denomination-images.tsx` — Utilidad central (single source of truth)
 - `/public/monedas-recortadas-dolares/` — 24+ archivos existentes
-- Componentes: `GuidedFieldView.tsx`, `DeliveryFieldView.tsx`, `Phase2VerificationSection.tsx`
+- Componentes migrados: `GuidedFieldView.tsx`, `DeliveryFieldView.tsx`
+- Ver CLAUDE.md secciones v3.4.1 y v3.5.1
