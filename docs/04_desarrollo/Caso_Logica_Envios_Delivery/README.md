@@ -4,8 +4,8 @@
 **Empresa:** Acuarios Paradise
 **Fecha creación:** 23 Oct 2025
 **Última actualización:** 23 Feb 2026
-**Status:** ✅ IMPLEMENTADO — Core logic completo. UX communication pendiente (D-01).
-**Prioridad:** MEDIA (Lógica implementada; pendiente claridad UX para cajero)
+**Status:** ✅ IMPLEMENTADO Y CERRADO — Core logic completo. UX communication completada (D-01 ✅ commit 1f729f4).
+**Prioridad:** COMPLETADA (Lógica + claridad UX cajero implementadas)
 **Progreso:** 9/9 archivos base + 5 docs FASE 9 (~18,000 líneas totales)
 
 ---
@@ -16,7 +16,7 @@
 2. [Navegación de Documentos](#navegación-de-documentos)
 3. [Status Actual vs Propuesto](#status-actual-vs-propuesto)
 4. [Quick Wins Identificados](#quick-wins-identificados)
-5. [Decisión Pendiente](#decisión-pendiente)
+5. [Historial: Decisión de Arquitectura](#historial-decisión-de-arquitectura-archivado)
 6. [Próximos Pasos](#próximos-pasos)
 
 ---
@@ -59,9 +59,9 @@
 - ✅ Tracking por encomendista (C807/Melos) → modelo Supabase
 - ✅ Acceso directo desde pantalla inicial → OperationSelector FASE 9
 
-**Pendiente (UX Communication):**
-- ⏳ Orden D-01 (2026-02-23): Nota explícita en Phase 3 conectando deliveries → ajuste SICAR automático
-  - Implementado: `CashResultsDisplay.tsx` `data-testid="delivery-sicar-note"`
+**UX Communication (D-01 COMPLETADA):**
+- ✅ Orden D-01 (2026-02-23): Nota explícita en Phase 3 conectando deliveries → ajuste SICAR automático
+  - Implementado: `CashResultsDisplay.tsx` `data-testid="delivery-sicar-note"` (commit 1f729f4)
   - Tests: `CashResultsDisplay.delivery-ux.test.tsx` (2/2 ✅)
 
 **ROI Estimado:** 4-6 meses payback | **Desarrollo original:** 26-35 horas | **Completado en:** ~4 meses
@@ -246,9 +246,13 @@
 
 ---
 
-## 🤔 Decisión Pendiente
+## 📚 Historial: Decisión de Arquitectura (Archivado)
 
-### Recomendación Claude: Opción B (Módulo + Dashboard)
+> **NOTA (23 Feb 2026):** Esta sección es **histórica**. La decisión fue tomada e implementada.
+> La Opción B (Módulo + SICAR ajuste automático) fue implementada en producción.
+> D-01 completada: nota UX explícita en Phase 3 (commit 1f729f4, `CashResultsDisplay.tsx`).
+
+### Recomendación Claude: Opción B (Módulo + Dashboard) — ✅ IMPLEMENTADA
 
 **Razón #1 - Resuelve problema COMPLETO:**
 - ✅ Elimina workaround día actual
@@ -281,37 +285,20 @@
 
 ---
 
-## 🚀 Próximos Pasos
+## ✅ Estado de Implementación (Feb 2026)
 
-### Paso 1: Decisión Stakeholder (Usuario)
-- [ ] Leer documentos 5 (Propuesta) + 8 (Impacto)
-- [ ] Decidir: Opción A, B, C o D
-- [ ] Aprobar inversión desarrollo estimada
-- [ ] Definir timeline prioritario (¿Urgente o puede esperar?)
+### Completado
 
-### Paso 2: Plan Detallado (Si aprueba Opción B)
-- [ ] Claude crea task list detallada 8 FASES
-- [ ] Estimaciones tiempo refinadas
-- [ ] Asignación recursos (Developer + Testing)
-- [ ] Schedule releases (v1.5.0 → v1.8.0)
+- [x] **Core logic SICAR:** `sicarAdjustment.ts` + 25 tests passing
+- [x] **DeliveryManager:** Módulo completo integrado en Phase 3
+- [x] **D-01 UX Communication:** Nota explícita `data-testid="delivery-sicar-note"` en `CashResultsDisplay.tsx` (commit 1f729f4)
+- [x] **Tests D-01:** `CashResultsDisplay.delivery-ux.test.tsx` 2/2 GREEN
 
-### Paso 3: Kickoff Desarrollo
-- [ ] FASE 1: Tipos TypeScript (2-3h)
-- [ ] FASE 2: DeliveryManager (4-5h)
-- [ ] FASE 3: Integración Wizard (3-4h)
-- [ ] [Ver Plan Implementación completo](./7_PLAN_IMPLEMENTACION.md)
+### Pendiente Futuro (no bloqueante)
 
-### Paso 4: Validación Usuario
-- [ ] Testing con datos reales Paradise
-- [ ] 3 días validación operacional
-- [ ] Feedback equipo Acuarios Paradise
-- [ ] Refinamiento UX si necesario
-
-### Paso 5: Rollout Producción
-- [ ] Deploy v1.5.0 (Módulo Básico)
-- [ ] Training equipo (usar Modal Educativo)
-- [ ] Monitoreo 1 semana
-- [ ] Deploy v1.6.0 (Dashboard) si exitoso
+- [ ] Dashboard tracking histórico >30 días (Opción B extendida)
+- [ ] Alertas automáticas cobranza >30 días
+- [ ] Integración API SICAR (Opción D — largo plazo)
 
 ---
 
@@ -382,15 +369,14 @@
 - 9 documentos técnicos (~10,000 líneas)
 - Screenshots WhatsApp grupo ENVÍOS MERLIOT C807
 
-**Stakeholder Decision:**
-- ⏸️ PENDIENTE: Aprobar Opción A, B, C o D
-- 📧 Contacto: Usuario Paradise (vía Claude conversation)
+**Implementación:**
+- ✅ D-01 completada: commit 1f729f4 (23 Feb 2026)
+- ✅ Core logic: `sicarAdjustment.ts`, `DeliveryManager`, 25 tests passing
+- ✅ UX cajero: nota explícita en Phase 3 (`CashResultsDisplay.tsx`)
 
-**Siguiente Acción:**
-1. Usuario lee [Propuesta Solución](./5_PROPUESTA_SOLUCION.md)
-2. Usuario lee [Impacto Negocio](./8_IMPACTO_NEGOCIO.md)
-3. Usuario decide opción + aprueba inversión
-4. Claude ejecuta [Plan Implementación](./7_PLAN_IMPLEMENTACION.md)
+**Siguiente Acción (futuro):**
+- Dashboard tracking histórico — pendiente decisión stakeholder
+- Ver [Plan Implementación](./7_PLAN_IMPLEMENTACION.md) para roadmap extendido
 
 ---
 
@@ -468,7 +454,7 @@ Este caso ejemplifica cómo un workaround aparentemente "simple" puede:
 
 ---
 
-**Última actualización:** 24 Oct 2025
+**Última actualización:** 23 Feb 2026
 
 ---
 
@@ -496,5 +482,5 @@ Este caso ejemplifica cómo un workaround aparentemente "simple" puede:
 - 📊 Reducción 95%+ tiempo consultas (2-3min → 5-10seg)
 - 🎯 Mejor UX y adopción sistema
 - 💰 +$1,800/año ahorro tiempo consultas adicionales
-**Status:** ✅ DOCUMENTACIÓN COMPLETA (9/9 archivos)
-**Próximo hito:** Decisión stakeholder → Implementación
+**Status:** ✅ CASO CERRADO (9/9 archivos + D-01 UX implementada)
+**Próximo hito:** Dashboard tracking histórico (opcional — pendiente priorización)
