@@ -3,7 +3,7 @@
 // T1 y T8 pueden pasar trivialmente en RED (testing ausencia — elemento aún no existe)
 // T2-T7 DEBEN fallar (testing presencia de elementos no implementados aún)
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Step5SicarInput } from '../steps/Step5SicarInput';
 import type { Step5Props } from '@/types/initialWizard';
 
@@ -77,11 +77,15 @@ describe('CASO-SANN-R2: Active Session Panel in Step5SicarInput', () => {
   });
 
   // [IA] - CASO-SANN-R2 T5: Botón "Abortar Sesión" dispara onAbortSession
-  it('T5: "Abortar Sesión" button calls onAbortSession when clicked', () => {
+  it('T5: "Abortar Sesión" confirma en modal y luego llama onAbortSession', async () => {
     const onAbortSession = vi.fn();
     renderStep5({ hasActiveSession: true, onAbortSession });
     fireEvent.click(screen.getByRole('button', { name: /abortar sesión/i }));
-    expect(onAbortSession).toHaveBeenCalledTimes(1);
+    fireEvent.click(screen.getByRole('button', { name: /sí,\s*abortar/i }));
+
+    await waitFor(() => {
+      expect(onAbortSession).toHaveBeenCalledTimes(1);
+    });
   });
 
   // [IA] - CASO-SANN-R2 T6: Input SICAR deshabilitado cuando hay sesión activa

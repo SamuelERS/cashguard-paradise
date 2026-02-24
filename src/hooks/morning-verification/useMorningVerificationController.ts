@@ -155,7 +155,9 @@ export function useMorningVerificationController(
 
   const handleWhatsAppSend = useCallback(async () => {
     try {
-      if (!store || !cashierIn || !cashierOut) {
+      const idsRequeridos = [storeId, cashierId, witnessId];
+      const faltanIds = idsRequeridos.some((id) => id.trim().length === 0);
+      if (faltanIds) {
         toast.error('❌ Error', {
           description: 'Faltan datos necesarios para generar el reporte',
         });
@@ -192,7 +194,7 @@ export function useMorningVerificationController(
         description: 'Por favor intente nuevamente',
       });
     }
-  }, [store, cashierIn, cashierOut, report, handleCopyToClipboard]);
+  }, [storeId, cashierId, witnessId, report, handleCopyToClipboard]);
 
   const handleConfirmSent = useCallback(() => {
     setReportSent(true);

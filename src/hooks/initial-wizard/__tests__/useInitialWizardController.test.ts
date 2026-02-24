@@ -447,15 +447,19 @@ describe('useInitialWizardController', () => {
     });
   });
 
-  // ── Preselección sucursal (DACC-CIERRE) ──
+  // ── initialSucursalId NO debe preseleccionar sucursal (R3-B4) ──
 
   describe('preselección sucursal desde sesión activa', () => {
-    it('preselecciona store cuando initialSucursalId proporcionado y selectedStore vacío', () => {
+    it('NO preselecciona store cuando initialSucursalId está presente', () => {
       renderHook(() =>
         useInitialWizardController(makeProps({ isOpen: true, initialSucursalId: 'suc-001' }))
       );
 
-      expect(mockUpdateWizardData).toHaveBeenCalledWith({ selectedStore: 'suc-001' });
+      const calls = mockUpdateWizardData.mock.calls;
+      const preselectionCalls = calls.filter(
+        (c: [Record<string, unknown>]) => c[0] && 'selectedStore' in c[0]
+      );
+      expect(preselectionCalls).toHaveLength(0);
     });
 
     it('NO preselecciona cuando initialSucursalId es null', () => {
