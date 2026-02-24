@@ -1,3 +1,28 @@
+.operation-brand-strip {
+  position: absolute;
+  inset: 0 0 auto 0;
+  z-index: 20;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+  padding: clamp(12px, 2.5vw, 28px);
+}
+
+.operation-brand-logo {
+  width: auto;
+  height: clamp(32px, 7vw, 64px);
+}
+
+.operation-brand-logo--left {
+  opacity: 0.9;
+}
+
+.operation-brand-logo--right {
+  opacity: 0.82;
+  max-height: 60px;
+  border-radius: 8px;
+}
+
 .operation-card {
   appearance: none;
   background: var(--glass-bg-primary);
@@ -5,13 +30,36 @@
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 16px;
-  padding: clamp(20px, 7.4vw, 32px);
+  padding: clamp(18px, 4.5vw, 28px);
+  min-height: clamp(250px, 32vw, 340px);
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.operation-card:hover {
+  transform: translateY(-2px);
+}
+
+.operation-card--morning:hover {
+  border-color: rgba(244, 165, 42, 0.5);
+}
+
+.operation-card--night:hover {
+  border-color: rgba(10, 132, 255, 0.5);
+}
+
+.operation-card--delivery:hover {
+  border-color: rgba(16, 185, 129, 0.5);
+}
+
+.operation-card--supervisor:hover {
+  border-color: rgba(139, 92, 246, 0.5);
 }
 
 .operation-card:focus-visible {
   outline: 2px solid hsl(var(--ring));
   outline-offset: 3px;
+  box-shadow: 0 0 0 4px rgba(10, 132, 255, 0.2);
 }
 
 .operation-badge {
@@ -47,9 +95,46 @@
   color: #e0d2ff;
 }
 
+.operation-title {
+  font-size: clamp(1.25rem, 5vw, 1.5rem);
+  color: #e1e8ed;
+}
+
+.operation-description {
+  font-size: clamp(0.75rem, 3vw, 0.875rem);
+  color: #8899a6;
+}
+
+.operation-action {
+  font-size: clamp(0.75rem, 3vw, 0.875rem);
+  font-weight: 500;
+}
+
+.operation-action--morning {
+  color: #f4a52a;
+}
+
+.operation-action--night {
+  color: #0a84ff;
+}
+
+.operation-action--delivery {
+  color: #10b981;
+}
+
+.operation-action--supervisor {
+  color: #8b5cf6;
+}
+
 .operation-feature-text {
   font-size: clamp(0.75rem, 3vw, 0.875rem);
   color: #8899a6;
+}
+
+.operation-feature {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .operation-feature--mobile-optional {
@@ -59,5 +144,26 @@
 @media (min-width: 640px) {
   .operation-feature--mobile-optional {
     display: flex;
+  }
+}
+
+@media (max-width: 430px) {
+  .operation-brand-logo--right {
+    max-height: 44px;
+    opacity: 0.72;
+    transform: scale(0.94);
+    transform-origin: top right;
+  }
+}
+
+@media (max-width: 640px) {
+  .operation-card {
+    min-height: auto;
+  }
+}
+
+@media (hover: none) {
+  .operation-card:hover {
+    transform: none;
   }
 }

@@ -35,12 +35,10 @@ describe('Limpieza OperationSelector (Módulo 04)', () => {
     expect(content).not.toMatch(/Math\.min\(window\.innerWidth/);
   });
 
-  test('4.3 — Máximo 47 bloques style={{}} (reducción desde baseline 64)', () => {
+  test('4.3 — Máximo 32 bloques style={{}} tras extracción semántica', () => {
     const content = readFileSync(resolve(OP_SELECTOR_PATH), 'utf-8');
     const styleBlocks = content.match(/style=\{\{/g) ?? [];
-    // Baseline confirmado: 64 bloques. Post-audit real: 47 bloques (reducción -26.6%).
-    // Los 47 restantes son styles genuinamente dinámicos (gradientes, colores temáticos, etc.)
-    expect(styleBlocks.length).toBeLessThanOrEqual(47);
+    expect(styleBlocks.length).toBeLessThanOrEqual(32);
   });
 
   test('4.4 — tarjetas accesibles y acceso supervisor presentes', () => {
