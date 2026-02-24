@@ -42,7 +42,7 @@ export function WhatsAppInstructionsModal({
 }: WhatsAppInstructionsModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="glass-morphism-panel max-w-md p-0">
+      <DialogContent className="glass-morphism-panel max-w-md max-h-[clamp(85vh,90vh,90vh)] overflow-y-auto overflow-x-hidden p-0">
         <DialogTitle className="sr-only">
           Instrucciones para enviar reporte por WhatsApp
         </DialogTitle>

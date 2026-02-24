@@ -442,7 +442,7 @@ export function Phase2Manager({
               variant="ghost"
               size="icon-sm"
               onClick={handleInstructionsCancelRequest}
-              className="rounded-full"
+              className="rounded-full modal-close-button"
               aria-label="Cerrar modal"
             >
               <X className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)]" />

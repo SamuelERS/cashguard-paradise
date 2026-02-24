@@ -278,8 +278,19 @@ describe('InitialWizardModalView — Integration', () => {
     it('X button calls handleCancelRequest', () => {
       render(<InitialWizardModalView {...defaultProps} />);
       const closeBtn = screen.getByLabelText('Cerrar modal');
+      expect(closeBtn.className).toContain('modal-close-button');
       fireEvent.click(closeBtn);
       expect(mockCtrl.handleCancelRequest).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('Confirmation copy consistency', () => {
+    it('cancel confirmation usa copy consistente', () => {
+      resetMockCtrl({ showCancelConfirmation: true });
+      render(<InitialWizardModalView {...defaultProps} />);
+
+      expect(screen.getByText('Sí, cancelar')).toBeInTheDocument();
+      expect(screen.getByText('Continuar aquí')).toBeInTheDocument();
     });
   });
 

@@ -86,8 +86,8 @@ export function Step5SicarInput({
             title="¿Abortar Sesión Activa?"
             description="Se marcará como ABORTADO en el sistema. Esta acción no se puede deshacer."
             warningText="Los datos del corte anterior se perderán permanentemente."
-            confirmText="Sí, Abortar"
-            cancelText="Cancelar"
+            confirmText="Sí, cancelar"
+            cancelText="Continuar aquí"
             onConfirm={() => {
               setShowAbortConfirm(false);
               void (async () => {

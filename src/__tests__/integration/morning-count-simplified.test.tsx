@@ -55,23 +55,19 @@ describe('🌅 Morning Count Flow Simplified Tests', () => {
     await waitForAnimation();
     
     // Buscar y hacer click en el card de Conteo de Caja
-    const conteoDeCaja = await screen.findByText('Conteo de Caja');
-    const card = conteoDeCaja.closest('div[class*="cursor-pointer"]');
+    const card = await screen.findByTestId('operation-card-cash-count');
+    await user.click(card);
     
-    if (card) {
-      await user.click(card);
-      
-      // Verificar que el modal se abre
-      await waitFor(() => {
-        expect(screen.getByText(/Conteo de Caja Matutino/)).toBeInTheDocument();
-      });
-      
-      // 🤖 [IA] - v1.3.7e: Fix paso 1 es "Protocolo" no "Sucursal", wizard tiene 4 pasos
-      const modal = testUtils.withinWizardModal();
-      expect(testUtils.getVisibleStepIndicator(/Paso 1 de 4/)).toBeInTheDocument();
-      // Paso 1 muestra reglas del protocolo, no sucursal
-      expect(modal.getByText(/Protocolo/i)).toBeInTheDocument();
-    }
+    // Verificar que el modal se abre
+    await waitFor(() => {
+      expect(screen.getByText(/Conteo de Caja Matutino/)).toBeInTheDocument();
+    });
+    
+    // 🤖 [IA] - v1.3.7e: Fix paso 1 es "Protocolo" no "Sucursal", wizard tiene 4 pasos
+    const modal = testUtils.withinWizardModal();
+    expect(testUtils.getVisibleStepIndicator(/Paso 1 de 4/)).toBeInTheDocument();
+    // Paso 1 muestra reglas del protocolo, no sucursal
+    expect(modal.getByText(/Protocolo/i)).toBeInTheDocument();
   });
 
   it('debe cerrar el modal al hacer click en el botón X', async () => {
@@ -84,39 +80,31 @@ describe('🌅 Morning Count Flow Simplified Tests', () => {
     
     await waitForAnimation();
     
-    const conteoDeCaja = await screen.findByText('Conteo de Caja');
-    const card = conteoDeCaja.closest('div[class*="cursor-pointer"]');
+    const card = await screen.findByTestId('operation-card-cash-count');
     
-    if (card) {
-      await user.click(card);
-      
-      // Esperar a que el modal se abra
-      await waitFor(() => {
-        expect(screen.getByText(/Conteo de Caja Matutino/)).toBeInTheDocument();
-      });
-      
-      // 🤖 [IA] - v1.2.36a: Find custom X button (not hidden Radix default button)
-      // Custom button is in .rounded-full with <X> icon
-      const buttons = screen.getAllByRole('button');
-      const closeButton = buttons.find(btn =>
-        btn.className.includes('rounded-full') &&
-        btn.querySelector('.lucide-x')
-      );
-
-      expect(closeButton).toBeDefined();
-      if (closeButton) {
-        await user.click(closeButton);
-      }
-
-      // 🤖 [IA] - v1.2.36a: Wait for animation (duration-200 = 200ms) before checking closure
-      await waitForAnimation();
-
-      // 🤖 [IA] - v1.2.36a: Modal should close and return to selector
-      await waitFor(() => {
-        expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-        expect(screen.getByText(/Seleccione Operación/)).toBeInTheDocument();
-      }, { timeout: 5000 });
+    await user.click(card);
+    
+    // Esperar a que el modal se abra
+    await waitFor(() => {
+      expect(screen.getByText(/Conteo de Caja Matutino/)).toBeInTheDocument();
+    });
+    
+    // Botón X específico del header matutino debe exponer nombre accesible explícito
+    const closeIcon = document.querySelector('.icon-responsive-sm.lucide-x');
+    const closeButton = closeIcon?.closest('button');
+    expect(closeButton).toHaveAttribute('aria-label', 'Cerrar modal');
+    if (closeButton) {
+      await user.click(closeButton);
     }
+
+    // 🤖 [IA] - v1.2.36a: Wait for animation (duration-200 = 200ms) before checking closure
+    await waitForAnimation();
+
+    // 🤖 [IA] - v1.2.36a: Modal should close and return to selector
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+      expect(screen.getByText(/Seleccione Operación/)).toBeInTheDocument();
+    }, { timeout: 5000 });
   });
 
   it('debe mostrar los pasos del wizard correctamente', async () => {
@@ -129,28 +117,24 @@ describe('🌅 Morning Count Flow Simplified Tests', () => {
     
     await waitForAnimation();
     
-    const conteoDeCaja = await screen.findByText('Conteo de Caja');
-    const card = conteoDeCaja.closest('div[class*="cursor-pointer"]');
+    const card = await screen.findByTestId('operation-card-cash-count');
+    await user.click(card);
     
-    if (card) {
-      await user.click(card);
-      
-      // 🤖 [IA] - v1.3.7e: Fix paso 1 es "Protocolo" (4 pasos total), timeout aumentado
-      await waitFor(() => {
-        const modal = testUtils.withinWizardModal();
-        expect(testUtils.getVisibleStepIndicator(/Paso 1 de 4/)).toBeInTheDocument();
-        expect(modal.getByText(/Protocolo/i)).toBeInTheDocument();
-      }, { timeout: 5000 });
-      
-      // 🤖 [IA] - v1.3.7e: Botón es "Continuar" no "Siguiente"
+    // 🤖 [IA] - v1.3.7e: Fix paso 1 es "Protocolo" (4 pasos total), timeout aumentado
+    await waitFor(() => {
       const modal = testUtils.withinWizardModal();
-      const nextButton = modal.getByRole('button', { name: /continuar/i });
-      expect(nextButton).toBeInTheDocument();
+      expect(testUtils.getVisibleStepIndicator(/Paso 1 de 4/)).toBeInTheDocument();
+      expect(modal.getByText(/Protocolo/i)).toBeInTheDocument();
+    }, { timeout: 5000 });
+    
+    // 🤖 [IA] - v1.3.7e: Botón es "Continuar" no "Siguiente"
+    const modal = testUtils.withinWizardModal();
+    const nextButton = modal.getByRole('button', { name: /continuar/i });
+    expect(nextButton).toBeInTheDocument();
 
-      // Verificar que el botón Anterior está deshabilitado en el paso 1
-      const prevButton = modal.getByRole('button', { name: /anterior/i });
-      expect(prevButton).toBeDisabled();
-    }
+    // Verificar que el botón Anterior está deshabilitado en el paso 1
+    const prevButton = modal.getByRole('button', { name: /anterior/i });
+    expect(prevButton).toBeDisabled();
   });
 
   it('debe mostrar el selector de operación con colores temáticos', async () => {
@@ -193,26 +177,22 @@ describe('🌅 Morning Count Flow Simplified Tests', () => {
     
     await waitForAnimation();
     
-    const conteoDeCaja = await screen.findByText('Conteo de Caja');
-    const card = conteoDeCaja.closest('div[class*="cursor-pointer"]');
+    const card = await screen.findByTestId('operation-card-cash-count');
+    await user.click(card);
     
-    if (card) {
-      await user.click(card);
-      
-      // 🤖 [IA] - v1.3.7e: Fix paso 1 (4 pasos total), timeout aumentado
-      await waitFor(() => {
-        const modal = testUtils.withinWizardModal();
-        expect(testUtils.getVisibleStepIndicator(/Paso 1 de 4/)).toBeInTheDocument();
-      }, { timeout: 5000 });
+    // 🤖 [IA] - v1.3.7e: Fix paso 1 (4 pasos total), timeout aumentado
+    await waitFor(() => {
+      const modal = testUtils.withinWizardModal();
+      expect(testUtils.getVisibleStepIndicator(/Paso 1 de 4/)).toBeInTheDocument();
+    }, { timeout: 5000 });
 
-      // El modal debería mantener el título durante todo el flujo
-      expect(screen.getByText(/Conteo de Caja Matutino/)).toBeInTheDocument();
+    // El modal debería mantener el título durante todo el flujo
+    expect(screen.getByText(/Conteo de Caja Matutino/)).toBeInTheDocument();
 
-      // 🤖 [IA] - v1.3.7e: querySelector retorna Node|null, usar screen.getByRole
-      await waitFor(() => {
-        expect(screen.getByRole('dialog')).toBeInTheDocument();
-      }, { timeout: 5000 });
-    }
+    // 🤖 [IA] - v1.3.7e: querySelector retorna Node|null, usar screen.getByRole
+    await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+    }, { timeout: 5000 });
   });
 
   it('debe mostrar características diferentes para cada modo', async () => {

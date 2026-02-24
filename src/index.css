@@ -32,6 +32,7 @@
 @import "./styles/features/guided-progress-glass.css";
 
 /* Modal Systems */
+@import "./styles/features/modal-close-button.css";
 @import "./styles/features/modal-dark-scrollbar.css";
 
 /* Phase 1 Navigation */
@@ -2633,6 +2634,12 @@
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.15) !important;
   border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  width: calc(100vw - 2rem);
+  max-width: clamp(320px, 90vw, 500px);
+  margin: 0 auto;
+  padding: 24px;
+}
 
 /* 🤖 [IA] - v3.0.0: Protocol Rule Hidden State - Solo propiedades no conflictivas */
 .wizard-step-container .protocol-rule-hidden {
@@ -2659,12 +2666,6 @@
   padding: clamp(0.5rem, 2vw, 0.75rem);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   transition: all 0.7s cubic-bezier(0.23, 1, 0.32, 1);
-}
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  width: calc(100vw - 2rem);
-  max-width: clamp(320px, 90vw, 500px);
-  margin: 0 auto;
-  padding: 24px;
 }
 
 .glass-alert-dialog-title {

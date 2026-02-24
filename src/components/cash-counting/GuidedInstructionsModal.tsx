@@ -150,7 +150,7 @@ export function GuidedInstructionsModal({
               variant="ghost"
               size="icon-sm"
               onClick={handleCancelRequest}
-              className="rounded-full"
+              className="rounded-full modal-close-button"
               aria-label="Cerrar modal"
             >
               <X className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)]" />
@@ -215,8 +215,8 @@ export function GuidedInstructionsModal({
         title="Cancelar Instrucciones"
         description="Se perderá el progreso de las instrucciones del conteo"
         warningText="Esta acción no se puede deshacer"
-        confirmText="Sí, Cancelar"
-        cancelText="Continuar"
+        confirmText="Sí, cancelar"
+        cancelText="Continuar aquí"
         onConfirm={handleConfirmedClose}
         onCancel={handleCancelClose}
       />

@@ -92,9 +92,8 @@ describe('R3-B5: Step5SicarInput — feedback al abortar sesión', () => {
 
     await user.click(screen.getByRole('button', { name: /abortar/i }));
 
-    // FALLA: no hay modal, por lo que no existe botón "Cancelar" en él.
-    // En GREEN, el botón "Cancelar" del modal cerrará sin ejecutar la acción.
-    const cancelBtn = screen.getByRole('button', { name: /^cancelar$/i });
+    // El botón de cancelar en el modal usa el copy estándar "Continuar aquí"
+    const cancelBtn = screen.getByRole('button', { name: /continuar aquí/i });
     await user.click(cancelBtn);
 
     expect(onAbortSession).not.toHaveBeenCalled();
@@ -109,9 +108,9 @@ describe('R3-B5: Step5SicarInput — feedback al abortar sesión', () => {
 
     await user.click(screen.getByRole('button', { name: /abortar/i }));
 
-    // FALLA: no hay modal — el botón "Sí, Abortar" no existe todavía.
+    // FALLA: no hay modal — el botón "Sí, cancelar" no existe todavía.
     // En GREEN, confirmar en el modal ejecutará onAbortSession una sola vez.
-    const confirmBtn = screen.getByRole('button', { name: /sí, abortar/i });
+    const confirmBtn = screen.getByRole('button', { name: /sí, cancelar/i });
     await user.click(confirmBtn);
 
     expect(onAbortSession).toHaveBeenCalledTimes(1);
@@ -126,9 +125,9 @@ describe('R3-B5: Step5SicarInput — feedback al abortar sesión', () => {
 
     await user.click(screen.getByRole('button', { name: /abortar/i }));
 
-    // FALLA: no hay modal — el botón "Sí, Abortar" no existe todavía.
+    // FALLA: no hay modal — el botón "Sí, cancelar" no existe todavía.
     // Adicionalmente, el flujo actual no llama toast.success en ningún caso.
-    const confirmBtn = screen.getByRole('button', { name: /sí, abortar/i });
+    const confirmBtn = screen.getByRole('button', { name: /sí, cancelar/i });
     await user.click(confirmBtn);
 
     expect(toast.success).toHaveBeenCalled();
@@ -169,9 +168,9 @@ describe('R3-B5: Step5SicarInput — feedback al abortar sesión', () => {
 
     await user.click(screen.getByRole('button', { name: /abortar/i }));
 
-    // FALLA: no hay modal — el botón "Sí, Abortar" no existe todavía.
+    // FALLA: no hay modal — el botón "Sí, cancelar" no existe todavía.
     // En GREEN, tras fallo de Supabase el panel debe seguir visible.
-    const confirmBtn = screen.getByRole('button', { name: /sí, abortar/i });
+    const confirmBtn = screen.getByRole('button', { name: /sí, cancelar/i });
     await user.click(confirmBtn);
 
     expect(screen.getByText('Sesión en Progreso')).toBeInTheDocument();

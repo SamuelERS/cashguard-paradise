@@ -133,7 +133,7 @@ const InitialWizardModalView = (props: InitialWizardModalProps) => {
               variant="ghost"
               size="icon-sm"
               onClick={ctrl.handleCancelRequest}
-              className="rounded-full"
+              className="rounded-full modal-close-button"
               aria-label="Cerrar modal"
             >
               <X className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)]" />
@@ -219,8 +219,8 @@ const InitialWizardModalView = (props: InitialWizardModalProps) => {
         title="Cancelar Configuración"
         description="Se perderá todo el progreso del protocolo de seguridad"
         warningText="Esta acción no se puede deshacer"
-        confirmText="Sí, Cancelar"
-        cancelText="Continuar"
+        confirmText="Sí, cancelar"
+        cancelText="Continuar aquí"
         onConfirm={ctrl.handleConfirmedClose}
         onCancel={ctrl.handleCancelClose}
       />

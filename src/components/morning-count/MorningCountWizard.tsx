@@ -469,7 +469,8 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
               variant="ghost"
               size="icon-sm"
               onClick={handleCancelClick}
-              className="rounded-full"
+              className="rounded-full modal-close-button"
+              aria-label="Cerrar modal"
             >
               <X className="icon-responsive-sm" />
             </Button>
@@ -536,8 +537,8 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
         title="Cancelar Conteo Matutino"
         description="Se perderá todo el progreso del protocolo de seguridad y la información ingresada"
         warningText="Esta acción no se puede deshacer"
-        confirmText="Sí, Cancelar"
-        cancelText="Continuar Conteo"
+        confirmText="Sí, cancelar"
+        cancelText="Continuar aquí"
         onConfirm={handleConfirmedClose}
         onCancel={handleCancelClose}
       />

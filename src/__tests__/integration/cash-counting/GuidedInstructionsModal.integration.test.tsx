@@ -261,12 +261,15 @@ describe('📋 GuidedInstructionsModal - Integration Tests', () => {
       render(<GuidedInstructionsModal {...defaultProps} />);
 
       const xButton = screen.getByRole('button', { name: /cerrar modal/i });
+      expect(xButton.className).toContain('modal-close-button');
       fireEvent.click(xButton);
 
       // Avanzar timers para permitir renderizado del modal de confirmación
       await advanceTimer(100);
 
       expect(screen.getByText(/cancelar instrucciones/i)).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Sí, cancelar' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Continuar aquí' })).toBeInTheDocument();
     });
   });
 

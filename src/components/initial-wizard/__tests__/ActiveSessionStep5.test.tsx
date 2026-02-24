@@ -84,7 +84,7 @@ describe('CASO-SANN-R2: Active Session Panel in Step5SicarInput', () => {
     // Step 1: Click abre ConfirmationModal
     fireEvent.click(screen.getByRole('button', { name: /abortar sesión/i }));
     // Step 2: Confirmar en el modal
-    const confirmButton = await screen.findByRole('button', { name: /sí, abortar/i });
+    const confirmButton = await screen.findByRole('button', { name: /sí, cancelar/i });
     fireEvent.click(confirmButton);
     // Step 3: onAbortSession se llama async dentro del onConfirm
     await waitFor(() => {
