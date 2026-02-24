@@ -44,6 +44,7 @@ describe('Suite 1 — Exportaciones', () => {
     expect(tables).toHaveProperty('corteIntentos');
     expect(tables).toHaveProperty('empleados');
     expect(tables).toHaveProperty('empleadoSucursales');
+    expect(tables).toHaveProperty('corteConteoSnapshots');
   });
 
   it('cada propiedad de tables es una función', () => {
@@ -52,6 +53,7 @@ describe('Suite 1 — Exportaciones', () => {
     expect(typeof tables.corteIntentos).toBe('function');
     expect(typeof tables.empleados).toBe('function');
     expect(typeof tables.empleadoSucursales).toBe('function');
+    expect(typeof tables.corteConteoSnapshots).toBe('function');
   });
 
   it('exporta checkSupabaseConnection como función', () => {
@@ -99,6 +101,12 @@ describe('Suite 2 — Tipo Database y createClient', () => {
     expect(mockFrom).toHaveBeenCalledWith('empleado_sucursales');
   });
 
+  it('tables.corteConteoSnapshots() invoca supabase.from("corte_conteo_snapshots")', () => {
+    mockFrom.mockClear();
+    tables.corteConteoSnapshots();
+    expect(mockFrom).toHaveBeenCalledWith('corte_conteo_snapshots');
+  });
+
   // Compile-time type check: ensures Database type is usable
   it('Database type es compatible con el esquema esperado', () => {
     type CorteRow = Database['public']['Tables']['cortes']['Row'];
@@ -111,13 +119,13 @@ describe('Suite 2 — Tipo Database y createClient', () => {
     const _sucCheck: SucursalRow['activa'] = true;
     const _intCheck: IntentoRow['attempt_number'] = 1;
     const _empCheck: EmpleadoRow['activo'] = true;
-    const _empSucCheck: EmpleadoSucursalRow['activo'] = true;
+    const _empSucCheck: EmpleadoSucursalRow['sucursal_id'] = 'suc-001';
 
     expect(_corteCheck).toBe('INICIADO');
     expect(_sucCheck).toBe(true);
     expect(_intCheck).toBe(1);
     expect(_empCheck).toBe(true);
-    expect(_empSucCheck).toBe(true);
+    expect(_empSucCheck).toBe('suc-001');
   });
 });
 

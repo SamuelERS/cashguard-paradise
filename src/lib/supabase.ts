@@ -2,7 +2,7 @@
 // Capa 3 (Sincronización) — Singleton + helpers + conectividad
 
 import { createClient } from '@supabase/supabase-js';
-import type { Sucursal, Corte, CorteIntento } from '../types/auditoria';
+import type { Sucursal, Corte, CorteIntento, CorteConteoSnapshot } from '../types/auditoria';
 
 // ---------------------------------------------------------------------------
 // 1. Tipo Database (mapeo Supabase)
@@ -39,42 +39,49 @@ export type Database = {
         Row: {
           id: string;
           nombre: string;
-          rol: string | null;
-          cargo: string | null;
           activo: boolean;
+          created_at: string;
+          updated_at: string;
         };
         Insert: {
-          id?: string;
+          id: string;
           nombre: string;
-          rol?: string | null;
-          cargo?: string | null;
           activo?: boolean;
+          created_at?: string;
+          updated_at?: string;
         };
         Update: {
+          id?: string;
           nombre?: string;
-          rol?: string | null;
-          cargo?: string | null;
           activo?: boolean;
+          created_at?: string;
+          updated_at?: string;
         };
       };
       empleado_sucursales: {
         Row: {
-          id: string;
           empleado_id: string;
           sucursal_id: string;
-          activo: boolean;
+          created_at: string;
         };
         Insert: {
-          id?: string;
           empleado_id: string;
           sucursal_id: string;
-          activo?: boolean;
+          created_at?: string;
         };
         Update: {
           empleado_id?: string;
           sucursal_id?: string;
-          activo?: boolean;
+          created_at?: string;
         };
+      };
+      corte_conteo_snapshots: {
+        Row: CorteConteoSnapshot;
+        Insert: Omit<CorteConteoSnapshot, 'id' | 'captured_at'> & {
+          id?: string;
+          captured_at?: string;
+        };
+        Update: Partial<Omit<CorteConteoSnapshot, 'id'>>;
       };
     };
     Views: Record<string, never>;
@@ -134,6 +141,7 @@ export const tables = {
   corteIntentos: () => supabase.from('corte_intentos'),
   empleados: () => supabase.from('empleados'),
   empleadoSucursales: () => supabase.from('empleado_sucursales'),
+  corteConteoSnapshots: () => supabase.from('corte_conteo_snapshots'),
 } as const;
 
 // ---------------------------------------------------------------------------
