@@ -155,7 +155,9 @@ export function useMorningVerificationController(
 
   const handleWhatsAppSend = useCallback(async () => {
     try {
-      if (!storeId || !cashierId || !witnessId) {
+      const idsRequeridos = [storeId, cashierId, witnessId];
+      const faltanIds = idsRequeridos.some((id) => id.trim().length === 0);
+      if (faltanIds) {
         toast.error('❌ Error', {
           description: 'Faltan datos necesarios para generar el reporte',
         });

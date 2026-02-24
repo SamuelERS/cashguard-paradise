@@ -19,7 +19,8 @@ let mockSupabaseResponse: { data: unknown[] | null; error: { message: string } |
 
 let mockShouldThrow = false;
 
-const mockEq = vi.fn().mockImplementation(() => Promise.resolve(mockSupabaseResponse));
+const mockOrder = vi.fn().mockImplementation(() => Promise.resolve(mockSupabaseResponse));
+const mockEq = vi.fn().mockImplementation(() => ({ order: mockOrder }));
 const mockSelect = vi.fn().mockImplementation(() => ({ eq: mockEq }));
 
 vi.mock('@/lib/supabase', () => ({
@@ -35,7 +36,7 @@ beforeEach(() => {
   mockSupabaseResponse = { data: SUCURSALES_DB, error: null };
   mockShouldThrow = false;
 
-  mockEq.mockImplementation(() => {
+  mockOrder.mockImplementation(() => {
     if (mockShouldThrow) {
       return Promise.reject(new Error('Network failure'));
     }
@@ -91,6 +92,7 @@ describe('useSucursales', () => {
 
       expect(mockSelect).toHaveBeenCalledWith('id,nombre,codigo,activa');
       expect(mockEq).toHaveBeenCalledWith('activa', true);
+      expect(mockOrder).toHaveBeenCalledWith('nombre', { ascending: true });
     });
   });
 

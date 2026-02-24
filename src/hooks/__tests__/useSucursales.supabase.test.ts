@@ -18,7 +18,8 @@ describe('useSucursales — fuente Supabase', () => {
       { id: 'db-002', nombre: 'Apopa', codigo: 'A', activa: true },
     ];
 
-    const eqMock = vi.fn().mockResolvedValue({ data: supabaseRows, error: null });
+    const orderMock = vi.fn().mockResolvedValue({ data: supabaseRows, error: null });
+    const eqMock = vi.fn(() => ({ order: orderMock }));
     const selectMock = vi.fn(() => ({ eq: eqMock }));
     const sucursalesMock = vi.fn(() => ({ select: selectMock }));
 
@@ -40,7 +41,7 @@ describe('useSucursales — fuente Supabase', () => {
     expect(sucursalesMock).toHaveBeenCalledTimes(1);
     expect(selectMock).toHaveBeenCalledWith('id,nombre,codigo,activa');
     expect(eqMock).toHaveBeenCalledWith('activa', true);
+    expect(orderMock).toHaveBeenCalledWith('nombre', { ascending: true });
     expect(result.current.sucursales).toEqual(supabaseRows);
   });
 });
-

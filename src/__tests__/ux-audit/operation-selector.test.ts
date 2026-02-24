@@ -42,4 +42,13 @@ describe('Limpieza OperationSelector (Módulo 04)', () => {
     // Los 47 restantes son styles genuinamente dinámicos (gradientes, colores temáticos, etc.)
     expect(styleBlocks.length).toBeLessThanOrEqual(47);
   });
+
+  test('4.4 — tarjetas accesibles y acceso supervisor presentes', () => {
+    const content = readFileSync(resolve(OP_SELECTOR_PATH), 'utf-8');
+    expect(content).toMatch(/motion\.button/);
+    expect(content).toMatch(/data-testid="operation-card-cash-count"/);
+    expect(content).toMatch(/data-testid="operation-card-cash-cut"/);
+    expect(content).toMatch(/data-testid="operation-card-delivery"/);
+    expect(content).toMatch(/navigate\('\/supervisor'\)/);
+  });
 });

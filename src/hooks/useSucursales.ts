@@ -46,7 +46,8 @@ export const useSucursales = (): UseSucursalesReturn => {
     const { data, error } = await tables
       .sucursales()
       .select('id,nombre,codigo,activa')
-      .eq('activa', true);
+      .eq('activa', true)
+      .order('nombre', { ascending: true });
 
     if (error) {
       throw new Error(error.message);

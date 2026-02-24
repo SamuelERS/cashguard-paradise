@@ -279,6 +279,20 @@ describe('useMorningVerificationController - handleWhatsAppSend (validación)', 
 
     expect(toast.error).toHaveBeenCalled();
   });
+
+  it('muestra error si ids requeridos contienen solo espacios', async () => {
+    const { toast } = await import('sonner');
+
+    const { result } = renderHook(() =>
+      useMorningVerificationController(makeProps({ storeId: '   ' }))
+    );
+
+    await act(async () => {
+      await result.current.handleWhatsAppSend();
+    });
+
+    expect(toast.error).toHaveBeenCalled();
+  });
 });
 
 // ────────────────────────────────────────────────────────────────
