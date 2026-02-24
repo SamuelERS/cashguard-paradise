@@ -5,12 +5,17 @@ import { motion } from 'framer-motion';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { ConstructiveActionButton } from '@/components/shared/ConstructiveActionButton';
-import { ArrowRight, X, CheckCircle } from 'lucide-react'; // 🤖 [IA] - v1.2.41U: CheckCircle verde (removido DestructiveActionButton + ShieldOff)
-import * as Icons from 'lucide-react';
+import { ArrowRight, X, CheckCircle, Receipt, PackagePlus } from 'lucide-react'; // 🤖 [IA] - v1.2.41U: CheckCircle verde (removido DestructiveActionButton + ShieldOff)
 import { InstructionRule } from '@/components/wizards/InstructionRule';
 import { useInstructionFlow } from '@/hooks/instructions/useInstructionFlow';
 import { cashCountingInstructions } from '@/data/instructions/cashCountingInstructions';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
+
+// 🤖 [IA] - FASE 5: Mapa estático de íconos → habilita tree-shaking de lucide-react
+const ICON_MAP: Record<string, React.ComponentType<React.SVGProps<SVGSVGElement>>> = {
+  Receipt,
+  PackagePlus,
+};
 // 🤖 [IA] - FAE-02: PURGA QUIRÚRGICA COMPLETADA - CSS imports eliminados
 // Los 1 archivos CSS están ahora importados globalmente vía index.css:
 // - guided-start-button.css
@@ -165,7 +170,7 @@ export function GuidedInstructionsModal({
                       id: instruction.id,
                       title: instruction.title,
                       subtitle: instruction.description,
-                      Icon: Icons[instruction.icon as keyof typeof Icons] as React.ComponentType<React.SVGProps<SVGSVGElement>>,
+                      Icon: ICON_MAP[instruction.icon],
                       colors: getInstructionColor(instruction)
                     }}
                     state={{

@@ -9,10 +9,16 @@
 // 🤖 [IA] - v1.2.41AA: Footer único botón + subtítulos 2 líneas + iconos semánticos
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Package, ScrollText, Grid3x3, AlertCircle, DollarSign, X, Pencil, Banknote, CheckCircle2 } from 'lucide-react';
-import * as Icons from 'lucide-react'; // 🤖 [IA] - v1.2.41AD: Dynamic icon loading para Doctrina D.5
+import { ArrowLeft, ArrowRight, Package, ScrollText, Grid3x3, AlertCircle, DollarSign, X, Pencil, Banknote, CheckCircle2, FileText } from 'lucide-react';
 import { InstructionRule, type RuleState } from '@/components/wizards/InstructionRule';
 import { phase2PreparationInstructions } from '@/data/instructions/phase2PreparationInstructions'; // 🤖 [IA] - v1.2.41AD: Configuración de datos separada
+
+// 🤖 [IA] - FASE 5: Mapa estático de íconos → habilita tree-shaking de lucide-react
+const ICON_MAP: Record<string, React.ComponentType<React.SVGProps<SVGSVGElement>>> = {
+  Package,
+  FileText,
+  Banknote,
+};
 import { WizardGlassCard } from '@/components/wizards/WizardGlassCard';
 // 🤖 [IA] - v1.2.10: Agregado modal controlado para confirmación de salida
 import {
@@ -457,7 +463,7 @@ export function Phase2Manager({
                       id: instruction.id,
                       title: instruction.title,
                       subtitle: instruction.description,
-                      Icon: Icons[instruction.icon as keyof typeof Icons] as React.ComponentType<React.SVGProps<SVGSVGElement>>,
+                      Icon: ICON_MAP[instruction.icon],
                       colors: {
                         border: checkedItems[itemKey] ? 'border-green-400' : 'border-blue-400',
                         text: checkedItems[itemKey] ? 'text-green-400' : 'text-blue-400'

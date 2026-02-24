@@ -1,11 +1,10 @@
-// > [CTO] v3.1.2 - Inicio de Misi�n M-V3-DELTA. Estructura base del hook useInstructionFlow.
+// > [CTO] v3.1.2 - Inicio de Misión M-V3-DELTA. Estructura base del hook useInstructionFlow.
 import { useReducer, useCallback, useEffect } from 'react';
-import * as Icons from 'lucide-react';
 
-// Tipos de datos que el hook manejar�
+// Tipos de datos que el hook manejará
 export interface Instruction {
   id: string;
-  icon: keyof typeof Icons; // Reemplaza el 'as any'
+  icon: string; // nombre del ícono (e.g. 'Receipt', 'Package')
   title: string;
   description: string;
   minReviewTimeMs: number; // Mínimo tiempo de revisión
@@ -101,7 +100,7 @@ function instructionFlowReducer(state: InstructionFlowState, action: Action): In
   }
 }
 
-// El hook que encapsula toda la l�gica
+// El hook que encapsula toda la lógica
 export function useInstructionFlow() {
   const [state, dispatch] = useReducer(instructionFlowReducer, initialState);
 

@@ -4,7 +4,6 @@
 import React, { useMemo, useCallback, memo } from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { motion } from 'framer-motion';
-import * as Icons from 'lucide-react';
 import { CheckCircle, Eye } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
