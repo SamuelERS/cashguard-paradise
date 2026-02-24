@@ -26,14 +26,19 @@ export function Step5SicarInput({
   onResumeSession,
   onAbortSession,
   activeSessionInfo,
+  activeSessionSucursalId,
 }: Step5Props) {
   const [showAbortConfirm, setShowAbortConfirm] = useState(false);
+  const hasActiveSessionForSelectedStore =
+    hasActiveSession === true &&
+    Boolean(wizardData.selectedStore) &&
+    wizardData.selectedStore === activeSessionSucursalId;
 
   return (
     <div className="glass-morphism-panel space-y-fluid-lg">
 
       {/* [IA] - CASO-SANN-R2: Panel de sesión activa — bloqueo anti-fraude en Step 5 */}
-      {hasActiveSession === true && currentStep === 5 && (
+      {hasActiveSessionForSelectedStore && currentStep === 5 && (
         <div
           className="rounded-lg p-4 border border-amber-500/40"
           style={{ background: 'rgba(245, 158, 11, 0.08)' }}
@@ -128,7 +133,7 @@ export function Step5SicarInput({
               }}
               placeholder="0.00"
               aria-label="Ingrese el monto de la venta esperada"
-              disabled={hasActiveSession === true}
+              disabled={hasActiveSessionForSelectedStore}
               className={cn(
                 'font-semibold bg-transparent border-none text-primary-foreground pl-[clamp(3rem,12vw,3.5rem)] h-[clamp(2.25rem,9vw,2.75rem)] text-fluid-lg neon-glow-success',
                 wizardData.expectedSales && parseFloat(wizardData.expectedSales) > 0 && 'border-green-500/50'
@@ -140,7 +145,7 @@ export function Step5SicarInput({
           {currentStep < totalSteps && (
             <ConstructiveActionButton
               onClick={handleNext}
-              disabled={!canGoNext || hasActiveSession === true}
+              disabled={!canGoNext || hasActiveSessionForSelectedStore}
               aria-label="Continuar al siguiente paso"
               type="button"
               className="h-[clamp(2.25rem,9vw,2.75rem)]"

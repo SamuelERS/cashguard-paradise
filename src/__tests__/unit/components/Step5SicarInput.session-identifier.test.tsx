@@ -8,10 +8,12 @@ import { Step5SicarInput } from '@/components/initial-wizard/steps/Step5SicarInp
 
 // ── Props mínimas válidas ─────────────────────────────────────────────────────
 
+const ACTIVE_STORE_ID = 'los-heroes';
+
 const baseProps = {
   wizardData: {
     rulesAccepted: false,
-    selectedStore: '',
+    selectedStore: ACTIVE_STORE_ID,
     selectedCashier: '',
     selectedWitness: '',
     expectedSales: '',
@@ -40,6 +42,7 @@ describe('R3-B2: Step5SicarInput — identificador sesión visible', () => {
       <Step5SicarInput
         {...baseProps}
         hasActiveSession={true}
+        activeSessionSucursalId={ACTIVE_STORE_ID}
         onResumeSession={vi.fn()}
         onAbortSession={vi.fn()}
         activeSessionInfo={{
@@ -63,6 +66,7 @@ describe('R3-B2: Step5SicarInput — identificador sesión visible', () => {
       <Step5SicarInput
         {...baseProps}
         hasActiveSession={true}
+        activeSessionSucursalId={ACTIVE_STORE_ID}
         onResumeSession={vi.fn()}
         onAbortSession={vi.fn()}
         activeSessionInfo={{
@@ -86,6 +90,7 @@ describe('R3-B2: Step5SicarInput — identificador sesión visible', () => {
       <Step5SicarInput
         {...baseProps}
         hasActiveSession={true}
+        activeSessionSucursalId={ACTIVE_STORE_ID}
         onResumeSession={vi.fn()}
         onAbortSession={vi.fn()}
         activeSessionInfo={{
@@ -109,6 +114,7 @@ describe('R3-B2: Step5SicarInput — identificador sesión visible', () => {
       <Step5SicarInput
         {...baseProps}
         hasActiveSession={true}
+        activeSessionSucursalId={ACTIVE_STORE_ID}
         onResumeSession={vi.fn()}
         onAbortSession={vi.fn()}
         // Sin activeSessionInfo — el panel base debe seguir visible sin detalles

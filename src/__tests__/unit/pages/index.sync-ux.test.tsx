@@ -219,10 +219,10 @@ describe('DACC-CIERRE-SYNC-UX: Persistence & Sync UX', () => {
     });
   });
 
-  // 🤖 [IA] - DACC-CIERRE-SYNC-UX: Skip iniciarCorte when resuming active session
-  it('does NOT call iniciarCorte when an active session exists', async () => {
+  // 🤖 [IA] - DACC-CIERRE-SYNC-UX: Skip iniciarCorte only when active session matches selected store
+  it('does NOT call iniciarCorte when an active session exists for the selected store', async () => {
     supabaseMocks.maybeSingleMock.mockResolvedValueOnce({
-      data: { id: 'corte-activo-1', sucursal_id: 'suc-active' },
+      data: { id: 'corte-activo-1', sucursal_id: 'store-1' },
       error: null,
     });
 
@@ -298,10 +298,10 @@ describe('DACC-CIERRE-SYNC-UX: Persistence & Sync UX', () => {
     expect(screen.queryByTestId('cash-counter')).not.toBeInTheDocument();
   });
 
-  // 🤖 [IA] - DACC-R2 Gap 1+3: Política A — sesión activa fuerza su sucursal para sync
-  it('uses active session sucursal for sync, not wizard selection (Policy A)', async () => {
+  // 🤖 [IA] - DACC-R2 Gap 1+3: Política A — sesión activa de la MISMA sucursal gobierna sync
+  it('uses active session sucursal for sync when it matches wizard selection (Policy A)', async () => {
     supabaseMocks.maybeSingleMock.mockResolvedValueOnce({
-      data: { id: 'corte-activo-1', sucursal_id: 'suc-active-db' },
+      data: { id: 'corte-activo-1', sucursal_id: 'store-1' },
       error: null,
     });
 
@@ -310,11 +310,34 @@ describe('DACC-CIERRE-SYNC-UX: Persistence & Sync UX', () => {
 
     await completeCashCutWizard(user);
 
-    // Wizard sends selectedStore='store-1' but active session has sucursal_id='suc-active-db'
-    // Policy A: active session wins → sync uses 'suc-active-db'
-    expect(corteSesionMocks._lastSucursalId).toBe('suc-active-db');
+    // Wizard sends selectedStore='store-1' and active session has same sucursal_id
+    // Policy A: active session wins → sync uses 'store-1'
+    expect(corteSesionMocks._lastSucursalId).toBe('store-1');
     // iniciarCorte NOT called because active session exists
     expect(corteSesionMocks.iniciarCorte).not.toHaveBeenCalled();
+  });
+
+  // [IA] - BRANCH-ISOLATION: sesión activa de otra sucursal NO debe bloquear flujo actual
+  it('starts a new cut when active session belongs to a different sucursal', async () => {
+    supabaseMocks.maybeSingleMock.mockResolvedValueOnce({
+      data: { id: 'corte-activo-1', sucursal_id: 'plaza-merliot' },
+      error: null,
+    });
+
+    const user = userEvent.setup();
+    render(<Index />);
+
+    await completeCashCutWizard(user);
+
+    // Wizard selectedStore='store-1' (mock). Active session is from another sucursal.
+    // Expected: proceed as NEW flow for selected store.
+    expect(corteSesionMocks.iniciarCorte).toHaveBeenCalledOnce();
+    expect(corteSesionMocks.iniciarCorte).toHaveBeenCalledWith({
+      sucursal_id: 'store-1',
+      cajero: 'cashier-1',
+      testigo: 'witness-1',
+      venta_esperada: 1500,
+    });
   });
 
   // 🤖 [IA] - DACC-R2 Gap 2+3: Successful iniciarCorte → sincronizado with ultimaSync timestamp

@@ -79,6 +79,8 @@ const InitialWizardModalView = (props: InitialWizardModalProps) => {
             onAbortSession={props.onAbortSession}
             // [IA] - R3-B2: Info enriquecida para identificador de sesión
             activeSessionInfo={props.activeSessionInfo}
+            // [IA] - BRANCH-ISOLATION: vincular alerta solo a la sucursal seleccionada
+            activeSessionSucursalId={props.activeSessionSucursalId}
           />
         );
       case 6:

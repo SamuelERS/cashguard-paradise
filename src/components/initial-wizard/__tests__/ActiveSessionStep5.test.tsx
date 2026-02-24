@@ -37,6 +37,7 @@ const baseProps: Step5PropsWithSession = {
     { id: 'plaza-merliot', name: 'Plaza Merliot' },
   ],
   availableEmployees: [],
+  activeSessionSucursalId: 'los-heroes',
 };
 
 // ── Helper de renderizado ──
@@ -111,6 +112,16 @@ describe('CASO-SANN-R2: Active Session Panel in Step5SicarInput', () => {
   // Razón: El panel solo aplica cuando el usuario ya está en el paso de decisión (Step 5)
   it('T8: panel NOT visible on Step 2 even with hasActiveSession true', () => {
     renderStep5({ hasActiveSession: true, currentStep: 2 });
+    expect(screen.queryByText('Sesión en Progreso')).not.toBeInTheDocument();
+  });
+
+  it('T9: panel NOT visible when active session belongs to a different store', () => {
+    renderStep5({
+      hasActiveSession: true,
+      currentStep: 5,
+      activeSessionSucursalId: 'plaza-merliot',
+      wizardData: { ...baseProps.wizardData, selectedStore: 'los-heroes' },
+    });
     expect(screen.queryByText('Sesión en Progreso')).not.toBeInTheDocument();
   });
 });

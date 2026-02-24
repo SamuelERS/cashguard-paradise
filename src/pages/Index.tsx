@@ -173,10 +173,12 @@ const Index = () => {
     });
     setShowWizard(false);
     setShowMorningWizard(false);
+    const hasActiveSessionForSelectedStore =
+      Boolean(activeCashCutSucursalId) && activeCashCutSucursalId === data.selectedStore;
 
     // 🤖 [IA] - DIRM V2 Task 5: Nuevo flujo CASH_CUT sin sesión activa → CorteOrquestador
     // CorteOrquestador maneja selección cajero/testigo desde Supabase y llama iniciarCorte
-    if (currentMode === OperationMode.CASH_CUT && !activeCashCutSucursalId) {
+    if (currentMode === OperationMode.CASH_CUT && !hasActiveSessionForSelectedStore) {
       setShowCorteInicio(true);
       return;
     }
@@ -184,11 +186,13 @@ const Index = () => {
     setShowCashCounter(true);
 
     // 🤖 [IA] - DACC-R2 Gap 1: Política explícita de sucursal para sincronización.
-    // POLÍTICA A: Si hay sesión activa en Supabase, su sucursal_id SIEMPRE gobierna la sync,
-    // independientemente de lo que el usuario seleccione en el wizard.
-    // Si NO hay sesión activa, se usa la sucursal elegida en el wizard (data.selectedStore).
+    // POLÍTICA A: Si existe sesión activa PARA la sucursal seleccionada en el wizard,
+    // esa sucursal gobierna la sync. Si la sesión activa pertenece a otra sucursal,
+    // el flujo continúa como corte nuevo para data.selectedStore.
     if (isSupabaseConfigured && currentMode === OperationMode.CASH_CUT) {
-      const sucursalParaSync = activeCashCutSucursalId ?? data.selectedStore;
+      const sucursalParaSync = hasActiveSessionForSelectedStore
+        ? (activeCashCutSucursalId as string)
+        : data.selectedStore;
       setSyncSucursalId(sucursalParaSync);
 
       // Sesión activa reanudada — sync ya existe en Supabase
@@ -367,6 +371,8 @@ const Index = () => {
               onAbortSession={handleAbortSession}
               // [IA] - R3-B2: Info enriquecida para identificador en Step 5
               activeSessionInfo={activeSessionInfo}
+              // [IA] - BRANCH-ISOLATION: sucursal dueña de sesión activa detectada
+              activeSessionSucursalId={activeCashCutSucursalId}
             />
           )}
           {showMorningWizard && (

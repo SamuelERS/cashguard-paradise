@@ -19,10 +19,12 @@ vi.mock('sonner', () => ({
 
 // ── Props mínimas válidas ─────────────────────────────────────────────────────
 
+const ACTIVE_STORE_ID = 'los-heroes';
+
 const baseProps = {
   wizardData: {
     rulesAccepted: false,
-    selectedStore: '',
+    selectedStore: ACTIVE_STORE_ID,
     selectedCashier: '',
     selectedWitness: '',
     expectedSales: '',
@@ -50,6 +52,8 @@ function renderWithActiveSession(
     <Step5SicarInput
       {...baseProps}
       hasActiveSession={true}
+      // [IA] - BRANCH-ISOLATION: sesión activa pertenece a la misma sucursal seleccionada
+      activeSessionSucursalId={ACTIVE_STORE_ID}
       onResumeSession={onResumeSession}
       onAbortSession={onAbortSession}
     />
@@ -152,6 +156,8 @@ describe('R3-B5: Step5SicarInput — feedback al abortar sesión', () => {
         <Step5SicarInput
           {...baseProps}
           hasActiveSession={hasActive}
+          // [IA] - BRANCH-ISOLATION: misma sucursal para que el panel sea visible
+          activeSessionSucursalId={ACTIVE_STORE_ID}
           onResumeSession={vi.fn()}
           onAbortSession={handleAbort}
         />

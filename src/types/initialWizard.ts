@@ -31,6 +31,8 @@ export interface InitialWizardModalProps {
     cajero: string | null;
     estado: string | null;
   } | null;
+  /** [IA] - BRANCH-ISOLATION: Sucursal dueña de la sesión activa detectada */
+  activeSessionSucursalId?: string | null;
 }
 
 // ────────────────────────────────────────────────────────────────
@@ -87,6 +89,8 @@ export interface Step5Props extends WizardStepProps {
     cajero: string | null;
     estado: string | null;
   } | null;
+  /** [IA] - BRANCH-ISOLATION: Sucursal dueña de la sesión activa detectada */
+  activeSessionSucursalId?: string | null;
 }
 
 // ────────────────────────────────────────────────────────────────
