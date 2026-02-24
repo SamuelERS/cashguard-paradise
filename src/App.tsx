@@ -12,6 +12,7 @@ import { FloatingOrbs } from "@/components/FloatingOrbs";
 import { useIsMobile } from "@/hooks/use-mobile"; // 🤖 [IA] - v2.0.0: Hook unificado de detección móvil
 import { ErrorBoundary } from "@/components/ErrorBoundary"; // 🤖 [IA] - v1.0.0: Global error handling
 import { logError } from "@/utils/errorLogger"; // 🤖 [IA] - v1.0.0: Error logging service
+import { isIOSLikeDevice } from "@/utils/deviceDetection";
 
 const queryClient = new QueryClient();
 
@@ -22,7 +23,11 @@ const App = () => {
   // 🤖 [IA] - v1.3.6AA: FIX CRÍTICO iOS Safari - Deshabilitar FloatingOrbs en iOS
   // Root cause REAL: FloatingOrbs GPU compositing (3 motion.div animados) bloquea touch events en iOS
   // Trade-off aceptable: iOS sin orbes decorativos para garantizar funcionalidad 100%
-  const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+  const isIOS = typeof navigator !== 'undefined' && isIOSLikeDevice(
+    navigator.userAgent,
+    navigator.platform,
+    navigator.maxTouchPoints ?? 0
+  );
 
   return (
     <ErrorBoundary

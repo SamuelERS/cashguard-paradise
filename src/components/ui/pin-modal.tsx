@@ -91,9 +91,8 @@ export function PinModal({
       }
     }}>
       <AlertDialogContent
-        className="sm:max-w-md"
+        className="modal-size-compact"
         style={{
-          maxWidth: "min(calc(100vw - 2rem), 32rem)",
           pointerEvents: 'auto',
           touchAction: 'auto'
         }}

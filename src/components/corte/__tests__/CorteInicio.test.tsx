@@ -222,3 +222,19 @@ describe('CorteInicio — Suite D: Validación y submit', () => {
     expect(screen.getByText(/nombre ambiguo/i)).toBeInTheDocument();
   });
 });
+
+// ---------------------------------------------------------------------------
+// Suite E — Contrato visual base (anti "pantalla negra")
+// ---------------------------------------------------------------------------
+
+describe('CorteInicio — Suite E: Contrato visual base', () => {
+  it('E1: renderiza shell visual con heading contextual del paso', () => {
+    render(<CorteInicio {...defaultProps} />);
+
+    const form = screen.getByTestId('corte-inicio-form');
+    expect(form).toHaveClass('glass-morphism-panel');
+    expect(
+      screen.getByRole('heading', { name: /configurar equipo del corte/i }),
+    ).toBeInTheDocument();
+  });
+});

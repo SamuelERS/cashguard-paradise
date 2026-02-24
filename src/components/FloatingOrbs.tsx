@@ -16,6 +16,8 @@ export const FloatingOrbs = () => {
       <motion.div
         className="absolute w-48 h-48 md:w-64 lg:w-96 md:h-64 lg:h-96 rounded-full opacity-20"
         style={{
+          top: '8%',
+          left: '6%',
           background: `radial-gradient(circle, rgba(10, 132, 255, 0.3) 0%, transparent 70%)`,
           filter: "blur(40px)",
           willChange: "transform",
@@ -32,12 +34,13 @@ export const FloatingOrbs = () => {
           ease: "easeInOut",
           pause: !isVisible
         }}
-        initial={{ x: "5%", y: "10%" }}
       />
 
       <motion.div
         className="absolute w-40 h-40 md:w-56 lg:w-80 md:h-56 lg:h-80 rounded-full opacity-15"
         style={{
+          top: '28%',
+          right: '8%',
           background: `radial-gradient(circle, rgba(94, 92, 230, 0.4) 0%, transparent 70%)`,
           filter: "blur(35px)",
           willChange: "transform",
@@ -55,12 +58,13 @@ export const FloatingOrbs = () => {
           delay: -10,
           pause: !isVisible
         }}
-        initial={{ x: "50%", y: "40%" }}
       />
 
       <motion.div
         className="absolute w-32 h-32 md:w-48 lg:w-64 md:h-48 lg:h-64 rounded-full opacity-25"
         style={{
+          bottom: '12%',
+          left: '26%',
           background: `radial-gradient(circle, rgba(48, 209, 88, 0.3) 0%, transparent 70%)`,
           filter: "blur(30px)",
           willChange: "transform",
@@ -78,7 +82,6 @@ export const FloatingOrbs = () => {
           delay: -20,
           pause: !isVisible
         }}
-        initial={{ x: "30%", y: "60%" }}
       />
 
       {/* Grid pattern overlay - more subtle */}

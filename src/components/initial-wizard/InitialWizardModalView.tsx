@@ -102,7 +102,7 @@ const InitialWizardModalView = (props: InitialWizardModalProps) => {
       }
     }}>
       <DialogContent
-        className="glass-morphism-panel wizard-dialog-content max-h-[clamp(85vh,90vh,90vh)] overflow-y-auto overflow-x-hidden p-0 [&>button]:hidden"
+        className="glass-morphism-panel wizard-dialog-content modal-size-standard max-h-[clamp(85vh,90vh,90vh)] overflow-y-auto overflow-x-hidden p-0 [&>button]:hidden"
       >
         <DialogTitle className="sr-only">
           Corte Nocturno - Paso {ctrl.currentStep} de {ctrl.totalSteps}
@@ -124,7 +124,7 @@ const InitialWizardModalView = (props: InitialWizardModalProps) => {
                 <h2 className="font-bold text-[clamp(1.25rem,5vw,1.5rem)] text-[#e1e8ed] leading-tight">
                   Corte Nocturno
                 </h2>
-                <p className="text-[clamp(0.625rem,2.5vw,0.75rem)] text-[#8899a6] mt-[clamp(0.125rem,0.5vw,0.25rem)]">
+                <p className="modal-subtitle mt-[clamp(0.125rem,0.5vw,0.25rem)]">
                   Control de cierre diario
                 </p>
               </div>

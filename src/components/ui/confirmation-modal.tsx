@@ -99,12 +99,11 @@ export function ConfirmationModal({
           }
         }}
         style={{
-          maxWidth: "min(calc(100vw - 2rem), 32rem)", // Responsive constraint only
           // 🤖 [IA] - v1.3.6Z: FIX iOS Safari - Override body touchAction + forzar interacción
           pointerEvents: 'auto',  // Forzar eventos pointer (clicks funcionales)
           touchAction: 'auto'     // Override body pan-y (permitir todos los gestos)
         }}
-        className={`glass-morphism-panel w-full ${className || ''}`}
+        className={`glass-morphism-panel modal-size-compact w-full ${className || ''}`}
       >
         <AlertDialogHeader className="pt-[clamp(1.5rem,6vw,2.5rem)] pb-[clamp(1rem,4vw,1.5rem)]">
           <AlertDialogTitle

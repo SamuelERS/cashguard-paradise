@@ -411,7 +411,7 @@ export function Phase2Manager({
         }}
       >
       {/* 🤖 [IA] - v1.2.41AC: Corregido wizard-dialog-shell → glass-morphism-panel para coherencia transparencias */}
-      <DialogContent className="glass-morphism-panel wizard-dialog-content max-h-[clamp(85vh,90vh,90vh)] overflow-y-auto overflow-x-hidden p-0 [&>button]:hidden">
+      <DialogContent className="glass-morphism-panel wizard-dialog-content modal-size-standard max-h-[clamp(85vh,90vh,90vh)] overflow-y-auto overflow-x-hidden p-0 [&>button]:hidden">
         {/* 🤖 [IA] - v1.2.41Z: DialogTitle/Description solo para accesibilidad */}
         <DialogTitle className="sr-only">
           Preparar Dinero a Entregar
@@ -433,7 +433,7 @@ export function Phase2Manager({
                 <h2 className="font-bold text-[clamp(1.25rem,5vw,1.5rem)] text-[#e1e8ed] leading-tight">
                   Preparar Dinero a Entregar
                 </h2>
-                <p className="text-[clamp(0.625rem,2.5vw,0.75rem)] text-[#8899a6] mt-[clamp(0.125rem,0.5vw,0.25rem)]">
+                <p className="modal-subtitle mt-[clamp(0.125rem,0.5vw,0.25rem)]">
                   Preparación de entrega de efectivo
                 </p>
               </div>

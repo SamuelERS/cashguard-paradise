@@ -117,7 +117,7 @@ export function GuidedInstructionsModal({
   return (
     <Dialog open={isOpen} onOpenChange={() => {}}>
       <DialogContent
-        className="glass-morphism-panel wizard-dialog-content max-h-[clamp(85vh,90vh,90vh)] overflow-y-auto overflow-x-hidden p-0 [&>button]:hidden"
+        className="glass-morphism-panel wizard-dialog-content modal-size-standard max-h-[clamp(85vh,90vh,90vh)] overflow-y-auto overflow-x-hidden p-0 [&>button]:hidden"
       >
         {/* 🤖 [IA] - v1.2.41V: DialogTitle/Description solo para accesibilidad */}
         <DialogTitle className="sr-only">
@@ -141,7 +141,7 @@ export function GuidedInstructionsModal({
                 <h2 className="font-bold text-[clamp(1.25rem,5vw,1.5rem)] text-[#e1e8ed] leading-tight">
                   Instrucciones de Conteo
                 </h2>
-                <p className="text-[clamp(0.625rem,2.5vw,0.75rem)] text-[#8899a6] mt-[clamp(0.125rem,0.5vw,0.25rem)]">
+                <p className="modal-subtitle mt-[clamp(0.125rem,0.5vw,0.25rem)]">
                   Preparativos antes de contar efectivo
                 </p>
               </div>

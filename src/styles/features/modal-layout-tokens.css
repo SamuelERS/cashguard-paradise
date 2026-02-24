@@ -1,0 +1,32 @@
+/* Shared modal sizing and subtitle typography tokens */
+
+.modal-size-standard {
+  width: min(92vw, 540px);
+  max-width: min(92vw, 540px);
+  max-height: clamp(85vh, 90vh, 90vh);
+}
+
+@media (min-width: 768px) {
+  .modal-size-standard {
+    width: clamp(480px, 48vw, 560px);
+    max-width: clamp(480px, 48vw, 560px);
+  }
+}
+
+.modal-size-compact {
+  width: min(calc(100vw - 2rem), 32rem);
+  max-width: min(calc(100vw - 2rem), 32rem);
+  max-height: 90vh;
+}
+
+.modal-size-large {
+  width: min(calc(100vw - 2rem), 44rem);
+  max-width: min(calc(100vw - 2rem), 44rem);
+  max-height: 90vh;
+}
+
+.modal-subtitle {
+  font-size: clamp(0.75rem, 2.8vw, 0.875rem);
+  line-height: 1.35;
+  color: #9aa8b4;
+}

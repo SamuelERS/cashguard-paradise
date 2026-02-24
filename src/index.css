@@ -34,6 +34,7 @@
 /* Modal Systems */
 @import "./styles/features/modal-close-button.css";
 @import "./styles/features/modal-dark-scrollbar.css";
+@import "./styles/features/modal-layout-tokens.css";
 
 /* Phase 1 Navigation */
 @import "./styles/features/phase1-navigation.css";

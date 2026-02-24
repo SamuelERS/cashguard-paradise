@@ -15,8 +15,8 @@ describe('WhatsAppInstructionsModal responsive contract', () => {
     const content = screen.getByRole('dialog');
 
     expect(content).toHaveClass('glass-morphism-panel');
+    expect(content).toHaveClass('modal-size-compact');
     expect(content).toHaveClass('overflow-y-auto');
     expect(content).toHaveClass('overflow-x-hidden');
-    expect(content.className).toContain('max-h-');
   });
 });

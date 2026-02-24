@@ -191,6 +191,16 @@ describe('CorteOrquestador — Suite E: Orquestación', () => {
     // Verify error message is visible
     expect(screen.getByText(/sesión duplicada/i)).toBeInTheDocument();
   });
+
+  it('E6: expone shell visual y botón cancelar accesible', () => {
+    render(<CorteOrquestador {...defaultProps} />);
+
+    const shell = screen.getByTestId('corte-orquestador-shell');
+    expect(shell).toHaveClass('glass-morphism-panel');
+
+    const cancelButton = screen.getByRole('button', { name: /cancelar/i });
+    expect(cancelButton).toHaveAttribute('aria-label', 'Cancelar y volver al wizard');
+  });
 });
 
 // ---------------------------------------------------------------------------

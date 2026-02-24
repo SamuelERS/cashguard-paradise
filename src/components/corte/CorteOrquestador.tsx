@@ -4,6 +4,7 @@ import type { Corte } from '@/types/auditoria';
 import type { EmpleadoSucursal } from '@/hooks/useEmpleadosSucursal';
 import { useEmpleadosSucursal } from '@/hooks/useEmpleadosSucursal';
 import { useCorteSesion } from '@/hooks/useCorteSesion';
+import { NeutralActionButton } from '@/components/ui/neutral-action-button';
 import CorteInicio from './CorteInicio';
 
 export const LAST_CASHIER_KEY = 'cashguard_last_cashier';
@@ -57,8 +58,15 @@ export default function CorteOrquestador({
   );
 
   return (
-    <div>
-      {errorLocal && <p role="alert">{errorLocal}</p>}
+    <div
+      data-testid="corte-orquestador-shell"
+      className="glass-morphism-panel space-y-fluid-lg max-w-[min(92vw,640px)] mx-auto"
+    >
+      {errorLocal && (
+        <p role="alert" className="wizard-error-feedback text-fluid-xs text-red-300">
+          {errorLocal}
+        </p>
+      )}
       <CorteInicio
         empleadosDeSucursal={empleados}
         empleadoPrecargado={empleadoPrecargado}
@@ -66,9 +74,14 @@ export default function CorteOrquestador({
         errorEmpleados={error}
         onConfirmar={handleConfirmar}
       />
-      <button type="button" onClick={onCancelar}>
+      <NeutralActionButton
+        type="button"
+        onClick={onCancelar}
+        aria-label="Cancelar y volver al wizard"
+        className="w-full sm:w-auto"
+      >
         Cancelar
-      </button>
+      </NeutralActionButton>
     </div>
   );
 }

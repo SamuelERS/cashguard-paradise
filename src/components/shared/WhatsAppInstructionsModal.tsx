@@ -42,7 +42,7 @@ export function WhatsAppInstructionsModal({
 }: WhatsAppInstructionsModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="glass-morphism-panel max-w-md max-h-[clamp(85vh,90vh,90vh)] overflow-y-auto overflow-x-hidden p-0">
+      <DialogContent className="glass-morphism-panel modal-size-compact overflow-y-auto overflow-x-hidden p-0">
         <DialogTitle className="sr-only">
           Instrucciones para enviar reporte por WhatsApp
         </DialogTitle>
@@ -62,7 +62,7 @@ export function WhatsAppInstructionsModal({
               <h2 className="font-bold text-[clamp(1.125rem,5vw,1.375rem)] text-[#e1e8ed] leading-tight">
                 Cómo enviar el reporte
               </h2>
-              <p className="text-[clamp(0.625rem,2.5vw,0.75rem)] text-[#8899a6] mt-[clamp(0.125rem,0.5vw,0.25rem)]">
+              <p className="modal-subtitle mt-[clamp(0.125rem,0.5vw,0.25rem)]">
                 Siga estos pasos para enviar por WhatsApp Web
               </p>
             </div>

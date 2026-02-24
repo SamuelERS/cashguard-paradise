@@ -99,7 +99,7 @@ export function DeliveryEducationModal({
 }: DeliveryEducationModalProps) {
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-      <DialogContent className="max-w-[90vw] sm:max-w-2xl max-h-[90vh] overflow-y-auto bg-[rgba(36,36,36,0.95)] backdrop-blur-xl border-[rgba(255,255,255,0.15)]">
+      <DialogContent className="modal-size-large overflow-y-auto bg-[rgba(36,36,36,0.95)] backdrop-blur-xl border-[rgba(255,255,255,0.15)]">
         {/* HEADER */}
         <DialogHeader>
           <DialogTitle className="text-[clamp(1.25rem,3.5vw,1.5rem)] text-[#e1e8ed] flex items-center gap-2">

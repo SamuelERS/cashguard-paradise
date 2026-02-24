@@ -1,6 +1,9 @@
 // 🤖 [IA] - v1.0.0: CorteInicio — Formulario presentacional de inicio de corte (TDD GREEN)
 import { useEffect, useRef, useState } from 'react';
 import type { EmpleadoSucursal } from '@/hooks/useEmpleadosSucursal';
+import { Input } from '@/components/ui/input';
+import { ConstructiveActionButton } from '@/components/shared/ConstructiveActionButton';
+import { NeutralActionButton } from '@/components/ui/neutral-action-button';
 
 interface CorteInicioProps {
   empleadosDeSucursal: EmpleadoSucursal[];
@@ -67,40 +70,57 @@ export default function CorteInicio({
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form
+      onSubmit={handleSubmit}
+      data-testid="corte-inicio-form"
+      className="glass-morphism-panel space-y-fluid-lg"
+    >
+      <div className="glass-morphism-panel header-section">
+        <div className="flex-1 min-w-0">
+          <h3 className="font-semibold text-primary-foreground text-fluid-xl">Configurar Equipo del Corte</h3>
+          <p className="text-muted-foreground text-fluid-xs mt-fluid-xs">
+            Selecciona cajero y testigo para iniciar el corte.
+          </p>
+        </div>
+      </div>
+
       {errorEmpleados && <p role="alert">{errorEmpleados}</p>}
       {seleccionAmbigua && (
         <p role="alert">Nombre ambiguo: seleccione un empleado único.</p>
       )}
 
-      <div>
-        <label htmlFor="cajero-input">Cajero</label>
-        <input
+      <div className="glass-morphism-panel space-y-fluid-sm">
+        <div className="flex items-center justify-between gap-fluid-sm">
+          <label htmlFor="cajero-input" className="text-fluid-sm font-medium text-primary-foreground">Cajero</label>
+          <NeutralActionButton type="button" onClick={handleMostrarTodos} className="h-8 min-h-8 px-3 text-xs">
+            Mostrar todos
+          </NeutralActionButton>
+        </div>
+        <Input
           id="cajero-input"
           list="cajero-list"
           ref={cajeroInputRef}
           value={cajeroBusqueda}
           onChange={(e) => setCajeroBusqueda(e.target.value)}
           disabled={cargandoEmpleados}
+          className="bg-background/30 border-white/20 text-primary-foreground"
         />
         <datalist id="cajero-list">
           {empleadosDeSucursal.map((emp) => (
             <option key={emp.id} value={emp.nombre} />
           ))}
         </datalist>
-        <button type="button" onClick={handleMostrarTodos}>
-          Mostrar todos
-        </button>
       </div>
 
-      <div>
-        <label htmlFor="testigo-input">Testigo</label>
-        <input
+      <div className="glass-morphism-panel space-y-fluid-sm">
+        <label htmlFor="testigo-input" className="text-fluid-sm font-medium text-primary-foreground">Testigo</label>
+        <Input
           id="testigo-input"
           list="testigo-list"
           value={testigoBusqueda}
           onChange={(e) => setTestigoBusqueda(e.target.value)}
           disabled={cargandoEmpleados}
+          className="bg-background/30 border-white/20 text-primary-foreground"
         />
         <datalist id="testigo-list">
           {empleadosDeSucursal
@@ -111,9 +131,9 @@ export default function CorteInicio({
         </datalist>
       </div>
 
-      <button type="submit" disabled={!puedeConfirmar}>
+      <ConstructiveActionButton type="submit" disabled={!puedeConfirmar} className="w-full sm:w-auto">
         Confirmar
-      </button>
+      </ConstructiveActionButton>
     </form>
   );
 }

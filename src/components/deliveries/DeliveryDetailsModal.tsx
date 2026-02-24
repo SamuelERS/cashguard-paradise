@@ -186,7 +186,7 @@ export function DeliveryDetailsModal({
 
   return (
     <Dialog open={!!delivery} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-[90vw] sm:max-w-md bg-[rgba(36,36,36,0.95)] backdrop-blur-xl border-[rgba(255,255,255,0.15)]">
+      <DialogContent className="modal-size-compact bg-[rgba(36,36,36,0.95)] backdrop-blur-xl border-[rgba(255,255,255,0.15)]">
         {delivery && (
           <>
             {/* HEADER */}
@@ -354,7 +354,7 @@ export function DeliveryDetailsModal({
 
       {/* 🤖 [IA] - v3.1.0: Modal razón cancelación/rechazo (reemplaza prompt() para PWA iOS) */}
       <AlertDialog open={!!reasonModal} onOpenChange={(open) => !open && setReasonModal(null)}>
-        <AlertDialogContent className="max-w-[90vw] sm:max-w-md bg-[rgba(36,36,36,0.95)] backdrop-blur-xl border-[rgba(255,255,255,0.15)]">
+        <AlertDialogContent className="modal-size-compact bg-[rgba(36,36,36,0.95)] backdrop-blur-xl border-[rgba(255,255,255,0.15)]">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-[#e1e8ed]">
               {reasonModal?.type === 'cancel' ? 'Cancelar Delivery' : 'Rechazar Delivery'}
