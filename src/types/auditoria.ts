@@ -90,8 +90,12 @@ export interface Corte {
   sucursal_id: string;
   /** Nombre del cajero que realiza el corte */
   cajero: string;
+  /** ID del cajero en catalogo de empleados (nullable para retrocompatibilidad) */
+  cajero_id?: string | null;
   /** Nombre del testigo (debe ser diferente al cajero) */
   testigo: string;
+  /** ID del testigo en catalogo de empleados (nullable para retrocompatibilidad) */
+  testigo_id?: string | null;
   /** Estado actual del corte */
   estado: EstadoCorte;
   /** Fase actual del proceso (1=conteo, 2=entrega, 3=reporte) */
@@ -153,8 +157,8 @@ export interface CorteIntento {
  * Tabla `corte_conteo_snapshots` — append-only (trigger bloquea UPDATE/DELETE).
  */
 export interface CorteConteoSnapshot {
-  /** UUID auto-generado */
-  id: string;
+  /** Identificador auto-generado en BD */
+  id: number | string;
   /** FK al corte activo */
   corte_id: string;
   /** Numero de intento activo al momento del snapshot */
@@ -167,19 +171,19 @@ export interface CorteConteoSnapshot {
   dime: number;
   quarter: number;
   dollar_coin: number;
-  bill_1: number;
-  bill_5: number;
-  bill_10: number;
-  bill_20: number;
-  bill_50: number;
-  bill_100: number;
+  bill1: number;
+  bill5: number;
+  bill10: number;
+  bill20: number;
+  bill50: number;
+  bill100: number;
   /** Pagos electronicos */
   credomatic: number;
   promerica: number;
   bank_transfer: number;
   paypal: number;
   /** Gastos del dia (JSONB serializado) */
-  gastos_dia: Record<string, unknown> | null;
+  gastos_dia: Record<string, unknown> | unknown[] | null;
   /** Origen del snapshot */
   source: 'autosave' | 'manual' | 'fase_change';
   /** Timestamp de captura ISO 8601 (DB default: now()) */
@@ -198,8 +202,12 @@ export interface IniciarCorteParams {
   sucursal_id: string;
   /** Nombre del cajero */
   cajero: string;
+  /** ID del cajero en catalogo empleados (opcional) */
+  cajero_id?: string;
   /** Nombre del testigo (debe ser != cajero) */
   testigo: string;
+  /** ID del testigo en catalogo empleados (opcional) */
+  testigo_id?: string;
   /** Venta esperada segun SICAR (opcional, >= 0) */
   venta_esperada?: number;
 }

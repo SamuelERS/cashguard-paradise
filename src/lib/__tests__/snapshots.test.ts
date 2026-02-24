@@ -81,7 +81,7 @@ const samplePayload: SnapshotPayload = {
 };
 
 const sampleDbRow: CorteConteoSnapshot = {
-  id: 'snap-001',
+  id: 1,
   corte_id: 'corte-001',
   attempt_number: 1,
   fase_actual: 1,
@@ -90,27 +90,27 @@ const sampleDbRow: CorteConteoSnapshot = {
   dime: 33,
   quarter: 8,
   dollar_coin: 1,
-  bill_1: 5,
-  bill_5: 3,
-  bill_10: 2,
-  bill_20: 1,
-  bill_50: 0,
-  bill_100: 0,
+  bill1: 5,
+  bill5: 3,
+  bill10: 2,
+  bill20: 1,
+  bill50: 0,
+  bill100: 0,
   credomatic: 5.32,
   promerica: 56.12,
   bank_transfer: 43.56,
   paypal: 0,
-  gastos_dia: null,
+  gastos_dia: [],
   source: 'manual',
   captured_at: '2026-02-17T10:00:00.000Z',
 };
 
 // ---------------------------------------------------------------------------
-// Suite 1: _toDbRow — CamelCase → snake_case
+// Suite 1: _toDbRow — CamelCase UI → contrato DB actual
 // ---------------------------------------------------------------------------
 
 describe('Suite 1: _toDbRow', () => {
-  it('1.1 — Mapea CashCount camelCase a columnas snake_case', () => {
+  it('1.1 — Mapea CashCount camelCase al contrato real de BD (snake/legacy mix)', () => {
     const row = _toDbRow(samplePayload);
 
     expect(row.penny).toBe(43);
@@ -118,15 +118,15 @@ describe('Suite 1: _toDbRow', () => {
     expect(row.dime).toBe(33);
     expect(row.quarter).toBe(8);
     expect(row.dollar_coin).toBe(1);
-    expect(row.bill_1).toBe(5);
-    expect(row.bill_5).toBe(3);
-    expect(row.bill_10).toBe(2);
-    expect(row.bill_20).toBe(1);
-    expect(row.bill_50).toBe(0);
-    expect(row.bill_100).toBe(0);
+    expect(row.bill1).toBe(5);
+    expect(row.bill5).toBe(3);
+    expect(row.bill10).toBe(2);
+    expect(row.bill20).toBe(1);
+    expect(row.bill50).toBe(0);
+    expect(row.bill100).toBe(0);
   });
 
-  it('1.2 — Mapea ElectronicPayments camelCase a snake_case', () => {
+  it('1.2 — Mapea ElectronicPayments al contrato real de BD', () => {
     const row = _toDbRow(samplePayload);
 
     expect(row.credomatic).toBe(5.32);
@@ -142,7 +142,7 @@ describe('Suite 1: _toDbRow', () => {
     expect(row.attempt_number).toBe(1);
     expect(row.fase_actual).toBe(1);
     expect(row.source).toBe('manual');
-    expect(row.gastos_dia).toBeNull();
+    expect(row.gastos_dia).toEqual([]);
   });
 
   it('1.4 — Maneja gastos_dia con datos', () => {
@@ -166,18 +166,18 @@ describe('Suite 1: _toDbRow', () => {
     });
 
     expect(row.penny).toBe(0);
-    expect(row.bill_100).toBe(0);
+    expect(row.bill100).toBe(0);
     expect(row.credomatic).toBe(0);
     expect(row.bank_transfer).toBe(0);
   });
 });
 
 // ---------------------------------------------------------------------------
-// Suite 2: _fromDbRow — snake_case → CamelCase
+// Suite 2: _fromDbRow — DB contract → UI camelCase
 // ---------------------------------------------------------------------------
 
 describe('Suite 2: _fromDbRow', () => {
-  it('2.1 — Mapea columnas snake_case a CashCount camelCase', () => {
+  it('2.1 — Mapea columnas de BD a CashCount camelCase', () => {
     const result = _fromDbRow(sampleDbRow);
 
     expect(result.cashCount.penny).toBe(43);
@@ -193,7 +193,7 @@ describe('Suite 2: _fromDbRow', () => {
     expect(result.cashCount.bill100).toBe(0);
   });
 
-  it('2.2 — Mapea columnas snake_case a ElectronicPayments camelCase', () => {
+  it('2.2 — Mapea columnas de BD a ElectronicPayments camelCase', () => {
     const result = _fromDbRow(sampleDbRow);
 
     expect(result.electronicPayments.credomatic).toBe(5.32);
@@ -205,7 +205,7 @@ describe('Suite 2: _fromDbRow', () => {
   it('2.3 — Preserva gastos_dia y fase_actual', () => {
     const result = _fromDbRow(sampleDbRow);
 
-    expect(result.gastos_dia).toBeNull();
+    expect(result.gastos_dia).toEqual([]);
     expect(result.fase_actual).toBe(1);
   });
 
@@ -221,7 +221,7 @@ describe('Suite 2: _fromDbRow', () => {
 
     expect(result.cashCount).toEqual(samplePayload.cashCount);
     expect(result.electronicPayments).toEqual(samplePayload.electronicPayments);
-    expect(result.gastos_dia).toEqual(samplePayload.gastos_dia);
+    expect(result.gastos_dia).toEqual([]);
     expect(result.fase_actual).toEqual(samplePayload.fase_actual);
   });
 });

@@ -1,11 +1,11 @@
-// 🤖 [IA] - v1.1.0: Integration test — CorteOrquestador branch in Index.tsx (DIRM V2 Task 5)
+// 🤖 [IA] - v1.2.0: Integration test — CASH_CUT inicia corte directo desde wizard (sin modal duplicado)
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import Index from '@/pages/Index';
 
 // ---------------------------------------------------------------------------
-// Supabase mock (no active session → triggers CorteOrquestador path)
+// Supabase mock (no active session)
 // ---------------------------------------------------------------------------
 
 const supabaseMocks = vi.hoisted(() => {
@@ -15,13 +15,19 @@ const supabaseMocks = vi.hoisted(() => {
   const inMock = vi.fn(() => ({ order: orderMock }));
   const selectMock = vi.fn(() => ({ in: inMock }));
   const cortesMock = vi.fn(() => ({ select: selectMock }));
+  const empleadosInMock = vi.fn();
+  const empleadosSelectMock = vi.fn(() => ({ in: empleadosInMock }));
+  const empleadosMock = vi.fn(() => ({ select: empleadosSelectMock }));
 
-  return { maybeSingleMock, cortesMock };
+  return { maybeSingleMock, cortesMock, empleadosInMock, empleadosMock };
 });
 
 vi.mock('@/lib/supabase', () => ({
   isSupabaseConfigured: true,
-  tables: { cortes: supabaseMocks.cortesMock },
+  tables: {
+    cortes: supabaseMocks.cortesMock,
+    empleados: supabaseMocks.empleadosMock,
+  },
 }));
 
 // ---------------------------------------------------------------------------
@@ -72,7 +78,7 @@ vi.mock('@/components/morning-count/MorningCountWizard', () => ({
   MorningCountWizard: () => null,
 }));
 
-// CorteOrquestador mock — renders with data-testid and forwarded props
+// CorteOrquestador mock — guard de regresión: NO debe renderizarse en flujo nuevo
 vi.mock('@/components/corte/CorteOrquestador', () => ({
   default: (props: Record<string, unknown>) => (
     <div
@@ -130,21 +136,39 @@ vi.mock('@/components/deliveries/DeliveryDashboardWrapper', () => ({
   DeliveryDashboardWrapper: () => <div data-testid="delivery-page">DeliveryDashboardWrapper</div>,
 }));
 
+const corteSesionMocks = vi.hoisted(() => ({
+  iniciarCorte: vi.fn().mockResolvedValue({
+    id: 'corte-uuid-test',
+    cajero: 'CorteCajero',
+    testigo: 'CorteTestigo',
+    sucursal_id: 'suc-001',
+  }),
+  guardarProgreso: vi.fn().mockResolvedValue(undefined),
+  error: null as string | null,
+}));
+
 vi.mock('@/hooks/useCorteSesion', () => ({
   useCorteSesion: () => ({
-    iniciarCorte: vi.fn().mockResolvedValue(undefined),
-    guardarProgreso: vi.fn().mockResolvedValue(undefined),
-    error: null,
+    iniciarCorte: corteSesionMocks.iniciarCorte,
+    guardarProgreso: corteSesionMocks.guardarProgreso,
+    error: corteSesionMocks.error,
   }),
 }));
 
 // ---------------------------------------------------------------------------
-// Suite G — Index.tsx CorteOrquestador integration
+// Suite G — Index.tsx CASH_CUT direct start integration
 // ---------------------------------------------------------------------------
 
-describe('Index — Suite G: CorteOrquestador integration', () => {
-  it('G1: CASH_CUT wizard complete (no active session) → CorteOrquestador renders with correct props', async () => {
+describe('Index — Suite G: CASH_CUT direct-start integration', () => {
+  it('G1: CASH_CUT wizard complete (no active session) → inicia corte y abre CashCounter sin segundo modal', async () => {
     supabaseMocks.maybeSingleMock.mockResolvedValue({ data: null, error: null });
+    supabaseMocks.empleadosInMock.mockResolvedValue({
+      data: [
+        { id: 'WizardCajero', nombre: 'Jonathan Melara' },
+        { id: 'WizardTestigo', nombre: 'Adonay Torres' },
+      ],
+      error: null,
+    });
     const user = userEvent.setup();
     render(<Index />);
 
@@ -155,59 +179,62 @@ describe('Index — Suite G: CorteOrquestador integration', () => {
     const wizard = await screen.findByTestId('initial-wizard');
     expect(wizard).toBeInTheDocument();
 
-    // Step 3: Complete wizard → CorteOrquestador should appear
+    // Step 3: Complete wizard → CashCounter should appear directly
     await user.click(screen.getByTestId('wizard-complete'));
 
-    const corte = await screen.findByTestId('corte-orquestador');
-    expect(corte).toBeInTheDocument();
-    expect(corte.getAttribute('data-sucursal-id')).toBe('suc-001');
-    expect(corte.getAttribute('data-venta-esperada')).toBe('500');
-
-    // Wizard and CashCounter should NOT be visible
+    const counter = await screen.findByTestId('cash-counter');
+    expect(counter).toBeInTheDocument();
+    expect(corteSesionMocks.iniciarCorte).toHaveBeenCalledOnce();
     expect(screen.queryByTestId('initial-wizard')).not.toBeInTheDocument();
-    expect(screen.queryByTestId('cash-counter')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('corte-orquestador')).not.toBeInTheDocument();
   });
 
-  it('G2: CorteOrquestador onCorteIniciado → CashCounter renders with corte cajero/testigo', async () => {
+  it('G2: iniciarCorte exitoso → CashCounter usa cajero/testigo devueltos por Supabase', async () => {
     supabaseMocks.maybeSingleMock.mockResolvedValue({ data: null, error: null });
+    supabaseMocks.empleadosInMock.mockResolvedValue({
+      data: [
+        { id: 'WizardCajero', nombre: 'Jonathan Melara' },
+        { id: 'WizardTestigo', nombre: 'Adonay Torres' },
+      ],
+      error: null,
+    });
     const user = userEvent.setup();
     render(<Index />);
 
-    // Navigate to CorteOrquestador
+    // Completar wizard
     await user.click(screen.getByTestId('open-cash-cut'));
     await user.click(await screen.findByTestId('wizard-complete'));
-    await screen.findByTestId('corte-orquestador');
-
-    // Confirm corte → CashCounter should render
-    await user.click(screen.getByTestId('corte-confirmar'));
 
     const counter = await screen.findByTestId('cash-counter');
     expect(counter).toBeInTheDocument();
 
-    // CashCounter receives cajero/testigo from corte, NOT from wizard
+    // CashCounter recibe cajero/testigo del corte persistido
     expect(counter.getAttribute('data-cashier')).toBe('CorteCajero');
     expect(counter.getAttribute('data-witness')).toBe('CorteTestigo');
-
-    // CorteOrquestador should be gone
     expect(screen.queryByTestId('corte-orquestador')).not.toBeInTheDocument();
   });
 
-  it('G3: CorteOrquestador onCancelar → returns to wizard', async () => {
+  it('G3: iniciarCorte falla → wizard permanece visible y no entra a CashCounter', async () => {
+    corteSesionMocks.iniciarCorte.mockRejectedValueOnce(new Error('Supabase network error'));
     supabaseMocks.maybeSingleMock.mockResolvedValue({ data: null, error: null });
+    supabaseMocks.empleadosInMock.mockResolvedValue({
+      data: [
+        { id: 'WizardCajero', nombre: 'Jonathan Melara' },
+        { id: 'WizardTestigo', nombre: 'Adonay Torres' },
+      ],
+      error: null,
+    });
     const user = userEvent.setup();
     render(<Index />);
 
-    // Navigate to CorteOrquestador
+    // Completar wizard con error en iniciar
     await user.click(screen.getByTestId('open-cash-cut'));
     await user.click(await screen.findByTestId('wizard-complete'));
-    await screen.findByTestId('corte-orquestador');
-
-    // Cancel → should return to wizard
-    await user.click(screen.getByTestId('corte-cancelar'));
-
     await waitFor(() => {
-      expect(screen.queryByTestId('corte-orquestador')).not.toBeInTheDocument();
+      expect(corteSesionMocks.iniciarCorte).toHaveBeenCalledOnce();
     });
+
+    expect(screen.queryByTestId('cash-counter')).not.toBeInTheDocument();
     expect(await screen.findByTestId('initial-wizard')).toBeInTheDocument();
   });
 

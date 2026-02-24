@@ -13,15 +13,31 @@ const supabaseMocks = vi.hoisted(() => {
   const inMock = vi.fn(() => ({ order: orderMock }));
   const selectMock = vi.fn(() => ({ in: inMock }));
   const cortesMock = vi.fn(() => ({ select: selectMock }));
+  const empleadosInMock = vi.fn();
+  const empleadosSelectMock = vi.fn(() => ({ in: empleadosInMock }));
+  const empleadosMock = vi.fn(() => ({ select: empleadosSelectMock }));
 
   return {
     maybeSingleMock,
     cortesMock,
+    empleadosInMock,
+    empleadosMock,
   };
 });
 
 const corteSesionMocks = vi.hoisted(() => ({
-  iniciarCorte: vi.fn<[{ sucursal_id: string; cajero: string; testigo: string; venta_esperada?: number }], Promise<void>>().mockResolvedValue(undefined),
+  iniciarCorte: vi.fn<[{
+    sucursal_id: string;
+    cajero: string;
+    testigo: string;
+    cajero_id?: string;
+    testigo_id?: string;
+    venta_esperada?: number;
+  }], Promise<{ cajero: string; testigo: string; sucursal_id: string }>>().mockResolvedValue({
+    cajero: 'cashier-1',
+    testigo: 'witness-1',
+    sucursal_id: 'store-1',
+  }),
   guardarProgreso: vi.fn<[], Promise<void>>().mockResolvedValue(undefined),
   error: null as string | null,
   // 🤖 [IA] - DACC-R2 Gap 3: Capturar sucursalId pasado a useCorteSesion
@@ -34,6 +50,7 @@ vi.mock('@/lib/supabase', () => ({
   isSupabaseConfigured: true,
   tables: {
     cortes: supabaseMocks.cortesMock,
+    empleados: supabaseMocks.empleadosMock,
   },
 }));
 
@@ -201,6 +218,13 @@ describe('DACC-CIERRE-SYNC-UX: Persistence & Sync UX', () => {
       data: null,
       error: null,
     });
+    supabaseMocks.empleadosInMock.mockResolvedValue({
+      data: [
+        { id: 'cashier-1', nombre: 'cashier-1' },
+        { id: 'witness-1', nombre: 'witness-1' },
+      ],
+      error: null,
+    });
   });
 
   // 🤖 [IA] - DACC-CIERRE-SYNC-UX: iniciarCorte called on new CASH_CUT session
@@ -215,6 +239,8 @@ describe('DACC-CIERRE-SYNC-UX: Persistence & Sync UX', () => {
       sucursal_id: 'store-1',
       cajero: 'cashier-1',
       testigo: 'witness-1',
+      cajero_id: 'cashier-1',
+      testigo_id: 'witness-1',
       venta_esperada: 1500,
     });
   });
@@ -277,10 +303,8 @@ describe('DACC-CIERRE-SYNC-UX: Persistence & Sync UX', () => {
     expect(wizard).toBeInTheDocument();
   });
 
-  // 🤖 [IA] - DIRM V2: iniciarCorte rejection → CorteOrquestador stays visible (CashCounter NOT shown)
-  // Architecture change: iniciarCorte is called inside CorteOrquestador (not Index.tsx),
-  // so rejection keeps CorteOrquestador on screen rather than setting syncEstado='error'
-  it('keeps CorteOrquestador visible when iniciarCorte rejects', async () => {
+  // 🤖 [IA] - v1.2.0: IniciarCorte rejection mantiene wizard visible (sin segundo modal)
+  it('keeps wizard visible when iniciarCorte rejects', async () => {
     corteSesionMocks.iniciarCorte.mockRejectedValueOnce(new Error('Supabase network error'));
 
     const user = userEvent.setup();
@@ -289,13 +313,12 @@ describe('DACC-CIERRE-SYNC-UX: Persistence & Sync UX', () => {
     await user.click(screen.getByTestId('open-cash-cut'));
     await screen.findByTestId('initial-wizard');
     await user.click(screen.getByTestId('wizard-complete'));
-    await screen.findByTestId('corte-orquestador');
-    await user.click(screen.getByTestId('corte-confirmar'));
 
     await waitFor(() => {
       expect(corteSesionMocks.iniciarCorte).toHaveBeenCalledOnce();
     });
     expect(screen.queryByTestId('cash-counter')).not.toBeInTheDocument();
+    expect(screen.getByTestId('initial-wizard')).toBeInTheDocument();
   });
 
   // 🤖 [IA] - DACC-R2 Gap 1+3: Política A — sesión activa de la MISMA sucursal gobierna sync
@@ -336,6 +359,8 @@ describe('DACC-CIERRE-SYNC-UX: Persistence & Sync UX', () => {
       sucursal_id: 'store-1',
       cajero: 'cashier-1',
       testigo: 'witness-1',
+      cajero_id: 'cashier-1',
+      testigo_id: 'witness-1',
       venta_esperada: 1500,
     });
   });

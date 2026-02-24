@@ -166,7 +166,9 @@ export function useCorteSesion(
         .insert({
           sucursal_id: params.sucursal_id,
           cajero: params.cajero,
+          cajero_id: params.cajero_id ?? null,
           testigo: params.testigo,
+          testigo_id: params.testigo_id ?? null,
           estado: 'INICIADO' as EstadoCorte,
           correlativo: correlativo,
           fase_actual: 0,

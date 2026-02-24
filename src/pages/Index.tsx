@@ -76,6 +76,7 @@ const Index = () => {
 
   // 🤖 [IA] - DACC-CIERRE-SYNC-UX: Hook de sesión para persistencia corte
   const {
+    iniciarCorte,
     guardarProgreso,
     error: syncError,
   } = useCorteSesion(syncSucursalId);
@@ -171,18 +172,73 @@ const Index = () => {
       ...data,
       dailyExpenses: data.dailyExpenses || []
     });
-    setShowWizard(false);
-    setShowMorningWizard(false);
     const hasActiveSessionForSelectedStore =
       Boolean(activeCashCutSucursalId) && activeCashCutSucursalId === data.selectedStore;
 
-    // 🤖 [IA] - DIRM V2 Task 5: Nuevo flujo CASH_CUT sin sesión activa → CorteOrquestador
-    // CorteOrquestador maneja selección cajero/testigo desde Supabase y llama iniciarCorte
+    // CASH_CUT sin sesión activa: persistir inmediatamente usando datos ya capturados en wizard.
+    // Evita segunda captura de cajero/testigo y mantiene una única fuente de verdad.
     if (currentMode === OperationMode.CASH_CUT && !hasActiveSessionForSelectedStore) {
-      setShowCorteInicio(true);
+      if (isSupabaseConfigured) {
+        try {
+          const selectedIds = Array.from(
+            new Set([data.selectedCashier, data.selectedWitness].filter(Boolean)),
+          );
+
+          let cashierName = data.selectedCashier;
+          let witnessName = data.selectedWitness;
+
+          if (selectedIds.length > 0) {
+            const { data: empleadosRows, error: empleadosError } = await tables
+              .empleados()
+              .select('id,nombre')
+              .in('id', selectedIds);
+
+            if (!empleadosError && empleadosRows) {
+              const employeeNameMap = new Map(
+                empleadosRows.map((empleado) => [empleado.id, empleado.nombre]),
+              );
+              cashierName = employeeNameMap.get(data.selectedCashier) ?? data.selectedCashier;
+              witnessName = employeeNameMap.get(data.selectedWitness) ?? data.selectedWitness;
+            }
+          }
+
+          const expectedSalesValue = parseFloat(data.expectedSales);
+          const corte = await iniciarCorte({
+            sucursal_id: data.selectedStore,
+            cajero: cashierName,
+            cajero_id: data.selectedCashier,
+            testigo: witnessName,
+            testigo_id: data.selectedWitness,
+            venta_esperada: Number.isFinite(expectedSalesValue) ? expectedSalesValue : undefined,
+          });
+
+          setInitialData(prev => prev ? {
+            ...prev,
+            selectedCashier: corte.cajero,
+            selectedWitness: corte.testigo,
+            expectedSales: corte.venta_esperada != null ? String(corte.venta_esperada) : prev.expectedSales,
+          } : prev);
+
+          setSyncSucursalId(corte.sucursal_id);
+          setSyncEstado('sincronizado');
+          setUltimaSync(new Date().toISOString());
+        } catch (err: unknown) {
+          console.warn('[Index] iniciarCorte falló:', err);
+          toast.error('No se pudo iniciar el corte. Verifique conexión e intente de nuevo.');
+          return;
+        }
+      }
+
+      setShowWizard(false);
+      setShowMorningWizard(false);
+      setShowCorteInicio(false);
+      setShowCashCounter(true);
       return;
     }
 
+    setShowWizard(false);
+    setShowMorningWizard(false);
+    setShowCorteInicio(false);
     setShowCashCounter(true);
 
     // 🤖 [IA] - DACC-R2 Gap 1: Política explícita de sucursal para sincronización.

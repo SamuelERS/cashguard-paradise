@@ -438,6 +438,33 @@ describe('Suite 3: iniciarCorte', () => {
     expect(result.current.corte_actual?.venta_esperada).toBeNull();
   });
 
+  it('3.6b - Propaga cajero_id y testigo_id cuando son proporcionados', async () => {
+    const { result } = renderHook(() => useCorteSesion(SUCURSAL_ID));
+
+    await waitFor(() => {
+      expect(result.current.cargando).toBe(false);
+    });
+
+    setupIniciarCorteExitoso();
+
+    await act(async () => {
+      await result.current.iniciarCorte({
+        sucursal_id: SUCURSAL_ID,
+        cajero: 'Juan Perez',
+        testigo: 'Maria Lopez',
+        cajero_id: 'tito-gomez',
+        testigo_id: 'adonay-torres',
+      });
+    });
+
+    const insertCall = mockChain.cortes.insert.mock.calls[
+      mockChain.cortes.insert.mock.calls.length - 1
+    ][0];
+
+    expect(insertCall.cajero_id).toBe('tito-gomez');
+    expect(insertCall.testigo_id).toBe('adonay-torres');
+  });
+
   it('3.7 - Rechaza si ya existe corte FINALIZADO hoy', async () => {
     const { result } = renderHook(() => useCorteSesion(SUCURSAL_ID));
 

@@ -16,7 +16,7 @@ export interface SnapshotPayload {
   fase_actual: number;
   cashCount: CashCount;
   electronicPayments: ElectronicPayments;
-  gastos_dia: Record<string, unknown> | null;
+  gastos_dia: Record<string, unknown> | unknown[] | null;
   source: CorteConteoSnapshot['source'];
 }
 
@@ -25,7 +25,7 @@ export interface SnapshotPayload {
 // ---------------------------------------------------------------------------
 
 /**
- * Mapea CashCount keys (camelCase) + ElectronicPayments a columnas DB (snake_case).
+ * Mapea CashCount + ElectronicPayments al contrato real de BD.
  * Separado para testeo independiente.
  */
 function toDbRow(payload: SnapshotPayload) {
@@ -34,36 +34,37 @@ function toDbRow(payload: SnapshotPayload) {
     corte_id: rest.corte_id,
     attempt_number: rest.attempt_number,
     fase_actual: rest.fase_actual,
-    // Denominaciones — CashCount camelCase → DB snake_case
+    // Denominaciones
     penny: cashCount.penny,
     nickel: cashCount.nickel,
     dime: cashCount.dime,
     quarter: cashCount.quarter,
     dollar_coin: cashCount.dollarCoin,
-    bill_1: cashCount.bill1,
-    bill_5: cashCount.bill5,
-    bill_10: cashCount.bill10,
-    bill_20: cashCount.bill20,
-    bill_50: cashCount.bill50,
-    bill_100: cashCount.bill100,
+    bill1: cashCount.bill1,
+    bill5: cashCount.bill5,
+    bill10: cashCount.bill10,
+    bill20: cashCount.bill20,
+    bill50: cashCount.bill50,
+    bill100: cashCount.bill100,
     // Pagos electrónicos
     credomatic: electronicPayments.credomatic,
     promerica: electronicPayments.promerica,
     bank_transfer: electronicPayments.bankTransfer,
     paypal: electronicPayments.paypal,
     // Resto
-    gastos_dia: rest.gastos_dia,
+    // La tabla real exige gastos_dia no nulo; usar [] como valor neutro.
+    gastos_dia: rest.gastos_dia ?? [],
     source: rest.source,
   };
 }
 
 /**
- * Mapea una fila DB (snake_case) de vuelta a CashCount + ElectronicPayments.
+ * Mapea una fila DB al modelo UI.
  */
 function fromDbRow(row: CorteConteoSnapshot): {
   cashCount: CashCount;
   electronicPayments: ElectronicPayments;
-  gastos_dia: Record<string, unknown> | null;
+  gastos_dia: Record<string, unknown> | unknown[] | null;
   fase_actual: number;
 } {
   return {
@@ -73,12 +74,12 @@ function fromDbRow(row: CorteConteoSnapshot): {
       dime: row.dime,
       quarter: row.quarter,
       dollarCoin: row.dollar_coin,
-      bill1: row.bill_1,
-      bill5: row.bill_5,
-      bill10: row.bill_10,
-      bill20: row.bill_20,
-      bill50: row.bill_50,
-      bill100: row.bill_100,
+      bill1: row.bill1,
+      bill5: row.bill5,
+      bill10: row.bill10,
+      bill20: row.bill20,
+      bill50: row.bill50,
+      bill100: row.bill100,
     },
     electronicPayments: {
       credomatic: row.credomatic,
@@ -136,7 +137,7 @@ export async function getLatestSnapshot(
 ): Promise<{
   cashCount: CashCount;
   electronicPayments: ElectronicPayments;
-  gastos_dia: Record<string, unknown> | null;
+  gastos_dia: Record<string, unknown> | unknown[] | null;
   fase_actual: number;
 } | null> {
   if (!isSupabaseConfigured) {
