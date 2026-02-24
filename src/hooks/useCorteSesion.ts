@@ -27,6 +27,11 @@ import type {
 } from '../types/auditoria';
 import { ESTADOS_TERMINALES, CORRELATIVO_REGEX } from '../types/auditoria';
 
+interface UseCorteSesionOptions {
+  autoRecuperarSesion?: boolean;
+  procesarColaEnReconexion?: boolean;
+}
+
 // ---------------------------------------------------------------------------
 // Helper exportado: generarCorrelativo
 // ---------------------------------------------------------------------------
@@ -77,7 +82,12 @@ export function generarCorrelativo(
  * @param sucursal_id - UUID de la sucursal (obligatorio, no cambia durante el ciclo de vida)
  * @returns Estado y acciones del corte ({@link UseCorteSesionReturn})
  */
-export function useCorteSesion(sucursal_id: string): UseCorteSesionReturn {
+export function useCorteSesion(
+  sucursal_id: string,
+  options?: UseCorteSesionOptions,
+): UseCorteSesionReturn {
+  const autoRecuperarSesion = options?.autoRecuperarSesion ?? true;
+  const procesarColaEnReconexion = options?.procesarColaEnReconexion ?? true;
   const [corteActual, setCorteActual] = useState<Corte | null>(null);
   const [intentoActual, setIntentoActual] = useState<CorteIntento | null>(null);
   const [cargando, setCargando] = useState<boolean>(false);
@@ -584,19 +594,21 @@ export function useCorteSesion(sucursal_id: string): UseCorteSesionReturn {
   // -------------------------------------------------------------------------
 
   useEffect(() => {
+    if (!autoRecuperarSesion) return;
     if (sucursal_id) {
       recuperarSesion().catch(() => {
         // 🤖 [IA] - v1.0.0: Error silencioso en auto-recovery
         // El usuario puede reintentar manualmente o iniciar un nuevo corte
       });
     }
-  }, [sucursal_id, recuperarSesion]);
+  }, [autoRecuperarSesion, sucursal_id, recuperarSesion]);
 
   // -------------------------------------------------------------------------
   // 🤖 [IA] - v1.3.0: Reconexión automática — procesar cola offline al volver online
   // -------------------------------------------------------------------------
 
   useEffect(() => {
+    if (!procesarColaEnReconexion) return;
     if (!corteActual) return;
 
     const ejecutor = async (op: OperacionOffline): Promise<void> => {
@@ -631,7 +643,7 @@ export function useCorteSesion(sucursal_id: string): UseCorteSesionReturn {
     });
 
     return cleanup;
-  }, [corteActual]);
+  }, [corteActual, procesarColaEnReconexion]);
 
   // -------------------------------------------------------------------------
   // Return

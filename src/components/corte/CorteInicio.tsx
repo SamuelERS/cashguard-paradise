@@ -1,5 +1,5 @@
 // 🤖 [IA] - v1.0.0: CorteInicio — Formulario presentacional de inicio de corte (TDD GREEN)
-import { useState, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { EmpleadoSucursal } from '@/hooks/useEmpleadosSucursal';
 
 interface CorteInicioProps {
@@ -23,12 +23,26 @@ export default function CorteInicio({
   const [testigoBusqueda, setTestigoBusqueda] = useState('');
   const cajeroInputRef = useRef<HTMLInputElement>(null);
 
-  const cajeroSeleccionado = empleadosDeSucursal.find(
+  useEffect(() => {
+    if (!empleadoPrecargado?.nombre) return;
+    setCajeroBusqueda((prev) =>
+      prev.trim().length === 0 ? empleadoPrecargado.nombre : prev,
+    );
+  }, [empleadoPrecargado?.id, empleadoPrecargado?.nombre]);
+
+  const cajerosCoincidentes = empleadosDeSucursal.filter(
     (e) => e.nombre === cajeroBusqueda,
   );
-  const testigoSeleccionado = empleadosDeSucursal.find(
+  const testigosCoincidentes = empleadosDeSucursal.filter(
     (e) => e.nombre === testigoBusqueda,
   );
+  const cajeroSeleccionado =
+    cajerosCoincidentes.length === 1 ? cajerosCoincidentes[0] : null;
+  const testigoSeleccionado =
+    testigosCoincidentes.length === 1 ? testigosCoincidentes[0] : null;
+  const seleccionAmbigua =
+    (cajeroBusqueda.trim().length > 0 && cajerosCoincidentes.length > 1) ||
+    (testigoBusqueda.trim().length > 0 && testigosCoincidentes.length > 1);
 
   const mismoEmpleado =
     cajeroSeleccionado != null &&
@@ -38,7 +52,8 @@ export default function CorteInicio({
   const puedeConfirmar =
     cajeroSeleccionado != null &&
     testigoSeleccionado != null &&
-    !mismoEmpleado;
+    !mismoEmpleado &&
+    !seleccionAmbigua;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,6 +69,9 @@ export default function CorteInicio({
   return (
     <form onSubmit={handleSubmit}>
       {errorEmpleados && <p role="alert">{errorEmpleados}</p>}
+      {seleccionAmbigua && (
+        <p role="alert">Nombre ambiguo: seleccione un empleado único.</p>
+      )}
 
       <div>
         <label htmlFor="cajero-input">Cajero</label>

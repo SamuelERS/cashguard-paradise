@@ -106,4 +106,24 @@ describe('useConnectionStatus — estado de conexión reactivo', () => {
     // Estado final: online
     expect(result.current.estadoConexion).toBe('online');
   });
+
+  it('1.4 - si vuelve offline antes del debounce, NO debe transicionar a online', () => {
+    const onReconexion = vi.fn();
+    const { result } = renderHook(() => useConnectionStatus({ onReconexion }));
+
+    act(() => {
+      Object.defineProperty(navigator, 'onLine', { value: true, writable: true, configurable: true });
+      fireOnlineEvent();
+    });
+    expect(result.current.estadoConexion).toBe('reconectando');
+
+    act(() => {
+      Object.defineProperty(navigator, 'onLine', { value: false, writable: true, configurable: true });
+      fireOfflineEvent();
+      vi.advanceTimersByTime(2500);
+    });
+
+    expect(result.current.estadoConexion).toBe('offline');
+    expect(onReconexion).not.toHaveBeenCalled();
+  });
 });

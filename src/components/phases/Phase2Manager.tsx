@@ -11,10 +11,11 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Package, ScrollText, Grid3x3, AlertCircle, DollarSign, X, Pencil, Banknote, CheckCircle2, FileText } from 'lucide-react';
 import { InstructionRule, type RuleState } from '@/components/wizards/InstructionRule';
+import type { InstructionIconName } from '@/hooks/instructions/useInstructionFlow';
 import { phase2PreparationInstructions } from '@/data/instructions/phase2PreparationInstructions'; // 🤖 [IA] - v1.2.41AD: Configuración de datos separada
 
 // 🤖 [IA] - FASE 5: Mapa estático de íconos → habilita tree-shaking de lucide-react
-const ICON_MAP: Record<string, React.ComponentType<React.SVGProps<SVGSVGElement>>> = {
+const ICON_MAP: Partial<Record<InstructionIconName, React.ComponentType<React.SVGProps<SVGSVGElement>>>> = {
   Package,
   FileText,
   Banknote,
@@ -456,6 +457,7 @@ export function Phase2Manager({
             <div className="flex flex-col gap-[clamp(0.75rem,3vw,1rem)]">
               {phase2PreparationInstructions.map((instruction) => {
                 const itemKey = instruction.id as keyof typeof checkedItems;
+                const InstructionIcon = ICON_MAP[instruction.icon] ?? FileText;
                 return (
                   <InstructionRule
                     key={instruction.id}
@@ -463,7 +465,7 @@ export function Phase2Manager({
                       id: instruction.id,
                       title: instruction.title,
                       subtitle: instruction.description,
-                      Icon: ICON_MAP[instruction.icon],
+                      Icon: InstructionIcon,
                       colors: {
                         border: checkedItems[itemKey] ? 'border-green-400' : 'border-blue-400',
                         text: checkedItems[itemKey] ? 'text-green-400' : 'text-blue-400'

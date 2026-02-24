@@ -8,11 +8,12 @@ import { ConstructiveActionButton } from '@/components/shared/ConstructiveAction
 import { ArrowRight, X, CheckCircle, Receipt, PackagePlus } from 'lucide-react'; // 🤖 [IA] - v1.2.41U: CheckCircle verde (removido DestructiveActionButton + ShieldOff)
 import { InstructionRule } from '@/components/wizards/InstructionRule';
 import { useInstructionFlow } from '@/hooks/instructions/useInstructionFlow';
+import type { InstructionIconName } from '@/hooks/instructions/useInstructionFlow';
 import { cashCountingInstructions } from '@/data/instructions/cashCountingInstructions';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 
 // 🤖 [IA] - FASE 5: Mapa estático de íconos → habilita tree-shaking de lucide-react
-const ICON_MAP: Record<string, React.ComponentType<React.SVGProps<SVGSVGElement>>> = {
+const ICON_MAP: Partial<Record<InstructionIconName, React.ComponentType<React.SVGProps<SVGSVGElement>>>> = {
   Receipt,
   PackagePlus,
 };
@@ -163,6 +164,7 @@ export function GuidedInstructionsModal({
             <div className="flex flex-col gap-[clamp(0.75rem,3vw,1rem)]">
               {state.instructions.map((instruction, index) => {
                 const instructionState = state.instructionStates[instruction.id];
+                const InstructionIcon = ICON_MAP[instruction.icon] ?? Receipt;
                 return (
                   <InstructionRule
                     key={instruction.id}
@@ -170,7 +172,7 @@ export function GuidedInstructionsModal({
                       id: instruction.id,
                       title: instruction.title,
                       subtitle: instruction.description,
-                      Icon: ICON_MAP[instruction.icon],
+                      Icon: InstructionIcon,
                       colors: getInstructionColor(instruction)
                     }}
                     state={{

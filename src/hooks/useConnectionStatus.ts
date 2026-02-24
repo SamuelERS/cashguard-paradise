@@ -44,6 +44,10 @@ export function useConnectionStatus(
   onReconexionRef.current = options?.onReconexion;
 
   const handleOffline = useCallback(() => {
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+      debounceRef.current = null;
+    }
     setEstadoConexion('offline');
   }, []);
 

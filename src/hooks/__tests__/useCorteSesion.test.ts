@@ -1265,4 +1265,24 @@ describe('Suite 11: Reconexión automática — procesarCola al volver online', 
     expect(result.current.corte_actual).not.toBeNull();
     expect(result.current.error).toBeNull();
   });
+
+  it('11.4 - con procesarColaEnReconexion=false no registra listener de conectividad', async () => {
+    const { result } = renderHook(() =>
+      useCorteSesion(SUCURSAL_ID, {
+        autoRecuperarSesion: false,
+        procesarColaEnReconexion: false,
+      }),
+    );
+
+    setupIniciarCorteExitoso();
+    await act(async () => {
+      await result.current.iniciarCorte({
+        sucursal_id: SUCURSAL_ID,
+        cajero: 'Juan Perez',
+        testigo: 'Maria Lopez',
+      });
+    });
+
+    expect(mockEscucharConectividad).not.toHaveBeenCalled();
+  });
 });

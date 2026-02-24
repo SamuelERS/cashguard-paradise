@@ -72,6 +72,25 @@ describe('CorteInicio — Suite A: Prefill básico', () => {
     expect(opciones).toContain('Tito Gomez');
     expect(opciones).toContain('Irvin Abarca');
   });
+
+  it('A3: prefill tardío (prop async) hidrata input cajero cuando estaba vacío', () => {
+    const { rerender } = render(
+      <CorteInicio {...defaultProps} empleadoPrecargado={null} />,
+    );
+    const inputCajero = screen.getByLabelText(/cajero/i) as HTMLInputElement;
+    expect(inputCajero.value).toBe('');
+
+    rerender(
+      <CorteInicio
+        {...defaultProps}
+        empleadoPrecargado={EMPLEADO_PRECARGADO}
+      />,
+    );
+
+    expect((screen.getByLabelText(/cajero/i) as HTMLInputElement).value).toBe(
+      'Adonay Torres',
+    );
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -173,5 +192,33 @@ describe('CorteInicio — Suite D: Validación y submit', () => {
       expect.objectContaining({ id: 'emp-001', nombre: 'Adonay Torres' }),
       expect.objectContaining({ id: 'emp-002', nombre: 'Tito Gomez' }),
     );
+  });
+
+  it('D3: nombres ambiguos (duplicados) bloquean confirmación y muestran alerta', async () => {
+    const user = userEvent.setup();
+    const empleadosConDuplicado: EmpleadoSucursal[] = [
+      { id: 'emp-001', nombre: 'Adonay Torres' },
+      { id: 'emp-999', nombre: 'Adonay Torres' },
+      { id: 'emp-002', nombre: 'Tito Gomez' },
+    ];
+
+    render(
+      <CorteInicio
+        {...defaultProps}
+        empleadosDeSucursal={empleadosConDuplicado}
+      />,
+    );
+
+    const inputCajero = screen.getByLabelText(/cajero/i);
+    const inputTestigo = screen.getByLabelText(/testigo/i);
+    const btnConfirmar = screen.getByRole('button', { name: /confirmar/i });
+
+    await user.clear(inputCajero);
+    await user.type(inputCajero, 'Adonay Torres');
+    await user.clear(inputTestigo);
+    await user.type(inputTestigo, 'Tito Gomez');
+
+    expect(btnConfirmar).toBeDisabled();
+    expect(screen.getByText(/nombre ambiguo/i)).toBeInTheDocument();
   });
 });

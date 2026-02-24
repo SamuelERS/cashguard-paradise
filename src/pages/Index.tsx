@@ -14,6 +14,7 @@ import { useOperationMode } from "@/hooks/useOperationMode";
 import { OperationMode } from "@/types/operation-mode";
 import { DailyExpense, isDailyExpense } from '@/types/expenses'; // 🤖 [IA] - v1.4.0 + ORDEN #28 M6
 import { isSupabaseConfigured, tables } from '@/lib/supabase';
+import { obtenerEstadoCola } from '@/lib/offlineQueue';
 import { useCorteSesion } from '@/hooks/useCorteSesion';
 import CorteOrquestador from '@/components/corte/CorteOrquestador'; // 🤖 [IA] - DIRM V2 Task 5: Flujo CorteInicio → Supabase
 import type { DatosProgreso } from '@/types/auditoria';
@@ -71,11 +72,10 @@ const Index = () => {
   // 🤖 [IA] - DACC-CIERRE-SYNC-UX: Estado de sincronización Supabase
   const [syncSucursalId, setSyncSucursalId] = useState('');
   const [ultimaSync, setUltimaSync] = useState<string | null>(null);
-  const [syncEstado, setSyncEstado] = useState<'sincronizado' | 'sincronizando' | 'error'>('sincronizado');
+  const [syncEstado, setSyncEstado] = useState<'sincronizado' | 'sincronizando' | 'pendiente' | 'error'>('sincronizado');
 
   // 🤖 [IA] - DACC-CIERRE-SYNC-UX: Hook de sesión para persistencia corte
   const {
-    iniciarCorte,
     guardarProgreso,
     error: syncError,
   } = useCorteSesion(syncSucursalId);
@@ -85,7 +85,10 @@ const Index = () => {
     abortarCorte: abortarCorteActivo,
     // [IA] - R3-B1 GREEN: recuperarSesion para saltar wizard directamente a CashCounter
     recuperarSesion: recuperarSesionActiva,
-  } = useCorteSesion(activeCashCutSucursalId || '');
+  } = useCorteSesion(activeCashCutSucursalId || '', {
+    autoRecuperarSesion: false,
+    procesarColaEnReconexion: false,
+  });
 
   // 🤖 [IA] - v1.2.23: OPERATION-MODAL-CONTAINMENT - Prevención de selección de texto y scroll en background
   useEffect(() => {
@@ -127,6 +130,7 @@ const Index = () => {
   }) => {
     if (!isSupabaseConfigured || !syncSucursalId) return;
 
+    const estadoColaAntes = obtenerEstadoCola();
     setSyncEstado('sincronizando');
     const datosProgreso: DatosProgreso = {
       fase_actual: datos.fase_actual,
@@ -138,6 +142,14 @@ const Index = () => {
     };
     guardarProgreso(datosProgreso)
       .then(() => {
+        const estadoColaDespues = obtenerEstadoCola();
+        const seEncoloOperacion =
+          estadoColaDespues.total > estadoColaAntes.total ||
+          estadoColaDespues.pendientes > estadoColaAntes.pendientes;
+        if (seEncoloOperacion) {
+          setSyncEstado('pendiente');
+          return;
+        }
         setSyncEstado('sincronizado');
         setUltimaSync(new Date().toISOString());
       })

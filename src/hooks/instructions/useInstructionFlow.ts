@@ -2,9 +2,16 @@
 import { useReducer, useCallback, useEffect } from 'react';
 
 // Tipos de datos que el hook manejará
+export type InstructionIconName =
+  | 'Package'
+  | 'FileText'
+  | 'Banknote'
+  | 'Receipt'
+  | 'PackagePlus';
+
 export interface Instruction {
   id: string;
-  icon: string; // nombre del ícono (e.g. 'Receipt', 'Package')
+  icon: InstructionIconName;
   title: string;
   description: string;
   minReviewTimeMs: number; // Mínimo tiempo de revisión

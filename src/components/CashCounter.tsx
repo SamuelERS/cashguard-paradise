@@ -36,7 +36,7 @@ interface CashCounterProps {
     gastos_dia: DailyExpense[];
   }) => void;
   // 🤖 [IA] - DACC-CIERRE-SYNC-UX: Props sincronización visual
-  syncEstado?: 'sincronizado' | 'sincronizando' | 'error';
+  syncEstado?: 'sincronizado' | 'sincronizando' | 'pendiente' | 'error';
   ultimaSync?: string | null;
   syncError?: string | null;
 }
