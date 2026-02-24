@@ -35,6 +35,7 @@ interface CashCounterProps {
     pagos_electronicos: ElectronicPayments;
     gastos_dia: DailyExpense[];
   }) => void;
+  onFinalizarCorte?: (reporteHash: string) => Promise<void>;
   // 🤖 [IA] - DACC-CIERRE-SYNC-UX: Props sincronización visual
   syncEstado?: 'sincronizado' | 'sincronizando' | 'pendiente' | 'error';
   ultimaSync?: string | null;
@@ -55,6 +56,7 @@ const CashCounter = ({
   initialCashCount,
   initialElectronicPayments,
   onGuardarProgreso,
+  onFinalizarCorte,
   syncEstado,
   ultimaSync,
   syncError,
@@ -97,6 +99,7 @@ const CashCounter = ({
         dailyExpenses={state.dailyExpenses}
         deliveryCalculation={state.deliveryCalculation}
         phaseState={state.phaseState}
+        onFinalizarCorte={onFinalizarCorte}
         onComplete={state.handleCompleteCalculation}
         onBack={state.handleBackToStart}
       />

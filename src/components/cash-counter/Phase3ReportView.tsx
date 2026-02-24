@@ -26,6 +26,7 @@ interface Phase3ReportViewProps {
   dailyExpenses: DailyExpense[];
   deliveryCalculation: DeliveryCalculation | null;
   phaseState: PhaseState;
+  onFinalizarCorte?: (reporteHash: string) => Promise<void>;
   onComplete: () => void;
   onBack: () => void;
 }
@@ -44,6 +45,7 @@ export function Phase3ReportView({
   dailyExpenses,
   deliveryCalculation,
   phaseState,
+  onFinalizarCorte,
   onComplete,
   onBack,
 }: Phase3ReportViewProps) {
@@ -83,6 +85,7 @@ export function Phase3ReportView({
       expenses={dailyExpenses}
       deliveryCalculation={deliveryCalculation}
       phaseState={phaseState}
+      onFinalizeReport={onFinalizarCorte}
       onComplete={onComplete}
       onBack={onBack}
     />

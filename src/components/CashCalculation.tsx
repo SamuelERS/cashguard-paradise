@@ -17,6 +17,7 @@ import { calculateCashTotal, calculateChange50 } from "@/utils/calculations";
 import { calculateSicarAdjusted } from "@/utils/sicarAdjustment";
 import { copyToClipboard } from "@/utils/clipboard";
 import { toast } from "sonner";
+import { generarReporteHash } from '@/lib/corte-report-hash';
 import type { CashCount, ElectronicPayments } from "@/types/cash";
 import type { PhaseState, DeliveryCalculation } from "@/types/phases";
 import type { DailyExpense } from '@/types/expenses';
@@ -40,6 +41,7 @@ interface CashCalculationProps {
   expenses?: DailyExpense[];
   deliveryCalculation?: DeliveryCalculation;
   phaseState?: PhaseState;
+  onFinalizeReport?: (reporteHash: string) => Promise<void>;
   onBack: () => void;
   onComplete: () => void;
 }
@@ -57,6 +59,7 @@ const CashCalculation = ({
   expenses = [],
   deliveryCalculation,
   phaseState,
+  onFinalizeReport,
   onBack,
   onComplete
 }: CashCalculationProps) => {
@@ -414,8 +417,39 @@ const CashCalculation = ({
         confirmText="Sí, Finalizar"
         cancelText="Continuar"
         onConfirm={() => {
-          setShowFinishConfirmation(false);
-          onComplete();
+          void (async () => {
+            try {
+              if (onFinalizeReport) {
+                const reportPayload = {
+                  report: generateCompleteReport(),
+                  metadata: {
+                    storeId,
+                    cashierId,
+                    witnessId,
+                    expectedSales,
+                    timestamp: calculationData.timestamp,
+                  },
+                  totals: calculationData,
+                  phase: {
+                    currentPhase: phaseState?.currentPhase ?? 3,
+                    shouldSkipPhase2: phaseState?.shouldSkipPhase2 ?? false,
+                  },
+                };
+                const reportHash = await generarReporteHash(reportPayload);
+                if (!reportHash.trim()) {
+                  throw new Error('No se pudo generar hash de reporte');
+                }
+                await onFinalizeReport(reportHash);
+              }
+
+              setShowFinishConfirmation(false);
+              onComplete();
+            } catch (error) {
+              toast.error('❌ Error al finalizar corte', {
+                description: error instanceof Error ? error.message : 'No se pudo cerrar el corte en Supabase',
+              });
+            }
+          })();
         }}
         onCancel={() => setShowFinishConfirmation(false)}
       />

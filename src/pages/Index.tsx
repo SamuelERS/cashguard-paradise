@@ -78,6 +78,7 @@ const Index = () => {
   const {
     iniciarCorte,
     guardarProgreso,
+    finalizarCorte,
     error: syncError,
   } = useCorteSesion(syncSucursalId);
 
@@ -159,6 +160,21 @@ const Index = () => {
         console.warn('[Index] autosave falló (no-blocking):', err);
       });
   }, [guardarProgreso, syncSucursalId]);
+
+  const handleFinalizarCorte = useCallback(async (reporteHash: string) => {
+    if (!isSupabaseConfigured || !syncSucursalId) return;
+
+    setSyncEstado('sincronizando');
+    try {
+      await finalizarCorte(reporteHash);
+      setSyncEstado('sincronizado');
+      setUltimaSync(new Date().toISOString());
+    } catch (err: unknown) {
+      setSyncEstado('error');
+      console.warn('[Index] finalizarCorte falló:', err);
+      throw err;
+    }
+  }, [finalizarCorte, syncSucursalId]);
 
   const handleWizardComplete = async (data: {
     selectedStore: string;
@@ -495,6 +511,7 @@ const Index = () => {
         onFlowCancel={handleBackFromCounter} // 🤖 [IA] - SAFE-RETURN: Navegación segura en cancelación
         // 🤖 [IA] - DACC-CIERRE-SYNC-UX: Props sincronización Supabase
         onGuardarProgreso={currentMode === OperationMode.CASH_CUT ? handleGuardarProgreso : undefined}
+        onFinalizarCorte={currentMode === OperationMode.CASH_CUT ? handleFinalizarCorte : undefined}
         syncEstado={currentMode === OperationMode.CASH_CUT && syncSucursalId ? syncEstado : undefined}
         ultimaSync={ultimaSync}
         syncError={syncError}
