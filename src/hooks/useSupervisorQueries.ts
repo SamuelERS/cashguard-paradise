@@ -115,11 +115,25 @@ function toCorteConSucursal(raw: unknown): CorteConSucursal {
 }
 
 async function reconciliarCortesVencidos(fechaCorte: string): Promise<void> {
+  type RpcError = {
+    message: string;
+    code?: string;
+  };
+
+  const esFuncionNoDisponible = (error: RpcError): boolean => {
+    const message = error.message.toLowerCase();
+    return (
+      error.code === 'PGRST202' ||
+      message.includes('could not find the function public.reconciliar_cortes_vencidos') ||
+      message.includes('schema cache')
+    );
+  };
+
   const tablesConRpc = tables as unknown as {
     rpc?: (
       fn: 'reconciliar_cortes_vencidos',
       args: { p_fecha_corte: string },
-    ) => Promise<{ error: { message: string } | null }>;
+    ) => Promise<{ error: RpcError | null }>;
   };
 
   if (!tablesConRpc.rpc) return;
@@ -128,9 +142,17 @@ async function reconciliarCortesVencidos(fechaCorte: string): Promise<void> {
     p_fecha_corte: fechaCorte,
   });
 
-  if (rpcError) {
-    throw new Error(rpcError.message);
+  if (!rpcError) return;
+
+  if (esFuncionNoDisponible(rpcError)) {
+    console.warn(
+      '[supervisor] RPC reconciliar_cortes_vencidos no disponible; se continúa con consulta directa',
+      rpcError.code,
+    );
+    return;
   }
+
+  throw new Error(rpcError.message);
 }
 
 // ---------------------------------------------------------------------------
