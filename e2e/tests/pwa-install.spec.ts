@@ -131,10 +131,7 @@ test.describe('PWA Installation and Functionality @regression', () => {
     await context.setOffline(false);
   });
 
-  test('Install prompt behavior', async ({ page, browserName }) => {
-    // Skip for Firefox as it doesn't support install prompts
-    test.skip(browserName === 'firefox', 'Firefox does not support PWA install prompts');
-    
+  test('Install prompt behavior', async ({ page }) => {
     // Navigate to the app
     await page.goto('/');
     
