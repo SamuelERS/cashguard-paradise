@@ -103,17 +103,17 @@ export default defineConfig({
       }
     },
 
-    // 🤖 [IA] - OPERACIÓN ISLA RÁPIDA: Pool configuration para paralelismo estable
-    // Decisión: pool: 'forks' (preferido para estabilidad con librerías nativas)
-    // Alternativa: pool: 'threads' (más rápido, usar si no hay issues)
-    // Ref: docs/qa/tests/031-operacion-isla-rapida.md Tarea D
+    // 🤖 [IA] - ORDEN-DACC/FASE-2+3: Pool config — API Vitest 4 (poolOptions eliminado)
+    // Vitest 4 breaking change: poolOptions removido, opciones son ahora top-level
+    // Ref: https://vitest.dev/guide/migration#pool-rework
+    // maxForks → maxWorkers | minForks → eliminado | execArgv → top-level
     pool: 'forks',
-    poolOptions: {
-      forks: {
-        singleFork: false, // ⚠️ CAMBIADO: false para habilitar paralelismo real
-        maxForks: 4, // Límite razonable para evitar saturación
-        minForks: 1
-      }
-    }
+    maxWorkers: 2, // Reducido de 4: cada fork puede usar hasta 12GB → 2×12GB=24GB = límite máquina
+    // 🤖 [IA] - ORDEN-DACC/FASE-2: Fix OOM en fork processes
+    // Root cause: CashCalculation.test.tsx + jsdom + React infraestructura consume >8GB
+    // Fork processes heredan el límite default de Node.js (~4GB) → FATAL OOM a ~4085 MB
+    // execArgv top-level en Vitest 4 se propaga a CADA proceso hijo fork
+    // Aumentado de 8192 → 12288: test consume >8GB, máquina tiene 24GB RAM
+    execArgv: ['--max-old-space-size=12288'],
   },
 });
