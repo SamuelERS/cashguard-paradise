@@ -15,6 +15,7 @@ import { useNavigate } from 'react-router-dom';
 // 🤖 [IA] - v1.2.24 - FloatingParticles eliminado para mejorar rendimiento
 import { OperationMode, OPERATION_MODES } from '@/types/operation-mode';
 import { AppFooter } from '@/components/AppFooter';
+import './operation-selector.css';
 
 interface OperationSelectorProps {
   onSelectMode: (mode: OperationMode) => void;
@@ -37,7 +38,8 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.1 }}
           src="/logo-paradise.png"
-          alt="Acuarios Paradise"
+          alt=""
+          aria-hidden="true"
           style={{
             height: `clamp(40px, 10vw, 80px)`,
             width: 'auto',
@@ -49,7 +51,8 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.1 }}
           src="/productos-acuarios.png"
-          alt="Productos Paradise"
+          alt=""
+          aria-hidden="true"
           style={{
             height: `clamp(40px, 10vw, 80px)`,
             width: 'auto',
@@ -116,7 +119,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
             transition={{ delay: 0.1 }}
             whileHover={{ scale: 1.02 }}
             onClick={() => onSelectMode(OperationMode.CASH_COUNT)}
-            className="cursor-pointer group text-left w-full"
+            className="operation-card cursor-pointer group text-left w-full"
             style={{
               appearance: 'none',
               background: 'var(--glass-bg-primary)',
@@ -141,16 +144,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
                   backgroundClip: 'text'
                 }}
               />
-              <span 
-                className="rounded-full font-semibold"
-                style={{
-                  padding: 'clamp(2px, 0.9vw, 4px) clamp(7px, 2.8vw, 12px)',
-                  fontSize: `clamp(0.625rem, 2.5vw, 0.75rem)`,
-                  background: 'rgba(244, 165, 42, 0.2)',
-                  border: '1px solid rgba(244, 165, 42, 0.4)',
-                  color: '#ffb84d'
-                }}
-              >
+              <span className="operation-badge operation-badge--morning">
                 {cashCount.subtitle}
               </span>
             </div>
@@ -177,7 +171,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
                   height: `clamp(5px, 1.5vw, 6px)`,
                   background: '#f4a52a'
                 }} />
-                <span className="ops-feature-text">
+                <span className="operation-feature-text">
                   Verificación de cambio inicial ($50)
                 </span>
               </div>
@@ -187,17 +181,17 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
                   height: `clamp(5px, 1.5vw, 6px)`,
                   background: '#f4a52a'
                 }} />
-                <span className="ops-feature-text">
+                <span className="operation-feature-text">
                   Proceso simplificado de 2 fases
                 </span>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 operation-feature--mobile-optional">
                 <div className="rounded-full" style={{
                   width: `clamp(5px, 1.5vw, 6px)`,
                   height: `clamp(5px, 1.5vw, 6px)`,
                   background: '#f4a52a'
                 }} />
-                <span className="ops-feature-text">
+                <span className="operation-feature-text">
                   Ideal para cambio de turno matutino
                 </span>
               </div>
@@ -227,7 +221,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
             transition={{ delay: 0.2 }}
             whileHover={{ scale: 1.02 }}
             onClick={() => onSelectMode(OperationMode.CASH_CUT)}
-            className="cursor-pointer group text-left w-full"
+            className="operation-card cursor-pointer group text-left w-full"
             style={{
               appearance: 'none',
               background: 'var(--glass-bg-primary)',
@@ -252,16 +246,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
                   backgroundClip: 'text'
                 }}
               />
-              <span 
-                className="rounded-full font-semibold"
-                style={{
-                  padding: 'clamp(2px, 0.9vw, 4px) clamp(7px, 2.8vw, 12px)',
-                  fontSize: `clamp(0.625rem, 2.5vw, 0.75rem)`,
-                  background: 'rgba(10, 132, 255, 0.2)',
-                  border: '1px solid rgba(10, 132, 255, 0.4)',
-                  color: '#0a84ff'
-                }}
-              >
+              <span className="operation-badge operation-badge--night">
                 {cashCut.subtitle}
               </span>
             </div>
@@ -288,7 +273,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
                   height: `clamp(5px, 1.5vw, 6px)`,
                   background: '#0a84ff'
                 }} />
-                <span className="ops-feature-text">
+                <span className="operation-feature-text">
                   Comparación con venta esperada SICAR
                 </span>
               </div>
@@ -298,17 +283,17 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
                   height: `clamp(5px, 1.5vw, 6px)`,
                   background: '#0a84ff'
                 }} />
-                <span className="ops-feature-text">
+                <span className="operation-feature-text">
                   Proceso completo de 3 fases
                 </span>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 operation-feature--mobile-optional">
                 <div className="rounded-full" style={{
                   width: `clamp(5px, 1.5vw, 6px)`,
                   height: `clamp(5px, 1.5vw, 6px)`,
                   background: '#0a84ff'
                 }} />
-                <span className="ops-feature-text">
+                <span className="operation-feature-text">
                   Entrega de efectivo y reporte final
                 </span>
               </div>
@@ -338,7 +323,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
             transition={{ delay: 0.3 }}
             whileHover={{ scale: 1.02 }}
             onClick={() => onSelectMode(OperationMode.DELIVERY_VIEW)}
-            className="cursor-pointer group text-left w-full"
+            className="operation-card cursor-pointer group text-left w-full"
             style={{
               appearance: 'none',
               background: 'var(--glass-bg-primary)',
@@ -362,16 +347,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
                   backgroundClip: 'text'
                 }}
               />
-              <span 
-                className="rounded-full font-semibold"
-                style={{
-                  padding: 'clamp(2px, 0.9vw, 4px) clamp(7px, 2.8vw, 12px)',
-                  fontSize: `clamp(0.625rem, 2.5vw, 0.75rem)`,
-                  background: 'rgba(16, 185, 129, 0.2)',
-                  border: '1px solid rgba(16, 185, 129, 0.4)',
-                  color: '#10b981'
-                }}
-              >
+              <span className="operation-badge operation-badge--delivery">
                 {deliveryView.subtitle}
               </span>
             </div>
@@ -398,7 +374,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
                   height: `clamp(5px, 1.5vw, 6px)`,
                   background: '#10b981'
                 }} />
-                <span className="ops-feature-text">
+                <span className="operation-feature-text">
                   Vista completa de envíos activos
                 </span>
               </div>
@@ -408,17 +384,17 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
                   height: `clamp(5px, 1.5vw, 6px)`,
                   background: '#10b981'
                 }} />
-                <span className="ops-feature-text">
+                <span className="operation-feature-text">
                   Actualizar estados (pagado/cancelado)
                 </span>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 operation-feature--mobile-optional">
                 <div className="rounded-full" style={{
                   width: `clamp(5px, 1.5vw, 6px)`,
                   height: `clamp(5px, 1.5vw, 6px)`,
                   background: '#10b981'
                 }} />
-                <span className="ops-feature-text">
+                <span className="operation-feature-text">
                   Alertas automáticas de antigüedad
                 </span>
               </div>
@@ -447,7 +423,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
             transition={{ delay: 0.4 }}
             whileHover={{ scale: 1.02 }}
             onClick={() => navigate('/supervisor')}
-            className="cursor-pointer group text-left w-full"
+            className="operation-card cursor-pointer group text-left w-full"
             style={{
               appearance: 'none',
               background: 'var(--glass-bg-primary)',
@@ -471,16 +447,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
                   backgroundClip: 'text'
                 }}
               />
-              <span
-                className="rounded-full font-semibold"
-                style={{
-                  padding: 'clamp(2px, 0.9vw, 4px) clamp(7px, 2.8vw, 12px)',
-                  fontSize: `clamp(0.625rem, 2.5vw, 0.75rem)`,
-                  background: 'rgba(139, 92, 246, 0.2)',
-                  border: '1px solid rgba(139, 92, 246, 0.4)',
-                  color: '#8b5cf6'
-                }}
-              >
+              <span className="operation-badge operation-badge--supervisor">
                 Supervisión
               </span>
             </div>
@@ -507,7 +474,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
                   height: `clamp(5px, 1.5vw, 6px)`,
                   background: '#8b5cf6'
                 }} />
-                <span className="ops-feature-text">
+                <span className="operation-feature-text">
                   Cortes del día con semáforo de estado
                 </span>
               </div>
@@ -517,17 +484,17 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
                   height: `clamp(5px, 1.5vw, 6px)`,
                   background: '#8b5cf6'
                 }} />
-                <span className="ops-feature-text">
+                <span className="operation-feature-text">
                   Historial con filtros por fecha y sucursal
                 </span>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 operation-feature--mobile-optional">
                 <div className="rounded-full" style={{
                   width: `clamp(5px, 1.5vw, 6px)`,
                   height: `clamp(5px, 1.5vw, 6px)`,
                   background: '#8b5cf6'
                 }} />
-                <span className="ops-feature-text">
+                <span className="operation-feature-text">
                   Acceso protegido con PIN de supervisor
                 </span>
               </div>

@@ -1,0 +1,63 @@
+.operation-card {
+  appearance: none;
+  background: var(--glass-bg-primary);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  padding: clamp(20px, 7.4vw, 32px);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.operation-card:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 3px;
+}
+
+.operation-badge {
+  padding: clamp(2px, 0.9vw, 4px) clamp(7px, 2.8vw, 12px);
+  font-size: clamp(0.75rem, 2.8vw, 0.8125rem);
+  border-radius: 9999px;
+  border-width: 1px;
+  border-style: solid;
+  font-weight: 600;
+}
+
+.operation-badge--morning {
+  background: rgba(244, 165, 42, 0.2);
+  border-color: rgba(244, 165, 42, 0.45);
+  color: #ffd48a;
+}
+
+.operation-badge--night {
+  background: rgba(10, 132, 255, 0.22);
+  border-color: rgba(10, 132, 255, 0.5);
+  color: #bfe1ff;
+}
+
+.operation-badge--delivery {
+  background: rgba(16, 185, 129, 0.22);
+  border-color: rgba(16, 185, 129, 0.5);
+  color: #a6ffe0;
+}
+
+.operation-badge--supervisor {
+  background: rgba(139, 92, 246, 0.24);
+  border-color: rgba(139, 92, 246, 0.55);
+  color: #e0d2ff;
+}
+
+.operation-feature-text {
+  font-size: clamp(0.75rem, 3vw, 0.875rem);
+  color: #8899a6;
+}
+
+.operation-feature--mobile-optional {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .operation-feature--mobile-optional {
+    display: flex;
+  }
+}

@@ -106,4 +106,17 @@ describe('Delivery View Navigation', () => {
     expect(cashCutCard).toBeInTheDocument();
     expect(deliveryCard).toBeInTheDocument();
   });
+
+  it('logos decorativos no se anuncian a lectores de pantalla', () => {
+    const handleSelectMode = vi.fn();
+
+    render(
+      <MemoryRouter>
+        <OperationSelector onSelectMode={handleSelectMode} />
+      </MemoryRouter>
+    );
+
+    expect(screen.queryByRole('img', { name: /Acuarios Paradise/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('img', { name: /Productos Paradise/i })).not.toBeInTheDocument();
+  });
 });
