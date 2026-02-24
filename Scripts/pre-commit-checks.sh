@@ -12,6 +12,10 @@ NC='\033[0m'
 
 echo -e "${BLUE}🔍 Running pre-commit checks...${NC}"
 
+# 🤖 [IA] - ORDEN DACC/FASE-6: Hygiene guardrails (no .skip, no .bak artifacts)
+echo -e "${BLUE}Running hygiene checks...${NC}"
+bash Scripts/lint-hygiene.sh || exit 1
+
 # 🤖 [IA] - v3.1.0: Load local environment if exists
 if [ -f ".env.local" ]; then
     source .env.local

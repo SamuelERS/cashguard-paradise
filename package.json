@@ -22,7 +22,8 @@
     "test:e2e:regression": "npx playwright test --config=e2e/playwright.config.ts --grep @regression",
     "test:e2e:all": "npx playwright test --config=e2e/playwright.config.ts",
     "docker:test": "./Scripts/docker-test-commands.sh test",
-    "docker:test:build": "./Scripts/docker-test-commands.sh build"
+    "docker:test:build": "./Scripts/docker-test-commands.sh build",
+    "lint:hygiene": "bash Scripts/lint-hygiene.sh"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
