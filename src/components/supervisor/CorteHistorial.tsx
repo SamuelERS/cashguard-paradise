@@ -61,6 +61,7 @@ export function CorteHistorial() {
     () => ({
       fechaDesde: haceNDias(7),
       fechaHasta: hoyElSalvador(),
+      estado: 'TODOS',
       pagina: 1,
     }),
   );
@@ -73,6 +74,7 @@ export function CorteHistorial() {
     () => ({
       fechaDesde: haceNDias(7),
       fechaHasta: hoyElSalvador(),
+      estado: 'TODOS',
       pagina: 1,
     }),
     [],

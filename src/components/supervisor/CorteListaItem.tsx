@@ -22,20 +22,35 @@ export interface CorteListaItemProps {
 // ---------------------------------------------------------------------------
 
 /**
- * Formatea la hora de finalización en formato 12h (zona El Salvador).
+ * Formatea una hora operativa en formato 12h (zona El Salvador).
  * Retorna '—' si el campo es null o inválido.
  */
-function formatearHora(finalizadoAt: string | null): string {
-  if (!finalizadoAt) return '—';
+function formatearHora(timestamp: string | null): string {
+  if (!timestamp) return '—';
   try {
     return new Intl.DateTimeFormat('es', {
       timeZone: 'America/El_Salvador',
       hour: '2-digit',
       minute: '2-digit',
       hour12: true,
-    }).format(new Date(finalizadoAt));
+    }).format(new Date(timestamp));
   } catch {
     return '—';
+  }
+}
+
+function estadoBadgeClasses(estado: CorteConSucursal['estado']): string {
+  switch (estado) {
+    case 'FINALIZADO':
+      return 'border-sky-500/30 bg-sky-500/12 text-sky-300';
+    case 'EN_PROGRESO':
+      return 'border-emerald-500/30 bg-emerald-500/12 text-emerald-300';
+    case 'INICIADO':
+      return 'border-amber-500/30 bg-amber-500/12 text-amber-300';
+    case 'ABORTADO':
+      return 'border-rose-500/30 bg-rose-500/12 text-rose-300';
+    default:
+      return 'border-white/20 bg-white/10 text-white/70';
   }
 }
 
@@ -116,7 +131,11 @@ export function CorteListaItem({ corte, onClick }: CorteListaItemProps) {
     tieneAdvertenciasVerificacion: false,
   });
 
-  const hora = formatearHora(corte.finalizado_at);
+  const estadoVisible = corte.estado.replace(/_/g, ' ');
+  const esCorteCerrado = corte.estado === 'FINALIZADO' || corte.estado === 'ABORTADO';
+  const timestampOperativo = esCorteCerrado ? (corte.finalizado_at ?? corte.created_at) : corte.created_at;
+  const hora = formatearHora(timestampOperativo);
+  const etiquetaTemporal = esCorteCerrado ? 'Finalizado' : 'Creado';
   const nombreSucursal = corte.sucursales?.nombre ?? 'Sucursal no disponible';
 
   const diferenciaEsPositiva = diferencia >= 0;
@@ -130,7 +149,7 @@ export function CorteListaItem({ corte, onClick }: CorteListaItemProps) {
       type="button"
       onClick={() => onClick(corte.id)}
       className="w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl border border-white/10 bg-white/[0.04] hover:bg-white/[0.08] active:bg-white/[0.06] transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
-      aria-label={`Ver detalle del corte ${corte.correlativo} — ${nombreSucursal}, ${hora}`}
+      aria-label={`Ver detalle del corte ${corte.correlativo} — ${estadoVisible} — ${nombreSucursal}, ${etiquetaTemporal} ${hora}`}
     >
       {/* Semáforo */}
       <SemaforoIndicador color={colorSemaforo} razon={razonSemaforo} size="md" />
@@ -140,10 +159,20 @@ export function CorteListaItem({ corte, onClick }: CorteListaItemProps) {
 
       {/* Sucursal + cajero */}
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-white/90 truncate leading-tight">
-          {nombreSucursal}
-        </p>
+        <div className="flex items-center gap-2 min-w-0">
+          <p className="text-sm font-medium text-white/90 truncate leading-tight">
+            {nombreSucursal}
+          </p>
+          <span
+            className={`flex-shrink-0 px-2 py-0.5 rounded-full border text-[10px] font-semibold tracking-wide uppercase ${estadoBadgeClasses(corte.estado)}`}
+          >
+            {estadoVisible}
+          </span>
+        </div>
         <p className="text-xs text-white/50 truncate leading-tight mt-0.5">{corte.cajero}</p>
+        <p className="text-[11px] text-white/35 leading-tight mt-1">
+          {etiquetaTemporal} {hora}
+        </p>
       </div>
 
       {/* Totales */}

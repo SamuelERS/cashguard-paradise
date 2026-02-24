@@ -55,6 +55,9 @@ export function CortesDelDia() {
 
   const [cortes, setCortes] = useState<CorteConSucursal[]>([]);
   const [ultimaActualizacion, setUltimaActualizacion] = useState<Date | null>(null);
+  const activos = cortes.filter(corte => corte.estado === 'INICIADO' || corte.estado === 'EN_PROGRESO');
+  const finalizados = cortes.filter(corte => corte.estado === 'FINALIZADO');
+  const hayActividad = activos.length > 0 || finalizados.length > 0;
 
   // ── Carga de datos ────────────────────────────────────────────────────────
 
@@ -166,33 +169,63 @@ export function CortesDelDia() {
         </div>
       )}
 
-      {/* Lista de cortes o estado vacío */}
-      {cortes.length === 0 ? (
+      {/* Actividad del día o estado vacío */}
+      {!hayActividad ? (
         <div className="flex flex-col items-center justify-center py-12 gap-3 text-center">
           <div className="h-12 w-12 rounded-full bg-white/[0.04] flex items-center justify-center">
             <span className="text-white/30 text-xl" aria-hidden="true">○</span>
           </div>
           <div>
-            <p className="text-sm font-medium text-white/60">Sin cortes finalizados</p>
+            <p className="text-sm font-medium text-white/60">Sin actividad de cortes hoy</p>
             <p className="text-xs text-white/30 mt-1">
-              Los cortes del día aparecerán aquí al finalizarse.
+              Los cortes activos y finalizados del día aparecerán aquí.
             </p>
           </div>
         </div>
       ) : (
-        <ul className="flex flex-col gap-2" role="list" aria-label="Lista de cortes del día">
-          {cortes.map((corte) => (
-            <li key={corte.id}>
-              <CorteListaItem corte={corte} onClick={irADetalle} />
-            </li>
-          ))}
-        </ul>
+        <div className="flex flex-col gap-4">
+          {activos.length > 0 && (
+            <section className="flex flex-col gap-2" aria-label="Activos ahora">
+              <div className="flex items-center justify-between px-1">
+                <h3 className="text-sm font-semibold text-emerald-300/90">Activos ahora</h3>
+                <span className="text-xs text-white/40">
+                  {activos.length} {activos.length === 1 ? 'corte' : 'cortes'}
+                </span>
+              </div>
+              <ul className="flex flex-col gap-2" role="list" aria-label="Lista de cortes activos">
+                {activos.map(corte => (
+                  <li key={corte.id}>
+                    <CorteListaItem corte={corte} onClick={irADetalle} />
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+          {finalizados.length > 0 && (
+            <section className="flex flex-col gap-2" aria-label="Finalizados hoy">
+              <div className="flex items-center justify-between px-1">
+                <h3 className="text-sm font-semibold text-sky-300/90">Finalizados hoy</h3>
+                <span className="text-xs text-white/40">
+                  {finalizados.length} {finalizados.length === 1 ? 'corte' : 'cortes'}
+                </span>
+              </div>
+              <ul className="flex flex-col gap-2" role="list" aria-label="Lista de cortes finalizados hoy">
+                {finalizados.map(corte => (
+                  <li key={corte.id}>
+                    <CorteListaItem corte={corte} onClick={irADetalle} />
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+        </div>
       )}
 
       {/* Pie: conteo total */}
-      {cortes.length > 0 && (
+      {hayActividad && (
         <p className="text-xs text-white/30 text-center pt-1">
-          {cortes.length} {cortes.length === 1 ? 'corte' : 'cortes'} finalizados hoy
+          {activos.length} activos · {finalizados.length} finalizados hoy
         </p>
       )}
     </div>

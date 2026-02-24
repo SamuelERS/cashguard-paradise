@@ -51,6 +51,7 @@ export function FiltrosHistorial({
   const [fechaHasta, setFechaHasta] = useState(filtrosIniciales.fechaHasta);
   const [sucursalId, setSucursalId] = useState(filtrosIniciales.sucursalId ?? '');
   const [cajero, setCajero] = useState(filtrosIniciales.cajero ?? '');
+  const [estado, setEstado] = useState(filtrosIniciales.estado ?? 'TODOS');
 
   // ── Handlers ──────────────────────────────────────────────────────────────
 
@@ -60,6 +61,7 @@ export function FiltrosHistorial({
       fechaHasta,
       sucursalId: sucursalId || undefined,
       cajero: cajero.trim() || undefined,
+      estado,
       pagina: 1,
     });
   }
@@ -110,6 +112,22 @@ export function FiltrosHistorial({
               {s.nombre}
             </option>
           ))}
+        </select>
+      </label>
+
+      {/* Estado */}
+      <label className="flex flex-col gap-1">
+        <span className="text-xs text-white/50">Estado</span>
+        <select
+          value={estado}
+          onChange={e => setEstado(e.target.value as FiltrosHistorialType['estado'])}
+          className="bg-white/[0.06] border border-white/10 rounded-lg px-3 py-1.5 text-sm text-white/80 focus:outline-none focus:ring-2 focus:ring-white/20 [color-scheme:dark]"
+        >
+          <option value="TODOS">Todos</option>
+          <option value="EN_PROGRESO">En progreso</option>
+          <option value="INICIADO">Iniciado</option>
+          <option value="FINALIZADO">Finalizado</option>
+          <option value="ABORTADO">Abortado</option>
         </select>
       </label>
 

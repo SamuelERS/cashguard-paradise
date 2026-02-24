@@ -5,7 +5,7 @@
 
 import { useState, useCallback } from 'react';
 import { tables } from '../lib/supabase';
-import type { Corte, Sucursal } from '../types/auditoria';
+import type { Corte, EstadoCorte, Sucursal } from '../types/auditoria';
 
 // ---------------------------------------------------------------------------
 // 1. Constantes
@@ -41,6 +41,8 @@ export interface FiltrosHistorial {
   sucursalId?: string;
   /** Nombre exacto del cajero (opcional). */
   cajero?: string;
+  /** Estado a consultar en historial (`TODOS` incluye cortes no finalizados). */
+  estado?: 'TODOS' | EstadoCorte;
   /** Número de página 1-based (default: 1). */
   pagina?: number;
 }
@@ -154,28 +156,53 @@ export function useSupervisorQueries(): UseSupervisorQueriesReturn {
   // ── Query 1: Cortes del día ────────────────────────────────────────────────
 
   /**
-   * Obtiene todos los cortes FINALIZADOS del día actual (timezone El Salvador),
-   * ordenados por finalizado_at DESC con datos de sucursal embebidos.
+   * Obtiene actividad de cortes del día actual (timezone El Salvador):
+   * - Finalizados por finalizado_at
+   * - Activos (INICIADO / EN_PROGRESO) por created_at
+   * Devuelve una única lista ordenada por timestamp operativo DESC.
    */
   const obtenerCortesDelDia = useCallback(async (): Promise<CorteConSucursal[]> => {
     iniciarQuery();
     try {
       const { inicio, fin } = getRangoDiaElSalvador();
 
-      const { data, error: supabaseError } = await tables
-        .cortes()
-        .select('*, sucursales(id, nombre, codigo, activa)')
-        .eq('estado', 'FINALIZADO')
-        .gte('finalizado_at', inicio)
-        .lte('finalizado_at', fin)
-        .order('finalizado_at', { ascending: false });
+      const [finalizadosRes, activosRes] = await Promise.all([
+        tables
+          .cortes()
+          .select('*, sucursales(id, nombre, codigo, activa)')
+          .eq('estado', 'FINALIZADO')
+          .gte('finalizado_at', inicio)
+          .lte('finalizado_at', fin)
+          .order('finalizado_at', { ascending: false }),
+        tables
+          .cortes()
+          .select('*, sucursales(id, nombre, codigo, activa)')
+          .in('estado', ['INICIADO', 'EN_PROGRESO'])
+          .gte('created_at', inicio)
+          .lte('created_at', fin)
+          .order('created_at', { ascending: false }),
+      ]);
 
-      if (supabaseError) {
-        throw new Error(supabaseError.message);
+      if (finalizadosRes.error) {
+        throw new Error(finalizadosRes.error.message);
       }
 
+      if (activosRes.error) {
+        throw new Error(activosRes.error.message);
+      }
+
+      const merged = [...(activosRes.data ?? []), ...(finalizadosRes.data ?? [])]
+        .map(toCorteConSucursal)
+        .sort((a, b) => {
+          const timeA = Date.parse(a.finalizado_at ?? a.created_at);
+          const timeB = Date.parse(b.finalizado_at ?? b.created_at);
+          const safeA = Number.isFinite(timeA) ? timeA : 0;
+          const safeB = Number.isFinite(timeB) ? timeB : 0;
+          return safeB - safeA;
+        });
+
       finalizarQuery();
-      return (data ?? []).map(toCorteConSucursal);
+      return merged;
     } catch (err) {
       const e = err instanceof Error ? err : new Error('Error inesperado al obtener cortes del día');
       finalizarQuery(e);
@@ -227,14 +254,29 @@ export function useSupervisorQueries(): UseSupervisorQueriesReturn {
       const rangoDesde = fechaAISORange(filtros.fechaDesde);
       const rangoHasta = fechaAISORange(filtros.fechaHasta);
 
+      const estadoFiltro = filtros.estado ?? 'TODOS';
+
       let query = tables
         .cortes()
         .select('*, sucursales(id, nombre, codigo, activa)', { count: 'exact' })
-        .eq('estado', 'FINALIZADO')
-        .gte('finalizado_at', rangoDesde.inicio)
-        .lte('finalizado_at', rangoHasta.fin)
-        .order('finalizado_at', { ascending: false })
         .range(desde, hasta);
+
+      if (estadoFiltro === 'FINALIZADO') {
+        query = query
+          .eq('estado', 'FINALIZADO')
+          .gte('finalizado_at', rangoDesde.inicio)
+          .lte('finalizado_at', rangoHasta.fin)
+          .order('finalizado_at', { ascending: false });
+      } else {
+        query = query
+          .gte('created_at', rangoDesde.inicio)
+          .lte('created_at', rangoHasta.fin)
+          .order('created_at', { ascending: false });
+
+        if (estadoFiltro !== 'TODOS') {
+          query = query.eq('estado', estadoFiltro);
+        }
+      }
 
       if (filtros.sucursalId) {
         query = query.eq('sucursal_id', filtros.sucursalId);

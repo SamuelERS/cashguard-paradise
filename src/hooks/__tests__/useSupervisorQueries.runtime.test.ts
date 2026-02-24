@@ -27,23 +27,38 @@ type SupabaseResult = {
  * un query se resuelve antes que el otro (concurrencia real).
  */
 function buildControlledMocks() {
-  let resolveCortes!: (val: SupabaseResult) => void;
+  let resolveCortesFinalizados!: (val: SupabaseResult) => void;
+  let resolveCortesActivos!: (val: SupabaseResult) => void;
   let resolveSucursales!: (val: SupabaseResult) => void;
 
-  const cortesPromise = new Promise<SupabaseResult>((res) => {
-    resolveCortes = res;
+  const cortesFinalizadosPromise = new Promise<SupabaseResult>((res) => {
+    resolveCortesFinalizados = res;
+  });
+  const cortesActivosPromise = new Promise<SupabaseResult>((res) => {
+    resolveCortesActivos = res;
   });
   const sucursalesPromise = new Promise<SupabaseResult>((res) => {
     resolveSucursales = res;
   });
 
-  // cortes(): .select().eq().gte().lte().order() → SupabaseResult
-  const cortesOrderMock = vi.fn(() => cortesPromise);
-  const cortesLteMock = vi.fn(() => ({ order: cortesOrderMock }));
-  const cortesGteMock = vi.fn(() => ({ lte: cortesLteMock }));
-  const cortesEqMock = vi.fn(() => ({ gte: cortesGteMock }));
-  const cortesSelectMock = vi.fn(() => ({ eq: cortesEqMock }));
-  const cortesMock = vi.fn(() => ({ select: cortesSelectMock }));
+  // cortes() #1: .select().eq().gte().lte().order() → finalizados
+  const cortesFinalizadosOrderMock = vi.fn(() => cortesFinalizadosPromise);
+  const cortesFinalizadosLteMock = vi.fn(() => ({ order: cortesFinalizadosOrderMock }));
+  const cortesFinalizadosGteMock = vi.fn(() => ({ lte: cortesFinalizadosLteMock }));
+  const cortesFinalizadosEqMock = vi.fn(() => ({ gte: cortesFinalizadosGteMock }));
+  const cortesFinalizadosSelectMock = vi.fn(() => ({ eq: cortesFinalizadosEqMock }));
+
+  // cortes() #2: .select().in().gte().lte().order() → activos
+  const cortesActivosOrderMock = vi.fn(() => cortesActivosPromise);
+  const cortesActivosLteMock = vi.fn(() => ({ order: cortesActivosOrderMock }));
+  const cortesActivosGteMock = vi.fn(() => ({ lte: cortesActivosLteMock }));
+  const cortesActivosInMock = vi.fn(() => ({ gte: cortesActivosGteMock }));
+  const cortesActivosSelectMock = vi.fn(() => ({ in: cortesActivosInMock }));
+
+  const cortesMock = vi
+    .fn()
+    .mockReturnValueOnce({ select: cortesFinalizadosSelectMock })
+    .mockReturnValueOnce({ select: cortesActivosSelectMock });
 
   // sucursales(): .select().eq().order() → SupabaseResult
   const sucursalesOrderMock = vi.fn(() => sucursalesPromise);
@@ -54,7 +69,8 @@ function buildControlledMocks() {
   return {
     cortesMock,
     sucursalesMock,
-    resolveCortes,
+    resolveCortesFinalizados,
+    resolveCortesActivos,
     resolveSucursales,
   };
 }
@@ -73,7 +89,7 @@ describe('useSupervisorQueries — concurrencia runtime', () => {
   });
 
   it('cargando permanece true hasta que AMBOS queries concurrentes resuelven', async () => {
-    const { cortesMock, sucursalesMock, resolveCortes, resolveSucursales } =
+    const { cortesMock, sucursalesMock, resolveCortesFinalizados, resolveCortesActivos, resolveSucursales } =
       buildControlledMocks();
 
     vi.doMock('@/lib/supabase', () => ({
@@ -111,9 +127,15 @@ describe('useSupervisorQueries — concurrencia runtime', () => {
     // Un query pendiente → cargando sigue true
     expect(result.current.cargando).toBe(true);
 
-    // Resolver cortes
+    // Resolver SOLO finalizados de cortes (activos sigue pendiente)
     await act(async () => {
-      resolveCortes({ data: [], error: null });
+      resolveCortesFinalizados({ data: [], error: null });
+    });
+    expect(result.current.cargando).toBe(true);
+
+    // Resolver activos de cortes
+    await act(async () => {
+      resolveCortesActivos({ data: [], error: null });
     });
     await act(async () => { await cortesResult; });
 
@@ -129,7 +151,7 @@ describe('useSupervisorQueries — concurrencia runtime', () => {
     //   A y B inician juntos → A falla → B sigue pendiente → error de A visible.
     // Bug anterior: iniciarQuery() hacía setError(null) sin importar si
     // había queries ya en vuelo, borrando errores de queries concurrentes.
-    const { cortesMock, sucursalesMock, resolveCortes, resolveSucursales } =
+    const { cortesMock, sucursalesMock, resolveCortesFinalizados, resolveCortesActivos, resolveSucursales } =
       buildControlledMocks();
 
     vi.doMock('@/lib/supabase', () => ({
@@ -154,9 +176,10 @@ describe('useSupervisorQueries — concurrencia runtime', () => {
       expect(result.current.cargando).toBe(true);
     });
 
-    // Query A (cortes) FALLA mientras B sigue pendiente
+    // Query A (cortes) termina con error mientras B sigue pendiente
     await act(async () => {
-      resolveCortes({ data: null, error: { message: 'Timeout en cortes' } });
+      resolveCortesFinalizados({ data: null, error: { message: 'Timeout en cortes' } });
+      resolveCortesActivos({ data: [], error: null });
     });
     await act(async () => { await cortesResult; });
 

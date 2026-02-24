@@ -29,22 +29,26 @@ const bloqueHistorial = extraerBloque('Query 3: Historial filtrado', 'Query 4: L
 // ---------------------------------------------------------------------------
 
 describe('useSupervisorQueries — filtros de fecha', () => {
-  it('obtenerCortesDelDia filtra rango por finalizado_at (no created_at)', () => {
-    // Los cortes FINALIZADOS del día se buscan por la fecha en que se finalizaron,
-    // no por la fecha en que se crearon. Un corte creado ayer y finalizado hoy
-    // debe aparecer en "Cortes de hoy".
+  it('obtenerCortesDelDia combina finalizado_at y created_at por tipo de actividad', () => {
+    // Actividad de hoy:
+    // - FINALIZADO se filtra por finalizado_at
+    // - INICIADO/EN_PROGRESO se filtran por created_at
     expect(bloqueCortesDelDia).toMatch(/\.gte\(\s*['"]finalizado_at['"]/);
     expect(bloqueCortesDelDia).toMatch(/\.lte\(\s*['"]finalizado_at['"]/);
-    expect(bloqueCortesDelDia).not.toMatch(/\.gte\(\s*['"]created_at['"]/);
-    expect(bloqueCortesDelDia).not.toMatch(/\.lte\(\s*['"]created_at['"]/);
+    expect(bloqueCortesDelDia).toMatch(/\.gte\(\s*['"]created_at['"]/);
+    expect(bloqueCortesDelDia).toMatch(/\.lte\(\s*['"]created_at['"]/);
+    expect(bloqueCortesDelDia).toMatch(/\.in\(\s*['"]estado['"]\s*,\s*\[\s*['"]INICIADO['"]\s*,\s*['"]EN_PROGRESO['"]\s*\]\s*\)/);
   });
 
-  it('obtenerHistorial filtra rango por finalizado_at (no created_at)', () => {
-    // Misma lógica: el historial busca cortes finalizados en un rango de fechas.
+  it('obtenerHistorial soporta rango por finalizado_at y created_at según estado', () => {
+    // Historial inteligente:
+    // - FINALIZADO usa finalizado_at
+    // - TODOS / estados no finalizados usan created_at
+    expect(bloqueHistorial).toMatch(/estadoFiltro\s*===\s*['"]FINALIZADO['"]/);
     expect(bloqueHistorial).toMatch(/\.gte\(\s*['"]finalizado_at['"]/);
     expect(bloqueHistorial).toMatch(/\.lte\(\s*['"]finalizado_at['"]/);
-    expect(bloqueHistorial).not.toMatch(/\.gte\(\s*['"]created_at['"]/);
-    expect(bloqueHistorial).not.toMatch(/\.lte\(\s*['"]created_at['"]/);
+    expect(bloqueHistorial).toMatch(/\.gte\(\s*['"]created_at['"]/);
+    expect(bloqueHistorial).toMatch(/\.lte\(\s*['"]created_at['"]/);
   });
 });
 
