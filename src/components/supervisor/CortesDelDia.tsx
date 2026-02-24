@@ -56,7 +56,9 @@ export function CortesDelDia() {
   const [cortes, setCortes] = useState<CorteConSucursal[]>([]);
   const [ultimaActualizacion, setUltimaActualizacion] = useState<Date | null>(null);
   const activos = cortes.filter(corte => corte.estado === 'INICIADO' || corte.estado === 'EN_PROGRESO');
-  const finalizados = cortes.filter(corte => corte.estado === 'FINALIZADO');
+  const finalizados = cortes.filter(
+    corte => corte.estado === 'FINALIZADO' || corte.estado === 'ABORTADO',
+  );
   const hayActividad = activos.length > 0 || finalizados.length > 0;
 
   // ── Carga de datos ────────────────────────────────────────────────────────

@@ -85,7 +85,14 @@ export type Database = {
       };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      reconciliar_cortes_vencidos: {
+        Args: {
+          p_fecha_corte?: string;
+        };
+        Returns: number;
+      };
+    };
     Enums: Record<string, never>;
   };
 };
@@ -142,6 +149,10 @@ export const tables = {
   empleados: () => supabase.from('empleados'),
   empleadoSucursales: () => supabase.from('empleado_sucursales'),
   corteConteoSnapshots: () => supabase.from('corte_conteo_snapshots'),
+  rpc: (
+    fn: keyof Database['public']['Functions'],
+    args: Database['public']['Functions'][keyof Database['public']['Functions']]['Args'],
+  ) => supabase.rpc(fn, args),
 } as const;
 
 // ---------------------------------------------------------------------------

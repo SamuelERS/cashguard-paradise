@@ -43,4 +43,17 @@ describe('Supabase migrations contract', () => {
     const sql = readAllMigrations();
     expect(sql).toMatch(/chk_cajero_testigo_distintos/i);
   });
+
+  it('incluye constraint que obliga finalizado_at en estados terminales', () => {
+    const sql = readAllMigrations();
+    expect(sql).toMatch(/chk_cortes_terminal_timestamp/i);
+    expect(sql).toMatch(/estado\s+in\s*\(\s*'FINALIZADO'\s*,\s*'ABORTADO'\s*\)\s+and\s+finalizado_at\s+is\s+not\s+null/i);
+  });
+
+  it('incluye función de reconciliación diaria de cortes vencidos', () => {
+    const sql = readAllMigrations();
+    expect(sql).toMatch(/create\s+or\s+replace\s+function\s+public\.reconciliar_cortes_vencidos/i);
+    expect(sql).toMatch(/set\s+estado\s*=\s*'ABORTADO'/i);
+    expect(sql).toMatch(/finalizado_at\s*=\s*coalesce\s*\(\s*finalizado_at\s*,\s*now\(\)\s*\)/i);
+  });
 });

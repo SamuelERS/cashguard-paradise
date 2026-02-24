@@ -114,6 +114,25 @@ function toCorteConSucursal(raw: unknown): CorteConSucursal {
   return raw as CorteConSucursal;
 }
 
+async function reconciliarCortesVencidos(fechaCorte: string): Promise<void> {
+  const tablesConRpc = tables as unknown as {
+    rpc?: (
+      fn: 'reconciliar_cortes_vencidos',
+      args: { p_fecha_corte: string },
+    ) => Promise<{ error: { message: string } | null }>;
+  };
+
+  if (!tablesConRpc.rpc) return;
+
+  const { error: rpcError } = await tablesConRpc.rpc('reconciliar_cortes_vencidos', {
+    p_fecha_corte: fechaCorte,
+  });
+
+  if (rpcError) {
+    throw new Error(rpcError.message);
+  }
+}
+
 // ---------------------------------------------------------------------------
 // 4. Hook principal
 // ---------------------------------------------------------------------------
@@ -165,6 +184,7 @@ export function useSupervisorQueries(): UseSupervisorQueriesReturn {
     iniciarQuery();
     try {
       const { inicio, fin } = getRangoDiaElSalvador();
+      await reconciliarCortesVencidos(inicio.slice(0, 10));
 
       const [finalizadosRes, activosRes] = await Promise.all([
         tables
@@ -253,6 +273,7 @@ export function useSupervisorQueries(): UseSupervisorQueriesReturn {
     try {
       const rangoDesde = fechaAISORange(filtros.fechaDesde);
       const rangoHasta = fechaAISORange(filtros.fechaHasta);
+      await reconciliarCortesVencidos(filtros.fechaHasta);
 
       const estadoFiltro = filtros.estado ?? 'TODOS';
 
