@@ -29,8 +29,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-// 🤖 [IA] - v1.2.19: Importado ConfirmationModal estandarizado para modal de confirmación
-import { ConfirmationModal } from "@/components/ui/confirmation-modal";
+import { AbortCorteModal } from "@/components/ui/abort-corte-modal";
 // 🤖 [IA] - v1.3.0: Reemplazado botones nativos con componentes Button para estandarización
 import { Button } from "@/components/ui/button";
 // 🤖 [IA] - v1.2.19: Agregados botones de acción para modal de confirmación ROJO/VERDE
@@ -56,6 +55,7 @@ interface Phase2ManagerProps {
   deliveryCalculation: DeliveryCalculation;
   onPhase2Complete: () => void;
   onBack: () => void;
+  onAbortFlow?: (motivo: string) => Promise<void> | void;
   onDeliveryCalculationUpdate?: (updates: Partial<DeliveryCalculation>) => void; // 🤖 [IA] - v1.3.6N: Callback para actualizar deliveryCalculation.verificationBehavior en usePhaseManager
 }
 
@@ -63,6 +63,7 @@ export function Phase2Manager({
   deliveryCalculation,
   onPhase2Complete,
   onBack,
+  onAbortFlow,
   onDeliveryCalculationUpdate // 🤖 [IA] - v1.3.6N: Callback para actualizar state en usePhaseManager
 }: Phase2ManagerProps) {
   const [currentSection, setCurrentSection] = useState<'delivery' | 'verification'>('delivery');
@@ -96,6 +97,19 @@ export function Phase2Manager({
   const handleInstructionsCancelRequest = () => {
     setShowInstructionsCancelConfirmation(true);
   };
+
+  const handleAbortFromPhase2 = useCallback(async (motivo: string) => {
+    setShowExitConfirmation(false);
+    setShowInstructionsCancelConfirmation(false);
+    setShowInstructionsModal(false);
+
+    if (onAbortFlow) {
+      await onAbortFlow(motivo);
+      return;
+    }
+
+    onBack();
+  }, [onAbortFlow, onBack]);
 
   // 🤖 [IA] - v1.2.26: Inicialización del checklist con revelación progresiva
   useEffect(() => {
@@ -420,16 +434,15 @@ export function Phase2Manager({
         </div>
       </div>
 
-      {/* 🤖 [IA] - v1.2.19: Modal de confirmación migrado a ConfirmationModal estandarizado */}
-      <ConfirmationModal
+      <AbortCorteModal
         open={showExitConfirmation}
         onOpenChange={setShowExitConfirmation}
-        title="¿Confirmar salida?"
-        description="Se perderá todo el progreso del conteo actual."
-        warningText="Esta acción no se puede deshacer."
-        confirmText="Sí, volver al inicio"
+        title="¿Cancelar corte actual?"
+        description="Si continúas, el corte se marcará como ABORTADO y deberás iniciar uno nuevo."
+        warningText="Debes registrar el motivo de la cancelación."
+        confirmText="Confirmar cancelación"
         cancelText="Continuar aquí"
-        onConfirm={onBack}
+        onConfirm={handleAbortFromPhase2}
         onCancel={() => setShowExitConfirmation(false)}
       />
 
@@ -534,20 +547,15 @@ export function Phase2Manager({
       </DialogContent>
     </Dialog>
 
-    {/* 🤖 [IA] - Modal de confirmación para cancelar instrucciones */}
-    <ConfirmationModal
+    <AbortCorteModal
       open={showInstructionsCancelConfirmation}
       onOpenChange={setShowInstructionsCancelConfirmation}
       title="¿Cancelar proceso de preparación?"
-      description="Se perderá el progreso del checklist actual."
-      warningText="Deberá reiniciar el proceso desde el principio."
-      confirmText="Sí, cancelar"
+      description="Si continúas, se abortará el corte en progreso y deberás iniciar uno nuevo."
+      warningText="Debes indicar el motivo de cancelación del proceso."
+      confirmText="Confirmar cancelación"
       cancelText="Continuar aquí"
-      onConfirm={() => {
-        setShowInstructionsCancelConfirmation(false);
-        setShowInstructionsModal(false);
-        onBack();
-      }}
+      onConfirm={handleAbortFromPhase2}
       onCancel={() => setShowInstructionsCancelConfirmation(false)}
     />
     </>

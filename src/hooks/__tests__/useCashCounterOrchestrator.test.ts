@@ -316,4 +316,25 @@ describe('useCashCounterOrchestrator — skipWizard', () => {
     expect(mockUseEmpleadosSucursal).toHaveBeenCalledWith(null);
     expect(result.current.availableEmployees).toEqual([]);
   });
+
+  it('handleAbortFlow usa onFlowCancel con motivo y no dispara onBack', async () => {
+    const onBack = vi.fn();
+    const onFlowCancel = vi.fn().mockResolvedValue(undefined);
+
+    const { result } = renderHook(() =>
+      useCashCounterOrchestrator(
+        defaultOptions({
+          onBack,
+          onFlowCancel,
+        }),
+      ),
+    );
+
+    await act(async () => {
+      await result.current.handleAbortFlow('Cajero solicita reinicio por conteo inconsistente');
+    });
+
+    expect(onFlowCancel).toHaveBeenCalledWith('Cajero solicita reinicio por conteo inconsistente');
+    expect(onBack).not.toHaveBeenCalled();
+  });
 });

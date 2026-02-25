@@ -23,7 +23,7 @@ export interface InitialWizardModalProps {
   /** [IA] - CASO-SANN-R2: Callback cuando usuario elige reanudar sesión activa */
   onResumeSession?: () => void;
   /** [IA] - CASO-SANN-R2: Callback cuando usuario elige abortar sesión activa */
-  onAbortSession?: () => void;
+  onAbortSession?: (motivo: string) => void | Promise<void>;
   /** [IA] - R3-B2: Info enriquecida de sesión activa para mostrar identificador en Step 5 */
   activeSessionInfo?: {
     correlativo: string | null;
@@ -85,7 +85,7 @@ export interface Step5Props extends WizardStepProps {
   // [IA] - CASO-SANN-R2: Props para panel de sesión activa (bloqueo anti-fraude en Step 5)
   hasActiveSession?: boolean;
   onResumeSession?: () => void;
-  onAbortSession?: () => void;
+  onAbortSession?: (motivo: string) => void | Promise<void>;
   /** [IA] - R3-B2: Info enriquecida de sesión activa para mostrar identificador en Step 5 */
   activeSessionInfo?: {
     correlativo: string | null;

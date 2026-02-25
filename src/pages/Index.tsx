@@ -112,6 +112,7 @@ const Index = () => {
     iniciarCorte,
     guardarProgreso,
     finalizarCorte,
+    abortarCorte,
     error: syncError,
   } = useCorteSesion(syncSucursalId);
 
@@ -347,7 +348,7 @@ const Index = () => {
     }
   };
 
-  const handleBackFromCounter = () => {
+  const handleBackFromCounter = useCallback(() => {
     setShowCashCounter(false);
     setShowCorteInicio(false); // 🤖 [IA] - DIRM V2 Task 5: reset CorteOrquestador
     setSkipWizardOnResume(false); // 🤖 [IA] - ORDEN #25 M2: reset flag al volver de reanudación
@@ -362,7 +363,27 @@ const Index = () => {
     setUltimaSync(null);
     setSyncEstado('sincronizado');
     resetMode(); // 🤖 [IA] - v1.0.81 - Resetear modo al volver
-  };
+  }, [resetMode]);
+
+  const handleFlowCancel = useCallback(async (motivo?: string) => {
+    const motivoFinal = motivo?.trim() || 'Corte abortado por usuario desde flujo de conteo';
+
+    if (isSupabaseConfigured && syncSucursalId) {
+      try {
+        await abortarCorte(motivoFinal);
+      } catch (err: unknown) {
+        console.warn('[Index] abortarCorte (onFlowCancel) falló:', err);
+        if (esErrorDeRed(err)) {
+          toast.error('No hay conexión con Supabase. Verifique internet y reintente.');
+          return;
+        }
+        toast.error('No se pudo cancelar el corte. Intente nuevamente.');
+        return;
+      }
+    }
+
+    handleBackFromCounter();
+  }, [abortarCorte, handleBackFromCounter, syncSucursalId]);
 
   // [IA] - R3-B1 GREEN: Handler reanudar sesión — llama recuperarSesion y salta wizard a CashCounter
   const handleResumeSession = useCallback(async () => {
@@ -418,7 +439,7 @@ const Index = () => {
 
   // [IA] - CASO-SANN-R2: Handler abortar sesión — marca ABORTADO en Supabase y desbloquea
   // [IA] - R3-B5 FIX: Cleanup de estado SOLO en éxito; re-throw en error para que Step5 muestre toast.error
-  const handleAbortSession = useCallback(async () => {
+  const handleAbortSession = useCallback(async (motivo: string) => {
     try {
       const corteActivo = await recuperarSesionActiva();
       if (!corteActivo) {
@@ -429,7 +450,8 @@ const Index = () => {
         return;
       }
 
-      await abortarCorteActivo('Sesión abortada por usuario desde wizard');
+      const motivoFinal = motivo.trim() || 'Sesión abortada por usuario desde wizard';
+      await abortarCorteActivo(motivoFinal);
       setActiveSessionInfo(null);
       setActiveCashCutSucursalId(null);
       setHasActiveCashCutSession(false);
@@ -616,7 +638,7 @@ const Index = () => {
         initialCashCount={initialCashCount} // 🤖 [IA] - ORDEN #27 M4: conteo parcial desde datos_conteo
         initialElectronicPayments={initialElectronicPayments} // 🤖 [IA] - ORDEN #27 M4: pagos desde datos_conteo
         onBack={handleBackFromCounter}
-        onFlowCancel={handleBackFromCounter} // 🤖 [IA] - SAFE-RETURN: Navegación segura en cancelación
+        onFlowCancel={handleFlowCancel} // 🤖 [IA] - CANCEL-SYNC: cancelar flujo aborta sesión en Supabase antes de navegar
         // 🤖 [IA] - DACC-CIERRE-SYNC-UX: Props sincronización Supabase
         onGuardarProgreso={currentMode === OperationMode.CASH_CUT ? handleGuardarProgreso : undefined}
         onFinalizarCorte={currentMode === OperationMode.CASH_CUT ? handleFinalizarCorte : undefined}

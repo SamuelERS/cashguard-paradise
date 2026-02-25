@@ -1,4 +1,5 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { Step5SicarInput } from '../Step5SicarInput';
 
@@ -37,7 +38,10 @@ describe('Step5SicarInput', () => {
     expect(screen.getByText('Adonay Torres')).toBeInTheDocument();
   });
 
-  it('usa copy consistente en modal de abortar sesión activa', () => {
+  it('requiere motivo para confirmar cancelación de sesión activa', async () => {
+    const user = userEvent.setup();
+    const onAbortSession = vi.fn().mockResolvedValue(undefined);
+
     render(
       <Step5SicarInput
         wizardData={{
@@ -66,13 +70,19 @@ describe('Step5SicarInput', () => {
         hasActiveSession={true}
         activeSessionSucursalId="suc-001"
         onResumeSession={vi.fn()}
-        onAbortSession={vi.fn()}
+        onAbortSession={onAbortSession}
       />,
     );
 
-    fireEvent.click(screen.getByRole('button', { name: /abortar sesión/i }));
+    await user.click(screen.getByRole('button', { name: /abortar sesión/i }));
 
-    expect(screen.getByText('Sí, cancelar')).toBeInTheDocument();
-    expect(screen.getByText('Continuar aquí')).toBeInTheDocument();
+    const confirmButton = screen.getByRole('button', { name: /confirmar cancelación/i });
+    expect(confirmButton).toBeDisabled();
+
+    await user.type(screen.getByLabelText(/motivo/i), 'Duplicidad de corte en sucursal');
+    expect(confirmButton).not.toBeDisabled();
+
+    await user.click(confirmButton);
+    expect(onAbortSession).toHaveBeenCalledWith('Duplicidad de corte en sucursal');
   });
 });

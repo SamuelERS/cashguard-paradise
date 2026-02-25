@@ -108,12 +108,12 @@ describe('R3-B5: Step5SicarInput — feedback al abortar sesión', () => {
 
     await user.click(screen.getByRole('button', { name: /abortar/i }));
 
-    // FALLA: no hay modal — el botón "Sí, cancelar" no existe todavía.
-    // En GREEN, confirmar en el modal ejecutará onAbortSession una sola vez.
-    const confirmBtn = screen.getByRole('button', { name: /sí, cancelar/i });
+    const confirmBtn = screen.getByRole('button', { name: /confirmar cancelación/i });
+    await user.type(screen.getByLabelText(/motivo/i), 'Reinicio por inconsistencia en sesión activa');
     await user.click(confirmBtn);
 
     expect(onAbortSession).toHaveBeenCalledTimes(1);
+    expect(onAbortSession).toHaveBeenCalledWith('Reinicio por inconsistencia en sesión activa');
   });
 
   // ── Test 4 ─────────────────────────────────────────────────────────────────
@@ -125,9 +125,8 @@ describe('R3-B5: Step5SicarInput — feedback al abortar sesión', () => {
 
     await user.click(screen.getByRole('button', { name: /abortar/i }));
 
-    // FALLA: no hay modal — el botón "Sí, cancelar" no existe todavía.
-    // Adicionalmente, el flujo actual no llama toast.success en ningún caso.
-    const confirmBtn = screen.getByRole('button', { name: /sí, cancelar/i });
+    const confirmBtn = screen.getByRole('button', { name: /confirmar cancelación/i });
+    await user.type(screen.getByLabelText(/motivo/i), 'Reinicio por inconsistencia en sesión activa');
     await user.click(confirmBtn);
 
     expect(toast.success).toHaveBeenCalled();
@@ -143,7 +142,7 @@ describe('R3-B5: Step5SicarInput — feedback al abortar sesión', () => {
     // en GREEN, el estado solo se limpia DENTRO del bloque de éxito.
     function StatefulWrapper() {
       const [hasActive, setHasActive] = useState(true);
-      const handleAbort = async () => {
+      const handleAbort = async (_motivo: string) => {
         try {
           await onAbortSession();
           setHasActive(false); // solo en éxito
@@ -168,9 +167,8 @@ describe('R3-B5: Step5SicarInput — feedback al abortar sesión', () => {
 
     await user.click(screen.getByRole('button', { name: /abortar/i }));
 
-    // FALLA: no hay modal — el botón "Sí, cancelar" no existe todavía.
-    // En GREEN, tras fallo de Supabase el panel debe seguir visible.
-    const confirmBtn = screen.getByRole('button', { name: /sí, cancelar/i });
+    const confirmBtn = screen.getByRole('button', { name: /confirmar cancelación/i });
+    await user.type(screen.getByLabelText(/motivo/i), 'Reinicio por inconsistencia en sesión activa');
     await user.click(confirmBtn);
 
     expect(screen.getByText('Sesión en Progreso')).toBeInTheDocument();

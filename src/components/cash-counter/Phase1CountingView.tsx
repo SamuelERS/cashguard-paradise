@@ -13,6 +13,7 @@ import { GuidedCoinSection } from "@/components/cash-counting/GuidedCoinSection"
 import { GuidedBillSection } from "@/components/cash-counting/GuidedBillSection";
 import { GuidedElectronicInputSection } from "@/components/cash-counting/GuidedElectronicInputSection";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
+import { AbortCorteModal } from "@/components/ui/abort-corte-modal";
 import type { CashCount, ElectronicPayments } from "@/types/cash";
 import type { GuidedCountingState } from "@/hooks/useGuidedCounting";
 
@@ -46,6 +47,7 @@ interface Phase1CountingViewProps {
   onFieldConfirm: (value: string) => void;
   onAttemptAccess: () => void;
   onCancelProcess: () => void;
+  onAbortFlow: (motivo: string) => Promise<void> | void;
   onPreviousStep: () => void;
   onConfirmPrevious: () => void;
   onBackToStart: () => void;
@@ -72,6 +74,7 @@ export function Phase1CountingView({
   onFieldConfirm,
   onAttemptAccess,
   onCancelProcess,
+  onAbortFlow,
   onPreviousStep,
   onConfirmPrevious,
   onBackToStart,
@@ -173,15 +176,15 @@ export function Phase1CountingView({
         </div>
 
         {/* 🤖 [IA] - v2.0.0: Modal de confirmación abstracto para salida */}
-        <ConfirmationModal
+        <AbortCorteModal
           open={showExitConfirmation}
           onOpenChange={onShowExitConfirmationChange}
-          title="¿Confirmar salida?"
-          description="Se perderá todo el progreso del conteo actual."
-          warningText="Esta acción no se puede deshacer."
-          confirmText="Sí, volver al inicio"
+          title="¿Cancelar corte actual?"
+          description="Si continúas, el corte se marcará como ABORTADO y deberás iniciar uno nuevo."
+          warningText="Debes registrar el motivo de la cancelación."
+          confirmText="Confirmar cancelación"
           cancelText="Continuar aquí"
-          onConfirm={onBackToStart}
+          onConfirm={onAbortFlow}
           onCancel={() => onShowExitConfirmationChange(false)}
         />
 

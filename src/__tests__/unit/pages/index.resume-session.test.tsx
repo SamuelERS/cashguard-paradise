@@ -91,7 +91,7 @@ vi.mock('@/components/InitialWizardModal', () => ({
     initialSucursalId?: string | null;
     hasActiveSession?: boolean;
     onResumeSession?: () => void;
-    onAbortSession?: () => void | Promise<void>;
+    onAbortSession?: (motivo: string) => void | Promise<void>;
   }) =>
     isOpen ? (
       <div
@@ -112,7 +112,7 @@ vi.mock('@/components/InitialWizardModal', () => ({
           <button
             type="button"
             data-testid="abort-session-btn"
-            onClick={() => void onAbortSession()}
+            onClick={() => void onAbortSession('Motivo desde wizard: sesión duplicada')}
           >
             Abortar sesión
           </button>
@@ -311,7 +311,7 @@ describe('R3-B1: Index — reanudar sesión salta wizard directamente a CashCoun
       expect(corteSesionMocks.recuperarSesionMock).toHaveBeenCalledTimes(1);
     });
     expect(corteSesionMocks.abortarCorteMock).toHaveBeenCalledWith(
-      'Sesión abortada por usuario desde wizard',
+      'Motivo desde wizard: sesión duplicada',
     );
   });
 });

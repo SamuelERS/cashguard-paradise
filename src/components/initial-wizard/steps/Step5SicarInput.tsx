@@ -1,7 +1,7 @@
 // 🤖 [IA] - ORDEN #075: Step 5 - Venta Esperada (SICAR)
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { ConfirmationModal } from '@/components/ui/confirmation-modal';
+import { AbortCorteModal } from '@/components/ui/abort-corte-modal';
 import { motion } from 'framer-motion';
 import { DollarSign, ArrowRight, CheckCircle, Cloud } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -33,6 +33,16 @@ export function Step5SicarInput({
     hasActiveSession === true &&
     Boolean(wizardData.selectedStore) &&
     wizardData.selectedStore === activeSessionSucursalId;
+
+  const handleAbortSessionConfirm = async (motivo: string) => {
+    try {
+      await onAbortSession?.(motivo);
+      setShowAbortConfirm(false);
+      toast.success('Sesión abortada correctamente');
+    } catch {
+      toast.error('No se pudo abortar la sesión. Intente de nuevo.');
+    }
+  };
 
   return (
     <div className="glass-morphism-panel space-y-fluid-lg">
@@ -80,25 +90,15 @@ export function Step5SicarInput({
               Abortar Sesión
             </DestructiveActionButton>
           </div>
-          <ConfirmationModal
+          <AbortCorteModal
             open={showAbortConfirm}
             onOpenChange={setShowAbortConfirm}
             title="¿Abortar Sesión Activa?"
-            description="Se marcará como ABORTADO en el sistema. Esta acción no se puede deshacer."
-            warningText="Los datos del corte anterior se perderán permanentemente."
-            confirmText="Sí, cancelar"
+            description="Si continúas, la sesión se marcará como ABORTADA y deberás iniciar un nuevo corte."
+            warningText="Debes registrar el motivo de la cancelación."
+            confirmText="Confirmar cancelación"
             cancelText="Continuar aquí"
-            onConfirm={() => {
-              setShowAbortConfirm(false);
-              void (async () => {
-                try {
-                  await onAbortSession?.();
-                  toast.success('Sesión abortada correctamente');
-                } catch {
-                  toast.error('No se pudo abortar la sesión. Intente de nuevo.');
-                }
-              })();
-            }}
+            onConfirm={handleAbortSessionConfirm}
             onCancel={() => setShowAbortConfirm(false)}
           />
         </div>

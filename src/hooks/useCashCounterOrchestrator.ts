@@ -83,7 +83,7 @@ interface CashCounterOrchestratorOptions {
   initialExpectedSales: string;
   initialDailyExpenses: DailyExpense[];
   onBack?: () => void;
-  onFlowCancel?: () => void;
+  onFlowCancel?: (motivo?: string) => Promise<void> | void;
   skipWizard?: boolean; // 🤖 [IA] - Orden #015: Saltar instrucciones en flujo auditoría
   // 🤖 [IA] - OT-17: Hidratación + autosave
   initialCashCount?: CashCount;
@@ -484,6 +484,19 @@ export function useCashCounterOrchestrator({
     setShowExitConfirmation(true);
   };
 
+  const handleAbortFlow = useCallback(async (motivo: string) => {
+    setShowExitConfirmation(false);
+    resetGuidedCounting();
+    resetAllPhases();
+
+    if (onFlowCancel) {
+      await onFlowCancel(motivo);
+      return;
+    }
+
+    if (onBack) onBack();
+  }, [onBack, onFlowCancel, resetAllPhases, resetGuidedCounting]);
+
   return {
     // Mode
     isMorningCount,
@@ -537,6 +550,7 @@ export function useCashCounterOrchestrator({
     handlePreviousStep,
     handleConfirmPrevious,
     handleCancelProcess,
+    handleAbortFlow,
     handleInstructionsConfirm,
     handleInstructionsCancel,
   };

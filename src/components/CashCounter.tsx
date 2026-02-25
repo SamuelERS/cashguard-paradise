@@ -24,7 +24,7 @@ interface CashCounterProps {
   initialExpectedSales?: string;
   initialDailyExpenses?: DailyExpense[];
   onBack?: () => void;
-  onFlowCancel?: () => void;
+  onFlowCancel?: (motivo?: string) => Promise<void> | void;
   skipWizard?: boolean; // 🤖 [IA] - Orden #015: Saltar instrucciones cuando datos vienen del flujo de auditoría
   // 🤖 [IA] - OT-17: Hidratación + autosave persistencia anti-reinicio
   initialCashCount?: CashCount;
@@ -178,6 +178,7 @@ const CashCounter = ({
               onFieldConfirm={state.handleGuidedFieldConfirm}
               onAttemptAccess={state.handleInvalidAccess}
               onCancelProcess={state.handleCancelProcess}
+              onAbortFlow={state.handleAbortFlow}
               onPreviousStep={state.handlePreviousStep}
               onConfirmPrevious={state.handleConfirmPrevious}
               onBackToStart={state.handleBackToStart}
@@ -190,6 +191,7 @@ const CashCounter = ({
               deliveryCalculation={state.deliveryCalculation}
               onPhase2Complete={state.handlePhase2Complete}
               onBack={state.handleBackToStart}
+              onAbortFlow={state.handleAbortFlow}
               onDeliveryCalculationUpdate={state.updateDeliveryCalculation}
             />
           )}

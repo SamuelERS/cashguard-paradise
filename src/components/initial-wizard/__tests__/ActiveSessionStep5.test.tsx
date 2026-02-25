@@ -12,7 +12,7 @@ import type { Step5Props } from '@/types/initialWizard';
 type Step5PropsWithSession = Step5Props & {
   hasActiveSession?: boolean;
   onResumeSession?: () => void;
-  onAbortSession?: () => void;
+  onAbortSession?: (motivo: string) => void | Promise<void>;
 };
 
 // ── Props mínimas base para Step5SicarInput ──
@@ -77,19 +77,24 @@ describe('CASO-SANN-R2: Active Session Panel in Step5SicarInput', () => {
     expect(onResumeSession).toHaveBeenCalledTimes(1);
   });
 
-  // [IA] - CASO-SANN-R2 T5: Botón "Abortar Sesión" dispara onAbortSession (via ConfirmationModal)
-  it('T5: "Abortar Sesión" button calls onAbortSession when clicked', async () => {
+  // [IA] - CASO-SANN-R2 T5: Botón "Abortar Sesión" exige motivo y lo propaga a onAbortSession
+  it('T5: "Abortar Sesión" pide motivo obligatorio antes de ejecutar onAbortSession', async () => {
     const onAbortSession = vi.fn().mockResolvedValue(undefined);
     renderStep5({ hasActiveSession: true, onAbortSession });
-    // Step 1: Click abre ConfirmationModal
+
     fireEvent.click(screen.getByRole('button', { name: /abortar sesión/i }));
-    // Step 2: Confirmar en el modal
-    const confirmButton = await screen.findByRole('button', { name: /sí, cancelar/i });
+    const confirmButton = await screen.findByRole('button', { name: /confirmar cancelación/i });
+    expect(confirmButton).toBeDisabled();
+
+    fireEvent.change(screen.getByLabelText(/motivo/i), {
+      target: { value: 'Corte bloqueado por diferencia de efectivo' },
+    });
     fireEvent.click(confirmButton);
-    // Step 3: onAbortSession se llama async dentro del onConfirm
+
     await waitFor(() => {
       expect(onAbortSession).toHaveBeenCalledTimes(1);
     });
+    expect(onAbortSession).toHaveBeenCalledWith('Corte bloqueado por diferencia de efectivo');
   });
 
   // [IA] - CASO-SANN-R2 T6: Input SICAR deshabilitado cuando hay sesión activa
