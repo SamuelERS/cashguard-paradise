@@ -2,16 +2,33 @@ import { act, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const realtimeMocks = vi.hoisted(() => {
-  const channelChain = {
-    on: vi.fn(),
-    subscribe: vi.fn(),
+  type MockChannel = {
+    on: ReturnType<typeof vi.fn>;
+    subscribe: ReturnType<typeof vi.fn>;
+    name: string;
   };
-  channelChain.on.mockReturnValue(channelChain);
-  channelChain.subscribe.mockReturnValue(channelChain);
+
+  const channels = new Map<string, MockChannel>();
+  const ensureChannel = (name: string): MockChannel => {
+    const existing = channels.get(name);
+    if (existing) return existing;
+
+    const channel: MockChannel = {
+      name,
+      on: vi.fn(),
+      subscribe: vi.fn(),
+    };
+    channel.on.mockReturnValue(channel);
+    channel.subscribe.mockReturnValue(channel);
+    channels.set(name, channel);
+    return channel;
+  };
 
   return {
-    channelChain,
-    channel: vi.fn(() => channelChain),
+    channels,
+    ensureChannel,
+    resetChannels: () => channels.clear(),
+    channel: vi.fn((name: string) => ensureChannel(name)),
     removeChannel: vi.fn().mockResolvedValue('ok'),
   };
 });
@@ -30,8 +47,7 @@ describe('useSupervisorRealtime', () => {
   beforeEach(() => {
     vi.useFakeTimers();
     vi.clearAllMocks();
-    realtimeMocks.channelChain.on.mockReturnValue(realtimeMocks.channelChain);
-    realtimeMocks.channelChain.subscribe.mockReturnValue(realtimeMocks.channelChain);
+    realtimeMocks.resetChannels();
   });
 
   afterEach(() => {
@@ -43,8 +59,9 @@ describe('useSupervisorRealtime', () => {
     const onChange = vi.fn();
     renderHook(() => useSupervisorRealtime({ onChange }));
 
-    expect(realtimeMocks.channel).toHaveBeenCalledWith('supervisor-live:all');
-    expect(realtimeMocks.channelChain.on).toHaveBeenCalledWith(
+    expect(realtimeMocks.channel).toHaveBeenCalledWith('supervisor-live:all:cortes');
+    const cortesChannel = realtimeMocks.ensureChannel('supervisor-live:all:cortes');
+    expect(cortesChannel.on).toHaveBeenCalledWith(
       'postgres_changes',
       expect.objectContaining({
         event: '*',
@@ -53,15 +70,20 @@ describe('useSupervisorRealtime', () => {
       }),
       expect.any(Function),
     );
-    expect(realtimeMocks.channelChain.subscribe).toHaveBeenCalled();
+    expect(cortesChannel.subscribe).toHaveBeenCalled();
   });
 
   it('aplica filtro por corteId en cortes y snapshots cuando se envía detalle', () => {
     const onChange = vi.fn();
     renderHook(() => useSupervisorRealtime({ corteId: 'corte-123', onChange }));
 
-    expect(realtimeMocks.channel).toHaveBeenCalledWith('supervisor-live:corte-123');
-    expect(realtimeMocks.channelChain.on).toHaveBeenCalledWith(
+    expect(realtimeMocks.channel).toHaveBeenCalledWith('supervisor-live:corte-123:cortes');
+    expect(realtimeMocks.channel).toHaveBeenCalledWith('supervisor-live:corte-123:snapshots');
+
+    const cortesChannel = realtimeMocks.ensureChannel('supervisor-live:corte-123:cortes');
+    const snapshotsChannel = realtimeMocks.ensureChannel('supervisor-live:corte-123:snapshots');
+
+    expect(cortesChannel.on).toHaveBeenCalledWith(
       'postgres_changes',
       expect.objectContaining({
         table: 'cortes',
@@ -69,7 +91,8 @@ describe('useSupervisorRealtime', () => {
       }),
       expect.any(Function),
     );
-    expect(realtimeMocks.channelChain.on).toHaveBeenCalledWith(
+
+    expect(snapshotsChannel.on).toHaveBeenCalledWith(
       'postgres_changes',
       expect.objectContaining({
         table: 'corte_conteo_snapshots',
@@ -85,23 +108,17 @@ describe('useSupervisorRealtime', () => {
 
     unmount();
 
-    expect(realtimeMocks.removeChannel).toHaveBeenCalledWith(realtimeMocks.channelChain);
+    const cortesChannel = realtimeMocks.ensureChannel('supervisor-live:all:cortes');
+    expect(realtimeMocks.removeChannel).toHaveBeenCalledWith(cortesChannel);
   });
 
   it('expone estado del canal realtime (connecting -> subscribed -> error)', () => {
-    let subscribeCallback:
-      | ((status: string, err?: { message?: string }) => void)
-      | undefined;
-
-    realtimeMocks.channelChain.subscribe.mockImplementation(
-      (callback?: (status: string, err?: { message?: string }) => void) => {
-        subscribeCallback = callback;
-        return realtimeMocks.channelChain;
-      },
-    );
-
     const onChange = vi.fn();
     const { result } = renderHook(() => useSupervisorRealtime({ onChange }));
+    const cortesChannel = realtimeMocks.ensureChannel('supervisor-live:all:cortes');
+    const subscribeCallback = cortesChannel.subscribe.mock.calls[0]?.[0] as
+      | ((status: string, err?: { message?: string }) => void)
+      | undefined;
 
     expect(result.current).toEqual({
       status: 'connecting',
@@ -134,7 +151,8 @@ describe('useSupervisorRealtime', () => {
     const onChange = vi.fn();
     renderHook(() => useSupervisorRealtime({ onChange }));
 
-    const postgresHandler = realtimeMocks.channelChain.on.mock.calls[0]?.[2] as
+    const cortesChannel = realtimeMocks.ensureChannel('supervisor-live:all:cortes');
+    const postgresHandler = cortesChannel.on.mock.calls[0]?.[2] as
       | (() => void)
       | undefined;
     expect(postgresHandler).toBeTypeOf('function');
@@ -152,5 +170,34 @@ describe('useSupervisorRealtime', () => {
       vi.advanceTimersByTime(250);
     });
     expect(onChange).toHaveBeenCalledTimes(1);
+  });
+
+  it('si snapshots falla en detalle, mantiene canal de cortes en vivo (regresión)', () => {
+    const onChange = vi.fn();
+    const { result } = renderHook(() =>
+      useSupervisorRealtime({ corteId: 'corte-123', onChange }),
+    );
+
+    const cortesChannel = realtimeMocks.ensureChannel('supervisor-live:corte-123:cortes');
+    const snapshotsChannel = realtimeMocks.ensureChannel('supervisor-live:corte-123:snapshots');
+
+    const cortesSubscribeCallback = cortesChannel.subscribe.mock.calls[0]?.[0] as
+      | ((status: string, err?: { message?: string }) => void)
+      | undefined;
+    const snapshotsSubscribeCallback = snapshotsChannel.subscribe.mock.calls[0]?.[0] as
+      | ((status: string, err?: { message?: string }) => void)
+      | undefined;
+
+    act(() => {
+      cortesSubscribeCallback?.('SUBSCRIBED');
+    });
+    expect(result.current.status).toBe('subscribed');
+
+    act(() => {
+      snapshotsSubscribeCallback?.('CHANNEL_ERROR', { message: 'snapshot realtime disabled' });
+    });
+
+    expect(result.current.status).toBe('subscribed');
+    expect(result.current.error).toBeNull();
   });
 });

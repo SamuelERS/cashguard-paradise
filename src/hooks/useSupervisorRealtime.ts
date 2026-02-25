@@ -25,7 +25,12 @@ const COALESCE_WINDOW_MS = 250;
 /**
  * Suscripción Realtime para refrescar vistas del supervisor en vivo.
  * - Sin corteId: escucha cambios de tabla cortes (lista del día).
- * - Con corteId: escucha cambios de ese corte + snapshots de conteo.
+ * - Con corteId: escucha cambios de ese corte + snapshots de conteo (canales separados).
+ *
+ * @remarks
+ * Algunos entornos pueden no tener `corte_conteo_snapshots` habilitada en Realtime.
+ * Si se comparte el mismo canal con `cortes`, ese error puede silenciar todo el stream.
+ * Por eso aislamos snapshots en un canal independiente y mantenemos `cortes` en vivo.
  */
 export function useSupervisorRealtime({
   onChange,
@@ -68,9 +73,10 @@ export function useSupervisorRealtime({
 
     setState({ status: 'connecting', lastEventAt: null, error: null });
 
-    const channel = supabase.channel(`supervisor-live:${corteId ?? 'all'}`);
+    const baseChannelName = `supervisor-live:${corteId ?? 'all'}`;
+    const cortesChannel = supabase.channel(`${baseChannelName}:cortes`);
 
-    channel.on(
+    cortesChannel.on(
       'postgres_changes',
       {
         event: '*',
@@ -81,8 +87,12 @@ export function useSupervisorRealtime({
       onRealtimeChange,
     );
 
-    if (corteId) {
-      channel.on(
+    const snapshotsChannel = corteId
+      ? supabase.channel(`${baseChannelName}:snapshots`)
+      : null;
+
+    if (snapshotsChannel && corteId) {
+      snapshotsChannel.on(
         'postgres_changes',
         {
           event: 'INSERT',
@@ -94,7 +104,7 @@ export function useSupervisorRealtime({
       );
     }
 
-    channel.subscribe((status, err) => {
+    cortesChannel.subscribe((status, err) => {
       if (status === 'SUBSCRIBED') {
         setState((prev) => ({
           ...prev,
@@ -113,12 +123,28 @@ export function useSupervisorRealtime({
       }
     });
 
+    if (snapshotsChannel) {
+      snapshotsChannel.subscribe((status, err) => {
+        if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          // No degradar el stream principal de cortes por fallos en snapshots.
+          // El detalle sigue vivo vía tabla `cortes`.
+          console.warn(
+            '[supervisor-realtime] Canal snapshots no disponible; se continúa con cortes',
+            err?.message ?? 'sin detalle',
+          );
+        }
+      });
+    }
+
     return () => {
       if (timeoutRef.current !== null) {
         clearTimeout(timeoutRef.current);
       }
       setState((prev) => ({ ...prev, status: 'idle' }));
-      void supabase.removeChannel(channel);
+      void supabase.removeChannel(cortesChannel);
+      if (snapshotsChannel) {
+        void supabase.removeChannel(snapshotsChannel);
+      }
     };
   }, [onRealtimeChange, corteId, enabled, estadoDeshabilitado]);
 
