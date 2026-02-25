@@ -80,6 +80,8 @@ export function AbortCorteModal({
       isClosingByConfirmRef.current = true;
       onOpenChange(false);
       resetState();
+    } catch {
+      // Mantener modal abierto y motivo intacto para reintento inmediato.
     } finally {
       setIsSubmitting(false);
     }

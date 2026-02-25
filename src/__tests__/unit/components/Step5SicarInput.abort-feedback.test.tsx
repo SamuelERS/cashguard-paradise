@@ -173,4 +173,20 @@ describe('R3-B5: Step5SicarInput — feedback al abortar sesión', () => {
 
     expect(screen.getByText('Sesión en Progreso')).toBeInTheDocument();
   });
+
+  it('mantiene el modal abierto y conserva motivo cuando abort falla en el primer intento', async () => {
+    const user = userEvent.setup();
+    const onAbortSession = vi.fn().mockRejectedValue(new Error('Supabase timeout'));
+    renderWithActiveSession(onAbortSession);
+
+    await user.click(screen.getByRole('button', { name: /abortar/i }));
+    const motivoInput = screen.getByLabelText(/motivo/i);
+    await user.type(motivoInput, 'Reinicio por desajuste detectado en caja');
+
+    await user.click(screen.getByRole('button', { name: /confirmar cancelación/i }));
+
+    expect(onAbortSession).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole('button', { name: /confirmar cancelación/i })).toBeInTheDocument();
+    expect(motivoInput).toHaveValue('Reinicio por desajuste detectado en caja');
+  });
 });

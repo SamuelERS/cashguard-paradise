@@ -39,8 +39,9 @@ export function Step5SicarInput({
       await onAbortSession?.(motivo);
       setShowAbortConfirm(false);
       toast.success('Sesión abortada correctamente');
-    } catch {
+    } catch (error) {
       toast.error('No se pudo abortar la sesión. Intente de nuevo.');
+      throw error;
     }
   };
 

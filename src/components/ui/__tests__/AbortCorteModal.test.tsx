@@ -42,4 +42,28 @@ describe('AbortCorteModal', () => {
 
     expect(onConfirm).toHaveBeenCalledWith('corte duplicado en caja');
   });
+
+  it('si onConfirm falla mantiene modal abierto para reintento', async () => {
+    const user = userEvent.setup();
+    const onConfirm = vi.fn().mockRejectedValue(new Error('network down'));
+    const onOpenChange = vi.fn();
+
+    render(
+      <AbortCorteModal
+        open
+        onOpenChange={onOpenChange}
+        onConfirm={onConfirm}
+        onCancel={vi.fn()}
+      />,
+    );
+
+    await user.type(screen.getByLabelText(/motivo/i), 'motivo válido para cancelar');
+    await user.click(
+      screen.getByRole('button', { name: /confirmar cancelación/i }),
+    );
+
+    expect(onConfirm).toHaveBeenCalledTimes(1);
+    expect(onOpenChange).not.toHaveBeenCalledWith(false);
+    expect(screen.getByRole('button', { name: /confirmar cancelación/i })).toBeInTheDocument();
+  });
 });
