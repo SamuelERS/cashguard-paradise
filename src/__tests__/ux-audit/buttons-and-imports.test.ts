@@ -53,14 +53,21 @@ describe('Estandarización Botones (Módulo 03)', () => {
    * Test de REGRESIÓN (guardián) — pasa actualmente.
    * Asegura que la migración de <button> a componentes estandarizados
    * NO pierde la funcionalidad onClick de los handlers.
+   *
+   * Nota: onAbortSession se ejecuta vía AbortCorteModal (confirmación anti-fraude).
+   * El botón "Abortar" abre el modal; el modal llama onAbortSession al confirmar.
+   * La aserción verifica que ambos mecanismos estén presentes.
    */
   test('3.5 — Step5SicarInput preserva handlers onResumeSession y onAbortSession', () => {
     const content = readFileSync(resolve(STEP5_PATH), 'utf-8');
-    // Los handlers originales deben seguir conectados a los botones migrados
+    // Los handlers deben estar referenciados en el componente
     expect(content).toMatch(/onResumeSession/);
     expect(content).toMatch(/onAbortSession/);
-    // Deben estar en atributos onClick (no solo como props del componente)
+    // onResumeSession: conectado directamente al botón Reanudar
     expect(content).toMatch(/onClick=\{.*onResumeSession/s);
-    expect(content).toMatch(/onClick=\{.*onAbortSession/s);
+    // onAbortSession: gateado por AbortCorteModal (confirmación anti-fraude).
+    // El botón Abortar abre el modal; el modal llama onAbortSession al confirmar.
+    expect(content).toMatch(/AbortCorteModal/);
+    expect(content).toMatch(/onAbortSession\?\.\(/);
   });
 });

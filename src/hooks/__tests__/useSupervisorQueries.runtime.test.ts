@@ -41,12 +41,12 @@ function buildControlledMocks() {
     resolveSucursales = res;
   });
 
-  // cortes() #1: .select().eq().gte().lte().order() → finalizados
+  // cortes() #1: .select().in().gte().lte().order() → finalizados (FINALIZADO|ABORTADO)
   const cortesFinalizadosOrderMock = vi.fn(() => cortesFinalizadosPromise);
   const cortesFinalizadosLteMock = vi.fn(() => ({ order: cortesFinalizadosOrderMock }));
   const cortesFinalizadosGteMock = vi.fn(() => ({ lte: cortesFinalizadosLteMock }));
-  const cortesFinalizadosEqMock = vi.fn(() => ({ gte: cortesFinalizadosGteMock }));
-  const cortesFinalizadosSelectMock = vi.fn(() => ({ eq: cortesFinalizadosEqMock }));
+  const cortesFinalizadosInMock = vi.fn(() => ({ gte: cortesFinalizadosGteMock }));
+  const cortesFinalizadosSelectMock = vi.fn(() => ({ in: cortesFinalizadosInMock }));
 
   // cortes() #2: .select().in().gte().lte().order() → activos
   const cortesActivosOrderMock = vi.fn(() => cortesActivosPromise);
