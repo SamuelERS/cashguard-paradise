@@ -14,6 +14,54 @@ export interface UseEmpleadosSucursalReturn {
   recargar: () => Promise<void>;
 }
 
+function normalizeEmployeeName(value: string): string {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
+}
+
+function canonicalEmployeeName(value: string): string {
+  const normalized = normalizeEmployeeName(value);
+  if (normalized === 'adonai torres' || normalized === 'adonay torres') {
+    return 'adonai torres';
+  }
+  return normalized;
+}
+
+function resolvePriorityOrder(empleados: EmpleadoSucursal[]): string[] {
+  const normalizedNames = new Set(empleados.map((empleado) => canonicalEmployeeName(empleado.nombre)));
+
+  const isMerliotProfile =
+    normalizedNames.has('irving abarca') || normalizedNames.has('edenison lopez');
+  if (isMerliotProfile) {
+    return ['irving abarca', 'edenison lopez', 'jonathan melara'];
+  }
+
+  const isHeroesProfile =
+    normalizedNames.has('tito gomez') || normalizedNames.has('adonai torres');
+  if (isHeroesProfile) {
+    return ['tito gomez', 'adonai torres', 'jonathan melara'];
+  }
+
+  return [];
+}
+
+function sortEmployeesByPriority(empleados: EmpleadoSucursal[]): EmpleadoSucursal[] {
+  const priorityOrder = resolvePriorityOrder(empleados);
+  const priorityMap = new Map(priorityOrder.map((name, index) => [name, index]));
+
+  return [...empleados].sort((left, right) => {
+    const leftRank = priorityMap.get(canonicalEmployeeName(left.nombre)) ?? Number.MAX_SAFE_INTEGER;
+    const rightRank = priorityMap.get(canonicalEmployeeName(right.nombre)) ?? Number.MAX_SAFE_INTEGER;
+
+    if (leftRank !== rightRank) return leftRank - rightRank;
+
+    return left.nombre.localeCompare(right.nombre, 'es', { sensitivity: 'base' });
+  });
+}
+
 export function useEmpleadosSucursal(
   sucursalId: string | null | undefined,
 ): UseEmpleadosSucursalReturn {
@@ -66,15 +114,15 @@ export function useEmpleadosSucursal(
         return;
       }
 
-      setEmpleados(
-        (empleadosRows ?? []).map((empleado) => ({
+      const normalizedEmployees = (empleadosRows ?? []).map((empleado) => ({
           id: empleado.id,
           nombre: empleado.nombre,
           cargo: typeof (empleado as { cargo?: unknown }).cargo === 'string'
             ? (empleado as { cargo?: string }).cargo
             : undefined,
-        })),
-      );
+        }));
+
+      setEmpleados(sortEmployeesByPriority(normalizedEmployees));
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Error al cargar empleados';
       setEmpleados([]);

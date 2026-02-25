@@ -127,8 +127,8 @@ describe('useEmpleadosSucursal', () => {
     expect(eqMock).toHaveBeenCalledWith('sucursal_id', 'suc-001');
     expect(inMock).toHaveBeenCalledWith('id', ['emp-1', 'emp-2']);
     expect(result.current.empleados).toEqual([
-      { id: 'emp-1', nombre: 'Jonathan Melara', cargo: 'Cajero' },
       { id: 'emp-2', nombre: 'Adonay Torres', cargo: 'Testigo' },
+      { id: 'emp-1', nombre: 'Jonathan Melara', cargo: 'Cajero' },
     ]);
     expect(result.current.error).toBeNull();
   });
@@ -247,6 +247,90 @@ describe('useEmpleadosSucursal', () => {
 
     expect(result.current.empleados).toEqual([
       { id: 'emp-2', nombre: 'Adonay Torres', cargo: 'Testigo' },
+    ]);
+  });
+
+  it('prioriza orden Los Héroes: Tito, Adonai/Adonay, Jonathan', async () => {
+    const { empleadoSucursalesMock, empleadosMock } = buildSupabaseMocks(
+      {
+        data: [
+          { empleado_id: 'emp-1' },
+          { empleado_id: 'emp-2' },
+          { empleado_id: 'emp-3' },
+        ],
+        error: null,
+      },
+      {
+        data: [
+          { id: 'emp-1', nombre: 'Jonathan Melara', cargo: 'Cajero', activo: true },
+          { id: 'emp-2', nombre: 'Tito Gomez', cargo: 'Cajero', activo: true },
+          { id: 'emp-3', nombre: 'Adonay Torres', cargo: 'Testigo', activo: true },
+        ],
+        error: null,
+      },
+    );
+
+    vi.doMock('@/lib/supabase', () => ({
+      isSupabaseConfigured: true,
+      tables: {
+        empleadoSucursales: empleadoSucursalesMock,
+        empleados: empleadosMock,
+      },
+    }));
+
+    const { useEmpleadosSucursal } = await import('../useEmpleadosSucursal');
+    const { result } = renderHook(() => useEmpleadosSucursal('suc-heroes'));
+
+    await waitFor(() => {
+      expect(result.current.cargando).toBe(false);
+    });
+
+    expect(result.current.empleados.map((e) => e.nombre)).toEqual([
+      'Tito Gomez',
+      'Adonay Torres',
+      'Jonathan Melara',
+    ]);
+  });
+
+  it('prioriza orden Plaza Merliot: Irving, Edenison, Jonathan', async () => {
+    const { empleadoSucursalesMock, empleadosMock } = buildSupabaseMocks(
+      {
+        data: [
+          { empleado_id: 'emp-1' },
+          { empleado_id: 'emp-2' },
+          { empleado_id: 'emp-3' },
+        ],
+        error: null,
+      },
+      {
+        data: [
+          { id: 'emp-1', nombre: 'Jonathan Melara', cargo: 'Cajero', activo: true },
+          { id: 'emp-2', nombre: 'Edenison Lopez', cargo: 'Testigo', activo: true },
+          { id: 'emp-3', nombre: 'Irving Abarca', cargo: 'Cajero', activo: true },
+        ],
+        error: null,
+      },
+    );
+
+    vi.doMock('@/lib/supabase', () => ({
+      isSupabaseConfigured: true,
+      tables: {
+        empleadoSucursales: empleadoSucursalesMock,
+        empleados: empleadosMock,
+      },
+    }));
+
+    const { useEmpleadosSucursal } = await import('../useEmpleadosSucursal');
+    const { result } = renderHook(() => useEmpleadosSucursal('suc-merliot'));
+
+    await waitFor(() => {
+      expect(result.current.cargando).toBe(false);
+    });
+
+    expect(result.current.empleados.map((e) => e.nombre)).toEqual([
+      'Irving Abarca',
+      'Edenison Lopez',
+      'Jonathan Melara',
     ]);
   });
 });
