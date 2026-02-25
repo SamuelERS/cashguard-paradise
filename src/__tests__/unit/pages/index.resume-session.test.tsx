@@ -17,9 +17,10 @@ const supabaseMocks = vi.hoisted(() => {
   const limitMock = vi.fn();
   const orderMock = vi.fn();
   const inMock = vi.fn();
+  const eqMock = vi.fn();
   const selectMock = vi.fn();
   const cortesMock = vi.fn();
-  return { maybeSingleMock, limitMock, orderMock, inMock, selectMock, cortesMock };
+  return { maybeSingleMock, limitMock, orderMock, inMock, eqMock, selectMock, cortesMock };
 });
 
 const corteSesionMocks = vi.hoisted(() => ({
@@ -186,7 +187,8 @@ beforeEach(() => {
   vi.resetAllMocks();
   // Restaurar cadena Supabase (resetAllMocks limpia todas las implementaciones vi.fn())
   supabaseMocks.cortesMock.mockReturnValue({ select: supabaseMocks.selectMock });
-  supabaseMocks.selectMock.mockReturnValue({ in: supabaseMocks.inMock });
+  supabaseMocks.selectMock.mockReturnValue({ in: supabaseMocks.inMock, eq: supabaseMocks.eqMock });
+  supabaseMocks.eqMock.mockReturnValue({ in: supabaseMocks.inMock });
   supabaseMocks.inMock.mockReturnValue({ order: supabaseMocks.orderMock });
   supabaseMocks.orderMock.mockReturnValue({ limit: supabaseMocks.limitMock });
   supabaseMocks.limitMock.mockReturnValue({ maybeSingle: supabaseMocks.maybeSingleMock });

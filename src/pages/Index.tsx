@@ -15,10 +15,25 @@ import { OperationMode } from "@/types/operation-mode";
 import { DailyExpense, isDailyExpense } from '@/types/expenses'; // 🤖 [IA] - v1.4.0 + ORDEN #28 M6
 import { isSupabaseConfigured, tables } from '@/lib/supabase';
 import { obtenerEstadoCola } from '@/lib/offlineQueue';
+import { esErrorDeRed } from '@/lib/esErrorDeRed';
 import { useCorteSesion } from '@/hooks/useCorteSesion';
 import CorteOrquestador from '@/components/corte/CorteOrquestador'; // 🤖 [IA] - DIRM V2 Task 5: Flujo CorteInicio → Supabase
 import type { DatosProgreso } from '@/types/auditoria';
 import type { CashCount, ElectronicPayments } from '@/types/cash';
+
+type ActiveSessionInfo = {
+  correlativo: string | null;
+  createdAt: string | null;
+  cajero: string | null;
+  estado: string | null;
+};
+
+type ActiveSessionCheck = {
+  status: 'ok' | 'connectivity_error';
+  hasActive: boolean;
+  sucursalId: string | null;
+  sessionInfo: ActiveSessionInfo | null;
+};
 
 // 🤖 [IA] - ORDEN #27 M4: type guards defensivos para datos_conteo (null-safe, corrupt-safe)
 function isCashCountLike(value: unknown): value is CashCount {
@@ -55,12 +70,7 @@ const Index = () => {
   // [IA] - CASO-SANN: Estado booleano para notificar sesión activa al wizard
   const [hasActiveCashCutSession, setHasActiveCashCutSession] = useState(false);
   // [IA] - R3-B2: Info enriquecida de sesión activa para identificador en Step 5
-  const [activeSessionInfo, setActiveSessionInfo] = useState<{
-    correlativo: string | null;
-    createdAt: string | null;
-    cajero: string | null;
-    estado: string | null;
-  } | null>(null);
+  const [activeSessionInfo, setActiveSessionInfo] = useState<ActiveSessionInfo | null>(null);
   const [initialData, setInitialData] = useState<{
     selectedStore: string;
     selectedCashier: string;
@@ -164,9 +174,18 @@ const Index = () => {
   const handleFinalizarCorte = useCallback(async (reporteHash: string) => {
     if (!isSupabaseConfigured || !syncSucursalId) return;
 
+    const estadoColaAntes = obtenerEstadoCola();
     setSyncEstado('sincronizando');
     try {
       await finalizarCorte(reporteHash);
+      const estadoColaDespues = obtenerEstadoCola();
+      const seEncoloOperacion =
+        estadoColaDespues.total > estadoColaAntes.total ||
+        estadoColaDespues.pendientes > estadoColaAntes.pendientes;
+      if (seEncoloOperacion) {
+        setSyncEstado('pendiente');
+        return;
+      }
       setSyncEstado('sincronizado');
       setUltimaSync(new Date().toISOString());
     } catch (err: unknown) {
@@ -196,6 +215,23 @@ const Index = () => {
     if (currentMode === OperationMode.CASH_CUT && !hasActiveSessionForSelectedStore) {
       if (isSupabaseConfigured) {
         try {
+          const latestActiveSession = await detectActiveCashCutSession(data.selectedStore);
+          if (latestActiveSession.status === 'connectivity_error') {
+            toast.error('Sin conexión a Supabase. No se puede validar sesión activa.');
+            return;
+          }
+
+          const hasLatestActiveForSelectedStore =
+            latestActiveSession.hasActive && latestActiveSession.sucursalId === data.selectedStore;
+
+          if (hasLatestActiveForSelectedStore) {
+            setHasActiveCashCutSession(true);
+            setActiveCashCutSucursalId(latestActiveSession.sucursalId);
+            setActiveSessionInfo(latestActiveSession.sessionInfo);
+            toast.error('Ya existe un corte EN PROGRESO para esta sucursal. Reanude la sesión.');
+            return;
+          }
+
           const selectedIds = Array.from(
             new Set([data.selectedCashier, data.selectedWitness].filter(Boolean)),
           );
@@ -240,6 +276,10 @@ const Index = () => {
           setUltimaSync(new Date().toISOString());
         } catch (err: unknown) {
           console.warn('[Index] iniciarCorte falló:', err);
+          if (esErrorDeRed(err)) {
+            toast.error('No hay conexión con Supabase. Verifique internet y reintente.');
+            return;
+          }
           toast.error('No se pudo iniciar el corte. Verifique conexión e intente de nuevo.');
           return;
         }
@@ -352,35 +392,36 @@ const Index = () => {
   }, [abortarCorteActivo]);
 
   // [IA] - R3-B2: Tipo extendido con sessionInfo para propagar identificador al wizard
-  const detectActiveCashCutSession = async (): Promise<{
-    hasActive: boolean;
-    sucursalId: string | null;
-    sessionInfo: {
-      correlativo: string | null;
-      createdAt: string | null;
-      cajero: string | null;
-      estado: string | null;
-    } | null;
-  }> => {
+  const detectActiveCashCutSession = useCallback(async (sucursalId?: string): Promise<ActiveSessionCheck> => {
     if (!isSupabaseConfigured) {
-      return { hasActive: false, sucursalId: null, sessionInfo: null };
+      return { status: 'ok', hasActive: false, sucursalId: null, sessionInfo: null };
     }
 
     try {
-      const { data, error } = await tables
-        .cortes()
-        .select('id,sucursal_id,correlativo,created_at,cajero,estado')
-        .in('estado', ['INICIADO', 'EN_PROGRESO'])
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
+      const { data, error } = sucursalId
+        ? await tables
+            .cortes()
+            .select('id,sucursal_id,correlativo,created_at,cajero,estado')
+            .eq('sucursal_id', sucursalId)
+            .in('estado', ['INICIADO', 'EN_PROGRESO'])
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .maybeSingle()
+        : await tables
+            .cortes()
+            .select('id,sucursal_id,correlativo,created_at,cajero,estado')
+            .in('estado', ['INICIADO', 'EN_PROGRESO'])
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .maybeSingle();
 
       if (error) {
         console.warn('[Index] Error verificando sesión activa de corte:', error.message);
-        return { hasActive: false, sucursalId: null, sessionInfo: null };
+        return { status: 'connectivity_error', hasActive: false, sucursalId: null, sessionInfo: null };
       }
 
       return {
+        status: 'ok',
         hasActive: Boolean(data),
         sucursalId: data?.sucursal_id ?? null,
         sessionInfo: data ? {
@@ -392,9 +433,20 @@ const Index = () => {
       };
     } catch (error) {
       console.warn('[Index] Fallo de red verificando sesión activa de corte:', error);
-      return { hasActive: false, sucursalId: null, sessionInfo: null };
+      return { status: 'connectivity_error', hasActive: false, sucursalId: null, sessionInfo: null };
     }
-  };
+  }, []);
+
+  const handleCheckActiveSessionForStore = useCallback(async (sucursalId: string) => {
+    if (!isSupabaseConfigured || !sucursalId) return;
+
+    const activeSession = await detectActiveCashCutSession(sucursalId);
+    if (activeSession.status === 'connectivity_error') return;
+
+    setHasActiveCashCutSession(activeSession.hasActive);
+    setActiveCashCutSucursalId(activeSession.hasActive ? activeSession.sucursalId : null);
+    setActiveSessionInfo(activeSession.hasActive ? activeSession.sessionInfo : null);
+  }, [detectActiveCashCutSession]);
 
   // 🤖 [IA] - v3.3.2 - Ruta híbrida: wizard legacy + reanudación automática por sesión activa
   const handleModeSelection = async (mode: OperationMode) => {
@@ -445,6 +497,7 @@ const Index = () => {
               activeSessionInfo={activeSessionInfo}
               // [IA] - BRANCH-ISOLATION: sucursal dueña de sesión activa detectada
               activeSessionSucursalId={activeCashCutSucursalId}
+              onCheckActiveSessionForStore={handleCheckActiveSessionForStore}
             />
           )}
           {showMorningWizard && (

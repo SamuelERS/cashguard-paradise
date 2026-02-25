@@ -33,6 +33,8 @@ export interface InitialWizardModalProps {
   } | null;
   /** [IA] - BRANCH-ISOLATION: Sucursal dueña de la sesión activa detectada */
   activeSessionSucursalId?: string | null;
+  /** [IA] - REGRESION-RCA: Revalida sesión activa al entrar a SICAR para la sucursal elegida */
+  onCheckActiveSessionForStore?: (sucursalId: string) => void | Promise<void>;
 }
 
 // ────────────────────────────────────────────────────────────────

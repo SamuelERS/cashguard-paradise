@@ -295,6 +295,30 @@ describe('InitialWizardModalView — Integration', () => {
   });
 
   // ── 5. Re-export backward compatibility ──
+  describe('Step 5 active-session check', () => {
+    it('dispara chequeo de sesión activa al entrar a Step 5 con sucursal seleccionada', () => {
+      const onCheckActiveSessionForStore = vi.fn();
+      resetMockCtrl({
+        currentStep: 5,
+        wizardData: {
+          ...mockCtrl.wizardData,
+          selectedStore: 'suc-001',
+        },
+      });
+
+      render(
+        <InitialWizardModalView
+          {...defaultProps}
+          onCheckActiveSessionForStore={onCheckActiveSessionForStore}
+        />
+      );
+
+      expect(onCheckActiveSessionForStore).toHaveBeenCalledTimes(1);
+      expect(onCheckActiveSessionForStore).toHaveBeenCalledWith('suc-001');
+    });
+  });
+
+  // ── 6. Re-export backward compatibility ──
   describe('Backward compatibility re-export', () => {
     it('InitialWizardModal.tsx re-exports default from View', async () => {
       const reExport = await import('@/components/InitialWizardModal');

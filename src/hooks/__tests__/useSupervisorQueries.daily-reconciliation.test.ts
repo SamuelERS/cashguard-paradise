@@ -11,8 +11,8 @@ function buildFinalizadosQuery(result: QueryResult) {
   const order = vi.fn(() => Promise.resolve(result));
   const lte = vi.fn(() => ({ order }));
   const gte = vi.fn(() => ({ lte }));
-  const eq = vi.fn(() => ({ gte }));
-  const select = vi.fn(() => ({ eq }));
+  const inMock = vi.fn(() => ({ gte }));
+  const select = vi.fn(() => ({ in: inMock }));
   return { select };
 }
 

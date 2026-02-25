@@ -708,6 +708,31 @@ describe('Suite 5: finalizarCorte', () => {
       }),
     ).rejects.toThrow('Solo se puede finalizar un corte EN_PROGRESO');
   });
+
+  it('5.4 - Fallo de red en finalizar encola FINALIZAR_CORTE sin lanzar error', async () => {
+    const result = await renderWithCorte(CORTE_EN_PROGRESO, INTENTO_MOCK);
+
+    mockChain.cortes.single.mockRejectedValueOnce(new TypeError('Failed to fetch'));
+
+    let thrown = false;
+    await act(async () => {
+      try {
+        await result.current.finalizarCorte('hash-offline-001');
+      } catch {
+        thrown = true;
+      }
+    });
+
+    expect(thrown).toBe(false);
+    expect(mockAgregarOperacion).toHaveBeenCalledWith({
+      tipo: 'FINALIZAR_CORTE',
+      payload: expect.objectContaining({
+        reporte_hash: 'hash-offline-001',
+        intento_id: INTENTO_MOCK.id,
+      }),
+      corteId: CORTE_EN_PROGRESO.id,
+    });
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -1221,6 +1246,26 @@ describe('Suite 10: guardarProgreso — offline fallback', () => {
     expect(thrown).toBe(false);
     expect(mockAgregarOperacion).toHaveBeenCalledTimes(1);
   });
+
+  it('10.6 - Fallo de red en guardarProgreso mantiene estado local EN_PROGRESO', async () => {
+    const result = await renderWithCorte(CORTE_MOCK, INTENTO_MOCK);
+
+    mockChain.cortes.single.mockRejectedValueOnce(
+      new TypeError('Failed to fetch'),
+    );
+
+    await act(async () => {
+      await result.current.guardarProgreso({
+        fase_actual: 1,
+        conteo_parcial: { penny: 7 },
+        pagos_electronicos: { credomatic: 10 },
+        gastos_dia: null,
+      });
+    });
+
+    expect(result.current.estado).toBe('EN_PROGRESO');
+    expect(result.current.corte_actual?.fase_actual).toBe(1);
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -1251,6 +1296,18 @@ describe('Suite 11: Reconexión automática — procesarCola al volver online', 
     expect(mockEscucharConectividad).toHaveBeenCalledWith(expect.any(Function));
   });
 
+  it('11.1b - Al montar sin corte activo intenta drenar cola y registra listener', async () => {
+    renderHook(() =>
+      useCorteSesion(SUCURSAL_ID, {
+        autoRecuperarSesion: false,
+      }),
+    );
+
+    expect(mockProcesarCola).toHaveBeenCalledTimes(1);
+    expect(mockProcesarCola).toHaveBeenCalledWith(expect.any(Function));
+    expect(mockEscucharConectividad).toHaveBeenCalledTimes(1);
+  });
+
   it('11.2 - Callback de reconexión ejecuta procesarCola con executor', async () => {
     await renderWithCorte();
 
@@ -1262,9 +1319,52 @@ describe('Suite 11: Reconexión automática — procesarCola al volver online', 
       onOnlineCallback();
     });
 
-    // procesarCola debe haberse llamado con un ejecutor (función)
-    expect(mockProcesarCola).toHaveBeenCalledTimes(1);
-    expect(mockProcesarCola).toHaveBeenCalledWith(expect.any(Function));
+    // procesarCola corre 1 vez al montar + 1 vez al volver online
+    expect(mockProcesarCola).toHaveBeenCalledTimes(2);
+    expect(mockProcesarCola).toHaveBeenNthCalledWith(2, expect.any(Function));
+  });
+
+  it('11.2b - Executor sincroniza FINALIZAR_CORTE contra cortes e intentos', async () => {
+    await renderWithCorte(CORTE_EN_PROGRESO, INTENTO_MOCK);
+
+    const onOnlineCallback = mockEscucharConectividad.mock.calls[0][0] as () => void;
+    await act(async () => {
+      onOnlineCallback();
+    });
+
+    const executor = mockProcesarCola.mock.calls[0][0] as (op: {
+      tipo: string;
+      payload: Record<string, unknown>;
+      corteId: string;
+    }) => Promise<void>;
+
+    mockChain.cortes.single.mockResolvedValueOnce({
+      data: { ...CORTE_EN_PROGRESO, estado: 'FINALIZADO' as const },
+      error: null,
+    });
+    mockChain.intentos.eq.mockResolvedValueOnce({ error: null });
+
+    await executor({
+      tipo: 'FINALIZAR_CORTE',
+      payload: {
+        reporte_hash: 'hash-sync-001',
+        finalizado_at: '2026-02-24T23:59:59.000Z',
+        intento_id: INTENTO_MOCK.id,
+      },
+      corteId: CORTE_EN_PROGRESO.id,
+    });
+
+    expect(mockChain.cortes.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        estado: 'FINALIZADO',
+        reporte_hash: 'hash-sync-001',
+      }),
+    );
+    expect(mockChain.intentos.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        estado: 'COMPLETADO',
+      }),
+    );
   });
 
   it('11.3 - Si procesarCola falla, no rompe la UI (degradación elegante)', async () => {

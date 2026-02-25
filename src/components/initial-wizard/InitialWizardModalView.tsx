@@ -1,4 +1,5 @@
 // 🤖 [IA] - ORDEN #075: View orchestrator — presentación + routing entre 6 steps
+import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Moon, X, ArrowLeft, ArrowRight, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -19,6 +20,24 @@ const InitialWizardModalView = (props: InitialWizardModalProps) => {
   const ctrl = useInitialWizardController(props);
 
   const navState = ctrl.getNavigationState(ctrl.isFlowCompleted());
+
+  useEffect(() => {
+    if (!props.isOpen) return;
+    if (ctrl.currentStep !== 5) return;
+    if (!ctrl.wizardData.selectedStore) return;
+    if (!props.onCheckActiveSessionForStore) return;
+
+    void Promise.resolve(
+      props.onCheckActiveSessionForStore(ctrl.wizardData.selectedStore),
+    ).catch(() => {
+      // El check es best-effort; no debe romper el render del wizard.
+    });
+  }, [
+    props.isOpen,
+    props.onCheckActiveSessionForStore,
+    ctrl.currentStep,
+    ctrl.wizardData.selectedStore,
+  ]);
 
   // ── Step routing ──
   const renderStepContent = () => {

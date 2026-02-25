@@ -10,9 +10,9 @@ function buildFinalizadosQuery(result: QueryResult) {
   const order = vi.fn(() => Promise.resolve(result));
   const lte = vi.fn(() => ({ order }));
   const gte = vi.fn(() => ({ lte }));
-  const eq = vi.fn(() => ({ gte }));
-  const select = vi.fn(() => ({ eq }));
-  return { select, eq, gte, lte, order };
+  const inMock = vi.fn(() => ({ gte }));
+  const select = vi.fn(() => ({ in: inMock }));
+  return { select, inMock, gte, lte, order };
 }
 
 function buildActivosQuery(result: QueryResult) {
@@ -77,6 +77,7 @@ describe('useSupervisorQueries.obtenerCortesDelDia - activity timeline', () => {
     });
 
     expect(cortesMock).toHaveBeenCalledTimes(2);
+    expect(finalizadosQuery.inMock).toHaveBeenCalledWith('estado', ['FINALIZADO', 'ABORTADO']);
     expect(activosQuery.inMock).toHaveBeenCalledWith('estado', ['INICIADO', 'EN_PROGRESO']);
     expect(rows).toHaveLength(2);
     expect(rows[0].id).toBe('a1');

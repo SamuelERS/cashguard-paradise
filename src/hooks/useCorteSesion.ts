@@ -284,6 +284,21 @@ export function useCorteSesion(
     } catch (err: unknown) {
       // 🤖 [IA] - CASO #3 RESILIENCIA OFFLINE (Iter 3a): Clasificador robusto de errores de red
       if (esErrorDeRed(err) && corteActual) {
+        const ahora = new Date().toISOString();
+        const estadoOptimista: EstadoCorte =
+          corteActual.estado === 'INICIADO' ? 'EN_PROGRESO' : corteActual.estado;
+        setCorteActual({
+          ...corteActual,
+          fase_actual: datos.fase_actual,
+          estado: estadoOptimista,
+          datos_conteo: {
+            conteo_parcial: datos.conteo_parcial,
+            pagos_electronicos: datos.pagos_electronicos,
+            gastos_dia: datos.gastos_dia,
+          },
+          updated_at: ahora,
+        });
+
         agregarOperacion({
           tipo: 'GUARDAR_PROGRESO',
           payload: {
@@ -368,6 +383,30 @@ export function useCorteSesion(
 
       return corteFinalizado;
     } catch (err: unknown) {
+      if (esErrorDeRed(err) && corteActual) {
+        const ahora = new Date().toISOString();
+        agregarOperacion({
+          tipo: 'FINALIZAR_CORTE',
+          payload: {
+            reporte_hash,
+            finalizado_at: ahora,
+            intento_id: intentoActual?.id ?? null,
+          },
+          corteId: corteActual.id,
+        });
+
+        const corteFinalizadoLocal: Corte = {
+          ...corteActual,
+          estado: 'FINALIZADO',
+          reporte_hash,
+          finalizado_at: ahora,
+          updated_at: ahora,
+        };
+        setCorteActual(corteFinalizadoLocal);
+        setIntentoActual(null);
+        return corteFinalizadoLocal;
+      }
+
       const message = err instanceof Error ? err.message : 'Error desconocido';
       setError(message);
       throw err;
@@ -611,7 +650,6 @@ export function useCorteSesion(
 
   useEffect(() => {
     if (!procesarColaEnReconexion) return;
-    if (!corteActual) return;
 
     const ejecutor = async (op: OperacionOffline): Promise<void> => {
       if (op.tipo === 'GUARDAR_PROGRESO') {
@@ -635,17 +673,69 @@ export function useCorteSesion(
         if (updateError) {
           throw new Error(updateError.message);
         }
+        return;
+      }
+
+      if (op.tipo === 'FINALIZAR_CORTE') {
+        const payload = op.payload as {
+          reporte_hash?: string;
+          finalizado_at?: string;
+          intento_id?: string | null;
+        };
+
+        if (!payload.reporte_hash || typeof payload.reporte_hash !== 'string') {
+          throw new Error('Operacion FINALIZAR_CORTE invalida: reporte_hash faltante');
+        }
+
+        const finalizadoAt = payload.finalizado_at ?? new Date().toISOString();
+        const { error: updateError } = await tables
+          .cortes()
+          .update({
+            estado: 'FINALIZADO',
+            reporte_hash: payload.reporte_hash,
+            finalizado_at: finalizadoAt,
+            updated_at: finalizadoAt,
+          })
+          .eq('id', op.corteId)
+          .select()
+          .single();
+
+        if (updateError) {
+          throw new Error(updateError.message);
+        }
+
+        if (payload.intento_id) {
+          const { error: intentoUpdateError } = await tables
+            .corteIntentos()
+            .update({
+              estado: 'COMPLETADO',
+              finalizado_at: finalizadoAt,
+            })
+            .eq('id', payload.intento_id);
+
+          if (intentoUpdateError) {
+            throw new Error(intentoUpdateError.message);
+          }
+        }
       }
     };
 
-    const cleanup = escucharConectividad(() => {
+    const drenarCola = () => {
       procesarCola(ejecutor).catch(() => {
         // 🤖 [IA] - v1.3.0: Degradación elegante — fallo en cola no rompe UI
       });
+    };
+
+    // Intento inmediato al montar para sincronizar operaciones pendientes
+    // aunque no haya un corte activo cargado en memoria.
+    drenarCola();
+
+    const cleanup = escucharConectividad(() => {
+      drenarCola();
     });
 
     return cleanup;
-  }, [corteActual, procesarColaEnReconexion]);
+  }, [procesarColaEnReconexion]);
 
   // -------------------------------------------------------------------------
   // Return

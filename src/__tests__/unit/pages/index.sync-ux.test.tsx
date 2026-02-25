@@ -11,7 +11,8 @@ const supabaseMocks = vi.hoisted(() => {
   const limitMock = vi.fn(() => ({ maybeSingle: maybeSingleMock }));
   const orderMock = vi.fn(() => ({ limit: limitMock }));
   const inMock = vi.fn(() => ({ order: orderMock }));
-  const selectMock = vi.fn(() => ({ in: inMock }));
+  const eqMock = vi.fn(() => ({ in: inMock }));
+  const selectMock = vi.fn(() => ({ in: inMock, eq: eqMock }));
   const cortesMock = vi.fn(() => ({ select: selectMock }));
   const empleadosInMock = vi.fn();
   const empleadosSelectMock = vi.fn(() => ({ in: empleadosInMock }));
@@ -19,6 +20,7 @@ const supabaseMocks = vi.hoisted(() => {
 
   return {
     maybeSingleMock,
+    eqMock,
     cortesMock,
     empleadosInMock,
     empleadosMock,

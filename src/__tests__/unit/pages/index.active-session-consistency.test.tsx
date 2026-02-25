@@ -18,6 +18,7 @@ const supabaseMocks = vi.hoisted(() => {
 
   return {
     maybeSingleMock,
+    inMock,
     eqMock,
     cortesMock,
     empleadosInMock,
@@ -31,13 +32,10 @@ const corteSesionMocks = vi.hoisted(() => ({
     cajero: 'Jonathan Melara',
     testigo: 'Adonay Torres',
     sucursal_id: 'store-1',
+    venta_esperada: 600,
   }),
   guardarProgreso: vi.fn().mockResolvedValue(undefined),
-  finalizarCorte: vi.fn().mockResolvedValue({
-    id: 'corte-1',
-    estado: 'FINALIZADO',
-    finalizado_at: '2026-02-24T22:00:00.000Z',
-  }),
+  finalizarCorte: vi.fn().mockResolvedValue(undefined),
   abortarCorte: vi.fn().mockResolvedValue(undefined),
   recuperarSesion: vi.fn().mockResolvedValue(null),
   error: null as string | null,
@@ -69,7 +67,7 @@ vi.mock('@/hooks/useCorteSesion', () => ({
 
 vi.mock('@/components/operation-selector/OperationSelector', () => ({
   OperationSelector: ({ onSelectMode }: { onSelectMode: (mode: 'cash_cut' | 'cash_count') => void }) => (
-    <div>
+    <div data-testid="operation-selector">
       <button type="button" data-testid="open-cash-cut" onClick={() => onSelectMode('cash_cut')}>
         Abrir Corte
       </button>
@@ -89,7 +87,6 @@ vi.mock('@/components/InitialWizardModal', () => ({
     }) => void;
   }) => {
     if (!isOpen) return null;
-
     return (
       <div data-testid="initial-wizard">
         <button
@@ -99,7 +96,7 @@ vi.mock('@/components/InitialWizardModal', () => ({
             selectedStore: 'store-1',
             selectedCashier: 'cashier-1',
             selectedWitness: 'witness-1',
-            expectedSales: '500',
+            expectedSales: '600',
             dailyExpenses: [],
           })}
         >
@@ -115,21 +112,7 @@ vi.mock('@/components/morning-count/MorningCountWizard', () => ({
 }));
 
 vi.mock('@/components/CashCounter', () => ({
-  default: (props: {
-    onFinalizarCorte?: (hash: string) => Promise<void>;
-  }) => (
-    <div data-testid="cash-counter">
-      <button
-        type="button"
-        data-testid="finish-cut"
-        onClick={() => {
-          void props.onFinalizarCorte?.('hash-ui-cierre');
-        }}
-      >
-        Finalizar corte
-      </button>
-    </div>
-  ),
+  default: () => <div data-testid="cash-counter">CashCounter</div>,
 }));
 
 vi.mock('@/components/deliveries/DeliveryDashboardWrapper', () => ({
@@ -140,15 +123,16 @@ vi.mock('@/components/corte/CorteOrquestador', () => ({
   default: () => null,
 }));
 
-describe('Index — finalización de corte sincroniza terminalidad', () => {
+describe('Index — consistencia entre sesión activa y flujo de inicio nocturno', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-
+    supabaseMocks.eqMock.mockImplementation(() => ({
+      in: (...args: unknown[]) => supabaseMocks.inMock(...args),
+    }));
     supabaseMocks.maybeSingleMock.mockResolvedValue({
       data: null,
       error: null,
     });
-
     supabaseMocks.empleadosInMock.mockResolvedValue({
       data: [
         { id: 'cashier-1', nombre: 'Jonathan Melara' },
@@ -158,22 +142,20 @@ describe('Index — finalización de corte sincroniza terminalidad', () => {
     });
   });
 
-  it('al finalizar desde UI llama finalizarCorte con reporte_hash', async () => {
-    const user = userEvent.setup();
-    render(<Index />);
-
-    await user.click(screen.getByTestId('open-cash-cut'));
-    await user.click(await screen.findByTestId('wizard-complete'));
-
-    await screen.findByTestId('cash-counter');
-    await user.click(screen.getByTestId('finish-cut'));
-
-    expect(corteSesionMocks.finalizarCorte).toHaveBeenCalledTimes(1);
-    expect(corteSesionMocks.finalizarCorte).toHaveBeenCalledWith('hash-ui-cierre');
-  });
-
-  it('muestra toast específico de red cuando iniciarCorte falla por conectividad', async () => {
-    corteSesionMocks.iniciarCorte.mockRejectedValueOnce(new TypeError('Failed to fetch'));
+  it('cuando aparece sesión EN_PROGRESO en validación final, no debe llamar iniciarCorte', async () => {
+    supabaseMocks.maybeSingleMock
+      .mockResolvedValueOnce({ data: null, error: null })
+      .mockResolvedValueOnce({
+        data: {
+          id: 'corte-activo-1',
+          sucursal_id: 'store-1',
+          correlativo: 'COR-1',
+          created_at: '2026-02-24T15:00:00.000Z',
+          cajero: 'Jonathan Melara',
+          estado: 'EN_PROGRESO',
+        },
+        error: null,
+      });
 
     const user = userEvent.setup();
     render(<Index />);
@@ -182,9 +164,78 @@ describe('Index — finalización de corte sincroniza terminalidad', () => {
     await user.click(await screen.findByTestId('wizard-complete'));
 
     await waitFor(() => {
-      expect(corteSesionMocks.iniciarCorte).toHaveBeenCalledTimes(1);
+      expect(corteSesionMocks.iniciarCorte).not.toHaveBeenCalled();
     });
-    expect(toastMocks.error).toHaveBeenCalledWith('No hay conexión con Supabase. Verifique internet y reintente.');
-    expect(screen.queryByTestId('cash-counter')).not.toBeInTheDocument();
+  });
+
+  it('si hay activo en sucursal seleccionada pero otro más reciente en otra sucursal, debe bloquear iniciarCorte', async () => {
+    const activeStore2 = {
+      data: {
+        id: 'corte-activo-suc-2',
+        sucursal_id: 'store-2',
+        correlativo: 'COR-2',
+        created_at: '2026-02-24T15:01:00.000Z',
+        cajero: 'Irvin Abarca',
+        estado: 'EN_PROGRESO',
+      },
+      error: null,
+    };
+
+    const activeStore1 = {
+      data: {
+        id: 'corte-activo-suc-1',
+        sucursal_id: 'store-1',
+        correlativo: 'COR-1',
+        created_at: '2026-02-24T14:59:00.000Z',
+        cajero: 'Adonay Torres',
+        estado: 'EN_PROGRESO',
+      },
+      error: null,
+    };
+
+    supabaseMocks.maybeSingleMock.mockResolvedValue(activeStore2);
+    supabaseMocks.eqMock.mockImplementation((field: string, value: string) => {
+      if (field === 'sucursal_id' && value === 'store-1') {
+        return {
+          in: () => ({
+            order: () => ({
+              limit: () => ({
+                maybeSingle: () => Promise.resolve(activeStore1),
+              }),
+            }),
+          }),
+        };
+      }
+      return {
+        in: (...args: unknown[]) => supabaseMocks.inMock(...args),
+      };
+    });
+
+    const user = userEvent.setup();
+    render(<Index />);
+
+    await user.click(screen.getByTestId('open-cash-cut'));
+    await user.click(await screen.findByTestId('wizard-complete'));
+
+    await waitFor(() => {
+      expect(corteSesionMocks.iniciarCorte).not.toHaveBeenCalled();
+    });
+  });
+
+  it('si falla verificación de sesión activa por red, bloquea continuación y muestra error de conexión', async () => {
+    supabaseMocks.maybeSingleMock
+      .mockResolvedValueOnce({ data: null, error: null })
+      .mockRejectedValueOnce(new TypeError('Failed to fetch'));
+
+    const user = userEvent.setup();
+    render(<Index />);
+
+    await user.click(screen.getByTestId('open-cash-cut'));
+    await user.click(await screen.findByTestId('wizard-complete'));
+
+    await waitFor(() => {
+      expect(toastMocks.error).toHaveBeenCalledWith('Sin conexión a Supabase. No se puede validar sesión activa.');
+    });
+    expect(corteSesionMocks.iniciarCorte).not.toHaveBeenCalled();
   });
 });

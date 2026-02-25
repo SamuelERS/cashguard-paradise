@@ -212,7 +212,7 @@ export function useSupervisorQueries(): UseSupervisorQueriesReturn {
         tables
           .cortes()
           .select('*, sucursales(id, nombre, codigo, activa)')
-          .eq('estado', 'FINALIZADO')
+          .in('estado', ['FINALIZADO', 'ABORTADO'])
           .gte('finalizado_at', inicio)
           .lte('finalizado_at', fin)
           .order('finalizado_at', { ascending: false }),
