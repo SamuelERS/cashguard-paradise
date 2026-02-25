@@ -30,8 +30,8 @@
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 16px;
-  padding: clamp(18px, 4.5vw, 28px);
-  min-height: clamp(250px, 32vw, 340px);
+  padding: clamp(16px, 3.2vw, 22px);
+  min-height: clamp(220px, 24vw, 290px);
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
 }
@@ -162,8 +162,47 @@
   }
 }
 
+@media (max-width: 1024px) {
+  .operation-card {
+    min-height: auto;
+  }
+}
+
 @media (hover: none) {
   .operation-card:hover {
     transform: none;
   }
+}
+
+.operation-team-panel {
+  padding: clamp(14px, 4vw, 20px);
+  background-color: var(--glass-bg-primary);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-left: 3px solid #0a84ff;
+  color: #8899a6;
+  font-size: clamp(0.75rem, 3vw, 0.875rem);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.operation-team-signature {
+  font-size: clamp(0.625rem, 2.5vw, 0.75rem);
+  color: #657786;
+}
+
+.operation-team-icon {
+  font-size: clamp(0.875rem, 3.5vw, 1rem);
+}
+
+.operation-team-tag {
+  font-size: clamp(0.625rem, 2.5vw, 0.75rem);
+  color: #0a84ff;
+  letter-spacing: 0.02em;
+}
+
+.operation-team-heart {
+  width: clamp(12px, 3vw, 14px);
+  height: clamp(12px, 3vw, 14px);
+  filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.5));
 }

@@ -47,13 +47,13 @@ describe('OperationSelector UX contract (TDD RED)', () => {
     expect(css).toMatch(/@media\s*\(max-width:\s*430px\)[\s\S]*\.operation-brand-logo--right[\s\S]*(scale\(|max-height:\s*44px|opacity:\s*0\.[0-9]+)/);
   });
 
-  test('operation cards use bounded padding and minimum height for professional rhythm', () => {
+  test('operation cards use compact spacing and reduced min-height for professional rhythm', () => {
     const css = readFileSync(resolve(CSS_PATH), 'utf-8');
     const tsx = readFileSync(resolve(TSX_PATH), 'utf-8');
 
-    expect(css).toMatch(/\.operation-card\s*\{[\s\S]*padding:\s*clamp\(18px,\s*4\.5vw,\s*28px\)/);
-    expect(css).toMatch(/\.operation-card\s*\{[\s\S]*min-height:\s*clamp\(250px,\s*32vw,\s*340px\)/);
-    expect(css).toMatch(/@media\s*\(max-width:\s*640px\)[\s\S]*\.operation-card[\s\S]*min-height:\s*auto/);
+    expect(css).toMatch(/\.operation-card\s*\{[\s\S]*padding:\s*clamp\(16px,\s*3\.2vw,\s*22px\)/);
+    expect(css).toMatch(/\.operation-card\s*\{[\s\S]*min-height:\s*clamp\(220px,\s*24vw,\s*290px\)/);
+    expect(css).toMatch(/@media\s*\(max-width:\s*1024px\)[\s\S]*\.operation-card[\s\S]*min-height:\s*auto/);
 
     expect(tsx).not.toMatch(/className="operation-card[^"]*"\s*style=\{\{[\s\S]*padding:/);
   });

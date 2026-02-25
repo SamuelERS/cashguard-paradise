@@ -12,6 +12,7 @@
 import { motion } from 'framer-motion';
 import { Sunrise, Moon, Package, ArrowRight, Calculator, Fish, Heart, BarChart3 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 // 🤖 [IA] - v1.2.24 - FloatingParticles eliminado para mejorar rendimiento
 import { OperationMode, OPERATION_MODES } from '@/types/operation-mode';
 import { AppFooter } from '@/components/AppFooter';
@@ -23,6 +24,7 @@ interface OperationSelectorProps {
 
 export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
   const navigate = useNavigate();
+  const [showTeamMessage, setShowTeamMessage] = useState(false);
   const cashCount = OPERATION_MODES[OperationMode.CASH_COUNT];
   const cashCut = OPERATION_MODES[OperationMode.CASH_CUT];
   const deliveryView = OPERATION_MODES[OperationMode.DELIVERY_VIEW];
@@ -53,12 +55,12 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
         />
       </div>
       
-      <div className="relative z-10 container mx-auto px-4 py-8">
+      <div className="relative z-10 container mx-auto px-4 py-6 md:py-8">
         {/* Header con título principal */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12 pt-20"
+          className="text-center mb-10 pt-16 md:pt-20"
         >
           <div className="flex items-center justify-center gap-3 mb-4">
             <Calculator
@@ -99,7 +101,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
         </motion.div>
 
         {/* Contenedor de las tres opciones */}
-        <div className="grid md:grid-cols-2 gap-6 max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-5 md:gap-6 max-w-6xl mx-auto">
           {/* Card de Conteo de Caja (Mañana) */}
           <motion.button
             type="button"
@@ -433,97 +435,80 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
-          className="text-center mt-12"
+          className="text-center mt-10"
         >
           <p className="text-sm text-[#657786]">
             Seleccione la operación correcta según el horario actual
           </p>
         </motion.div>
 
-        {/* 🤖 [IA] - v1.0.87 - Mensaje motivacional del equipo */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
-          className="mt-12 max-w-2xl mx-auto rounded-xl"
-          style={{ 
-            padding: 'clamp(16px, 5.6vw, 24px)',
-            backgroundColor: 'var(--glass-bg-primary)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
-            border: '1px solid rgba(255, 255, 255, 0.15)',
-            borderLeft: '3px solid #0a84ff',
-            color: '#8899a6',
-            fontSize: `clamp(0.75rem, 3vw, 0.875rem)`,
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
-          }}
+          className="mt-8 max-w-2xl mx-auto"
         >
-          <span className="italic">
-            "Este sistema protege tu trabajo diario y garantiza transparencia en cada operación. 
-            Confiamos en ti, y juntos cuidamos los recursos de Paradise."
-          </span>
-          <span className="block mt-2" style={{ 
-            fontSize: `clamp(0.625rem, 2.5vw, 0.75rem)`,
-            color: '#657786' 
-          }}>
-            - Equipo de Acuarios Paradise
-          </span>
-
-          {/* 🤖 [IA] - v1.0.0 - Footer espiritual integrado - OPCIÓN 1: Esquina inferior derecha */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.9, duration: 0.5 }}
-            className="flex items-center justify-end gap-2 mt-4 pt-3 border-t border-white/[0.08]"
+          <button
+            type="button"
+            aria-expanded={showTeamMessage}
+            aria-controls="team-message-panel"
+            onClick={() => setShowTeamMessage(prev => !prev)}
+            className="operation-team-toggle w-full rounded-lg border border-white/10 bg-white/[0.03] px-4 py-2 text-left text-xs font-medium text-white/75 transition-colors hover:bg-white/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/35"
           >
-            <motion.span
-              animate={{
-                scale: [1, 1.1, 1],
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                repeatType: 'reverse',
-              }}
-              style={{
-                fontSize: `clamp(0.875rem, 3.5vw, 1rem)`,
-              }}
-            >
-              🕊️
-            </motion.span>
-            
-            <span
-              className="font-semibold"
-              style={{
-                fontSize: `clamp(0.625rem, 2.5vw, 0.75rem)`,
-                color: '#0a84ff',
-                letterSpacing: '0.02em',
-              }}
-            >
-              JesucristoEsDios
-            </span>
+            {showTeamMessage ? 'Ocultar mensaje del equipo' : 'Ver mensaje del equipo'}
+          </button>
 
+          {showTeamMessage && (
             <motion.div
-              animate={{
-                scale: [1, 1.2, 1],
-              }}
-              transition={{
-                duration: 1.5,
-                repeat: Infinity,
-                repeatType: 'reverse',
-              }}
+              id="team-message-panel"
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2 }}
+              className="operation-team-panel mt-3 rounded-xl"
             >
-              <Heart
-                fill="#ef4444"
-                stroke="#ef4444"
-                style={{
-                  width: `clamp(12px, 3vw, 14px)`,
-                  height: `clamp(12px, 3vw, 14px)`,
-                  filter: 'drop-shadow(0 0 6px rgba(239, 68, 68, 0.5))',
-                }}
-              />
+              <span className="italic">
+                "Este sistema protege tu trabajo diario y garantiza transparencia en cada operación.
+                Confiamos en ti, y juntos cuidamos los recursos de Paradise."
+              </span>
+              <span className="operation-team-signature block mt-2">- Equipo de Acuarios Paradise</span>
+
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.15, duration: 0.3 }}
+                className="flex items-center justify-end gap-2 mt-4 pt-3 border-t border-white/[0.08]"
+              >
+                <motion.span
+                  animate={{
+                    scale: [1, 1.1, 1],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    repeatType: 'reverse',
+                  }}
+                  className="operation-team-icon"
+                >
+                  🕊️
+                </motion.span>
+
+                <span className="operation-team-tag font-semibold">JesucristoEsDios</span>
+
+                <motion.div
+                  animate={{
+                    scale: [1, 1.2, 1],
+                  }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Infinity,
+                    repeatType: 'reverse',
+                  }}
+                >
+                  <Heart fill="#ef4444" stroke="#ef4444" className="operation-team-heart" />
+                </motion.div>
+              </motion.div>
             </motion.div>
-          </motion.div>
+          )}
         </motion.div>
       </div>
     </div>

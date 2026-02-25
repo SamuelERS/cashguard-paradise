@@ -156,14 +156,21 @@ describe('🌅 Morning Count Flow Simplified Tests', () => {
     expect(screen.getByText('Fin de Turno')).toBeInTheDocument();
   });
 
-  it('debe mostrar el mensaje motivacional del equipo', async () => {
-    renderWithProviders(<Index />);
-    
+  it('debe permitir expandir el mensaje motivacional del equipo', async () => {
+    const { user } = renderWithProviders(<Index />);
+
     await waitFor(() => {
       expect(screen.getByText(/Seleccione Operación/)).toBeInTheDocument();
     });
-    
-    // Verificar que el mensaje motivacional está presente
+
+    const toggle = screen.getByRole('button', { name: /ver mensaje del equipo/i });
+    expect(toggle).toBeInTheDocument();
+    expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.queryByText(/Este sistema protege tu trabajo diario/)).not.toBeInTheDocument();
+
+    await user.click(toggle);
+
+    expect(toggle).toHaveAttribute('aria-expanded', 'true');
     expect(screen.getByText(/Este sistema protege tu trabajo diario/)).toBeInTheDocument();
     expect(screen.getByText(/Equipo de Acuarios Paradise/)).toBeInTheDocument();
   });
