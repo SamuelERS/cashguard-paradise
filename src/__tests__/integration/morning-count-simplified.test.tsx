@@ -1,6 +1,6 @@
 // 🤖 [IA] - v1.2.1: Simplified integration tests for Morning Count flow - SECTOR 3
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { screen, waitFor } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import Index from '@/pages/Index';
 import {
   renderWithProviders,
@@ -156,23 +156,21 @@ describe('🌅 Morning Count Flow Simplified Tests', () => {
     expect(screen.getByText('Fin de Turno')).toBeInTheDocument();
   });
 
-  it('debe permitir expandir el mensaje motivacional del equipo', async () => {
-    const { user } = renderWithProviders(<Index />);
+  it('debe mostrar mensaje institucional fijo del equipo', async () => {
+    renderWithProviders(<Index />);
 
     await waitFor(() => {
       expect(screen.getByText(/Seleccione Operación/)).toBeInTheDocument();
     });
 
-    const toggle = screen.getByRole('button', { name: /ver mensaje del equipo/i });
-    expect(toggle).toBeInTheDocument();
-    expect(toggle).toHaveAttribute('aria-expanded', 'false');
-    expect(screen.queryByText(/Este sistema protege tu trabajo diario/)).not.toBeInTheDocument();
-
-    await user.click(toggle);
-
-    expect(toggle).toHaveAttribute('aria-expanded', 'true');
-    expect(screen.getByText(/Este sistema protege tu trabajo diario/)).toBeInTheDocument();
-    expect(screen.getByText(/Equipo de Acuarios Paradise/)).toBeInTheDocument();
+    const panel = screen.getByRole('note');
+    expect(within(panel).getByText(/Compromiso Operativo/i)).toBeInTheDocument();
+    expect(
+      within(panel).getByText(/Este sistema resguarda tu trabajo diario/i),
+    ).toBeInTheDocument();
+    expect(within(panel).getByText(/Equipo de Acuarios Paradise/i)).toBeInTheDocument();
+    expect(within(panel).getByText(/JesucristoEsDios/i)).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /ver mensaje del equipo/i })).not.toBeInTheDocument();
   });
 
   it('debe mantener el estado del modal entre navegaciones de pasos', async () => {
