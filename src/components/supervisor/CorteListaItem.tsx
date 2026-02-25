@@ -7,6 +7,7 @@ import { calculateCashTotal, formatCurrency } from '@/utils/calculations';
 import type { CashCount } from '@/types/cash';
 import { calcularSemaforo } from '@/utils/semaforoLogic';
 import { SemaforoIndicador } from './SemaforoIndicador';
+import { parseCorrelativo } from './correlativoMetrics';
 
 // ---------------------------------------------------------------------------
 // Tipos públicos
@@ -15,6 +16,9 @@ import { SemaforoIndicador } from './SemaforoIndicador';
 export interface CorteListaItemProps {
   corte: CorteConSucursal;
   onClick: (id: string) => void;
+  contextoCorrelativo?: {
+    atraso: number;
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -176,7 +180,11 @@ function extraerTotalesReporte(datosReporte: Record<string, unknown> | null): {
  * <CorteListaItem corte={corte} onClick={(id) => navigate(`/supervisor/corte/${id}`)} />
  * ```
  */
-export function CorteListaItem({ corte, onClick }: CorteListaItemProps) {
+export function CorteListaItem({
+  corte,
+  onClick,
+  contextoCorrelativo,
+}: CorteListaItemProps) {
   const { totalEfectivo, totalElectronico, disponible: conteoDisponible } = extraerTotalesConteo(
     corte.datos_conteo,
   );
@@ -203,6 +211,11 @@ export function CorteListaItem({ corte, onClick }: CorteListaItemProps) {
 
   const estadoVisible = corte.estado.replace(/_/g, ' ');
   const esCorteCerrado = corte.estado === 'FINALIZADO' || corte.estado === 'ABORTADO';
+  const correlativoParseado = parseCorrelativo(corte.correlativo);
+  const secuencialTexto =
+    correlativoParseado.valido && correlativoParseado.secuencial !== null
+      ? `Código #${String(correlativoParseado.secuencial).padStart(3, '0')}`
+      : 'Código no disponible';
   const timestampOperativo = esCorteCerrado ? (corte.finalizado_at ?? corte.created_at) : corte.created_at;
   const hora = formatearHora(timestampOperativo);
   const etiquetaTemporal = esCorteCerrado ? 'Finalizado' : 'Creado';
@@ -240,6 +253,17 @@ export function CorteListaItem({ corte, onClick }: CorteListaItemProps) {
           </span>
         </div>
         <p className="text-xs text-white/50 truncate leading-tight mt-0.5">{corte.cajero}</p>
+        <p className="text-[11px] text-white/45 truncate leading-tight mt-1">{corte.correlativo}</p>
+        <div className="mt-1 flex items-center gap-2">
+          <span className="px-2 py-0.5 rounded-full border border-white/15 text-[10px] text-white/60">
+            {secuencialTexto}
+          </span>
+          {contextoCorrelativo && contextoCorrelativo.atraso > 0 && (
+            <span className="px-2 py-0.5 rounded-full border border-amber-500/35 bg-amber-500/10 text-[10px] text-amber-300">
+              Atraso {contextoCorrelativo.atraso}
+            </span>
+          )}
+        </div>
         <p className="text-[11px] text-white/35 leading-tight mt-1">
           {etiquetaTemporal} {hora}
         </p>
