@@ -144,6 +144,19 @@ describe('InitialWizardModalView — Integration', () => {
       render(<InitialWizardModalView {...defaultProps} />);
       expect(screen.getByText('Paso 3 de 6')).toBeInTheDocument();
     });
+
+    it('muestra error de finalización dentro del modal cuando se provee completionError', () => {
+      render(
+        <InitialWizardModalView
+          {...defaultProps}
+          completionError="Ya existe un corte EN PROGRESO para esta sucursal. Reanude la sesión."
+        />
+      );
+
+      expect(screen.getByRole('alert')).toHaveTextContent(
+        'Ya existe un corte EN PROGRESO para esta sucursal. Reanude la sesión.'
+      );
+    });
   });
 
   // ── 2. Step routing ──

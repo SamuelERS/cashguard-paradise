@@ -198,16 +198,16 @@ export function GuidedFieldView({
         const coinImage = DENOMINATION_IMAGE_MAP[denomKey] ?? DENOMINATION_IMAGE_MAP.penny;
 
         return (
-          <img
-            src={coinImage}
-            alt={`Moneda de ${currentFieldLabel}`}
-            className="object-contain"
-            style={{
-              width: 'clamp(234.375px, 58.59vw, 390.625px)', // 🤖 [IA] - v1.3.3: Monedas 25% más grandes (segundo aumento adicional)
-              aspectRatio: '2.4 / 1' // 🤖 [IA] - v1.3.0: Proporción rectangular como billetes
-            }}
-            onError={(e) => { e.currentTarget.src = '/placeholder.svg'; }}
-          />
+            <img
+              src={coinImage}
+              alt={`Moneda de ${currentFieldLabel}`}
+              className="object-contain"
+              style={{
+                width: 'clamp(180px, 42vw, 300px)',
+                aspectRatio: '2.4 / 1' // 🤖 [IA] - v1.3.0: Proporción rectangular como billetes
+              }}
+              onError={(e) => { e.currentTarget.src = '/placeholder.svg'; }}
+            />
         );
       }
       case 'bill': {
@@ -324,8 +324,8 @@ export function GuidedFieldView({
             ? "border-2 border-warning/30"
             : "border-2 border-primary/30"
         )}>
-          {/* Content Section with padding and bottom space for absolute footer */}
-          <div className="p-[clamp(12px,3vw,20px)] pb-24">
+          {/* Content Section */}
+          <div className="p-[clamp(12px,2.5vw,18px)] pb-4">
             {/* 🤖 [IA] - v1.2.24: Header optimizado con moneda más grande */}
             <div className="flex items-center justify-center" style={{
               marginBottom: 'clamp(16px, 3vw, 20px)',
@@ -343,9 +343,9 @@ export function GuidedFieldView({
                     : 'bg-gradient-to-br from-accent-primary via-accent-primary/80 to-accent-secondary'
                 )}
                 style={{
-                  width: 'clamp(234.375px, 58.59vw, 390.625px)', // 🤖 [IA] - v1.3.3: Contenedor 25% más grande (segundo aumento)
+                  width: 'clamp(180px, 42vw, 300px)',
                   aspectRatio: '2.4 / 1', // 🤖 [IA] - v1.3.0: Proporción de billete
-                  borderRadius: 'clamp(23.44px, 5.86vw, 35.16px)' // 🤖 [IA] - v1.3.3: Bordes escalados proporcionalmente
+                  borderRadius: 'clamp(16px, 3.8vw, 24px)'
                 }}
               >
                 {getIcon()}
@@ -364,8 +364,8 @@ export function GuidedFieldView({
             {/* Input y confirmación optimizados */}
             <div>
               {/* Input y botón integrados */}
-              <div className="flex items-center" style={{ gap: 'clamp(8px, 2vw, 16px)' }}>
-                <div className="flex-1 relative">
+              <div className="cashcounter-field-row flex items-center" style={{ gap: 'clamp(8px, 2vw, 16px)' }}>
+                <div className="cashcounter-field-input-wrap flex-1 relative">
                   {/* 🤖 [IA] - v1.2.35: Accessible label for screen readers (WCAG 2.1) */}
                   <Label
                     htmlFor={inputId}
@@ -395,21 +395,22 @@ export function GuidedFieldView({
                     placeholder={
                       currentFieldType === 'electronic'
                         ? '0.00'
-                        : `¿Cuántos ${getDenominationDescription(currentFieldName, currentFieldLabel).toLowerCase()}?`
+                        : 'Ingresa la cantidad'
                     } // 🤖 [IA] - v1.2.51: Placeholder descriptivo coherente con Phase2VerificationSection
                     style={{
                       backgroundColor: 'rgba(255, 255, 255, 0.05)',
                       border: `2px solid ${borderColor}`,
                       borderRadius: 'clamp(8px, 2vw, 12px)',
-                      fontSize: 'clamp(18px, 4vw, 24px)', // 🤖 [IA] - v1.2.18: Responsive font-size - mínimo más grande para móviles
+                      fontSize: 'clamp(16px, 3vw, 20px)',
                       fontWeight: 'bold',
-                      height: 'clamp(48px, 12vw, 56px)', // 🤖 [IA] - v1.2.18: Responsive height - vw mejor para móviles
+                      height: 'clamp(44px, 6vw, 52px)',
                       textAlign: 'center',
                       paddingLeft: currentFieldType === 'electronic' ? 'clamp(36px, 6vw, 48px)' : 'clamp(14px, 3vw, 20px)', // 🤖 [IA] - v1.2.18: Responsive padding - ajustar mínimos
                       paddingRight: 'clamp(14px, 3vw, 20px)', // 🤖 [IA] - v1.2.18: Responsive padding right - aumentar mínimo
                       transition: 'all 0.3s ease'
                     } as React.CSSProperties}
                     className={cn(
+                      "cashcounter-field-input",
                       // 🤖 [IA] - v1.2.22: CONSTITUTIONAL FIX - Doctrinal neon-glow implementation per Doctrine D.4
                       isMorningCount ? "focus:neon-glow-morning" : "focus:neon-glow-primary",
                       shouldAnimate && (isMorningCount ? "guided-field-pulse-morning" : "guided-field-pulse-evening"),
@@ -424,9 +425,9 @@ export function GuidedFieldView({
                   data-size="default"
                   onTouchStart={(e) => e.preventDefault()} // 🤖 [IA] - v1.1.17: preventDefault para mantener focus
                   aria-label="Confirmar cantidad ingresada"
-                  className="btn-guided-confirm"
+                  className="btn-guided-confirm cashcounter-field-confirm"
                   style={{
-                    height: 'clamp(48px, 12vw, 56px)' // 🤖 [IA] - v1.2.19: Contextual height matching input for perfect alignment
+                    height: 'clamp(44px, 6vw, 52px)'
                   }}
                 >
                   Confirmar
@@ -464,9 +465,9 @@ export function GuidedFieldView({
             </div>
           </div>
 
-          {/* 🤖 [IA] - v1.2.26: Absolute positioned footer with visual separation */}
+          {/* Footer de navegación */}
           {(onCancel || onPrevious) && (
-            <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-3 border-t border-white/10 p-4 bg-black/20 backdrop-blur-sm">
+            <div className="mt-4 flex items-center justify-center gap-3 border-t border-white/10 p-4 bg-black/20">
               {/* Cancel Button */}
               {onCancel && (
                 <DestructiveActionButton

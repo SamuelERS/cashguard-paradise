@@ -19,6 +19,7 @@ interface GuidedProgressIndicatorProps {
 export const GuidedProgressIndicator: React.FC<GuidedProgressIndicatorProps> = ({
   currentStep,
   totalSteps,
+  currentFieldLabel,
   instructionText,
   isCompleted,
   isMorningCount = false,
@@ -28,6 +29,9 @@ export const GuidedProgressIndicator: React.FC<GuidedProgressIndicatorProps> = (
   // 🤖 [IA] - v1.2.14 - Cálculo de progreso unificado
   const progressPercentage = Math.min((currentStep / totalSteps) * 100, 100);
   const modeClass = isMorningCount ? 'morning-mode' : 'evening-mode';
+  const effectiveInstruction = instructionText?.trim()
+    ? instructionText
+    : `Campo actual: ${currentFieldLabel}`;
 
   // Vista unificada con sistema de diseño coherente
   return (
@@ -74,6 +78,17 @@ export const GuidedProgressIndicator: React.FC<GuidedProgressIndicatorProps> = (
           transition={{ duration: 0.5, ease: "easeOut" }}
         />
       </div>
+
+      {!isCompleted && (
+        <div className="guided-progress-instructions cashcounter-status-banner-slot">
+          <div className="guided-progress-instruction-content">
+            <ArrowRight className={`guided-progress-instruction-icon ${modeClass}`} />
+            <p className="guided-progress-instruction-text" data-testid="guided-instruction-text">
+              {effectiveInstruction}
+            </p>
+          </div>
+        </div>
+      )}
 
     </div>
   );

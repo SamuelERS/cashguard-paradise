@@ -56,4 +56,10 @@ describe('Supabase migrations contract', () => {
     expect(sql).toMatch(/set\s+estado\s*=\s*'ABORTADO'/i);
     expect(sql).toMatch(/finalizado_at\s*=\s*coalesce\s*\(\s*finalizado_at\s*,\s*now\(\)\s*\)/i);
   });
+
+  it('incluye columnas opcionales cajero_id y testigo_id en cortes para trazabilidad', () => {
+    const sql = readAllMigrations();
+    expect(sql).toMatch(/add\s+column\s+if\s+not\s+exists\s+cajero_id\s+text/i);
+    expect(sql).toMatch(/add\s+column\s+if\s+not\s+exists\s+testigo_id\s+text/i);
+  });
 });

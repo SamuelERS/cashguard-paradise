@@ -466,6 +466,55 @@ describe('Suite 3: iniciarCorte', () => {
     expect(insertCall.testigo_id).toBe('adonay-torres');
   });
 
+  it('3.6c - Reintenta insert sin cajero_id/testigo_id cuando la BD no tiene esas columnas', async () => {
+    const { result } = renderHook(() => useCorteSesion(SUCURSAL_ID));
+
+    await waitFor(() => {
+      expect(result.current.cargando).toBe(false);
+    });
+
+    // Sucursal OK
+    mockChain.sucursales.single.mockResolvedValueOnce({
+      data: { codigo: SUCURSAL_CODIGO },
+      error: null,
+    });
+    // Sin cortes previos hoy
+    mockChain.cortes.lt.mockResolvedValueOnce({ data: [], error: null });
+    // Primer insert falla por drift de schema (columnas no existen)
+    mockChain.cortes.single
+      .mockResolvedValueOnce({
+        data: null,
+        error: {
+          message: "Could not find the 'cajero_id' column of 'cortes' in the schema cache",
+        },
+      })
+      // Segundo insert (fallback) exitoso
+      .mockResolvedValueOnce({ data: CORTE_MOCK, error: null });
+
+    // Insert intento OK
+    mockChain.intentos.single.mockResolvedValueOnce({ data: INTENTO_MOCK, error: null });
+
+    await act(async () => {
+      await result.current.iniciarCorte({
+        sucursal_id: SUCURSAL_ID,
+        cajero: 'Juan Perez',
+        testigo: 'Maria Lopez',
+        cajero_id: 'tito-gomez',
+        testigo_id: 'adonay-torres',
+      });
+    });
+
+    expect(mockChain.cortes.insert).toHaveBeenCalledTimes(2);
+    const firstInsert = mockChain.cortes.insert.mock.calls[0][0] as Record<string, unknown>;
+    const secondInsert = mockChain.cortes.insert.mock.calls[1][0] as Record<string, unknown>;
+
+    expect(firstInsert.cajero_id).toBe('tito-gomez');
+    expect(firstInsert.testigo_id).toBe('adonay-torres');
+    expect(secondInsert).not.toHaveProperty('cajero_id');
+    expect(secondInsert).not.toHaveProperty('testigo_id');
+    expect(result.current.corte_actual?.id).toBe(CORTE_MOCK.id);
+  });
+
   it('3.7 - Rechaza si ya existe corte FINALIZADO hoy', async () => {
     const { result } = renderHook(() => useCorteSesion(SUCURSAL_ID));
 

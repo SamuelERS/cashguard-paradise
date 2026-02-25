@@ -289,7 +289,7 @@ describe('useInitialWizardController', () => {
   });
 
   describe('handleComplete', () => {
-    it('llama onComplete con datos cuando wizard completado', () => {
+    it('llama onComplete con datos cuando wizard completado y NO resetea prematuramente', () => {
       const onComplete = vi.fn();
       mockGetNavigationState.mockReturnValue({
         currentStep: 6,
@@ -322,7 +322,7 @@ describe('useInitialWizardController', () => {
         expectedSales: '',
         dailyExpenses: [],
       });
-      expect(mockResetWizard).toHaveBeenCalled();
+      expect(mockResetWizard).not.toHaveBeenCalled();
     });
 
     it('NO llama onComplete si wizard no completado', () => {

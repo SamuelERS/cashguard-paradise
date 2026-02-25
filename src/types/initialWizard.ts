@@ -35,6 +35,8 @@ export interface InitialWizardModalProps {
   activeSessionSucursalId?: string | null;
   /** [IA] - REGRESION-RCA: Revalida sesión activa al entrar a SICAR para la sucursal elegida */
   onCheckActiveSessionForStore?: (sucursalId: string) => void | Promise<void>;
+  /** Feedback visible dentro del modal cuando la finalización se bloquea */
+  completionError?: string | null;
 }
 
 // ────────────────────────────────────────────────────────────────

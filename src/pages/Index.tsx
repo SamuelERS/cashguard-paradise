@@ -35,6 +35,28 @@ type ActiveSessionCheck = {
   sessionInfo: ActiveSessionInfo | null;
 };
 
+function resolveStartCutErrorMessage(error: unknown): string {
+  if (esErrorDeRed(error)) {
+    return 'No hay conexión con Supabase. Verifique internet y reintente.';
+  }
+
+  const rawMessage = error instanceof Error ? error.message : '';
+  const normalized = rawMessage.toLowerCase();
+  const schemaMissingEmployeeIds =
+    (normalized.includes('cajero_id') || normalized.includes('testigo_id')) &&
+    (normalized.includes('schema cache') ||
+      normalized.includes('column') ||
+      normalized.includes('does not exist'));
+
+  if (schemaMissingEmployeeIds) {
+    return 'La base de datos está desactualizada (faltan columnas de empleado en cortes). Ejecute migración 009_cortes_employee_ids.sql.';
+  }
+
+  return rawMessage
+    ? `No se pudo iniciar el corte: ${rawMessage}`
+    : 'No se pudo iniciar el corte. Verifique conexión e intente de nuevo.';
+}
+
 // 🤖 [IA] - ORDEN #27 M4: type guards defensivos para datos_conteo (null-safe, corrupt-safe)
 function isCashCountLike(value: unknown): value is CashCount {
   if (typeof value !== 'object' || value === null) return false;
@@ -71,6 +93,7 @@ const Index = () => {
   const [hasActiveCashCutSession, setHasActiveCashCutSession] = useState(false);
   // [IA] - R3-B2: Info enriquecida de sesión activa para identificador en Step 5
   const [activeSessionInfo, setActiveSessionInfo] = useState<ActiveSessionInfo | null>(null);
+  const [wizardCompletionError, setWizardCompletionError] = useState<string | null>(null);
   const [initialData, setInitialData] = useState<{
     selectedStore: string;
     selectedCashier: string;
@@ -211,6 +234,7 @@ const Index = () => {
     expectedSales: string;
     dailyExpenses?: DailyExpense[]; // 🤖 [IA] - v1.4.0: Gastos del día (opcional para MorningCountWizard)
   }) => {
+    setWizardCompletionError(null);
     // 🤖 [IA] - v1.4.0: Asegurar que dailyExpenses siempre sea array
     setInitialData({
       ...data,
@@ -226,6 +250,7 @@ const Index = () => {
         try {
           const latestActiveSession = await detectActiveCashCutSession(data.selectedStore);
           if (latestActiveSession.status === 'connectivity_error') {
+            setWizardCompletionError('Sin conexión a Supabase. No se puede validar sesión activa.');
             toast.error('Sin conexión a Supabase. No se puede validar sesión activa.');
             return;
           }
@@ -237,6 +262,7 @@ const Index = () => {
             setHasActiveCashCutSession(true);
             setActiveCashCutSucursalId(latestActiveSession.sucursalId);
             setActiveSessionInfo(latestActiveSession.sessionInfo);
+            setWizardCompletionError('Ya existe un corte EN PROGRESO para esta sucursal. Reanude la sesión.');
             toast.error('Ya existe un corte EN PROGRESO para esta sucursal. Reanude la sesión.');
             return;
           }
@@ -285,15 +311,14 @@ const Index = () => {
           setUltimaSync(new Date().toISOString());
         } catch (err: unknown) {
           console.warn('[Index] iniciarCorte falló:', err);
-          if (esErrorDeRed(err)) {
-            toast.error('No hay conexión con Supabase. Verifique internet y reintente.');
-            return;
-          }
-          toast.error('No se pudo iniciar el corte. Verifique conexión e intente de nuevo.');
+          const errorMessage = resolveStartCutErrorMessage(err);
+          setWizardCompletionError(errorMessage);
+          toast.error(errorMessage);
           return;
         }
       }
 
+      setWizardCompletionError(null);
       setShowWizard(false);
       setShowMorningWizard(false);
       setShowCorteInicio(false);
@@ -301,6 +326,7 @@ const Index = () => {
       return;
     }
 
+    setWizardCompletionError(null);
     setShowWizard(false);
     setShowMorningWizard(false);
     setShowCorteInicio(false);
@@ -330,6 +356,7 @@ const Index = () => {
     setActiveCashCutSucursalId(null);
     setHasActiveCashCutSession(false); // [IA] - CASO-SANN: Reset estado sesión activa
     setInitialData(null);
+    setWizardCompletionError(null);
     // 🤖 [IA] - DACC-CIERRE-SYNC-UX: Reset sync state
     setSyncSucursalId('');
     setUltimaSync(null);
@@ -377,12 +404,14 @@ const Index = () => {
         setSyncSucursalId(corte.sucursal_id);
         setSyncEstado('sincronizado');
       }
+      setWizardCompletionError(null);
       setHasActiveCashCutSession(false);
       setShowWizard(false);
       setSkipWizardOnResume(true); // 🤖 [IA] - ORDEN #25 M2: saltar instrucciones guiadas en reanudación
       setShowCashCounter(true);
     } catch (err: unknown) {
       console.warn('[Index] recuperarSesion falló:', err);
+      setWizardCompletionError('Error al reanudar sesión');
       toast.error('Error al reanudar sesión');
     }
   }, [recuperarSesionActiva]);
@@ -404,6 +433,7 @@ const Index = () => {
       setActiveSessionInfo(null);
       setActiveCashCutSucursalId(null);
       setHasActiveCashCutSession(false);
+      setWizardCompletionError(null);
     } catch (err: unknown) {
       console.warn('[Index] abortarCorte falló:', err);
       throw err;
@@ -465,12 +495,16 @@ const Index = () => {
     setHasActiveCashCutSession(activeSession.hasActive);
     setActiveCashCutSucursalId(activeSession.hasActive ? activeSession.sucursalId : null);
     setActiveSessionInfo(activeSession.hasActive ? activeSession.sessionInfo : null);
+    if (!activeSession.hasActive) {
+      setWizardCompletionError(null);
+    }
   }, [detectActiveCashCutSession]);
 
   // 🤖 [IA] - v3.3.2 - Ruta híbrida: wizard legacy + reanudación automática por sesión activa
   const handleModeSelection = async (mode: OperationMode) => {
     selectMode(mode);
     if (mode === OperationMode.CASH_CUT) {
+      setWizardCompletionError(null);
       setCashCutSessionCheckInProgress(true);
       const activeSession = await detectActiveCashCutSession();
 
@@ -504,6 +538,7 @@ const Index = () => {
               isOpen={showWizard}
               onClose={() => {
                 setShowWizard(false);
+                setWizardCompletionError(null);
                 resetMode(); // 🤖 [IA] - v1.0.88 - Resetear modo para volver a OperationSelector
               }}
               onComplete={handleWizardComplete}
@@ -517,6 +552,7 @@ const Index = () => {
               // [IA] - BRANCH-ISOLATION: sucursal dueña de sesión activa detectada
               activeSessionSucursalId={activeCashCutSucursalId}
               onCheckActiveSessionForStore={handleCheckActiveSessionForStore}
+              completionError={wizardCompletionError}
             />
           )}
           {showMorningWizard && (

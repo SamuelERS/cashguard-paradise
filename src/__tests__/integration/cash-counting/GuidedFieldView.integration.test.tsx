@@ -282,6 +282,19 @@ describe('🎯 GuidedFieldView - Integration Tests', () => {
       const style = input.getAttribute('style');
       expect(style).toContain('padding-left');
     });
+
+    it('Test 2.7: usa placeholder profesional y evita copy gramatical incorrecto', () => {
+      renderGuidedFieldView({
+        isActive: true,
+        currentFieldType: 'coin',
+        currentFieldName: 'penny',
+        currentFieldLabel: '$0.01',
+      });
+
+      const input = screen.getByRole('textbox');
+      expect(input).toHaveAttribute('placeholder', 'Ingresa la cantidad');
+      expect(input).not.toHaveAttribute('placeholder', '¿Cuántos un centavo?');
+    });
   });
 
   // ═══════════════════════════════════════════════════════════

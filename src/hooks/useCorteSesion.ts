@@ -90,6 +90,17 @@ export function useCorteSesion(
   sucursal_id: string,
   options?: UseCorteSesionOptions,
 ): UseCorteSesionReturn {
+  const isMissingEmployeeIdColumnError = (message?: string | null): boolean => {
+    const normalized = (message ?? '').toLowerCase();
+    const mentionsEmployeeIdColumn =
+      normalized.includes('cajero_id') || normalized.includes('testigo_id');
+    const isSchemaColumnError =
+      normalized.includes('schema cache') ||
+      normalized.includes('column') ||
+      normalized.includes('does not exist');
+    return mentionsEmployeeIdColumn && isSchemaColumnError;
+  };
+
   const autoRecuperarSesion = options?.autoRecuperarSesion ?? true;
   const procesarColaEnReconexion = options?.procesarColaEnReconexion ?? true;
   const [corteActual, setCorteActual] = useState<Corte | null>(null);
@@ -165,29 +176,44 @@ export function useCorteSesion(
         secuencial,
       );
 
-      const { data: corte, error: insertError } = await tables
+      const baseInsertPayload = {
+        sucursal_id: params.sucursal_id,
+        cajero: params.cajero,
+        testigo: params.testigo,
+        estado: 'INICIADO' as EstadoCorte,
+        correlativo: correlativo,
+        fase_actual: 0,
+        intento_actual: 1,
+        venta_esperada: params.venta_esperada ?? null,
+        datos_conteo: null,
+        datos_entrega: null,
+        datos_verificacion: null,
+        datos_reporte: null,
+        reporte_hash: null,
+        finalizado_at: null,
+        motivo_aborto: null,
+      };
+
+      const payloadWithEmployeeIds = {
+        ...baseInsertPayload,
+        cajero_id: params.cajero_id ?? null,
+        testigo_id: params.testigo_id ?? null,
+      };
+
+      let { data: corte, error: insertError } = await tables
         .cortes()
-        .insert({
-          sucursal_id: params.sucursal_id,
-          cajero: params.cajero,
-          cajero_id: params.cajero_id ?? null,
-          testigo: params.testigo,
-          testigo_id: params.testigo_id ?? null,
-          estado: 'INICIADO' as EstadoCorte,
-          correlativo: correlativo,
-          fase_actual: 0,
-          intento_actual: 1,
-          venta_esperada: params.venta_esperada ?? null,
-          datos_conteo: null,
-          datos_entrega: null,
-          datos_verificacion: null,
-          datos_reporte: null,
-          reporte_hash: null,
-          finalizado_at: null,
-          motivo_aborto: null,
-        })
+        .insert(payloadWithEmployeeIds)
         .select()
         .single();
+
+      // Backward compatibility: algunos entornos aún no tienen columnas cajero_id/testigo_id.
+      if (insertError && isMissingEmployeeIdColumnError(insertError.message)) {
+        ({ data: corte, error: insertError } = await tables
+          .cortes()
+          .insert(baseInsertPayload)
+          .select()
+          .single());
+      }
 
       if (insertError || !corte) {
         throw new Error(insertError?.message ?? 'Error al crear corte');

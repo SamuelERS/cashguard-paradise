@@ -76,7 +76,7 @@ vi.mock('@/components/operation-selector/OperationSelector', () => ({
 }));
 
 vi.mock('@/components/InitialWizardModal', () => ({
-  default: ({ isOpen, onComplete }: {
+  default: ({ isOpen, onComplete, completionError }: {
     isOpen: boolean;
     onComplete: (data: {
       selectedStore: string;
@@ -85,10 +85,14 @@ vi.mock('@/components/InitialWizardModal', () => ({
       expectedSales: string;
       dailyExpenses: never[];
     }) => void;
+    completionError?: string | null;
   }) => {
     if (!isOpen) return null;
     return (
       <div data-testid="initial-wizard">
+        {completionError && (
+          <p data-testid="wizard-completion-error">{completionError}</p>
+        )}
         <button
           type="button"
           data-testid="wizard-complete"
@@ -166,6 +170,9 @@ describe('Index — consistencia entre sesión activa y flujo de inicio nocturno
     await waitFor(() => {
       expect(corteSesionMocks.iniciarCorte).not.toHaveBeenCalled();
     });
+    expect(screen.getByTestId('wizard-completion-error')).toHaveTextContent(
+      'Ya existe un corte EN PROGRESO para esta sucursal. Reanude la sesión.',
+    );
   });
 
   it('si hay activo en sucursal seleccionada pero otro más reciente en otra sucursal, debe bloquear iniciarCorte', async () => {

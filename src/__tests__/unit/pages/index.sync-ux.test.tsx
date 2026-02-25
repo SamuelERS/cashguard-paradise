@@ -78,7 +78,7 @@ vi.mock('@/components/operation-selector/OperationSelector', () => ({
 }));
 
 vi.mock('@/components/InitialWizardModal', () => ({
-  default: ({ isOpen, onComplete, initialSucursalId }: {
+  default: ({ isOpen, onComplete, initialSucursalId, completionError }: {
     isOpen: boolean;
     onComplete: (data: {
       selectedStore: string;
@@ -88,9 +88,11 @@ vi.mock('@/components/InitialWizardModal', () => ({
       dailyExpenses: never[];
     }) => void;
     initialSucursalId?: string | null;
+    completionError?: string | null;
   }) =>
     isOpen ? (
       <div data-testid="initial-wizard" data-initial-sucursal-id={initialSucursalId || ''}>
+        {completionError && <p data-testid="wizard-completion-error">{completionError}</p>}
         <button
           type="button"
           data-testid="wizard-complete"
@@ -342,6 +344,25 @@ describe('DACC-CIERRE-SYNC-UX: Persistence & Sync UX', () => {
     });
     expect(screen.queryByTestId('cash-counter')).not.toBeInTheDocument();
     expect(screen.getByTestId('initial-wizard')).toBeInTheDocument();
+  });
+
+  it('muestra mensaje accionable cuando iniciarCorte falla por columnas faltantes en schema', async () => {
+    corteSesionMocks.iniciarCorte.mockRejectedValueOnce(
+      new Error("Could not find the 'cajero_id' column of 'cortes' in the schema cache"),
+    );
+
+    const user = userEvent.setup();
+    render(<Index />);
+
+    await user.click(screen.getByTestId('open-cash-cut'));
+    await screen.findByTestId('initial-wizard');
+    await user.click(screen.getByTestId('wizard-complete'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('wizard-completion-error')).toHaveTextContent(
+        'La base de datos está desactualizada (faltan columnas de empleado en cortes). Ejecute migración 009_cortes_employee_ids.sql.',
+      );
+    });
   });
 
   // 🤖 [IA] - DACC-R2 Gap 1+3: Política A — sesión activa de la MISMA sucursal gobierna sync

@@ -25,8 +25,7 @@
 .glass-card,
 .guided-progress-container,
 .cash-counter-container,
-.phase1-navigation,
-[class*="glass-"] {
+.phase1-navigation {
   /* Ensure consistent backdrop support */
   -webkit-backdrop-filter: var(--glass-blur);
   backdrop-filter: var(--glass-blur);
@@ -78,12 +77,6 @@
 }
 
 /* Text color consistency */
-.guided-progress-container *,
-.phase1-navigation *,
-.cash-counter-container * {
-  color: var(--text-primary);
-}
-
 .guided-progress-subtitle,
 .guided-progress-stats-label,
 [class*="instruction-text"] {
@@ -114,8 +107,7 @@
   .glass-card,
   .guided-progress-container,
   .cash-counter-container,
-  .phase1-navigation,
-  [class*="glass-"] {
+  .phase1-navigation {
     /* Reduced blur for mobile performance */
     backdrop-filter: var(--glass-blur-medium) !important;
     -webkit-backdrop-filter: var(--glass-blur-medium) !important;
@@ -131,8 +123,7 @@
 @media (max-width: 480px) {
   .glass-card,
   .guided-progress-container,
-  .phase1-navigation,
-  [class*="glass-"] {
+  .phase1-navigation {
     /* Minimal blur for very low end devices */
     backdrop-filter: var(--glass-blur-light) !important;
     -webkit-backdrop-filter: var(--glass-blur-light) !important;
@@ -147,8 +138,7 @@
   .glass-card,
   .guided-progress-container,
   .cash-counter-container,
-  .phase1-navigation,
-  [class*="glass-"] {
+  .phase1-navigation {
     background: rgba(20, 20, 20, 0.5) !important;
     border-color: rgba(255, 255, 255, 0.12) !important;
     
@@ -162,8 +152,7 @@
 @media (prefers-contrast: high) {
   .glass-card,
   .guided-progress-container,
-  .phase1-navigation,
-  [class*="glass-"] {
+  .phase1-navigation {
     background: rgba(36, 36, 36, 0.8) !important;
     border: 2px solid rgba(255, 255, 255, 0.3) !important;
     backdrop-filter: blur(5px) !important;
@@ -175,8 +164,7 @@
 @media (prefers-reduced-motion: reduce) {
   .glass-card,
   .guided-progress-container,
-  .phase1-navigation,
-  [class*="glass-"] {
+  .phase1-navigation {
     transition: none !important;
     animation: none !important;
   }
@@ -186,8 +174,7 @@
 @media print {
   .glass-card,
   .guided-progress-container,
-  .phase1-navigation,
-  [class*="glass-"] {
+  .phase1-navigation {
     background: white !important;
     border: 1px solid black !important;
     backdrop-filter: none !important;

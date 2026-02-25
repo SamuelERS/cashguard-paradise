@@ -147,9 +147,13 @@ function resolverConfig(props: CorteStatusBannerProps): BannerConfig {
 
 function CorteStatusBanner(props: CorteStatusBannerProps) {
   const config = resolverConfig(props);
+  const ariaLive = props.estadoSync === 'error' ? 'assertive' : 'polite';
 
   return (
     <div
+      role="status"
+      aria-live={ariaLive}
+      aria-atomic="true"
       className={`rounded-lg border px-4 py-2 transition-colors duration-300 ${config.containerClasses}`}
     >
       <div className="flex items-center gap-2">

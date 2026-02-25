@@ -1,7 +1,7 @@
 // 🤖 [IA] - ORDEN #075: View orchestrator — presentación + routing entre 6 steps
 import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Moon, X, ArrowLeft, ArrowRight, CheckCircle } from 'lucide-react';
+import { Moon, X, ArrowLeft, ArrowRight, CheckCircle, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
@@ -179,6 +179,18 @@ const InitialWizardModalView = (props: InitialWizardModalProps) => {
               {renderStepContent()}
             </motion.div>
           </AnimatePresence>
+
+          {props.completionError && (
+            <div
+              role="alert"
+              className="glass-morphism-panel border border-red-500/40 bg-red-500/10 text-red-200"
+            >
+              <div className="flex items-start gap-fluid-sm">
+                <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0 text-red-300" />
+                <p className="text-fluid-xs leading-relaxed">{props.completionError}</p>
+              </div>
+            </div>
+          )}
 
           {/* Footer navigation */}
           <div className="flex items-center justify-center mt-fluid-2xl pt-fluid-xl border-t border-slate-600 gap-fluid-lg wizard-dialog-footer">

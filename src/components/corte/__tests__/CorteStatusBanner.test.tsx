@@ -299,3 +299,32 @@ describe('Suite 6: Casos de plural y singular', () => {
     vi.useRealTimers();
   });
 });
+
+// ---------------------------------------------------------------------------
+// SUITE 7: Semántica accesible (ARIA live status)
+// ---------------------------------------------------------------------------
+
+describe('Suite 7: Semántica accesible', () => {
+  it('7.1 - Banner usa role=status y aria-live=polite en estados normales', () => {
+    renderCorteStatusBanner({
+      estadoConexion: 'online',
+      estadoSync: 'sincronizado',
+    });
+
+    const status = screen.getByRole('status');
+    expect(status).toHaveAttribute('aria-live', 'polite');
+    expect(status).toHaveAttribute('aria-atomic', 'true');
+  });
+
+  it('7.2 - Banner usa aria-live=assertive cuando hay error', () => {
+    renderCorteStatusBanner({
+      estadoConexion: 'online',
+      estadoSync: 'error',
+      mensajeError: 'No se pudo sincronizar',
+    });
+
+    const status = screen.getByRole('status');
+    expect(status).toHaveAttribute('aria-live', 'assertive');
+    expect(status).toHaveTextContent('Error de sincronización');
+  });
+});

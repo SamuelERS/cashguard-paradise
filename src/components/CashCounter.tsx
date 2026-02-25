@@ -114,10 +114,12 @@ const CashCounter = ({
 
   return (
     <>
-      <div className="fixed inset-0 overflow-hidden flex items-center justify-center"
-           style={{ touchAction: 'none', overscrollBehavior: 'none', WebkitOverflowScrolling: 'touch' }}>
+      <div
+        className="cashcounter-shell fixed inset-0 overflow-y-auto overflow-x-hidden flex items-start justify-center"
+        style={{ overscrollBehaviorY: 'contain', WebkitOverflowScrolling: 'touch' }}
+      >
 
-        <div className="relative z-10 container mx-auto px-4 py-2 max-w-4xl">
+        <div className="relative z-10 container mx-auto px-4 py-4 md:py-6 max-w-4xl">
           {/* 🤖 [IA] - DACC-CIERRE-SYNC-UX: Banner de sincronización Supabase */}
           {syncEstado && (
             <div className="mb-2">

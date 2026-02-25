@@ -43,4 +43,12 @@ describe('CashCounter — estadoConexion real (no hardcoded)', () => {
     // La lectura puntual obtenerEstadoCola().pendientes no es reactiva.
     expect(source).not.toMatch(/import\s+.*obtenerEstadoCola.*from/);
   });
+
+  it('NO bloquea gestos táctiles con touchAction none en shell principal', () => {
+    expect(source).not.toMatch(/touchAction:\s*['"]none['"]/);
+  });
+
+  it('shell principal permite scroll vertical seguro', () => {
+    expect(source).toMatch(/overflow-y-auto/);
+  });
 });

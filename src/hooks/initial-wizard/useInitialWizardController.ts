@@ -139,9 +139,8 @@ export function useInitialWizardController(
         expectedSales: wizardData.expectedSales,
         dailyExpenses: wizardData.dailyExpenses || [],
       });
-      resetWizard();
     }
-  }, [getNavigationState, isFlowCompleted, onComplete, wizardData, resetWizard]);
+  }, [getNavigationState, isFlowCompleted, onComplete, wizardData]);
 
   const handleCancelRequest = useCallback(() => {
     setShowCancelConfirmation(true);
