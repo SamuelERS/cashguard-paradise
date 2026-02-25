@@ -388,6 +388,17 @@ export function CorteDetalle() {
   const diferenciaColorClase = diferenciaPositiva
     ? 'font-semibold text-green-400'
     : 'font-semibold text-red-400';
+  const porcentajeDiferencia = ventaEsperada > 0
+    ? (diferencia / ventaEsperada) * 100
+    : null;
+  const porcentajeDiferenciaTexto = porcentajeDiferencia === null
+    ? '—'
+    : `${diferenciaPositiva ? '+' : ''}${porcentajeDiferencia.toFixed(1)}%`;
+  const estadoColorClase = corte.estado === 'FINALIZADO'
+    ? 'font-semibold text-green-400'
+    : corte.estado === 'ABORTADO'
+      ? 'font-semibold text-red-400'
+      : 'font-semibold text-amber-300';
 
   const denominacionesConDatos = DENOMINACIONES.filter(
     d => (datos.cashCount[d.key] ?? 0) > 0,
@@ -425,6 +436,56 @@ export function CorteDetalle() {
           </p>
         </div>
       </div>
+
+      {/* Card: resumen ejecutivo (lectura rápida para supervisor) */}
+      <div className="p-4 rounded-xl border border-white/10 bg-white/[0.04]">
+        <p className="text-xs font-medium text-white/40 uppercase tracking-wider mb-2">
+          Resumen ejecutivo
+        </p>
+        <div className="divide-y divide-white/[0.06]">
+          <MetaFila
+            label="Estado actual"
+            valor={corte.estado}
+            colorClase={estadoColorClase}
+          />
+          <MetaFila
+            label="Total contado"
+            valor={formatCurrency(totalContado)}
+            mono
+            destacado
+          />
+          <MetaFila
+            label="Diferencia vs SICAR"
+            valor={diferenciaTexto}
+            mono
+            colorClase={diferenciaColorClase}
+          />
+          <MetaFila
+            label="Diferencia porcentual"
+            valor={porcentajeDiferenciaTexto}
+            mono
+          />
+        </div>
+      </div>
+
+      {/* Card: incidencia de cierre en estado ABORTADO */}
+      {corte.estado === 'ABORTADO' && (
+        <div className="p-4 rounded-xl border border-red-500/20 bg-red-500/[0.04]">
+          <p className="text-xs font-medium text-red-300 uppercase tracking-wider mb-2">
+            Incidencia de cierre
+          </p>
+          <div className="divide-y divide-white/[0.06]">
+            <MetaFila
+              label="Motivo de aborto"
+              valor={corte.motivo_aborto?.trim() ? corte.motivo_aborto : 'Sin motivo registrado'}
+            />
+            <MetaFila
+              label="Hora de cierre"
+              valor={formatearFechaHora(corte.finalizado_at)}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Card: identificación */}
       <div className="p-4 rounded-xl border border-white/10 bg-white/[0.04]">
