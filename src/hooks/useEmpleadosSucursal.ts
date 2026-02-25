@@ -27,6 +27,12 @@ function canonicalEmployeeName(value: string): string {
   if (normalized === 'adonai torres' || normalized === 'adonay torres') {
     return 'adonai torres';
   }
+  if (normalized === 'irvin abarca' || normalized === 'irving abarca') {
+    return 'irvin abarca';
+  }
+  if (normalized === 'edenilson lopez' || normalized === 'edenison lopez') {
+    return 'edenilson lopez';
+  }
   return normalized;
 }
 
@@ -34,9 +40,9 @@ function resolvePriorityOrder(empleados: EmpleadoSucursal[]): string[] {
   const normalizedNames = new Set(empleados.map((empleado) => canonicalEmployeeName(empleado.nombre)));
 
   const isMerliotProfile =
-    normalizedNames.has('irving abarca') || normalizedNames.has('edenison lopez');
+    normalizedNames.has('irvin abarca') || normalizedNames.has('edenilson lopez');
   if (isMerliotProfile) {
-    return ['irving abarca', 'edenison lopez', 'jonathan melara'];
+    return ['irvin abarca', 'edenilson lopez', 'jonathan melara'];
   }
 
   const isHeroesProfile =

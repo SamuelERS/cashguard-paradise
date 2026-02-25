@@ -333,4 +333,46 @@ describe('useEmpleadosSucursal', () => {
       'Jonathan Melara',
     ]);
   });
+
+  it('prioriza orden Plaza Merliot con variantes reales: Irvin, Edenilson, Jonathan', async () => {
+    const { empleadoSucursalesMock, empleadosMock } = buildSupabaseMocks(
+      {
+        data: [
+          { empleado_id: 'emp-1' },
+          { empleado_id: 'emp-2' },
+          { empleado_id: 'emp-3' },
+        ],
+        error: null,
+      },
+      {
+        data: [
+          { id: 'emp-1', nombre: 'Edenilson López', cargo: 'Testigo', activo: true },
+          { id: 'emp-2', nombre: 'Jonathan Melara', cargo: 'Cajero', activo: true },
+          { id: 'emp-3', nombre: 'Irvin Abarca', cargo: 'Cajero', activo: true },
+        ],
+        error: null,
+      },
+    );
+
+    vi.doMock('@/lib/supabase', () => ({
+      isSupabaseConfigured: true,
+      tables: {
+        empleadoSucursales: empleadoSucursalesMock,
+        empleados: empleadosMock,
+      },
+    }));
+
+    const { useEmpleadosSucursal } = await import('../useEmpleadosSucursal');
+    const { result } = renderHook(() => useEmpleadosSucursal('suc-merliot'));
+
+    await waitFor(() => {
+      expect(result.current.cargando).toBe(false);
+    });
+
+    expect(result.current.empleados.map((e) => e.nombre)).toEqual([
+      'Irvin Abarca',
+      'Edenilson López',
+      'Jonathan Melara',
+    ]);
+  });
 });
