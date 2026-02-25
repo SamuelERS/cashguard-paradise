@@ -30,6 +30,8 @@ const MAX_INTENTOS_PIN = 5;
 const TABS: ReadonlyArray<{ label: string; href: string }> = [
   { label: 'Hoy', href: '/supervisor/cortes' },
   { label: 'Historial', href: '/supervisor/historial' },
+  // 🤖 [IA] - v4.1.0: Tab analytics/KPI
+  { label: 'Resumen', href: '/supervisor/resumen' },
 ];
 
 // ---------------------------------------------------------------------------
@@ -173,7 +175,7 @@ export default function SupervisorDashboard() {
             </button>
             <h1 className="text-sm font-semibold text-white/90">
               Dashboard Supervisor
-              <span className="ml-2 text-[10px] font-normal text-white/30">v4.0.1</span>
+              <span className="ml-2 text-[10px] font-normal text-white/30">v4.1.0</span>
             </h1>
           </div>
 

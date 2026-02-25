@@ -8,6 +8,7 @@ import SupervisorDashboard from "./pages/SupervisorDashboard"; // 🤖 [IA] - Or
 import { CortesDelDia } from "@/components/supervisor/CortesDelDia"; // 🤖 [IA] - Orden #3 DACC
 import { CorteDetalle } from "@/components/supervisor/CorteDetalle"; // 🤖 [IA] - Orden #5 DACC
 import { CorteHistorial } from "@/components/supervisor/CorteHistorial"; // 🤖 [IA] - Orden #5 DACC
+import { CortesResumen } from "@/components/supervisor/CortesResumen"; // 🤖 [IA] - v4.1.0: Analytics/KPI
 import { FloatingOrbs } from "@/components/FloatingOrbs";
 import { useIsMobile } from "@/hooks/use-mobile"; // 🤖 [IA] - v2.0.0: Hook unificado de detección móvil
 import { ErrorBoundary } from "@/components/ErrorBoundary"; // 🤖 [IA] - v1.0.0: Global error handling
@@ -79,6 +80,8 @@ const App = () => {
                 {/* Próximamente — ORDEN #5: Vista B y Vista C */}
                 <Route path="corte/:id" element={<CorteDetalle />} />
                 <Route path="historial" element={<CorteHistorial />} />
+                {/* 🤖 [IA] - v4.1.0: Ruta analytics/KPI */}
+                <Route path="resumen" element={<CortesResumen />} />
               </Route>
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
