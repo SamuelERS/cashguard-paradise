@@ -218,6 +218,113 @@ function extraerDatosEntrega(
   };
 }
 
+type EntregaLiveEvent = {
+  stepKey: keyof CashCount;
+  quantity: number;
+  subtotal: number;
+  capturedAt: string | null;
+};
+
+type EntregaLiveRow = {
+  stepKey: keyof CashCount;
+  label: string;
+  expected: number;
+  delivered: number;
+  missing: number;
+  lastCapturedAt: string | null;
+};
+
+const LIVE_DENOMINATION_LABELS: Record<keyof CashCount, string> = {
+  penny: 'Un centavo',
+  nickel: 'Cinco centavos',
+  dime: 'Diez centavos',
+  quarter: 'Veinticinco centavos',
+  dollarCoin: 'Moneda de un dólar',
+  bill1: 'Billete de un dólar',
+  bill5: 'Billete de cinco dólares',
+  bill10: 'Billete de diez dólares',
+  bill20: 'Billete de veinte dólares',
+  bill50: 'Billete de cincuenta dólares',
+  bill100: 'Billete de cien dólares',
+};
+
+function toPartialCashCount(value: unknown): Partial<Record<keyof CashCount, number>> {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    return {};
+  }
+
+  const record = value as Record<string, unknown>;
+  const result: Partial<Record<keyof CashCount, number>> = {};
+
+  for (const denomination of DENOMINACIONES) {
+    const raw = record[denomination.key];
+    if (typeof raw === 'number' && Number.isFinite(raw) && raw >= 0) {
+      result[denomination.key] = raw;
+    }
+  }
+
+  return result;
+}
+
+function toEntregaLiveEvents(value: unknown): EntregaLiveEvent[] {
+  if (!Array.isArray(value)) return [];
+
+  const events: EntregaLiveEvent[] = [];
+  for (const item of value) {
+    if (typeof item !== 'object' || item === null || Array.isArray(item)) continue;
+    const record = item as Record<string, unknown>;
+    const stepKey = record.stepKey;
+    const quantity = record.quantity;
+    const subtotal = record.subtotal;
+    if (typeof stepKey !== 'string') continue;
+    if (!DENOMINACIONES.some((denomination) => denomination.key === stepKey)) continue;
+    if (typeof quantity !== 'number' || !Number.isFinite(quantity)) continue;
+    if (typeof subtotal !== 'number' || !Number.isFinite(subtotal)) continue;
+
+    events.push({
+      stepKey: stepKey as keyof CashCount,
+      quantity,
+      subtotal,
+      capturedAt: typeof record.capturedAt === 'string' ? record.capturedAt : null,
+    });
+  }
+
+  return events;
+}
+
+function extraerEntregaLiveRows(
+  datosEntrega: Record<string, unknown> | null,
+): { rows: EntregaLiveRow[]; liveTotal: number } {
+  if (!datosEntrega) return { rows: [], liveTotal: 0 };
+
+  const expected = toPartialCashCount(datosEntrega.denominations_to_deliver);
+  const delivered = toPartialCashCount(datosEntrega.live_delivery_progress);
+  const events = toEntregaLiveEvents(datosEntrega.live_delivery_events);
+  const liveTotalRaw = datosEntrega.live_delivery_total;
+  const liveTotal =
+    typeof liveTotalRaw === 'number' && Number.isFinite(liveTotalRaw)
+      ? liveTotalRaw
+      : events.reduce((acc, item) => acc + item.subtotal, 0);
+
+  const rows = DENOMINACIONES
+    .filter((denomination) => (expected[denomination.key] ?? 0) > 0)
+    .map((denomination) => {
+      const expectedValue = expected[denomination.key] ?? 0;
+      const deliveredValue = delivered[denomination.key] ?? 0;
+      const lastEvent = [...events].reverse().find((event) => event.stepKey === denomination.key);
+      return {
+        stepKey: denomination.key,
+        label: LIVE_DENOMINATION_LABELS[denomination.key],
+        expected: expectedValue,
+        delivered: deliveredValue,
+        missing: Math.max(expectedValue - deliveredValue, 0),
+        lastCapturedAt: lastEvent?.capturedAt ?? null,
+      };
+    });
+
+  return { rows, liveTotal };
+}
+
 function toFiniteNumber(value: unknown): number | null {
   if (typeof value !== 'number') return null;
   return Number.isFinite(value) ? value : null;
@@ -450,6 +557,9 @@ export function CorteDetalle() {
   ).filter(key => datos.pagosElectronicos[key] > 0);
   const gastosConValor = datos.gastosDia;
   const entrega = extraerDatosEntrega(corte.datos_entrega);
+  const entregaLive = extraerEntregaLiveRows(corte.datos_entrega);
+  const entregadoAcumulado = entregaLive.liveTotal;
+  const faltanteEntrega = Math.max((entrega.amountToDeliver ?? 0) - entregadoAcumulado, 0);
   const mostrarEntrega = entrega.amountToDeliver !== null || entrega.amountRemaining !== null;
 
   // ── Render principal ──────────────────────────────────────────────────────
@@ -608,6 +718,47 @@ export function CorteDetalle() {
                 mono
               />
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Card: entrega en vivo por denominación */}
+      {entregaLive.rows.length > 0 && (
+        <div className="p-4 rounded-xl border border-white/10 bg-white/[0.04]" aria-live="polite">
+          <p className="text-xs font-medium text-white/40 uppercase tracking-wider mb-2">
+            Entrega en vivo
+          </p>
+          <div className="flex items-center justify-between gap-2 pb-2 border-b border-white/[0.06] mb-2">
+            <span className="text-xs text-white/50">Entregado acumulado</span>
+            <span className="text-sm tabular-nums text-white/90">{formatCurrency(entregadoAcumulado)}</span>
+          </div>
+          <div className="flex items-center justify-between gap-2 pb-2 border-b border-white/[0.06] mb-2">
+            <span className="text-xs text-white/50">Faltante por entregar</span>
+            <span className="text-sm tabular-nums text-amber-300">{formatCurrency(faltanteEntrega)}</span>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="text-white/50">
+                  <th className="text-left py-1">Denominación</th>
+                  <th className="text-right py-1">Esperado</th>
+                  <th className="text-right py-1">Entregado</th>
+                  <th className="text-right py-1">Faltante</th>
+                  <th className="text-right py-1">Hora</th>
+                </tr>
+              </thead>
+              <tbody>
+                {entregaLive.rows.map((row) => (
+                  <tr key={row.stepKey} className="border-t border-white/[0.06]">
+                    <td className="py-1.5 text-white/80">{row.label}</td>
+                    <td className="py-1.5 text-right tabular-nums text-white/70">{row.expected}</td>
+                    <td className="py-1.5 text-right tabular-nums text-white/90">{row.delivered}</td>
+                    <td className="py-1.5 text-right tabular-nums text-amber-300">{row.missing}</td>
+                    <td className="py-1.5 text-right text-white/50">{formatearFechaHora(row.lastCapturedAt)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       )}

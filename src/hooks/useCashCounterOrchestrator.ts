@@ -234,6 +234,9 @@ export function useCashCounterOrchestrator({
             amount_remaining: deliveryCalculation.amountRemaining ?? 50,
             denominations_to_deliver: deliveryCalculation.denominationsToDeliver,
             denominations_to_keep: deliveryCalculation.denominationsToKeep,
+            live_delivery_progress: deliveryCalculation.liveDeliveryProgress ?? {},
+            live_delivery_events: deliveryCalculation.liveDeliveryEvents ?? [],
+            live_delivery_total: deliveryCalculation.liveDeliveryTotal ?? 0,
           }
         : null;
       const datosVerificacion = deliveryCalculation?.verificationBehavior

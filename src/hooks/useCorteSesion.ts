@@ -279,9 +279,15 @@ export function useCorteSesion(
         pagos_electronicos: datos.pagos_electronicos,
         gastos_dia: datos.gastos_dia,
       };
-      const datosEntrega = datos.datos_entrega ?? corteActual.datos_entrega;
-      const datosVerificacion = datos.datos_verificacion ?? corteActual.datos_verificacion;
-      const datosReporte = datos.datos_reporte ?? corteActual.datos_reporte;
+      const datosEntrega = Object.prototype.hasOwnProperty.call(datos, 'datos_entrega')
+        ? (datos.datos_entrega ?? null)
+        : corteActual.datos_entrega;
+      const datosVerificacion = Object.prototype.hasOwnProperty.call(datos, 'datos_verificacion')
+        ? (datos.datos_verificacion ?? null)
+        : corteActual.datos_verificacion;
+      const datosReporte = Object.prototype.hasOwnProperty.call(datos, 'datos_reporte')
+        ? (datos.datos_reporte ?? null)
+        : corteActual.datos_reporte;
 
       const { data: corteActualizado, error: updateError } = await tables
         .cortes()
@@ -323,10 +329,16 @@ export function useCorteSesion(
         const ahora = new Date().toISOString();
         const estadoOptimista: EstadoCorte =
           corteActual.estado === 'INICIADO' ? 'EN_PROGRESO' : corteActual.estado;
-        const datosEntregaFallback = datos.datos_entrega ?? corteActual.datos_entrega;
+        const datosEntregaFallback = Object.prototype.hasOwnProperty.call(datos, 'datos_entrega')
+          ? (datos.datos_entrega ?? null)
+          : corteActual.datos_entrega;
         const datosVerificacionFallback =
-          datos.datos_verificacion ?? corteActual.datos_verificacion;
-        const datosReporteFallback = datos.datos_reporte ?? corteActual.datos_reporte;
+          Object.prototype.hasOwnProperty.call(datos, 'datos_verificacion')
+            ? (datos.datos_verificacion ?? null)
+            : corteActual.datos_verificacion;
+        const datosReporteFallback = Object.prototype.hasOwnProperty.call(datos, 'datos_reporte')
+          ? (datos.datos_reporte ?? null)
+          : corteActual.datos_reporte;
         setCorteActual({
           ...corteActual,
           fase_actual: datos.fase_actual,

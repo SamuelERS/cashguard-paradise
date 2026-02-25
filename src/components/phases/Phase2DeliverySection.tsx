@@ -19,6 +19,7 @@ interface Phase2DeliverySectionProps {
   onStepComplete: (stepKey: string) => void;
   onStepUncomplete?: (stepKey: string) => void; // 🤖 [IA] - v1.2.24: Para deshacer pasos al retroceder
   onSectionComplete: () => void;
+  onStepLiveUpdate?: (event: { stepKey: string; quantity: number; subtotal: number }) => void;
   completedSteps: Record<string, boolean>;
   // 🤖 [IA] - v1.2.49: onPrevious y canGoPrevious eliminados (innecesarios en fase de ejecución física)
   onCancel: () => void;
@@ -29,6 +30,7 @@ export function Phase2DeliverySection({
   onStepComplete,
   onStepUncomplete,
   onSectionComplete,
+  onStepLiveUpdate,
   completedSteps,
   onCancel
 }: Phase2DeliverySectionProps) {
@@ -73,6 +75,12 @@ export function Phase2DeliverySection({
         ...prev,
         [currentStep.key]: inputNum
       }));
+
+      onStepLiveUpdate?.({
+        stepKey: currentStep.key,
+        quantity: inputNum,
+        subtotal: currentStep.value * inputNum,
+      });
 
       onStepComplete(currentStep.key);
 

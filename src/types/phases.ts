@@ -46,4 +46,15 @@ export interface DeliveryCalculation {
   // Ejemplo: 75 esperado → 70 aceptado = $50.00 original → $49.95 ajustado
   // Uso: CashCalculation reporte sección "LO QUE QUEDÓ EN CAJA" debe usar este valor si existe
   amountRemaining?: number;
+  /** Progreso live de entrega por denominación confirmada en fase 2. */
+  liveDeliveryProgress?: Partial<CashCount>;
+  /** Historial de eventos de entrega confirmados (append-only en sesión). */
+  liveDeliveryEvents?: Array<{
+    stepKey: keyof CashCount;
+    quantity: number;
+    subtotal: number;
+    capturedAt: string;
+  }>;
+  /** Total acumulado entregado en vivo (suma de subtotales confirmados). */
+  liveDeliveryTotal?: number;
 }

@@ -721,6 +721,39 @@ describe('Suite 4: guardarProgreso', () => {
       behavior: { totalAttempts: 2 },
     });
   });
+
+  it('4.7 - Respeta null explícito en datos_entrega (no reutiliza snapshot previo)', async () => {
+    const corteConEntrega: Corte = {
+      ...CORTE_EN_PROGRESO,
+      datos_entrega: { amount_to_deliver: 120, amount_remaining: 50 },
+    };
+    const result = await renderWithCorte(corteConEntrega, INTENTO_MOCK);
+
+    mockChain.cortes.single.mockResolvedValueOnce({
+      data: {
+        ...corteConEntrega,
+        fase_actual: 2,
+        estado: 'EN_PROGRESO',
+        datos_entrega: null,
+      },
+      error: null,
+    });
+
+    await act(async () => {
+      await result.current.guardarProgreso({
+        fase_actual: 2,
+        conteo_parcial: { penny: 1 },
+        pagos_electronicos: { credomatic: 2 },
+        gastos_dia: null,
+        datos_entrega: null,
+      } as unknown as Parameters<typeof result.current.guardarProgreso>[0]);
+    });
+
+    const updateCall = mockChain.cortes.update.mock.calls[
+      mockChain.cortes.update.mock.calls.length - 1
+    ][0];
+    expect(updateCall.datos_entrega).toBeNull();
+  });
 });
 
 // ---------------------------------------------------------------------------

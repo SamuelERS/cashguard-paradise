@@ -50,6 +50,7 @@ import { useTimingConfig } from '@/hooks/useTimingConfig'; // 🤖 [IA] - Hook d
 import { useChecklistFlow } from '@/hooks/useChecklistFlow'; // 🤖 [IA] - v1.2.26: Hook especializado para checklist
 // 🤖 [IA] - v1.3.6: MÓDULO 2 - Import VerificationBehavior type para state
 import type { VerificationBehavior } from '@/types/verification';
+import type { CashCount } from '@/types/cash';
 
 interface Phase2ManagerProps {
   deliveryCalculation: DeliveryCalculation;
@@ -254,6 +255,38 @@ export function Phase2Manager({
     }
   };
 
+  const handleDeliveryLiveUpdate = useCallback((event: { stepKey: string; quantity: number; subtotal: number }) => {
+    if (!onDeliveryCalculationUpdate) return;
+
+    const stepKey = event.stepKey as keyof CashCount;
+    const currentProgress = deliveryCalculation.liveDeliveryProgress ?? {};
+    const currentEvents = deliveryCalculation.liveDeliveryEvents ?? [];
+    const nextProgress = {
+      ...currentProgress,
+      [stepKey]: event.quantity,
+    };
+    const nextEvents = [
+      ...currentEvents,
+      {
+        stepKey,
+        quantity: event.quantity,
+        subtotal: event.subtotal,
+        capturedAt: new Date().toISOString(),
+      },
+    ];
+    const nextTotal = nextEvents.reduce((acc, item) => acc + item.subtotal, 0);
+
+    onDeliveryCalculationUpdate({
+      liveDeliveryProgress: nextProgress,
+      liveDeliveryEvents: nextEvents,
+      liveDeliveryTotal: nextTotal,
+    });
+  }, [
+    deliveryCalculation.liveDeliveryEvents,
+    deliveryCalculation.liveDeliveryProgress,
+    onDeliveryCalculationUpdate,
+  ]);
+
   // 🤖 [IA] - v1.2.24: Función para deshacer pasos de entrega
   const handleDeliveryStepUncomplete = (stepKey: string) => {
     setDeliveryProgress(prev => ({
@@ -354,6 +387,7 @@ export function Phase2Manager({
                   onStepComplete={handleDeliveryStepComplete}
                   onStepUncomplete={handleDeliveryStepUncomplete}
                   onSectionComplete={handleDeliverySectionComplete} // 🤖 [IA] - v1.2.47: RESTAURADO - crítico para transición
+                  onStepLiveUpdate={handleDeliveryLiveUpdate}
                   completedSteps={deliveryProgress}
                   onCancel={() => setShowExitConfirmation(true)}
                 />
