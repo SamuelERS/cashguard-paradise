@@ -62,4 +62,10 @@ describe('Supabase migrations contract', () => {
     expect(sql).toMatch(/add\s+column\s+if\s+not\s+exists\s+cajero_id\s+text/i);
     expect(sql).toMatch(/add\s+column\s+if\s+not\s+exists\s+testigo_id\s+text/i);
   });
+
+  it('incluye publicación realtime para cortes e intentos del supervisor', () => {
+    const sql = readAllMigrations();
+    expect(sql).toMatch(/alter\s+publication\s+supabase_realtime\s+add\s+table\s+public\.cortes/i);
+    expect(sql).toMatch(/alter\s+publication\s+supabase_realtime\s+add\s+table\s+public\.corte_intentos/i);
+  });
 });
