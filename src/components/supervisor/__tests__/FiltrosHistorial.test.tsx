@@ -126,4 +126,41 @@ describe('FiltrosHistorial', () => {
       }),
     );
   });
+
+  it('marca visual y semánticamente el atajo activo (aria-pressed)', async () => {
+    const onBuscar = vi.fn();
+    const user = userEvent.setup();
+
+    render(
+      <FiltrosHistorial
+        filtrosIniciales={{
+          fechaDesde: '2026-02-10',
+          fechaHasta: '2026-02-24',
+          estado: 'TODOS',
+          pagina: 1,
+        }}
+        sucursales={[]}
+        cargando={false}
+        onBuscar={onBuscar}
+      />,
+    );
+
+    const hoy = screen.getByRole('button', { name: /^hoy$/i });
+    const ultimos7 = screen.getByRole('button', { name: /últimos 7 días/i });
+    const dias30 = screen.getByRole('button', { name: /30 días/i });
+
+    expect(hoy).toHaveAttribute('aria-pressed', 'false');
+    expect(ultimos7).toHaveAttribute('aria-pressed', 'false');
+    expect(dias30).toHaveAttribute('aria-pressed', 'false');
+
+    await user.click(ultimos7);
+    expect(ultimos7).toHaveAttribute('aria-pressed', 'true');
+    expect(hoy).toHaveAttribute('aria-pressed', 'false');
+    expect(dias30).toHaveAttribute('aria-pressed', 'false');
+
+    await user.click(dias30);
+    expect(dias30).toHaveAttribute('aria-pressed', 'true');
+    expect(hoy).toHaveAttribute('aria-pressed', 'false');
+    expect(ultimos7).toHaveAttribute('aria-pressed', 'false');
+  });
 });

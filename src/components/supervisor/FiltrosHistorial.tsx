@@ -62,6 +62,14 @@ export function FiltrosHistorial({
   const [sucursalId, setSucursalId] = useState(filtrosIniciales.sucursalId ?? '');
   const [cajero, setCajero] = useState(filtrosIniciales.cajero ?? '');
   const [estado, setEstado] = useState(filtrosIniciales.estado ?? 'TODOS');
+  const hoyIso = hoyElSalvadorISO();
+  const rangoRapidoActivo = (() => {
+    if (fechaHasta !== hoyIso) return null;
+    if (fechaDesde === hoyIso) return 0;
+    if (fechaDesde === haceNDiasISO(7)) return 7;
+    if (fechaDesde === haceNDiasISO(30)) return 30;
+    return null;
+  })();
 
   // ── Handlers ──────────────────────────────────────────────────────────────
 
@@ -116,21 +124,39 @@ export function FiltrosHistorial({
             <button
               type="button"
               onClick={() => aplicarAtajo(0)}
-              className="h-7 rounded-md border border-cyan-300/30 bg-cyan-400/[0.12] px-2 text-[11px] font-medium text-cyan-100 transition-colors hover:bg-cyan-400/[0.2] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/40"
+              aria-pressed={rangoRapidoActivo === 0}
+              className={[
+                'h-7 rounded-md border px-2 text-[11px] transition-colors focus-visible:outline-none focus-visible:ring-2',
+                rangoRapidoActivo === 0
+                  ? 'border-cyan-300/30 bg-cyan-400/[0.12] font-medium text-cyan-100 hover:bg-cyan-400/[0.2] focus-visible:ring-cyan-300/40'
+                  : 'border-white/10 bg-white/[0.04] text-white/80 hover:bg-white/[0.08] focus-visible:ring-white/30',
+              ].join(' ')}
             >
               Hoy
             </button>
             <button
               type="button"
               onClick={() => aplicarAtajo(7)}
-              className="h-7 rounded-md border border-white/10 bg-white/[0.04] px-2 text-[11px] text-white/80 transition-colors hover:bg-white/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
+              aria-pressed={rangoRapidoActivo === 7}
+              className={[
+                'h-7 rounded-md border px-2 text-[11px] transition-colors focus-visible:outline-none focus-visible:ring-2',
+                rangoRapidoActivo === 7
+                  ? 'border-cyan-300/30 bg-cyan-400/[0.12] font-medium text-cyan-100 hover:bg-cyan-400/[0.2] focus-visible:ring-cyan-300/40'
+                  : 'border-white/10 bg-white/[0.04] text-white/80 hover:bg-white/[0.08] focus-visible:ring-white/30',
+              ].join(' ')}
             >
               Últimos 7 días
             </button>
             <button
               type="button"
               onClick={() => aplicarAtajo(30)}
-              className="h-7 rounded-md border border-white/10 bg-white/[0.04] px-2 text-[11px] text-white/80 transition-colors hover:bg-white/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
+              aria-pressed={rangoRapidoActivo === 30}
+              className={[
+                'h-7 rounded-md border px-2 text-[11px] transition-colors focus-visible:outline-none focus-visible:ring-2',
+                rangoRapidoActivo === 30
+                  ? 'border-cyan-300/30 bg-cyan-400/[0.12] font-medium text-cyan-100 hover:bg-cyan-400/[0.2] focus-visible:ring-cyan-300/40'
+                  : 'border-white/10 bg-white/[0.04] text-white/80 hover:bg-white/[0.08] focus-visible:ring-white/30',
+              ].join(' ')}
             >
               30 días
             </button>
