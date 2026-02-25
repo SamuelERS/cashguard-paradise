@@ -1,20 +1,12 @@
 // 🤖 [IA] - Orden #3 DACC Dashboard Supervisor — CortesDelDia (Vista A)
-// Lista de cortes FINALIZADOS del día actual con auto-refresco cada 60 segundos.
+// Lista de actividad del día con invalidación realtime + fallback de polling.
 // Estados: cargando inicial, error sin datos, lista vacía, lista con datos.
 
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSupervisorQueries } from '@/hooks/useSupervisorQueries';
-import { useSupervisorRealtime } from '@/hooks/useSupervisorRealtime';
-import type { CorteConSucursal } from '@/hooks/useSupervisorQueries';
+import { useSupervisorTodayFeed } from '@/hooks/supervisor/useSupervisorTodayFeed';
 import { CorteListaItem } from './CorteListaItem';
-
-// ---------------------------------------------------------------------------
-// Constantes
-// ---------------------------------------------------------------------------
-
-/** Intervalo de auto-refresco de la lista (60 segundos). */
-const INTERVALO_REFRESCO_MS = 60_000;
+import { SupervisorLiveBadge } from './SupervisorLiveBadge';
 
 // ---------------------------------------------------------------------------
 // Helper privado
@@ -52,44 +44,20 @@ function formatearHoraActualizacion(fecha: Date): string {
  */
 export function CortesDelDia() {
   const navigate = useNavigate();
-  const { cargando, error, obtenerCortesDelDia } = useSupervisorQueries();
-
-  const [cortes, setCortes] = useState<CorteConSucursal[]>([]);
-  const [ultimaActualizacion, setUltimaActualizacion] = useState<Date | null>(null);
+  const {
+    cortes,
+    cargando,
+    actualizando,
+    error,
+    ultimaActualizacion,
+    realtimeStatus,
+    refrescar,
+  } = useSupervisorTodayFeed();
   const activos = cortes.filter(corte => corte.estado === 'INICIADO' || corte.estado === 'EN_PROGRESO');
   const finalizados = cortes.filter(
     corte => corte.estado === 'FINALIZADO' || corte.estado === 'ABORTADO',
   );
   const hayActividad = activos.length > 0 || finalizados.length > 0;
-
-  // ── Carga de datos ────────────────────────────────────────────────────────
-
-  /**
-   * Carga los cortes del día y actualiza estado.
-   * Memoizado con [obtenerCortesDelDia] — estable porque useSupervisorQueries
-   * devuelve callbacks con useCallback([], []).
-   */
-  const cargarCortes = useCallback(async () => {
-    const resultado = await obtenerCortesDelDia();
-    setCortes(resultado);
-    setUltimaActualizacion(new Date());
-  }, [obtenerCortesDelDia]);
-
-  useSupervisorRealtime({
-    onChange: () => {
-      void cargarCortes();
-    },
-  });
-
-  /**
-   * Carga inicial + auto-refresco cada 60 s.
-   * Un único useEffect con [cargarCortes] evita loops de dependencias.
-   */
-  useEffect(() => {
-    void cargarCortes();
-    const intervalId = setInterval(() => void cargarCortes(), INTERVALO_REFRESCO_MS);
-    return () => clearInterval(intervalId);
-  }, [cargarCortes]);
 
   // ── Handlers ──────────────────────────────────────────────────────────────
 
@@ -98,7 +66,7 @@ export function CortesDelDia() {
     [navigate],
   );
 
-  const manejarReintentar = useCallback(() => void cargarCortes(), [cargarCortes]);
+  const manejarReintentar = useCallback(() => void refrescar(), [refrescar]);
 
   // ── Estados de render ────────────────────────────────────────────────────
 
@@ -146,13 +114,11 @@ export function CortesDelDia() {
       <div className="flex items-center justify-between px-1">
         <h2 className="text-base font-semibold text-white/90">Cortes de hoy</h2>
         <div className="flex items-center gap-2">
-          {cargando && (
-            <div
-              className="h-3 w-3 rounded-full border border-white/20 border-t-white/60 animate-spin"
-              role="status"
-              aria-label="Actualizando"
-            />
-          )}
+          <SupervisorLiveBadge
+            status={realtimeStatus}
+            actualizando={actualizando}
+            spinnerAriaLabel="Actualizando"
+          />
           {ultimaActualizacion && (
             <span className="text-xs text-white/40">
               Actualizado {formatearHoraActualizacion(ultimaActualizacion)}

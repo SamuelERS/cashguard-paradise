@@ -1,18 +1,24 @@
 import { render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const mockObtenerCorteDetalle = vi.fn();
+const detailFeedMock = vi.hoisted(() => ({
+  corte: null as Record<string, unknown> | null,
+}));
 
 vi.mock('react-router-dom', () => ({
   useNavigate: () => vi.fn(),
   useParams: () => ({ id: 'corte-001' }),
 }));
 
-vi.mock('@/hooks/useSupervisorQueries', () => ({
-  useSupervisorQueries: () => ({
+vi.mock('@/hooks/supervisor/useSupervisorCorteDetalleFeed', () => ({
+  useSupervisorCorteDetalleFeed: () => ({
+    corte: detailFeedMock.corte,
     cargando: false,
+    actualizando: false,
     error: null,
-    obtenerCorteDetalle: mockObtenerCorteDetalle,
+    noEncontrado: false,
+    realtimeStatus: 'subscribed',
+    refrescar: vi.fn(),
   }),
 }));
 
@@ -86,8 +92,7 @@ const CORTE_DETALLE_FIXTURE = {
 
 describe('CorteDetalle - legibilidad de dinero del corte', () => {
   beforeEach(() => {
-    mockObtenerCorteDetalle.mockReset();
-    mockObtenerCorteDetalle.mockResolvedValue(CORTE_DETALLE_FIXTURE);
+    detailFeedMock.corte = CORTE_DETALLE_FIXTURE;
   });
 
   it('muestra bloques legibles de entrega y gastos cuando vienen en Supabase', async () => {

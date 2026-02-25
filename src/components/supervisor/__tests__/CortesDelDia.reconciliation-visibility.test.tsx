@@ -5,11 +5,9 @@ vi.mock('react-router-dom', () => ({
   useNavigate: () => vi.fn(),
 }));
 
-vi.mock('@/hooks/useSupervisorQueries', () => ({
-  useSupervisorQueries: () => ({
-    cargando: false,
-    error: null,
-    obtenerCortesDelDia: async () => [
+vi.mock('@/hooks/supervisor/useSupervisorTodayFeed', () => ({
+  useSupervisorTodayFeed: () => ({
+    cortes: [
       {
         id: 'a1',
         correlativo: 'CORTE-2026-02-24-M-001',
@@ -33,6 +31,12 @@ vi.mock('@/hooks/useSupervisorQueries', () => ({
         datos_conteo: null,
       },
     ],
+    cargando: false,
+    actualizando: false,
+    error: null,
+    ultimaActualizacion: new Date('2026-02-24T22:00:00.000Z'),
+    realtimeStatus: 'subscribed',
+    refrescar: vi.fn(),
   }),
 }));
 

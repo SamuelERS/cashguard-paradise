@@ -3,15 +3,14 @@
 // desglose de efectivo y pagos electrónicos.
 // Solo lectura — sin side effects financieros.
 
-import { useState, useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useSupervisorQueries } from '@/hooks/useSupervisorQueries';
-import { useSupervisorRealtime } from '@/hooks/useSupervisorRealtime';
-import type { CorteConSucursal } from '@/hooks/useSupervisorQueries';
+import { useSupervisorCorteDetalleFeed } from '@/hooks/supervisor/useSupervisorCorteDetalleFeed';
 import { calculateCashTotal, formatCurrency } from '@/utils/calculations';
 import type { CashCount } from '@/types/cash';
 import { calcularSemaforo } from '@/utils/semaforoLogic';
 import { SemaforoIndicador } from './SemaforoIndicador';
+import { SupervisorLiveBadge } from './SupervisorLiveBadge';
 
 // ---------------------------------------------------------------------------
 // Tipos internos
@@ -332,37 +331,14 @@ function MetaFila({
 export function CorteDetalle() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { cargando, error, obtenerCorteDetalle } = useSupervisorQueries();
-
-  const [corte, setCorte] = useState<CorteConSucursal | null>(null);
-  const [noEncontrado, setNoEncontrado] = useState(false);
-
-  // ── Carga de datos ────────────────────────────────────────────────────────
-
-  const cargarDetalle = useCallback(async () => {
-    if (!id) {
-      setNoEncontrado(true);
-      return;
-    }
-    const resultado = await obtenerCorteDetalle(id);
-    if (resultado === null) {
-      setNoEncontrado(true);
-    } else {
-      setCorte(resultado);
-    }
-  }, [id, obtenerCorteDetalle]);
-
-  useSupervisorRealtime({
-    corteId: id,
-    enabled: Boolean(id),
-    onChange: () => {
-      void cargarDetalle();
-    },
-  });
-
-  useEffect(() => {
-    void cargarDetalle();
-  }, [cargarDetalle]);
+  const {
+    corte,
+    actualizando,
+    error,
+    noEncontrado,
+    realtimeStatus,
+    refrescar,
+  } = useSupervisorCorteDetalleFeed(id);
 
   // ── Estados de render ────────────────────────────────────────────────────
 
@@ -380,7 +356,7 @@ export function CorteDetalle() {
           </div>
           <button
             type="button"
-            onClick={() => void cargarDetalle()}
+            onClick={() => void refrescar()}
             className="mt-2 px-4 py-2 rounded-lg text-sm font-medium bg-white/10 hover:bg-white/15 text-white/80 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
           >
             Reintentar
@@ -493,9 +469,16 @@ export function CorteDetalle() {
       <div className="flex items-center gap-3 px-1">
         <SemaforoIndicador color={colorSemaforo} razon={razonSemaforo} size="lg" />
         <div>
-          <h2 className="text-base font-semibold text-white/90">
-            Corte #{corte.correlativo}
-          </h2>
+          <div className="flex items-center gap-2">
+            <h2 className="text-base font-semibold text-white/90">
+              Corte #{corte.correlativo}
+            </h2>
+            <SupervisorLiveBadge
+              status={realtimeStatus}
+              actualizando={actualizando}
+              spinnerAriaLabel="Actualizando detalle"
+            />
+          </div>
           <p className="text-xs text-white/40 mt-0.5">
             {formatearFechaHora(corte.finalizado_at)}
           </p>

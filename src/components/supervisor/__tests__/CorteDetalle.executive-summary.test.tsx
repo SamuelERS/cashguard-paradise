@@ -1,18 +1,24 @@
 import { render, screen, within } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const mockObtenerCorteDetalle = vi.fn();
+const detailFeedMock = vi.hoisted(() => ({
+  corte: null as Record<string, unknown> | null,
+}));
 
 vi.mock('react-router-dom', () => ({
   useNavigate: () => vi.fn(),
   useParams: () => ({ id: 'corte-001' }),
 }));
 
-vi.mock('@/hooks/useSupervisorQueries', () => ({
-  useSupervisorQueries: () => ({
+vi.mock('@/hooks/supervisor/useSupervisorCorteDetalleFeed', () => ({
+  useSupervisorCorteDetalleFeed: () => ({
+    corte: detailFeedMock.corte,
     cargando: false,
+    actualizando: false,
     error: null,
-    obtenerCorteDetalle: mockObtenerCorteDetalle,
+    noEncontrado: false,
+    realtimeStatus: 'subscribed',
+    refrescar: vi.fn(),
   }),
 }));
 
@@ -71,11 +77,11 @@ const BASE_FIXTURE = {
 
 describe('CorteDetalle - contrato de resumen ejecutivo', () => {
   beforeEach(() => {
-    mockObtenerCorteDetalle.mockReset();
+    detailFeedMock.corte = null;
   });
 
   it('muestra un Resumen ejecutivo con estado, total y diferencia', async () => {
-    mockObtenerCorteDetalle.mockResolvedValue(BASE_FIXTURE);
+    detailFeedMock.corte = BASE_FIXTURE;
     render(<CorteDetalle />);
 
     const heading = await screen.findByText(/resumen ejecutivo/i);
@@ -89,12 +95,12 @@ describe('CorteDetalle - contrato de resumen ejecutivo', () => {
   });
 
   it('en estado ABORTADO muestra incidencia de cierre con motivo visible', async () => {
-    mockObtenerCorteDetalle.mockResolvedValue({
+    detailFeedMock.corte = {
       ...BASE_FIXTURE,
       estado: 'ABORTADO',
       finalizado_at: '2026-02-24T20:10:00.000Z',
       motivo_aborto: 'Sesión abortada por usuario desde wizard',
-    });
+    };
 
     render(<CorteDetalle />);
 
@@ -106,7 +112,7 @@ describe('CorteDetalle - contrato de resumen ejecutivo', () => {
   });
 
   it('prioriza snapshot matemático de datos_reporte cuando existe', async () => {
-    mockObtenerCorteDetalle.mockResolvedValue({
+    detailFeedMock.corte = {
       ...BASE_FIXTURE,
       estado: 'FINALIZADO',
       finalizado_at: '2026-02-24T20:10:00.000Z',
@@ -115,7 +121,7 @@ describe('CorteDetalle - contrato de resumen ejecutivo', () => {
         expected_sales_adjusted: 942.0,
         difference: 45.65,
       },
-    });
+    };
 
     render(<CorteDetalle />);
 
