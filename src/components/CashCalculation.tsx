@@ -41,7 +41,10 @@ interface CashCalculationProps {
   expenses?: DailyExpense[];
   deliveryCalculation?: DeliveryCalculation;
   phaseState?: PhaseState;
-  onFinalizeReport?: (reporteHash: string) => Promise<void>;
+  onFinalizeReport?: (
+    reporteHash: string,
+    datosReporte?: Record<string, unknown>,
+  ) => Promise<void>;
   onBack: () => void;
   onComplete: () => void;
 }
@@ -439,7 +442,22 @@ const CashCalculation = ({
                 if (!reportHash.trim()) {
                   throw new Error('No se pudo generar hash de reporte');
                 }
-                await onFinalizeReport(reportHash);
+                const sicarAdjustment = calculateSicarAdjusted(expectedSales, pendingDeliveries);
+                const datosReporte: Record<string, unknown> = {
+                  total_cash: calculationData.totalCash,
+                  total_electronic: calculationData.totalElectronic,
+                  sales_cash: calculationData.salesCash,
+                  total_general: calculationData.totalGeneral,
+                  total_expenses: calculationData.totalExpenses,
+                  total_with_expenses: calculationData.totalWithExpenses,
+                  expected_sales_original: sicarAdjustment.originalExpected,
+                  expected_sales_adjusted: sicarAdjustment.adjustedExpected,
+                  pending_deliveries_total: sicarAdjustment.totalPendingDeliveries,
+                  pending_deliveries_count: sicarAdjustment.pendingDeliveriesCount,
+                  difference: calculationData.difference,
+                  generated_at: new Date().toISOString(),
+                };
+                await onFinalizeReport(reportHash, datosReporte);
               }
 
               setShowFinishConfirmation(false);

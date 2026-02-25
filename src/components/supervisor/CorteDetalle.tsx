@@ -219,6 +219,66 @@ function extraerDatosEntrega(
   };
 }
 
+function toFiniteNumber(value: unknown): number | null {
+  if (typeof value !== 'number') return null;
+  return Number.isFinite(value) ? value : null;
+}
+
+function firstFiniteNumber(...values: unknown[]): number | null {
+  for (const value of values) {
+    const parsed = toFiniteNumber(value);
+    if (parsed !== null) return parsed;
+  }
+  return null;
+}
+
+function extraerResumenReporte(datosReporte: Record<string, unknown> | null): {
+  totalContado: number | null;
+  ventaEsperada: number | null;
+  diferencia: number | null;
+  disponible: boolean;
+} {
+  if (!datosReporte) {
+    return {
+      totalContado: null,
+      ventaEsperada: null,
+      diferencia: null,
+      disponible: false,
+    };
+  }
+
+  const totalContado = firstFiniteNumber(
+    datosReporte.total_with_expenses,
+    datosReporte.total_contado,
+    datosReporte.total_general,
+    datosReporte.totalWithExpenses,
+    datosReporte.totalContado,
+    datosReporte.totalGeneral,
+  );
+
+  const ventaEsperada = firstFiniteNumber(
+    datosReporte.expected_sales_adjusted,
+    datosReporte.expected_sales,
+    datosReporte.expectedSalesAdjusted,
+    datosReporte.expectedSales,
+  );
+
+  const diferencia = firstFiniteNumber(
+    datosReporte.difference,
+    datosReporte.diferencia,
+  );
+
+  return {
+    totalContado,
+    ventaEsperada,
+    diferencia,
+    disponible:
+      totalContado !== null ||
+      ventaEsperada !== null ||
+      diferencia !== null,
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Sub-componente privado
 // ---------------------------------------------------------------------------
@@ -370,13 +430,18 @@ export function CorteDetalle() {
   // ── Cálculos ────────────────────────────────────────────────────────────
 
   const datos = extraerDatosConteo(corte.datos_conteo);
-  const totalContado = datos.totalEfectivo + datos.totalElectronico;
-  const ventaEsperada = corte.venta_esperada ?? 0;
-  const diferencia = totalContado - ventaEsperada;
+  const resumenReporte = extraerResumenReporte(corte.datos_reporte);
+  const totalContadoBase = datos.totalEfectivo + datos.totalElectronico;
+  const ventaEsperadaBase = corte.venta_esperada ?? 0;
+  const totalContado = resumenReporte.totalContado ?? totalContadoBase;
+  const ventaEsperada = resumenReporte.ventaEsperada ?? ventaEsperadaBase;
+  const diferenciaCalculada = totalContado - ventaEsperada;
+  const diferencia = resumenReporte.diferencia ?? diferenciaCalculada;
+  const resumenDisponible = datos.disponible || resumenReporte.disponible;
 
   // datos_verificacion siempre null (Plan §8) → flags en false
   const { color: colorSemaforo, razon: razonSemaforo } = calcularSemaforo({
-    diferencia: datos.disponible ? diferencia : 0,
+    diferencia: resumenDisponible ? diferencia : 0,
     tieneCriticasVerificacion: false,
     tieneAdvertenciasVerificacion: false,
   });
@@ -505,7 +570,7 @@ export function CorteDetalle() {
         <p className="text-xs font-medium text-white/40 uppercase tracking-wider mb-2">
           Resumen financiero
         </p>
-        {datos.disponible ? (
+        {resumenDisponible ? (
           <div className="divide-y divide-white/[0.06]">
             <MetaFila
               label="Efectivo contado"

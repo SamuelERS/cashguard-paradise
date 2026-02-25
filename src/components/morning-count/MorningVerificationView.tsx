@@ -16,6 +16,8 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { ConstructiveActionButton } from '@/components/shared/ConstructiveActionButton';
+import { NeutralActionButton } from '@/components/ui/neutral-action-button';
 import { WhatsAppInstructionsModal } from '@/components/shared/WhatsAppInstructionsModal';
 import { calculateCashTotal, formatCurrency } from '@/utils/calculations';
 import type { CashCount } from '@/types/cash';
@@ -109,7 +111,7 @@ export function MorningVerificationView(props: MorningVerificationProps) {
 
   return (
     <div className="morning-verification-container relative min-h-screen overflow-y-auto" data-scrollable="true">
-      <div className="relative z-10 container mx-auto px-4 py-8 lg:max-w-4xl">
+      <div className="relative z-10 container mx-auto max-w-4xl px-4 py-6 md:py-8">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
           <div className="mb-8 text-center">
             <h2 className="mb-2 text-2xl font-bold text-[#f4a52a]">Verificación Completada</h2>
@@ -144,12 +146,12 @@ export function MorningVerificationView(props: MorningVerificationProps) {
           )}
 
           {!reportSent ? (
-            <div className="glass-morphism-panel rounded-[clamp(0.75rem,3vw,1rem)] border border-[rgba(255,255,255,0.15)] px-[clamp(1.25rem,5vw,2rem)] py-[clamp(2rem,8vw,3.25rem)] text-center">
-              <Lock className="mx-auto mb-[clamp(1rem,4vw,1.5rem)] h-[clamp(3rem,12vw,4rem)] w-[clamp(3rem,12vw,4rem)] text-[#f4a52a]" />
-              <h3 className="mb-2 text-[clamp(1rem,4.5vw,1.25rem)] font-bold text-[#e1e8ed]">
+            <div className="glass-morphism-panel text-center lg:mx-auto lg:max-w-3xl">
+              <Lock className="mx-auto mb-4 h-12 w-12 text-[#f4a52a] md:h-14 md:w-14" />
+              <h3 className="mb-2 text-lg font-bold text-[#e1e8ed] md:text-xl">
                 🔒 Resultados Bloqueados
               </h3>
-              <p className="text-[clamp(0.875rem,3.5vw,1rem)] text-[#8899a6]">
+              <p className="text-sm text-[#8899a6] md:text-base">
                 Los resultados de la verificación matutina se revelarán después de enviar el reporte por
                 WhatsApp. Esto garantiza la trazabilidad completa de todas las verificaciones realizadas.
               </p>
@@ -250,23 +252,23 @@ export function MorningVerificationView(props: MorningVerificationProps) {
             transition={{ delay: 0.4 }}
             className="mt-8"
           >
-            <div className="glass-morphism-panel px-[clamp(1rem,4vw,1.5rem)] py-[clamp(1.25rem,5vw,2rem)]">
+            <div className="glass-morphism-panel lg:mx-auto lg:max-w-3xl">
               <div className="text-center">
-                <CheckCircle className="mx-auto mb-4 h-16 w-16 text-[#00ba7c]" />
+                <CheckCircle className="mx-auto mb-4 h-12 w-12 text-[#00ba7c] md:h-14 md:w-14" />
                 <h3 className="mb-2 text-xl font-bold text-[#e1e8ed]">Conteo Matutino Completado</h3>
-                <p className="mb-6 text-[#8899a6]">
+                <p className="mb-5 text-sm text-[#8899a6] md:text-base">
                   El cambio ha sido verificado y está listo para iniciar el turno. Los datos están
                   protegidos según el protocolo de seguridad.
                 </p>
 
                 {!reportSent && !whatsappOpened && !popupBlocked && (
-                  <div className="mb-[clamp(1rem,4vw,1.5rem)] flex items-start gap-3 rounded-[clamp(0.5rem,2vw,0.75rem)] border border-[rgba(255,159,10,0.3)] bg-[rgba(255,159,10,0.1)] p-[clamp(0.75rem,3vw,1rem)]">
-                    <AlertTriangle className="mt-0.5 h-[clamp(1rem,4vw,1.25rem)] w-[clamp(1rem,4vw,1.25rem)] text-[#ff9f0a]" />
+                  <div className="mb-4 flex items-start gap-3 rounded-lg border border-[rgba(255,159,10,0.3)] bg-[rgba(255,159,10,0.1)] p-3">
+                    <AlertTriangle className="mt-0.5 h-5 w-5 text-[#ff9f0a]" />
                     <div>
-                      <p className="text-[clamp(0.875rem,3.5vw,1rem)] font-medium text-[#ff9f0a]">
+                      <p className="text-sm font-medium text-[#ff9f0a] md:text-base">
                         ⚠️ DEBE ENVIAR REPORTE PARA CONTINUAR
                       </p>
-                      <p className="mt-1 text-[clamp(0.75rem,3vw,0.875rem)] text-[#8899a6]">
+                      <p className="mt-1 text-xs text-[#8899a6] md:text-sm">
                         Los resultados se revelarán después de enviar el reporte por WhatsApp.
                       </p>
                     </div>
@@ -274,13 +276,13 @@ export function MorningVerificationView(props: MorningVerificationProps) {
                 )}
 
                 {popupBlocked && !reportSent && (
-                  <div className="mb-[clamp(1rem,4vw,1.5rem)] flex items-start gap-3 rounded-[clamp(0.5rem,2vw,0.75rem)] border border-[rgba(255,69,58,0.3)] bg-[rgba(255,69,58,0.1)] p-[clamp(0.75rem,3vw,1rem)]">
-                    <AlertTriangle className="mt-0.5 h-[clamp(1rem,4vw,1.25rem)] w-[clamp(1rem,4vw,1.25rem)] text-[#ff453a]" />
+                  <div className="mb-4 flex items-start gap-3 rounded-lg border border-[rgba(255,69,58,0.3)] bg-[rgba(255,69,58,0.1)] p-3">
+                    <AlertTriangle className="mt-0.5 h-5 w-5 text-[#ff453a]" />
                     <div>
-                      <p className="text-[clamp(0.875rem,3.5vw,1rem)] font-medium text-[#ff453a]">
+                      <p className="text-sm font-medium text-[#ff453a] md:text-base">
                         🚫 Pop-ups Bloqueados
                       </p>
-                      <p className="mt-1 text-[clamp(0.75rem,3vw,0.875rem)] text-[#8899a6]">
+                      <p className="mt-1 text-xs text-[#8899a6] md:text-sm">
                         Su navegador bloqueó la apertura de WhatsApp. Use el botón "Copiar" para enviar
                         el reporte manualmente.
                       </p>
@@ -288,30 +290,29 @@ export function MorningVerificationView(props: MorningVerificationProps) {
                   </div>
                 )}
 
-                <div className="mx-auto grid max-w-3xl grid-cols-2 gap-3 md:grid-cols-3">
-                  <Button
+                <div className="mx-auto grid max-w-3xl gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  <ConstructiveActionButton
                     onClick={handleWhatsAppSend}
                     disabled={reportSent}
-                    className="h-[clamp(2.75rem,7.2vw,3rem)] min-h-[44px] transform bg-gradient-to-r from-green-600 to-green-700 px-2 py-2 text-xs font-semibold text-white transition-all duration-300 hover:scale-105 hover:from-green-700 hover:to-green-800 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100 sm:text-sm"
+                    className="w-full gap-2"
                   >
                     <Share className="mr-2 h-4 w-4" />
                     {reportSent ? 'Reporte Enviado ✅' : 'WhatsApp'}
-                  </Button>
+                  </ConstructiveActionButton>
 
-                  <Button
+                  <NeutralActionButton
                     onClick={handleCopyToClipboard}
                     disabled={!reportSent && !popupBlocked}
-                    variant="secondary"
-                    className="h-[clamp(2.75rem,7.2vw,3rem)] min-h-[44px] transform border-warning/30 px-2 py-2 text-xs transition-all duration-300 hover:scale-105 hover:bg-warning/10 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100 sm:text-sm"
+                    className="w-full gap-2 border border-warning/30 text-slate-100 hover:bg-warning/10"
                   >
                     <Copy className="mr-2 h-4 w-4" />
                     Copiar
-                  </Button>
+                  </NeutralActionButton>
 
                   <Button
                     onClick={handleComplete}
                     disabled={!reportSent}
-                    className="col-span-2 h-[clamp(2.75rem,7.2vw,3rem)] min-h-[44px] transform bg-gradient-to-r from-[#f4a52a] to-[#ffb84d] px-2 py-2 text-xs font-semibold text-white transition-all duration-300 hover:scale-105 hover:from-[#e89a1a] hover:to-[#ffa83d] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100 md:col-span-1 sm:text-sm"
+                    className="h-12 min-h-[44px] w-full gap-2 bg-gradient-to-r from-[#f4a52a] to-[#ffb84d] text-sm font-semibold text-white transition-colors duration-200 hover:from-[#e89a1a] hover:to-[#ffa83d] disabled:cursor-not-allowed disabled:opacity-50 sm:col-span-2 lg:col-span-1"
                   >
                     <CheckCircle className="mr-2 h-4 w-4" />
                     Finalizar
@@ -319,22 +320,27 @@ export function MorningVerificationView(props: MorningVerificationProps) {
                 </div>
 
                 {whatsappOpened && !reportSent && (
-                  <div className="mt-[clamp(1rem,4vw,1.5rem)] rounded-[clamp(0.5rem,2vw,0.75rem)] border border-[rgba(0,186,124,0.3)] bg-[rgba(0,186,124,0.1)] p-[clamp(1rem,4vw,1.5rem)]">
-                    <p className="mb-3 text-center text-[clamp(0.875rem,3.5vw,1rem)] text-[#8899a6]">
+                  <div className="mt-4 rounded-lg border border-[rgba(0,186,124,0.3)] bg-[rgba(0,186,124,0.1)] p-4">
+                    <p className="mb-3 text-center text-sm text-[#8899a6] md:text-base">
                       ¿Ya envió el reporte por WhatsApp?
                     </p>
-                    <Button
+                    <ConstructiveActionButton
                       onClick={handleConfirmSent}
-                      className="h-[clamp(2.75rem,7.2vw,3rem)] min-h-[44px] w-full transform bg-gradient-to-r from-green-600 to-green-700 font-semibold text-white transition-all duration-300 hover:scale-105 hover:from-green-700 hover:to-green-800"
+                      className="w-full gap-2"
                     >
                       <CheckCircle className="mr-2 h-4 w-4" />
                       Sí, ya envié el reporte
-                    </Button>
+                    </ConstructiveActionButton>
                   </div>
                 )}
 
                 <div className="mt-4 text-center">
-                  <Button onClick={handleBack} variant="ghost" size="sm" className="text-xs text-[#8899a6]">
+                  <Button
+                    onClick={handleBack}
+                    variant="ghost"
+                    size="sm"
+                    className="text-xs text-[#8899a6] hover:text-[#e1e8ed]"
+                  >
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Volver al Conteo
                   </Button>

@@ -20,4 +20,13 @@ describe('MorningVerificationView UX contract (TDD RED)', () => {
     expect(content).toMatch(/Resultados Bloqueados/);
     expect(content).toMatch(/Detalle de Denominaciones/);
   });
+
+  test('usa botones compartidos y reduce uso excesivo de clamp() en layout', () => {
+    const content = readFileSync(resolve(VIEW_PATH), 'utf-8');
+    const clampUsages = content.match(/clamp\(/g) ?? [];
+
+    expect(content).toMatch(/ConstructiveActionButton/);
+    expect(content).toMatch(/NeutralActionButton/);
+    expect(clampUsages.length).toBeLessThanOrEqual(10);
+  });
 });

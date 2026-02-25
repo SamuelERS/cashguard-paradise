@@ -116,14 +116,18 @@ vi.mock('@/components/morning-count/MorningCountWizard', () => ({
 
 vi.mock('@/components/CashCounter', () => ({
   default: (props: {
-    onFinalizarCorte?: (hash: string) => Promise<void>;
+    onFinalizarCorte?: (hash: string, datosReporte?: Record<string, unknown>) => Promise<void>;
   }) => (
     <div data-testid="cash-counter">
       <button
         type="button"
         data-testid="finish-cut"
         onClick={() => {
-          void props.onFinalizarCorte?.('hash-ui-cierre');
+          void props.onFinalizarCorte?.('hash-ui-cierre', {
+            difference: -30.43,
+            total_with_expenses: 623.57,
+            expected_sales_adjusted: 654,
+          });
         }}
       >
         Finalizar corte
@@ -169,7 +173,14 @@ describe('Index — finalización de corte sincroniza terminalidad', () => {
     await user.click(screen.getByTestId('finish-cut'));
 
     expect(corteSesionMocks.finalizarCorte).toHaveBeenCalledTimes(1);
-    expect(corteSesionMocks.finalizarCorte).toHaveBeenCalledWith('hash-ui-cierre');
+    expect(corteSesionMocks.finalizarCorte).toHaveBeenCalledWith(
+      'hash-ui-cierre',
+      expect.objectContaining({
+        difference: -30.43,
+        total_with_expenses: 623.57,
+        expected_sales_adjusted: 654,
+      }),
+    );
   });
 
   it('muestra toast específico de red cuando iniciarCorte falla por conectividad', async () => {

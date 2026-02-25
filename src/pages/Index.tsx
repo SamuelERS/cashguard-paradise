@@ -177,13 +177,16 @@ const Index = () => {
       });
   }, [guardarProgreso, syncSucursalId]);
 
-  const handleFinalizarCorte = useCallback(async (reporteHash: string) => {
+  const handleFinalizarCorte = useCallback(async (
+    reporteHash: string,
+    datosReporte?: Record<string, unknown>,
+  ) => {
     if (!isSupabaseConfigured || !syncSucursalId) return;
 
     const estadoColaAntes = obtenerEstadoCola();
     setSyncEstado('sincronizando');
     try {
-      await finalizarCorte(reporteHash);
+      await finalizarCorte(reporteHash, datosReporte ?? null);
       const estadoColaDespues = obtenerEstadoCola();
       const seEncoloOperacion =
         estadoColaDespues.total > estadoColaAntes.total ||

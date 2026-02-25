@@ -47,15 +47,17 @@ describe('OperationSelector UX contract (TDD RED)', () => {
     expect(css).toMatch(/@media\s*\(max-width:\s*430px\)[\s\S]*\.operation-brand-logo--right[\s\S]*(scale\(|max-height:\s*44px|opacity:\s*0\.[0-9]+)/);
   });
 
-  test('operation cards use compact spacing and reduced min-height for professional rhythm', () => {
+  test('operation cards use denser spacing and lower visual height for professional rhythm', () => {
     const css = readFileSync(resolve(CSS_PATH), 'utf-8');
     const tsx = readFileSync(resolve(TSX_PATH), 'utf-8');
 
-    expect(css).toMatch(/\.operation-card\s*\{[\s\S]*padding:\s*clamp\(16px,\s*3\.2vw,\s*22px\)/);
-    expect(css).toMatch(/\.operation-card\s*\{[\s\S]*min-height:\s*clamp\(220px,\s*24vw,\s*290px\)/);
+    expect(css).toMatch(/\.operation-card\s*\{[\s\S]*padding:\s*clamp\(14px,\s*2\.8vw,\s*18px\)/);
+    expect(css).toMatch(/\.operation-card\s*\{[\s\S]*min-height:\s*clamp\(196px,\s*21vw,\s*252px\)/);
     expect(css).toMatch(/@media\s*\(max-width:\s*1024px\)[\s\S]*\.operation-card[\s\S]*min-height:\s*auto/);
 
     expect(tsx).not.toMatch(/className="operation-card[^"]*"\s*style=\{\{[\s\S]*padding:/);
+    expect(tsx).not.toMatch(/mb-6/g);
+    expect(tsx).toMatch(/mb-4/g);
   });
 
   test('cards expose variant classes and semantic hover/focus styles', () => {
@@ -72,5 +74,28 @@ describe('OperationSelector UX contract (TDD RED)', () => {
     expect(css).toMatch(/\.operation-card--night:hover[\s\S]*border-color:/);
     expect(css).toMatch(/\.operation-card:focus-visible[\s\S]*box-shadow:/);
     expect(css).toMatch(/@media\s*\(hover:\s*none\)[\s\S]*\.operation-card:hover[\s\S]*transform:\s*none/);
+  });
+
+  test('mensaje institucional inferior es fijo y sin toggle', () => {
+    const css = readFileSync(resolve(CSS_PATH), 'utf-8');
+    const tsx = readFileSync(resolve(TSX_PATH), 'utf-8');
+
+    expect(tsx).not.toMatch(/Ver mensaje del equipo/);
+    expect(tsx).not.toMatch(/Ocultar mensaje del equipo/);
+    expect(tsx).not.toMatch(/showTeamMessage/);
+    expect(tsx).toMatch(/operation-team-panel operation-team-panel--fixed/);
+    expect(tsx).toMatch(/Compromiso Operativo/);
+    expect(tsx).toMatch(/JesucristoEsDios/);
+
+    expect(css).toMatch(/\.operation-team-panel--fixed\s*\{/);
+    expect(css).toMatch(/\.operation-team-heading\s*\{/);
+  });
+
+  test('texto guía evita redundancias y elimina leyenda inferior duplicada', () => {
+    const tsx = readFileSync(resolve(TSX_PATH), 'utf-8');
+
+    expect(tsx).toMatch(/Elige el proceso según el momento del día/);
+    expect(tsx).not.toMatch(/Seleccione el Proceso según momento del día/);
+    expect(tsx).not.toMatch(/Seleccione la operación correcta según el horario actual/);
   });
 });

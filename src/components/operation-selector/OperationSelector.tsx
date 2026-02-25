@@ -10,12 +10,10 @@
 // Previous: v2.6 - Badge versión actualizado (sistema inteligente WhatsApp + optimización UX)
 // Previous: v2.5 - Badge versión actualizado (formato tabla compacto + fix fondo $50 + SICAR)
 import { motion } from 'framer-motion';
-import { Sunrise, Moon, Package, ArrowRight, Calculator, Fish, Heart, BarChart3 } from 'lucide-react';
+import { Sunrise, Moon, Package, ArrowRight, Calculator, BarChart3 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
 // 🤖 [IA] - v1.2.24 - FloatingParticles eliminado para mejorar rendimiento
 import { OperationMode, OPERATION_MODES } from '@/types/operation-mode';
-import { AppFooter } from '@/components/AppFooter';
 import './operation-selector.css';
 
 interface OperationSelectorProps {
@@ -24,7 +22,6 @@ interface OperationSelectorProps {
 
 export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
   const navigate = useNavigate();
-  const [showTeamMessage, setShowTeamMessage] = useState(false);
   const cashCount = OPERATION_MODES[OperationMode.CASH_COUNT];
   const cashCut = OPERATION_MODES[OperationMode.CASH_CUT];
   const deliveryView = OPERATION_MODES[OperationMode.DELIVERY_VIEW];
@@ -55,12 +52,12 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
         />
       </div>
       
-      <div className="relative z-10 container mx-auto px-4 py-6 md:py-8">
+      <div className="relative z-10 container mx-auto px-4 py-5 md:py-7">
         {/* Header con título principal */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-10 pt-16 md:pt-20"
+          className="mb-8 pt-12 text-center md:pt-16"
         >
           <div className="flex items-center justify-center gap-3 mb-4">
             <Calculator
@@ -96,12 +93,12 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
             fontSize: `clamp(0.875rem, 3.5vw, 1.125rem)`,
             color: '#8899a6'
           }}>
-            Seleccione el Proceso según momento del día
+            Elige el proceso según el momento del día
           </p>
         </motion.div>
 
         {/* Contenedor de las tres opciones */}
-        <div className="grid md:grid-cols-2 gap-5 md:gap-6 max-w-6xl mx-auto">
+        <div className="mx-auto grid max-w-6xl gap-4 md:grid-cols-2 md:gap-5">
           {/* Card de Conteo de Caja (Mañana) */}
           <motion.button
             type="button"
@@ -115,11 +112,11 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
             className="operation-card operation-card--morning cursor-pointer group text-left w-full"
           >
             {/* Ícono y badge */}
-            <div className="flex items-start justify-between mb-6">
+            <div className="mb-4 flex items-start justify-between">
               <Sunrise 
                 style={{
-                  width: `clamp(48px, 12vw, 64px)`,
-                  height: `clamp(48px, 12vw, 64px)`,
+                  width: `clamp(42px, 9.5vw, 56px)`,
+                  height: `clamp(42px, 9.5vw, 56px)`,
                   background: 'linear-gradient(135deg, #f4a52a 0%, #ffb84d 100%)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
@@ -132,19 +129,19 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
             </div>
 
             {/* Título y descripción */}
-            <h3 className="font-bold mb-3 operation-title">
+            <h3 className="mb-2.5 font-bold operation-title">
               {cashCount.title}
             </h3>
-            <p className="mb-6 operation-description">
+            <p className="mb-4 operation-description">
               {cashCount.description}
             </p>
 
             {/* Características */}
-            <div className="mb-6 flex flex-col gap-2">
+            <div className="mb-4 flex flex-col gap-1.5">
               <div className="operation-feature">
                 <div className="rounded-full" style={{
-                  width: `clamp(5px, 1.5vw, 6px)`,
-                  height: `clamp(5px, 1.5vw, 6px)`,
+                  width: `clamp(4px, 1.2vw, 5px)`,
+                  height: `clamp(4px, 1.2vw, 5px)`,
                   background: '#f4a52a'
                 }} />
                 <span className="operation-feature-text">
@@ -153,8 +150,8 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
               </div>
               <div className="operation-feature">
                 <div className="rounded-full" style={{
-                  width: `clamp(5px, 1.5vw, 6px)`,
-                  height: `clamp(5px, 1.5vw, 6px)`,
+                  width: `clamp(4px, 1.2vw, 5px)`,
+                  height: `clamp(4px, 1.2vw, 5px)`,
                   background: '#f4a52a'
                 }} />
                 <span className="operation-feature-text">
@@ -163,8 +160,8 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
               </div>
               <div className="operation-feature operation-feature--mobile-optional">
                 <div className="rounded-full" style={{
-                  width: `clamp(5px, 1.5vw, 6px)`,
-                  height: `clamp(5px, 1.5vw, 6px)`,
+                  width: `clamp(4px, 1.2vw, 5px)`,
+                  height: `clamp(4px, 1.2vw, 5px)`,
                   background: '#f4a52a'
                 }} />
                 <span className="operation-feature-text">
@@ -197,11 +194,11 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
             className="operation-card operation-card--night cursor-pointer group text-left w-full"
           >
             {/* Ícono y badge */}
-            <div className="flex items-start justify-between mb-6">
+            <div className="mb-4 flex items-start justify-between">
               <Moon 
                 style={{
-                  width: `clamp(48px, 12vw, 64px)`,
-                  height: `clamp(48px, 12vw, 64px)`,
+                  width: `clamp(42px, 9.5vw, 56px)`,
+                  height: `clamp(42px, 9.5vw, 56px)`,
                   background: 'linear-gradient(135deg, #0a84ff 0%, #5e5ce6 100%)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
@@ -214,19 +211,19 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
             </div>
 
             {/* Título y descripción */}
-            <h3 className="font-bold mb-3 operation-title">
+            <h3 className="mb-2.5 font-bold operation-title">
               {cashCut.title}
             </h3>
-            <p className="mb-6 operation-description">
+            <p className="mb-4 operation-description">
               {cashCut.description}
             </p>
 
             {/* Características */}
-            <div className="mb-6 flex flex-col gap-2">
+            <div className="mb-4 flex flex-col gap-1.5">
               <div className="operation-feature">
                 <div className="rounded-full" style={{
-                  width: `clamp(5px, 1.5vw, 6px)`,
-                  height: `clamp(5px, 1.5vw, 6px)`,
+                  width: `clamp(4px, 1.2vw, 5px)`,
+                  height: `clamp(4px, 1.2vw, 5px)`,
                   background: '#0a84ff'
                 }} />
                 <span className="operation-feature-text">
@@ -235,8 +232,8 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
               </div>
               <div className="operation-feature">
                 <div className="rounded-full" style={{
-                  width: `clamp(5px, 1.5vw, 6px)`,
-                  height: `clamp(5px, 1.5vw, 6px)`,
+                  width: `clamp(4px, 1.2vw, 5px)`,
+                  height: `clamp(4px, 1.2vw, 5px)`,
                   background: '#0a84ff'
                 }} />
                 <span className="operation-feature-text">
@@ -245,8 +242,8 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
               </div>
               <div className="operation-feature operation-feature--mobile-optional">
                 <div className="rounded-full" style={{
-                  width: `clamp(5px, 1.5vw, 6px)`,
-                  height: `clamp(5px, 1.5vw, 6px)`,
+                  width: `clamp(4px, 1.2vw, 5px)`,
+                  height: `clamp(4px, 1.2vw, 5px)`,
                   background: '#0a84ff'
                 }} />
                 <span className="operation-feature-text">
@@ -279,11 +276,11 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
             className="operation-card operation-card--delivery cursor-pointer group text-left w-full"
           >
             {/* Ícono y badge */}
-            <div className="flex items-start justify-between mb-6">
+            <div className="mb-4 flex items-start justify-between">
               <Package 
                 style={{
-                  width: `clamp(48px, 12vw, 64px)`,
-                  height: `clamp(48px, 12vw, 64px)`,
+                  width: `clamp(42px, 9.5vw, 56px)`,
+                  height: `clamp(42px, 9.5vw, 56px)`,
                   background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
@@ -296,19 +293,19 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
             </div>
 
             {/* Título y descripción */}
-            <h3 className="font-bold mb-3 operation-title">
+            <h3 className="mb-2.5 font-bold operation-title">
               {deliveryView.title}
             </h3>
-            <p className="mb-6 operation-description">
+            <p className="mb-4 operation-description">
               {deliveryView.description}
             </p>
 
             {/* Características */}
-            <div className="mb-6 flex flex-col gap-2">
+            <div className="mb-4 flex flex-col gap-1.5">
               <div className="operation-feature">
                 <div className="rounded-full" style={{
-                  width: `clamp(5px, 1.5vw, 6px)`,
-                  height: `clamp(5px, 1.5vw, 6px)`,
+                  width: `clamp(4px, 1.2vw, 5px)`,
+                  height: `clamp(4px, 1.2vw, 5px)`,
                   background: '#10b981'
                 }} />
                 <span className="operation-feature-text">
@@ -317,8 +314,8 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
               </div>
               <div className="operation-feature">
                 <div className="rounded-full" style={{
-                  width: `clamp(5px, 1.5vw, 6px)`,
-                  height: `clamp(5px, 1.5vw, 6px)`,
+                  width: `clamp(4px, 1.2vw, 5px)`,
+                  height: `clamp(4px, 1.2vw, 5px)`,
                   background: '#10b981'
                 }} />
                 <span className="operation-feature-text">
@@ -327,8 +324,8 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
               </div>
               <div className="operation-feature operation-feature--mobile-optional">
                 <div className="rounded-full" style={{
-                  width: `clamp(5px, 1.5vw, 6px)`,
-                  height: `clamp(5px, 1.5vw, 6px)`,
+                  width: `clamp(4px, 1.2vw, 5px)`,
+                  height: `clamp(4px, 1.2vw, 5px)`,
                   background: '#10b981'
                 }} />
                 <span className="operation-feature-text">
@@ -360,11 +357,11 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
             className="operation-card operation-card--supervisor cursor-pointer group text-left w-full"
           >
             {/* Ícono y badge */}
-            <div className="flex items-start justify-between mb-6">
+            <div className="mb-4 flex items-start justify-between">
               <BarChart3
                 style={{
-                  width: `clamp(48px, 12vw, 64px)`,
-                  height: `clamp(48px, 12vw, 64px)`,
+                  width: `clamp(42px, 9.5vw, 56px)`,
+                  height: `clamp(42px, 9.5vw, 56px)`,
                   background: 'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
@@ -377,19 +374,19 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
             </div>
 
             {/* Título y descripción */}
-            <h3 className="font-bold mb-3 operation-title">
+            <h3 className="mb-2.5 font-bold operation-title">
               Dashboard Supervisor
             </h3>
-            <p className="mb-6 operation-description">
+            <p className="mb-4 operation-description">
               Consulta cortes del día, historial y desempeño de cajeros
             </p>
 
             {/* Características */}
-            <div className="mb-6 flex flex-col gap-2">
+            <div className="mb-4 flex flex-col gap-1.5">
               <div className="operation-feature">
                 <div className="rounded-full" style={{
-                  width: `clamp(5px, 1.5vw, 6px)`,
-                  height: `clamp(5px, 1.5vw, 6px)`,
+                  width: `clamp(4px, 1.2vw, 5px)`,
+                  height: `clamp(4px, 1.2vw, 5px)`,
                   background: '#8b5cf6'
                 }} />
                 <span className="operation-feature-text">
@@ -398,8 +395,8 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
               </div>
               <div className="operation-feature">
                 <div className="rounded-full" style={{
-                  width: `clamp(5px, 1.5vw, 6px)`,
-                  height: `clamp(5px, 1.5vw, 6px)`,
+                  width: `clamp(4px, 1.2vw, 5px)`,
+                  height: `clamp(4px, 1.2vw, 5px)`,
                   background: '#8b5cf6'
                 }} />
                 <span className="operation-feature-text">
@@ -408,8 +405,8 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
               </div>
               <div className="operation-feature operation-feature--mobile-optional">
                 <div className="rounded-full" style={{
-                  width: `clamp(5px, 1.5vw, 6px)`,
-                  height: `clamp(5px, 1.5vw, 6px)`,
+                  width: `clamp(4px, 1.2vw, 5px)`,
+                  height: `clamp(4px, 1.2vw, 5px)`,
                   background: '#8b5cf6'
                 }} />
                 <span className="operation-feature-text">
@@ -430,85 +427,32 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
           </motion.button>
         </div>
 
-        {/* Mensaje informativo */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-          className="text-center mt-10"
-        >
-          <p className="text-sm text-[#657786]">
-            Seleccione la operación correcta según el horario actual
-          </p>
-        </motion.div>
-
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
-          className="mt-8 max-w-2xl mx-auto"
+          className="mx-auto mt-8 max-w-2xl"
         >
-          <button
-            type="button"
-            aria-expanded={showTeamMessage}
-            aria-controls="team-message-panel"
-            onClick={() => setShowTeamMessage(prev => !prev)}
-            className="operation-team-toggle w-full rounded-lg border border-white/10 bg-white/[0.03] px-4 py-2 text-left text-xs font-medium text-white/75 transition-colors hover:bg-white/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/35"
+          <motion.div
+            role="note"
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25 }}
+            className="operation-team-panel operation-team-panel--fixed rounded-xl"
           >
-            {showTeamMessage ? 'Ocultar mensaje del equipo' : 'Ver mensaje del equipo'}
-          </button>
+            <p className="operation-team-heading">Compromiso Operativo</p>
+            <p className="operation-team-body">
+              Este sistema resguarda tu trabajo diario con trazabilidad, orden y transparencia en cada corte.
+            </p>
+            <p className="operation-team-body operation-team-body--secondary">
+              Gracias por operar con precisión y cuidar los recursos de Paradise en cada turno.
+            </p>
 
-          {showTeamMessage && (
-            <motion.div
-              id="team-message-panel"
-              initial={{ opacity: 0, y: -6 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.2 }}
-              className="operation-team-panel mt-3 rounded-xl"
-            >
-              <span className="italic">
-                "Este sistema protege tu trabajo diario y garantiza transparencia en cada operación.
-                Confiamos en ti, y juntos cuidamos los recursos de Paradise."
-              </span>
-              <span className="operation-team-signature block mt-2">- Equipo de Acuarios Paradise</span>
-
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.15, duration: 0.3 }}
-                className="flex items-center justify-end gap-2 mt-4 pt-3 border-t border-white/[0.08]"
-              >
-                <motion.span
-                  animate={{
-                    scale: [1, 1.1, 1],
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    repeatType: 'reverse',
-                  }}
-                  className="operation-team-icon"
-                >
-                  🕊️
-                </motion.span>
-
-                <span className="operation-team-tag font-semibold">JesucristoEsDios</span>
-
-                <motion.div
-                  animate={{
-                    scale: [1, 1.2, 1],
-                  }}
-                  transition={{
-                    duration: 1.5,
-                    repeat: Infinity,
-                    repeatType: 'reverse',
-                  }}
-                >
-                  <Heart fill="#ef4444" stroke="#ef4444" className="operation-team-heart" />
-                </motion.div>
-              </motion.div>
-            </motion.div>
-          )}
+            <div className="operation-team-footer">
+              <span className="operation-team-signature">Equipo de Acuarios Paradise</span>
+              <span className="operation-team-tag font-semibold">🕊️ JesucristoEsDios ❤️</span>
+            </div>
+          </motion.div>
         </motion.div>
       </div>
     </div>

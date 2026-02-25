@@ -26,7 +26,10 @@ interface Phase3ReportViewProps {
   dailyExpenses: DailyExpense[];
   deliveryCalculation: DeliveryCalculation | null;
   phaseState: PhaseState;
-  onFinalizarCorte?: (reporteHash: string) => Promise<void>;
+  onFinalizarCorte?: (
+    reporteHash: string,
+    datosReporte?: Record<string, unknown>,
+  ) => Promise<void>;
   onComplete: () => void;
   onBack: () => void;
 }

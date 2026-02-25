@@ -38,7 +38,10 @@ interface CashCounterProps {
     datos_verificacion?: Record<string, unknown> | null;
     datos_reporte?: Record<string, unknown> | null;
   }) => void;
-  onFinalizarCorte?: (reporteHash: string) => Promise<void>;
+  onFinalizarCorte?: (
+    reporteHash: string,
+    datosReporte?: Record<string, unknown>,
+  ) => Promise<void>;
   // 🤖 [IA] - DACC-CIERRE-SYNC-UX: Props sincronización visual
   syncEstado?: 'sincronizado' | 'sincronizando' | 'pendiente' | 'error';
   ultimaSync?: string | null;

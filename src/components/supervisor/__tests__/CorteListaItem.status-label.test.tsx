@@ -58,4 +58,28 @@ describe('CorteListaItem - status labels', () => {
       screen.getByText((content) => content.startsWith('Finalizado ')),
     ).toBeInTheDocument();
   });
+
+  it('usa diferencia y total de datos_reporte en cortes finalizados cuando están disponibles', () => {
+    render(
+      <CorteListaItem
+        corte={makeCorte({
+          estado: 'FINALIZADO',
+          finalizado_at: '2026-02-24T22:10:00.000Z',
+          venta_esperada: 900,
+          datos_conteo: {
+            conteo_parcial: { bill100: 1, bill20: 1 },
+            pagos_electronicos: { credomatic: 0, promerica: 0, bankTransfer: 0, paypal: 0 },
+          },
+          datos_reporte: {
+            total_with_expenses: 850.55,
+            difference: 75.15,
+          },
+        })}
+        onClick={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText('$850.55')).toBeInTheDocument();
+    expect(screen.getByText('+$75.15')).toBeInTheDocument();
+  });
 });

@@ -104,4 +104,28 @@ describe('CorteDetalle - contrato de resumen ejecutivo', () => {
       screen.getByText(/sesión abortada por usuario desde wizard/i),
     ).toBeInTheDocument();
   });
+
+  it('prioriza snapshot matemático de datos_reporte cuando existe', async () => {
+    mockObtenerCorteDetalle.mockResolvedValue({
+      ...BASE_FIXTURE,
+      estado: 'FINALIZADO',
+      finalizado_at: '2026-02-24T20:10:00.000Z',
+      datos_reporte: {
+        total_with_expenses: 987.65,
+        expected_sales_adjusted: 942.0,
+        difference: 45.65,
+      },
+    });
+
+    render(<CorteDetalle />);
+
+    const financialHeading = await screen.findByText(/resumen financiero/i);
+    const financialCard = financialHeading.closest('div');
+    expect(financialCard).not.toBeNull();
+    const scoped = within(financialCard as HTMLElement);
+
+    expect(scoped.getByText('$987.65')).toBeInTheDocument();
+    expect(scoped.getByText('+$45.65')).toBeInTheDocument();
+    expect(scoped.getByText('$942.00')).toBeInTheDocument();
+  });
 });

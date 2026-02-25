@@ -10,6 +10,10 @@ vi.mock('../DeliveryDashboard', () => ({
   DeliveryDashboard: () => <div data-testid="delivery-dashboard">Dashboard Content</div>,
 }));
 
+vi.mock('../DeliveryManager', () => ({
+  DeliveryManager: () => <div data-testid="delivery-management">Management Content</div>,
+}));
+
 // Mock sonner toast
 vi.mock('sonner', () => ({
   toast: {
@@ -153,6 +157,28 @@ describe('DeliveryDashboardWrapper', () => {
 
       // localStorage should be cleared
       expect(localStorage.getItem(LOCKOUT_KEY)).toBeNull();
+    });
+
+    it('permite navegar tabs con teclado (ArrowRight/ArrowLeft)', () => {
+      renderWrapper({ requirePin: false });
+
+      const tablist = screen.getByRole('tablist');
+      const dashboardTab = screen.getByRole('tab', { name: /Dashboard/i });
+      const managementTab = screen.getByRole('tab', { name: /Gestión/i });
+
+      expect(dashboardTab).toHaveAttribute('aria-selected', 'true');
+      expect(screen.queryByTestId('delivery-management')).not.toBeInTheDocument();
+
+      dashboardTab.focus();
+      fireEvent.keyDown(tablist, { key: 'ArrowRight' });
+
+      expect(managementTab).toHaveAttribute('aria-selected', 'true');
+      expect(screen.getByTestId('delivery-management')).toBeInTheDocument();
+
+      fireEvent.keyDown(tablist, { key: 'ArrowLeft' });
+
+      expect(dashboardTab).toHaveAttribute('aria-selected', 'true');
+      expect(screen.getByTestId('delivery-dashboard')).toBeInTheDocument();
     });
   });
 

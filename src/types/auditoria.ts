@@ -247,8 +247,11 @@ export interface UseCorteSesionReturn {
   iniciarCorte: (params: IniciarCorteParams) => Promise<Corte>;
   /** Guarda progreso parcial del corte activo */
   guardarProgreso: (datos: DatosProgreso) => Promise<void>;
-  /** Finaliza el corte con el hash del reporte */
-  finalizarCorte: (reporte_hash: string) => Promise<Corte>;
+  /** Finaliza el corte con hash de reporte y snapshot matemático opcional */
+  finalizarCorte: (
+    reporte_hash: string,
+    datos_reporte?: Record<string, unknown> | null,
+  ) => Promise<Corte>;
   /** Aborta el corte con un motivo */
   abortarCorte: (motivo: string) => Promise<void>;
   /** Reinicia un intento (crea nuevo CorteIntento) */

@@ -102,6 +102,66 @@ function extraerTotalesConteo(datosConteo: Record<string, unknown> | null): {
   return { totalEfectivo, totalElectronico, disponible: true };
 }
 
+function toFiniteNumber(value: unknown): number | null {
+  if (typeof value !== 'number') return null;
+  return Number.isFinite(value) ? value : null;
+}
+
+function firstFiniteNumber(...values: unknown[]): number | null {
+  for (const value of values) {
+    const parsed = toFiniteNumber(value);
+    if (parsed !== null) return parsed;
+  }
+  return null;
+}
+
+function extraerTotalesReporte(datosReporte: Record<string, unknown> | null): {
+  totalContado: number | null;
+  expectedSalesAdjusted: number | null;
+  diferencia: number | null;
+  disponible: boolean;
+} {
+  if (!datosReporte) {
+    return {
+      totalContado: null,
+      expectedSalesAdjusted: null,
+      diferencia: null,
+      disponible: false,
+    };
+  }
+
+  const totalContado = firstFiniteNumber(
+    datosReporte.total_with_expenses,
+    datosReporte.total_contado,
+    datosReporte.total_general,
+    datosReporte.totalWithExpenses,
+    datosReporte.totalContado,
+    datosReporte.totalGeneral,
+  );
+
+  const expectedSalesAdjusted = firstFiniteNumber(
+    datosReporte.expected_sales_adjusted,
+    datosReporte.expected_sales,
+    datosReporte.expectedSalesAdjusted,
+    datosReporte.expectedSales,
+  );
+
+  const diferencia = firstFiniteNumber(
+    datosReporte.difference,
+    datosReporte.diferencia,
+  );
+
+  return {
+    totalContado,
+    expectedSalesAdjusted,
+    diferencia,
+    disponible:
+      totalContado !== null ||
+      expectedSalesAdjusted !== null ||
+      diferencia !== null,
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Componente
 // ---------------------------------------------------------------------------
@@ -117,12 +177,22 @@ function extraerTotalesConteo(datosConteo: Record<string, unknown> | null): {
  * ```
  */
 export function CorteListaItem({ corte, onClick }: CorteListaItemProps) {
-  const { totalEfectivo, totalElectronico, disponible } = extraerTotalesConteo(
+  const { totalEfectivo, totalElectronico, disponible: conteoDisponible } = extraerTotalesConteo(
     corte.datos_conteo,
   );
-  const totalContado = totalEfectivo + totalElectronico;
-  const ventaEsperada = corte.venta_esperada ?? 0;
-  const diferencia = totalContado - ventaEsperada;
+  const {
+    totalContado: totalContadoReporte,
+    expectedSalesAdjusted,
+    diferencia: diferenciaReporte,
+    disponible: reporteDisponible,
+  } = extraerTotalesReporte(corte.datos_reporte);
+  const totalContadoBase = totalEfectivo + totalElectronico;
+  const ventaEsperadaBase = corte.venta_esperada ?? 0;
+  const totalContado = totalContadoReporte ?? totalContadoBase;
+  const ventaEsperada = expectedSalesAdjusted ?? ventaEsperadaBase;
+  const diferenciaCalculada = totalContado - ventaEsperada;
+  const diferencia = diferenciaReporte ?? diferenciaCalculada;
+  const disponible = conteoDisponible || reporteDisponible;
 
   // datos_verificacion siempre null en el flujo actual → ambas flags en false (Plan §8).
   const { color: colorSemaforo, razon: razonSemaforo } = calcularSemaforo({

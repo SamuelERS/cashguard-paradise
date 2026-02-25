@@ -1,12 +1,12 @@
 // 🤖 [IA] - v3.2.0 - FIX DEFINITIVO: onGoBack callback prop resets parent state (elimina bug estado local independiente)
 // Previous: v3.1.0 - Integración DeliveryManager con tabs Dashboard/Gestión (Bug #1 + #5 resueltos)
 // Previous: v3.0.0 - FIX DEFINITIVO: Reset completo de state antes de navegar (Bug #6 resuelto)
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type KeyboardEvent } from 'react';
 import { ArrowLeft, BarChart3, ClipboardList } from 'lucide-react';
 import { DeliveryDashboard } from './DeliveryDashboard';
 import { DeliveryManager } from './DeliveryManager';
 import { PinModal } from '../ui/pin-modal';
-import { DestructiveActionButton } from '@/components/shared/DestructiveActionButton';
+import { NeutralActionButton } from '@/components/ui/neutral-action-button';
 
 // 🔒 [SECURITY] - Lockout persistence helpers
 interface LockoutData {
@@ -70,6 +70,7 @@ export function DeliveryDashboardWrapper({
   requirePin = true,
   onGoBack
 }: DeliveryDashboardWrapperProps) {
+  const TAB_ORDER = ['dashboard', 'management'] as const;
   const [isPinValidated, setIsPinValidated] = useState(!requirePin);
   const [failedAttempts, setFailedAttempts] = useState(0);
   const [isLocked, setIsLocked] = useState(false);
@@ -142,6 +143,35 @@ export function DeliveryDashboardWrapper({
     }
   };
 
+  const handleTabKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    const currentIndex = TAB_ORDER.indexOf(activeTab);
+
+    if (event.key === 'ArrowRight') {
+      event.preventDefault();
+      const nextIndex = (currentIndex + 1) % TAB_ORDER.length;
+      setActiveTab(TAB_ORDER[nextIndex]);
+      return;
+    }
+
+    if (event.key === 'ArrowLeft') {
+      event.preventDefault();
+      const prevIndex = (currentIndex - 1 + TAB_ORDER.length) % TAB_ORDER.length;
+      setActiveTab(TAB_ORDER[prevIndex]);
+      return;
+    }
+
+    if (event.key === 'Home') {
+      event.preventDefault();
+      setActiveTab(TAB_ORDER[0]);
+      return;
+    }
+
+    if (event.key === 'End') {
+      event.preventDefault();
+      setActiveTab(TAB_ORDER[TAB_ORDER.length - 1]);
+    }
+  };
+
   // Mostrar modal PIN si no está validado
   if (!isPinValidated) {
     return (
@@ -159,28 +189,38 @@ export function DeliveryDashboardWrapper({
 
   // Mostrar dashboard una vez validado el PIN
   return (
-    <div className="min-h-screen relative p-4">
+    <div className="relative min-h-screen p-4">
       {/* Header: Botón volver + Tabs */}
-      <div className="mb-4 relative z-50 flex flex-col gap-3">
-        <DestructiveActionButton
+      <div className="relative z-50 mx-auto mb-4 flex w-full max-w-7xl flex-col gap-3">
+        <NeutralActionButton
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
             console.log('[DEBUG] Button clicked, calling handleGoBack');
             handleGoBack();
           }}
-          className="flex items-center gap-2 h-auto py-2 px-4 self-start"
+          className="self-start border border-[rgba(255,255,255,0.2)] bg-[rgba(36,36,36,0.55)] px-4"
           type="button"
         >
           <ArrowLeft className="w-4 h-4" />
           Volver a Operaciones
-        </DestructiveActionButton>
+        </NeutralActionButton>
 
         {/* Tab selector */}
-        <div className="flex gap-2 p-1 rounded-lg bg-[rgba(36,36,36,0.6)] backdrop-blur-md border border-[rgba(255,255,255,0.1)]">
+        <div
+          role="tablist"
+          aria-label="Secciones de deliveries"
+          onKeyDown={handleTabKeyDown}
+          className="flex gap-2 rounded-lg border border-[rgba(255,255,255,0.1)] bg-[rgba(36,36,36,0.6)] p-1 backdrop-blur-md"
+        >
           <button
             type="button"
             onClick={() => setActiveTab('dashboard')}
+            role="tab"
+            id="deliveries-tab-dashboard"
+            aria-selected={activeTab === 'dashboard'}
+            aria-controls="deliveries-panel-dashboard"
+            tabIndex={activeTab === 'dashboard' ? 0 : -1}
             className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-md text-sm font-medium transition-all duration-200 ${
               activeTab === 'dashboard'
                 ? 'bg-[rgba(10,132,255,0.2)] text-[#0a84ff] border border-[rgba(10,132,255,0.3)]'
@@ -193,6 +233,11 @@ export function DeliveryDashboardWrapper({
           <button
             type="button"
             onClick={() => setActiveTab('management')}
+            role="tab"
+            id="deliveries-tab-management"
+            aria-selected={activeTab === 'management'}
+            aria-controls="deliveries-panel-management"
+            tabIndex={activeTab === 'management' ? 0 : -1}
             className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-md text-sm font-medium transition-all duration-200 ${
               activeTab === 'management'
                 ? 'bg-[rgba(10,132,255,0.2)] text-[#0a84ff] border border-[rgba(10,132,255,0.3)]'
@@ -206,11 +251,27 @@ export function DeliveryDashboardWrapper({
       </div>
 
       {/* Contenido según tab activo */}
-      {activeTab === 'dashboard' ? (
-        <DeliveryDashboard />
-      ) : (
-        <DeliveryManager />
-      )}
+      <div
+        id="deliveries-panel-dashboard"
+        role="tabpanel"
+        aria-labelledby="deliveries-tab-dashboard"
+        hidden={activeTab !== 'dashboard'}
+        className="mx-auto w-full max-w-7xl"
+      >
+        {activeTab === 'dashboard' ? (
+          <DeliveryDashboard onGoToManagement={() => setActiveTab('management')} />
+        ) : null}
+      </div>
+
+      <div
+        id="deliveries-panel-management"
+        role="tabpanel"
+        aria-labelledby="deliveries-tab-management"
+        hidden={activeTab !== 'management'}
+        className="mx-auto w-full max-w-7xl"
+      >
+        {activeTab === 'management' ? <DeliveryManager /> : null}
+      </div>
     </div>
   );
 }
