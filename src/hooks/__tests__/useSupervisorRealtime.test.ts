@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const realtimeMocks = vi.hoisted(() => {
@@ -28,12 +28,14 @@ import { useSupervisorRealtime } from '../useSupervisorRealtime';
 
 describe('useSupervisorRealtime', () => {
   beforeEach(() => {
+    vi.useFakeTimers();
     vi.clearAllMocks();
     realtimeMocks.channelChain.on.mockReturnValue(realtimeMocks.channelChain);
     realtimeMocks.channelChain.subscribe.mockReturnValue(realtimeMocks.channelChain);
   });
 
   afterEach(() => {
+    vi.useRealTimers();
     vi.clearAllMocks();
   });
 
@@ -49,7 +51,7 @@ describe('useSupervisorRealtime', () => {
         schema: 'public',
         table: 'cortes',
       }),
-      onChange,
+      expect.any(Function),
     );
     expect(realtimeMocks.channelChain.subscribe).toHaveBeenCalled();
   });
@@ -65,7 +67,7 @@ describe('useSupervisorRealtime', () => {
         table: 'cortes',
         filter: 'id=eq.corte-123',
       }),
-      onChange,
+      expect.any(Function),
     );
     expect(realtimeMocks.channelChain.on).toHaveBeenCalledWith(
       'postgres_changes',
@@ -73,7 +75,7 @@ describe('useSupervisorRealtime', () => {
         table: 'corte_conteo_snapshots',
         filter: 'corte_id=eq.corte-123',
       }),
-      onChange,
+      expect.any(Function),
     );
   });
 
@@ -84,5 +86,71 @@ describe('useSupervisorRealtime', () => {
     unmount();
 
     expect(realtimeMocks.removeChannel).toHaveBeenCalledWith(realtimeMocks.channelChain);
+  });
+
+  it('expone estado del canal realtime (connecting -> subscribed -> error)', () => {
+    let subscribeCallback:
+      | ((status: string, err?: { message?: string }) => void)
+      | undefined;
+
+    realtimeMocks.channelChain.subscribe.mockImplementation(
+      (callback?: (status: string, err?: { message?: string }) => void) => {
+        subscribeCallback = callback;
+        return realtimeMocks.channelChain;
+      },
+    );
+
+    const onChange = vi.fn();
+    const { result } = renderHook(() => useSupervisorRealtime({ onChange }));
+
+    expect(result.current).toEqual({
+      status: 'connecting',
+      lastEventAt: null,
+      error: null,
+    });
+
+    act(() => {
+      subscribeCallback?.('SUBSCRIBED');
+    });
+
+    expect(result.current).toEqual({
+      status: 'subscribed',
+      lastEventAt: null,
+      error: null,
+    });
+
+    act(() => {
+      subscribeCallback?.('CHANNEL_ERROR', { message: 'Realtime down' });
+    });
+
+    expect(result.current).toEqual({
+      status: 'error',
+      lastEventAt: null,
+      error: 'Realtime down',
+    });
+  });
+
+  it('coalesce eventos de postgres en ventana de 250ms para evitar ráfagas', () => {
+    const onChange = vi.fn();
+    renderHook(() => useSupervisorRealtime({ onChange }));
+
+    const postgresHandler = realtimeMocks.channelChain.on.mock.calls[0]?.[2] as
+      | (() => void)
+      | undefined;
+    expect(postgresHandler).toBeTypeOf('function');
+
+    act(() => {
+      postgresHandler?.();
+      postgresHandler?.();
+      postgresHandler?.();
+    });
+
+    // Aún no debe disparar inmediatamente (debounce/coalescing)
+    expect(onChange).toHaveBeenCalledTimes(0);
+
+    act(() => {
+      vi.advanceTimersByTime(250);
+    });
+    expect(onChange).toHaveBeenCalledTimes(1);
   });
 });
