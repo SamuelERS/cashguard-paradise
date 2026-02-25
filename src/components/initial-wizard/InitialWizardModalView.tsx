@@ -18,23 +18,24 @@ import type { InitialWizardModalProps } from '@/types/initialWizard';
 
 const InitialWizardModalView = (props: InitialWizardModalProps) => {
   const ctrl = useInitialWizardController(props);
+  const { isOpen, onCheckActiveSessionForStore } = props;
 
   const navState = ctrl.getNavigationState(ctrl.isFlowCompleted());
 
   useEffect(() => {
-    if (!props.isOpen) return;
+    if (!isOpen) return;
     if (ctrl.currentStep !== 5) return;
     if (!ctrl.wizardData.selectedStore) return;
-    if (!props.onCheckActiveSessionForStore) return;
+    if (!onCheckActiveSessionForStore) return;
 
     void Promise.resolve(
-      props.onCheckActiveSessionForStore(ctrl.wizardData.selectedStore),
+      onCheckActiveSessionForStore(ctrl.wizardData.selectedStore),
     ).catch(() => {
       // El check es best-effort; no debe romper el render del wizard.
     });
   }, [
-    props.isOpen,
-    props.onCheckActiveSessionForStore,
+    isOpen,
+    onCheckActiveSessionForStore,
     ctrl.currentStep,
     ctrl.wizardData.selectedStore,
   ]);

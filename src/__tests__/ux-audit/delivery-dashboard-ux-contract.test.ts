@@ -24,8 +24,8 @@ describe('Delivery Dashboard UX contract (TDD RED)', () => {
   test('tabs con semántica accesible y acción volver no destructiva', () => {
     const content = readFileSync(resolve(WRAPPER_PATH), 'utf-8');
 
-    expect(content).toMatch(/role=\"tablist\"/);
-    expect(content).toMatch(/role=\"tab\"/);
+    expect(content).toMatch(/role="tablist"/);
+    expect(content).toMatch(/role="tab"/);
     expect(content).toMatch(/aria-selected=/);
     expect(content).toMatch(/handleTabKeyDown/);
     expect(content).toMatch(/ArrowRight/);
