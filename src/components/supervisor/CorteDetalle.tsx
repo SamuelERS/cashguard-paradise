@@ -3,7 +3,6 @@
 // desglose de efectivo y pagos electrónicos.
 // Solo lectura — sin side effects financieros.
 
-import { useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSupervisorCorteDetalleFeed } from '@/hooks/supervisor/useSupervisorCorteDetalleFeed';
 import { calculateCashTotal, formatCurrency } from '@/utils/calculations';
@@ -60,6 +59,23 @@ const LABEL_PAGO: Record<keyof PagosElectronicos, string> = {
   bankTransfer: 'Transferencia bancaria',
   paypal: 'PayPal',
 };
+
+const COIN_KEYS: ReadonlyArray<keyof CashCount> = [
+  'penny',
+  'nickel',
+  'dime',
+  'quarter',
+  'dollarCoin',
+];
+
+const BILL_KEYS: ReadonlyArray<keyof CashCount> = [
+  'bill1',
+  'bill5',
+  'bill10',
+  'bill20',
+  'bill50',
+  'bill100',
+];
 
 // ---------------------------------------------------------------------------
 // Helpers privados
@@ -325,6 +341,18 @@ function extraerEntregaLiveRows(
   return { rows, liveTotal };
 }
 
+function sumarSubtotalPorDenominaciones(
+  cashCount: Partial<CashCount>,
+  keys: ReadonlyArray<keyof CashCount>,
+): number {
+  return keys.reduce((acumulado, key) => {
+    const denominacion = DENOMINACIONES.find((item) => item.key === key);
+    if (!denominacion) return acumulado;
+    const cantidad = cashCount[key] ?? 0;
+    return acumulado + (cantidad * denominacion.valorUnitario);
+  }, 0);
+}
+
 function toFiniteNumber(value: unknown): number | null {
   if (typeof value !== 'number') return null;
   return Number.isFinite(value) ? value : null;
@@ -561,6 +589,27 @@ export function CorteDetalle() {
   const entregadoAcumulado = entregaLive.liveTotal;
   const faltanteEntrega = Math.max((entrega.amountToDeliver ?? 0) - entregadoAcumulado, 0);
   const mostrarEntrega = entrega.amountToDeliver !== null || entrega.amountRemaining !== null;
+  const objetivoEntrega = entrega.amountToDeliver ?? 0;
+  const progresoEntrega = objetivoEntrega > 0
+    ? Math.min((entregadoAcumulado / objetivoEntrega) * 100, 100)
+    : 0;
+  const subtotalMonedas = sumarSubtotalPorDenominaciones(datos.cashCount, COIN_KEYS);
+  const subtotalBilletes = sumarSubtotalPorDenominaciones(datos.cashCount, BILL_KEYS);
+  const prioridadSupervision = corte.estado === 'ABORTADO'
+    ? 'Crítica'
+    : Math.abs(diferencia) > 25
+      ? 'Alta'
+      : Math.abs(diferencia) > 10
+        ? 'Media'
+        : 'Controlada';
+  const prioridadColorClase = prioridadSupervision === 'Crítica'
+    ? 'text-red-300'
+    : prioridadSupervision === 'Alta'
+      ? 'text-amber-300'
+      : prioridadSupervision === 'Media'
+        ? 'text-yellow-200'
+        : 'text-emerald-300';
+  const cardClassName = 'p-4 rounded-xl border border-white/10 bg-white/[0.04]';
 
   // ── Render principal ──────────────────────────────────────────────────────
 
@@ -595,8 +644,33 @@ export function CorteDetalle() {
         </div>
       </div>
 
+      {/* Card: radar operativo */}
+      <div className={`${cardClassName} border-cyan-500/20 bg-gradient-to-r from-cyan-500/[0.07] to-blue-500/[0.03]`}>
+        <p className="text-xs font-medium text-cyan-200/80 uppercase tracking-wider mb-3">
+          Radar operativo
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="rounded-lg border border-white/[0.08] bg-black/20 p-3">
+            <p className="text-[11px] uppercase tracking-wider text-white/45">Prioridad supervisión</p>
+            <p className={`mt-1 text-sm font-semibold ${prioridadColorClase}`}>
+              {prioridadSupervision}
+            </p>
+          </div>
+          <div className="rounded-lg border border-white/[0.08] bg-black/20 p-3">
+            <p className="text-[11px] uppercase tracking-wider text-white/45">Fase activa</p>
+            <p className="mt-1 text-sm font-semibold text-white/90">Fase {corte.fase_actual}</p>
+          </div>
+          <div className="rounded-lg border border-white/[0.08] bg-black/20 p-3">
+            <p className="text-[11px] uppercase tracking-wider text-white/45">Diferencia actual</p>
+            <p className={`mt-1 text-sm font-semibold tabular-nums ${diferenciaColorClase}`}>
+              {diferenciaTexto}
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Card: resumen ejecutivo (lectura rápida para supervisor) */}
-      <div className="p-4 rounded-xl border border-white/10 bg-white/[0.04]">
+      <div className={cardClassName}>
         <p className="text-xs font-medium text-white/40 uppercase tracking-wider mb-2">
           Resumen ejecutivo
         </p>
@@ -646,7 +720,7 @@ export function CorteDetalle() {
       )}
 
       {/* Card: identificación */}
-      <div className="p-4 rounded-xl border border-white/10 bg-white/[0.04]">
+      <div className={cardClassName}>
         <p className="text-xs font-medium text-white/40 uppercase tracking-wider mb-2">
           Identificación
         </p>
@@ -659,7 +733,7 @@ export function CorteDetalle() {
       </div>
 
       {/* Card: resumen financiero */}
-      <div className="p-4 rounded-xl border border-white/10 bg-white/[0.04]">
+      <div className={cardClassName}>
         <p className="text-xs font-medium text-white/40 uppercase tracking-wider mb-2">
           Resumen financiero
         </p>
@@ -705,7 +779,7 @@ export function CorteDetalle() {
 
       {/* Card: pagos electrónicos desglosados (solo si hay) */}
       {datos.disponible && pagosConValor.length > 0 && (
-        <div className="p-4 rounded-xl border border-white/10 bg-white/[0.04]">
+        <div className={cardClassName}>
           <p className="text-xs font-medium text-white/40 uppercase tracking-wider mb-2">
             Pagos electrónicos
           </p>
@@ -724,17 +798,33 @@ export function CorteDetalle() {
 
       {/* Card: entrega en vivo por denominación */}
       {entregaLive.rows.length > 0 && (
-        <div className="p-4 rounded-xl border border-white/10 bg-white/[0.04]" aria-live="polite">
-          <p className="text-xs font-medium text-white/40 uppercase tracking-wider mb-2">
-            Entrega en vivo
+        <div className={`${cardClassName} border-cyan-500/20`} aria-live="polite">
+          <p className="text-xs font-medium text-cyan-200/80 uppercase tracking-wider mb-2">
+            Progreso de entrega en vivo
           </p>
+          <div className="h-2 w-full rounded-full bg-white/[0.08] overflow-hidden mb-3">
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-cyan-400 to-blue-400 transition-all duration-300"
+              style={{ width: `${progresoEntrega === 0 ? 0 : Math.max(progresoEntrega, 4)}%` }}
+            />
+          </div>
           <div className="flex items-center justify-between gap-2 pb-2 border-b border-white/[0.06] mb-2">
             <span className="text-xs text-white/50">Entregado acumulado</span>
-            <span className="text-sm tabular-nums text-white/90">{formatCurrency(entregadoAcumulado)}</span>
+            <span className="text-sm tabular-nums text-white/90">
+              {formatCurrency(entregadoAcumulado)}
+            </span>
           </div>
           <div className="flex items-center justify-between gap-2 pb-2 border-b border-white/[0.06] mb-2">
             <span className="text-xs text-white/50">Faltante por entregar</span>
-            <span className="text-sm tabular-nums text-amber-300">{formatCurrency(faltanteEntrega)}</span>
+            <span className="text-sm tabular-nums text-amber-300">
+              {formatCurrency(faltanteEntrega)}
+            </span>
+          </div>
+          <div className="flex items-center justify-between gap-2 pb-2 border-b border-white/[0.06] mb-2">
+            <span className="text-xs text-white/50">Cumplimiento</span>
+            <span className="text-sm tabular-nums text-cyan-200">
+              {progresoEntrega.toFixed(1)}%
+            </span>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
@@ -765,7 +855,7 @@ export function CorteDetalle() {
 
       {/* Card: entrega a gerencia (fase 2) */}
       {mostrarEntrega && (
-        <div className="p-4 rounded-xl border border-white/10 bg-white/[0.04]">
+        <div className={cardClassName}>
           <p className="text-xs font-medium text-white/40 uppercase tracking-wider mb-2">
             Entrega a gerencia
           </p>
@@ -791,7 +881,7 @@ export function CorteDetalle() {
 
       {/* Card: gastos del día */}
       {gastosConValor.length > 0 && (
-        <div className="p-4 rounded-xl border border-white/10 bg-white/[0.04]">
+        <div className={cardClassName}>
           <p className="text-xs font-medium text-white/40 uppercase tracking-wider mb-2">
             Gastos del día
           </p>
@@ -813,10 +903,28 @@ export function CorteDetalle() {
 
       {/* Card: desglose de efectivo por denominación */}
       {datos.disponible && denominacionesConDatos.length > 0 && (
-        <div className="p-4 rounded-xl border border-white/10 bg-white/[0.04]">
+        <div className={cardClassName}>
           <p className="text-xs font-medium text-white/40 uppercase tracking-wider mb-2">
             Desglose efectivo
           </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
+            <div className="rounded-lg border border-white/[0.08] bg-black/20 p-2.5">
+              <p className="text-[11px] uppercase tracking-wider text-white/45">
+                Subtotal monedas
+              </p>
+              <p className="mt-1 text-sm tabular-nums text-white/90">
+                {formatCurrency(subtotalMonedas)}
+              </p>
+            </div>
+            <div className="rounded-lg border border-white/[0.08] bg-black/20 p-2.5">
+              <p className="text-[11px] uppercase tracking-wider text-white/45">
+                Subtotal billetes
+              </p>
+              <p className="mt-1 text-sm tabular-nums text-white/90">
+                {formatCurrency(subtotalBilletes)}
+              </p>
+            </div>
+          </div>
           <div className="divide-y divide-white/[0.06]">
             {denominacionesConDatos.map(d => {
               const qty = datos.cashCount[d.key] ?? 0;
