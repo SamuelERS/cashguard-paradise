@@ -139,7 +139,14 @@ vi.mock('@/components/morning-count/MorningCountWizard', () => ({
 // 🤖 [IA] - DACC-CIERRE-SYNC-UX: CashCounter mock captures sync props via data attributes
 vi.mock('@/components/CashCounter', () => ({
   default: (props: {
-    onGuardarProgreso?: (...args: unknown[]) => void;
+    onGuardarProgreso?: (datos: {
+      fase_actual: number;
+      conteo_parcial: Record<string, number>;
+      pagos_electronicos: Record<string, number>;
+      gastos_dia: Array<{ id: string; amount: number; concept: string }>;
+      datos_entrega?: Record<string, unknown> | null;
+      datos_verificacion?: Record<string, unknown> | null;
+    }) => void;
     syncEstado?: string;
     ultimaSync?: string | null;
     syncError?: string | null;
@@ -152,6 +159,20 @@ vi.mock('@/components/CashCounter', () => ({
       data-sync-error={props.syncError || ''}
     >
       CashCounter
+      <button
+        type="button"
+        data-testid="cash-counter-trigger-autosave"
+        onClick={() => props.onGuardarProgreso?.({
+          fase_actual: 2,
+          conteo_parcial: { penny: 77, bill5: 11 },
+          pagos_electronicos: { credomatic: 23, bankTransfer: 4 },
+          gastos_dia: [{ id: 'g1', amount: 12.5, concept: 'Taxi cierre' }],
+          datos_entrega: { amount_to_deliver: 573.57, amount_remaining: 50 },
+          datos_verificacion: { behavior: { totalAttempts: 2 } },
+        })}
+      >
+        Trigger autosave
+      </button>
     </div>
   ),
 }));
@@ -380,5 +401,25 @@ describe('DACC-CIERRE-SYNC-UX: Persistence & Sync UX', () => {
     const ultimaSync = counter.getAttribute('data-ultima-sync') ?? '';
     expect(ultimaSync).not.toBe('');
     expect(new Date(ultimaSync).getTime()).not.toBeNaN();
+  });
+
+  it('passes delivery and verification payload in autosave progress to guardarProgreso', async () => {
+    const user = userEvent.setup();
+    render(<Index />);
+
+    await completeCashCutWizard(user);
+    await user.click(screen.getByTestId('cash-counter-trigger-autosave'));
+
+    await waitFor(() => {
+      expect(corteSesionMocks.guardarProgreso).toHaveBeenCalled();
+    });
+
+    expect(corteSesionMocks.guardarProgreso).toHaveBeenCalledWith(
+      expect.objectContaining({
+        fase_actual: 2,
+        datos_entrega: { amount_to_deliver: 573.57, amount_remaining: 50 },
+        datos_verificacion: { behavior: { totalAttempts: 2 } },
+      }),
+    );
   });
 });

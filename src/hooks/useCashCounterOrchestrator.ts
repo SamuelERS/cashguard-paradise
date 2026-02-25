@@ -93,6 +93,9 @@ interface CashCounterOrchestratorOptions {
     conteo_parcial: CashCount;
     pagos_electronicos: ElectronicPayments;
     gastos_dia: DailyExpense[];
+    datos_entrega?: Record<string, unknown> | null;
+    datos_verificacion?: Record<string, unknown> | null;
+    datos_reporte?: Record<string, unknown> | null;
   }) => void;
 }
 
@@ -225,11 +228,26 @@ export function useCashCounterOrchestrator({
     if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current);
 
     autosaveTimerRef.current = setTimeout(() => {
+      const datosEntrega = deliveryCalculation
+        ? {
+            amount_to_deliver: deliveryCalculation.amountToDeliver,
+            amount_remaining: deliveryCalculation.amountRemaining ?? 50,
+            denominations_to_deliver: deliveryCalculation.denominationsToDeliver,
+            denominations_to_keep: deliveryCalculation.denominationsToKeep,
+          }
+        : null;
+      const datosVerificacion = deliveryCalculation?.verificationBehavior
+        ? { behavior: deliveryCalculation.verificationBehavior }
+        : null;
+
       onGuardarProgreso({
         fase_actual: phaseState.currentPhase,
         conteo_parcial: cashCount,
         pagos_electronicos: electronicPayments,
         gastos_dia: dailyExpenses,
+        datos_entrega: datosEntrega,
+        datos_verificacion: datosVerificacion,
+        datos_reporte: null,
       });
     }, 600);
 
@@ -239,7 +257,7 @@ export function useCashCounterOrchestrator({
   // Deps: solo estado mutable que cambia con interacción del usuario.
   // onGuardarProgreso es callback estable (memoizado en padre).
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cashCount, electronicPayments, dailyExpenses, phaseState.currentPhase]);
+  }, [cashCount, electronicPayments, dailyExpenses, phaseState.currentPhase, deliveryCalculation]);
 
   // 🤖 [IA] - v1.4.1: PWA scroll prevention
   usePwaScrollPrevention(phaseState.currentPhase);

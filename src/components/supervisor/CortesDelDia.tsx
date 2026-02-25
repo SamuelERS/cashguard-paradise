@@ -5,6 +5,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSupervisorQueries } from '@/hooks/useSupervisorQueries';
+import { useSupervisorRealtime } from '@/hooks/useSupervisorRealtime';
 import type { CorteConSucursal } from '@/hooks/useSupervisorQueries';
 import { CorteListaItem } from './CorteListaItem';
 
@@ -73,6 +74,12 @@ export function CortesDelDia() {
     setCortes(resultado);
     setUltimaActualizacion(new Date());
   }, [obtenerCortesDelDia]);
+
+  useSupervisorRealtime({
+    onChange: () => {
+      void cargarCortes();
+    },
+  });
 
   /**
    * Carga inicial + auto-refresco cada 60 s.

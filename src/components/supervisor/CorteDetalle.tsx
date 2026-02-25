@@ -6,6 +6,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSupervisorQueries } from '@/hooks/useSupervisorQueries';
+import { useSupervisorRealtime } from '@/hooks/useSupervisorRealtime';
 import type { CorteConSucursal } from '@/hooks/useSupervisorQueries';
 import { calculateCashTotal, formatCurrency } from '@/utils/calculations';
 import type { CashCount } from '@/types/cash';
@@ -21,6 +22,15 @@ type PagosElectronicos = {
   promerica: number;
   bankTransfer: number;
   paypal: number;
+};
+
+type GastoDia = {
+  id: string;
+  concept: string;
+  amount: number;
+  category: string;
+  timestamp: string | null;
+  hasInvoice: boolean;
 };
 
 // ---------------------------------------------------------------------------
@@ -90,6 +100,7 @@ function extraerDatosConteo(datosConteo: Record<string, unknown> | null): {
   totalEfectivo: number;
   pagosElectronicos: PagosElectronicos;
   totalElectronico: number;
+  gastosDia: GastoDia[];
   disponible: boolean;
 } {
   if (!datosConteo) {
@@ -98,6 +109,7 @@ function extraerDatosConteo(datosConteo: Record<string, unknown> | null): {
       totalEfectivo: 0,
       pagosElectronicos: { credomatic: 0, promerica: 0, bankTransfer: 0, paypal: 0 },
       totalElectronico: 0,
+      gastosDia: [],
       disponible: false,
     };
   }
@@ -140,7 +152,71 @@ function extraerDatosConteo(datosConteo: Record<string, unknown> | null): {
     pagosElectronicos.bankTransfer +
     pagosElectronicos.paypal;
 
-  return { cashCount, totalEfectivo, pagosElectronicos, totalElectronico, disponible: true };
+  // ── Gastos del día ────────────────────────────────────────────────────────
+  const gastosDia: GastoDia[] = [];
+  const gastosRaw = datosConteo.gastos_dia;
+  const gastosItemsRaw = (
+    Array.isArray(gastosRaw)
+      ? gastosRaw
+      : (typeof gastosRaw === 'object' &&
+          gastosRaw !== null &&
+          !Array.isArray(gastosRaw) &&
+          Array.isArray((gastosRaw as Record<string, unknown>).items))
+        ? (gastosRaw as Record<string, unknown>).items
+        : []
+  ) as unknown[];
+
+  for (const item of gastosItemsRaw) {
+    if (typeof item !== 'object' || item === null || Array.isArray(item)) continue;
+    const record = item as Record<string, unknown>;
+    const amount = typeof record.amount === 'number' ? record.amount : 0;
+    if (!Number.isFinite(amount) || amount <= 0) continue;
+
+    gastosDia.push({
+      id: typeof record.id === 'string' ? record.id : `gasto-${gastosDia.length + 1}`,
+      concept: typeof record.concept === 'string' ? record.concept : 'Gasto sin concepto',
+      amount,
+      category: typeof record.category === 'string' ? record.category : 'Sin categoría',
+      timestamp: typeof record.timestamp === 'string' ? record.timestamp : null,
+      hasInvoice: record.hasInvoice === true,
+    });
+  }
+
+  return {
+    cashCount,
+    totalEfectivo,
+    pagosElectronicos,
+    totalElectronico,
+    gastosDia,
+    disponible: true,
+  };
+}
+
+function extraerDatosEntrega(
+  datosEntrega: Record<string, unknown> | null,
+): { amountToDeliver: number | null; amountRemaining: number | null } {
+  if (!datosEntrega) {
+    return { amountToDeliver: null, amountRemaining: null };
+  }
+
+  const amountToDeliverRaw =
+    typeof datosEntrega.amount_to_deliver === 'number'
+      ? datosEntrega.amount_to_deliver
+      : typeof datosEntrega.amountToDeliver === 'number'
+        ? datosEntrega.amountToDeliver
+        : null;
+
+  const amountRemainingRaw =
+    typeof datosEntrega.amount_remaining === 'number'
+      ? datosEntrega.amount_remaining
+      : typeof datosEntrega.amountRemaining === 'number'
+        ? datosEntrega.amountRemaining
+        : null;
+
+  return {
+    amountToDeliver: Number.isFinite(amountToDeliverRaw ?? NaN) ? amountToDeliverRaw : null,
+    amountRemaining: Number.isFinite(amountRemainingRaw ?? NaN) ? amountRemainingRaw : null,
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -215,6 +291,14 @@ export function CorteDetalle() {
       setCorte(resultado);
     }
   }, [id, obtenerCorteDetalle]);
+
+  useSupervisorRealtime({
+    corteId: id,
+    enabled: Boolean(id),
+    onChange: () => {
+      void cargarDetalle();
+    },
+  });
 
   useEffect(() => {
     void cargarDetalle();
@@ -312,6 +396,9 @@ export function CorteDetalle() {
   const pagosConValor = (
     Object.keys(datos.pagosElectronicos) as Array<keyof PagosElectronicos>
   ).filter(key => datos.pagosElectronicos[key] > 0);
+  const gastosConValor = datos.gastosDia;
+  const entrega = extraerDatosEntrega(corte.datos_entrega);
+  const mostrarEntrega = entrega.amountToDeliver !== null || entrega.amountRemaining !== null;
 
   // ── Render principal ──────────────────────────────────────────────────────
 
@@ -411,6 +498,54 @@ export function CorteDetalle() {
                 valor={formatCurrency(datos.pagosElectronicos[key])}
                 mono
               />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Card: entrega a gerencia (fase 2) */}
+      {mostrarEntrega && (
+        <div className="p-4 rounded-xl border border-white/10 bg-white/[0.04]">
+          <p className="text-xs font-medium text-white/40 uppercase tracking-wider mb-2">
+            Entrega a gerencia
+          </p>
+          <div className="divide-y divide-white/[0.06]">
+            {entrega.amountToDeliver !== null && (
+              <MetaFila
+                label="Monto a entregar"
+                valor={formatCurrency(entrega.amountToDeliver)}
+                mono
+                destacado
+              />
+            )}
+            {entrega.amountRemaining !== null && (
+              <MetaFila
+                label="Monto restante en caja"
+                valor={formatCurrency(entrega.amountRemaining)}
+                mono
+              />
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Card: gastos del día */}
+      {gastosConValor.length > 0 && (
+        <div className="p-4 rounded-xl border border-white/10 bg-white/[0.04]">
+          <p className="text-xs font-medium text-white/40 uppercase tracking-wider mb-2">
+            Gastos del día
+          </p>
+          <div className="divide-y divide-white/[0.06]">
+            {gastosConValor.map((gasto) => (
+              <div key={gasto.id} className="flex items-center justify-between gap-2 py-1.5">
+                <div className="min-w-0">
+                  <p className="text-xs text-white/80 truncate">{gasto.concept}</p>
+                  <p className="text-[11px] text-white/45 truncate">{gasto.category}</p>
+                </div>
+                <span className="text-sm tabular-nums text-white/80">
+                  {formatCurrency(gasto.amount)}
+                </span>
+              </div>
             ))}
           </div>
         </div>

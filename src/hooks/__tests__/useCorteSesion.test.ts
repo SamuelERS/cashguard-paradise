@@ -635,6 +635,42 @@ describe('Suite 4: guardarProgreso', () => {
       }),
     );
   });
+
+  it('4.6 - Persiste datos_entrega y datos_verificacion cuando se envían en guardarProgreso', async () => {
+    const result = await renderWithCorte(CORTE_EN_PROGRESO, INTENTO_MOCK);
+
+    const corteActualizado: Corte = {
+      ...CORTE_EN_PROGRESO,
+      fase_actual: 2,
+      estado: 'EN_PROGRESO',
+    };
+    mockChain.cortes.single.mockResolvedValueOnce({
+      data: corteActualizado,
+      error: null,
+    });
+
+    await act(async () => {
+      await result.current.guardarProgreso({
+        fase_actual: 2,
+        conteo_parcial: { penny: 1 },
+        pagos_electronicos: { credomatic: 2 },
+        gastos_dia: null,
+        datos_entrega: { amount_to_deliver: 573.57, amount_remaining: 50 },
+        datos_verificacion: { behavior: { totalAttempts: 2 } },
+      } as unknown as Parameters<typeof result.current.guardarProgreso>[0]);
+    });
+
+    const updateCall = mockChain.cortes.update.mock.calls[
+      mockChain.cortes.update.mock.calls.length - 1
+    ][0];
+    expect(updateCall.datos_entrega).toEqual({
+      amount_to_deliver: 573.57,
+      amount_remaining: 50,
+    });
+    expect(updateCall.datos_verificacion).toEqual({
+      behavior: { totalAttempts: 2 },
+    });
+  });
 });
 
 // ---------------------------------------------------------------------------

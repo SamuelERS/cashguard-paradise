@@ -224,6 +224,12 @@ export interface DatosProgreso {
   pagos_electronicos: Record<string, unknown> | null;
   /** Snapshot parcial de gastos del dia */
   gastos_dia: Record<string, unknown> | null;
+  /** Snapshot parcial de fase 2 (entrega a gerencia) */
+  datos_entrega?: Record<string, unknown> | null;
+  /** Snapshot parcial de verificación ciega de fase 2 */
+  datos_verificacion?: Record<string, unknown> | null;
+  /** Snapshot parcial de fase 3 (reporte) */
+  datos_reporte?: Record<string, unknown> | null;
 }
 
 /**

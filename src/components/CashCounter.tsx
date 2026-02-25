@@ -34,6 +34,9 @@ interface CashCounterProps {
     conteo_parcial: CashCount;
     pagos_electronicos: ElectronicPayments;
     gastos_dia: DailyExpense[];
+    datos_entrega?: Record<string, unknown> | null;
+    datos_verificacion?: Record<string, unknown> | null;
+    datos_reporte?: Record<string, unknown> | null;
   }) => void;
   onFinalizarCorte?: (reporteHash: string) => Promise<void>;
   // 🤖 [IA] - DACC-CIERRE-SYNC-UX: Props sincronización visual

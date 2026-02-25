@@ -249,6 +249,9 @@ export function useCorteSesion(
         pagos_electronicos: datos.pagos_electronicos,
         gastos_dia: datos.gastos_dia,
       };
+      const datosEntrega = datos.datos_entrega ?? corteActual.datos_entrega;
+      const datosVerificacion = datos.datos_verificacion ?? corteActual.datos_verificacion;
+      const datosReporte = datos.datos_reporte ?? corteActual.datos_reporte;
 
       const { data: corteActualizado, error: updateError } = await tables
         .cortes()
@@ -256,6 +259,9 @@ export function useCorteSesion(
           fase_actual: datos.fase_actual,
           estado: nuevoEstado,
           datos_conteo: datosConteo,
+          datos_entrega: datosEntrega,
+          datos_verificacion: datosVerificacion,
+          datos_reporte: datosReporte,
           updated_at: new Date().toISOString(),
         })
         .eq('id', corteActual.id)
@@ -287,6 +293,10 @@ export function useCorteSesion(
         const ahora = new Date().toISOString();
         const estadoOptimista: EstadoCorte =
           corteActual.estado === 'INICIADO' ? 'EN_PROGRESO' : corteActual.estado;
+        const datosEntregaFallback = datos.datos_entrega ?? corteActual.datos_entrega;
+        const datosVerificacionFallback =
+          datos.datos_verificacion ?? corteActual.datos_verificacion;
+        const datosReporteFallback = datos.datos_reporte ?? corteActual.datos_reporte;
         setCorteActual({
           ...corteActual,
           fase_actual: datos.fase_actual,
@@ -296,6 +306,9 @@ export function useCorteSesion(
             pagos_electronicos: datos.pagos_electronicos,
             gastos_dia: datos.gastos_dia,
           },
+          datos_entrega: datosEntregaFallback,
+          datos_verificacion: datosVerificacionFallback,
+          datos_reporte: datosReporteFallback,
           updated_at: ahora,
         });
 
@@ -308,6 +321,9 @@ export function useCorteSesion(
               pagos_electronicos: datos.pagos_electronicos,
               gastos_dia: datos.gastos_dia,
             },
+            datos_entrega: datosEntregaFallback,
+            datos_verificacion: datosVerificacionFallback,
+            datos_reporte: datosReporteFallback,
           },
           corteId: corteActual.id,
         });
@@ -656,6 +672,9 @@ export function useCorteSesion(
         const payload = op.payload as {
           fase_actual: number;
           datos_conteo: Record<string, unknown>;
+          datos_entrega?: Record<string, unknown> | null;
+          datos_verificacion?: Record<string, unknown> | null;
+          datos_reporte?: Record<string, unknown> | null;
         };
 
         const { error: updateError } = await tables
@@ -664,6 +683,15 @@ export function useCorteSesion(
             fase_actual: payload.fase_actual,
             estado: 'EN_PROGRESO',
             datos_conteo: payload.datos_conteo,
+            ...(Object.prototype.hasOwnProperty.call(payload, 'datos_entrega')
+              ? { datos_entrega: payload.datos_entrega ?? null }
+              : {}),
+            ...(Object.prototype.hasOwnProperty.call(payload, 'datos_verificacion')
+              ? { datos_verificacion: payload.datos_verificacion ?? null }
+              : {}),
+            ...(Object.prototype.hasOwnProperty.call(payload, 'datos_reporte')
+              ? { datos_reporte: payload.datos_reporte ?? null }
+              : {}),
             updated_at: new Date().toISOString(),
           })
           .eq('id', op.corteId)

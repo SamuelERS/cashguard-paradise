@@ -139,6 +139,9 @@ const Index = () => {
     conteo_parcial: CashCount;
     pagos_electronicos: ElectronicPayments;
     gastos_dia: DailyExpense[];
+    datos_entrega?: Record<string, unknown> | null;
+    datos_verificacion?: Record<string, unknown> | null;
+    datos_reporte?: Record<string, unknown> | null;
   }) => {
     if (!isSupabaseConfigured || !syncSucursalId) return;
 
@@ -151,6 +154,9 @@ const Index = () => {
       gastos_dia: datos.gastos_dia.length > 0
         ? { items: datos.gastos_dia } as unknown as Record<string, unknown>
         : null,
+      datos_entrega: datos.datos_entrega ?? null,
+      datos_verificacion: datos.datos_verificacion ?? null,
+      datos_reporte: datos.datos_reporte ?? null,
     };
     guardarProgreso(datosProgreso)
       .then(() => {
