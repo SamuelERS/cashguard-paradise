@@ -275,7 +275,6 @@ export function DeliveryManager() {
         {showForm ? (
           <DestructiveActionButton
             onClick={() => setShowForm(false)}
-            className="h-auto py-2 px-4"
           >
             <X className="mr-2 h-4 w-4" />
             Cancelar
@@ -283,7 +282,6 @@ export function DeliveryManager() {
         ) : (
           <ConstructiveActionButton
             onClick={() => setShowForm(true)}
-            className="h-auto py-2 px-4"
           >
             <Plus className="mr-2 h-4 w-4" />
             Agregar Delivery
@@ -427,13 +425,11 @@ export function DeliveryManager() {
                   <DestructiveActionButton
                     type="button"
                     onClick={handleCancel}
-                    className="h-auto py-2 px-4"
                   >
                     Cancelar
                   </DestructiveActionButton>
                   <ConstructiveActionButton
                     type="submit"
-                    className="h-auto py-2 px-4"
                   >
                     <Plus className="mr-2 h-4 w-4" />
                     Crear Delivery
@@ -515,7 +511,7 @@ export function DeliveryManager() {
                     <CardFooter className="flex gap-2 pt-3 border-t border-[rgba(255,255,255,0.1)]">
                       <ConstructiveActionButton
                         onClick={() => handleMarkPaid(delivery.id, delivery.customerName)}
-                        className="flex-1 h-auto py-1.5 px-3 text-sm"
+                        className="flex-1"
                       >
                         <Check className="mr-2 h-4 w-4" />
                         Pagado
@@ -523,7 +519,6 @@ export function DeliveryManager() {
 
                       <DestructiveActionButton
                         onClick={() => handleCancelDelivery(delivery.id, delivery.customerName)}
-                        className="h-auto py-1.5 px-3 text-sm"
                       >
                         <X className="mr-2 h-4 w-4" />
                         Cancelar
@@ -531,7 +526,6 @@ export function DeliveryManager() {
 
                       <DestructiveActionButton
                         onClick={() => handleRejectDelivery(delivery.id, delivery.customerName)}
-                        className="h-auto py-1.5 px-3 text-sm"
                       >
                         <Ban className="mr-2 h-4 w-4" />
                         Rechazar
@@ -550,7 +544,7 @@ export function DeliveryManager() {
       {/* 🤖 [IA] - v3.1.0: Reemplaza prompt() para PWA iOS compatibility */}
       {/* ══════════════════════════════════════ */}
       <AlertDialog open={!!reasonModal} onOpenChange={(open) => !open && setReasonModal(null)}>
-        <AlertDialogContent className="modal-size-compact bg-[rgba(36,36,36,0.95)] backdrop-blur-xl border-[rgba(255,255,255,0.15)]">
+        <AlertDialogContent className="glass-morphism-panel modal-size-compact">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-[#e1e8ed]">
               {reasonModal?.type === 'cancel' ? 'Cancelar Delivery' : 'Rechazar Delivery'}
@@ -574,14 +568,12 @@ export function DeliveryManager() {
           <AlertDialogFooter className="flex flex-col sm:flex-row gap-2">
             <DestructiveActionButton
               onClick={() => setReasonModal(null)}
-              className="h-auto py-2 px-4"
             >
               Volver
             </DestructiveActionButton>
             <ConstructiveActionButton
               onClick={handleReasonConfirm}
               disabled={!reasonText.trim()}
-              className="h-auto py-2 px-4"
             >
               Confirmar
             </ConstructiveActionButton>

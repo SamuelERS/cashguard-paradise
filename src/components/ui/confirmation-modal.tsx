@@ -150,7 +150,7 @@ export function ConfirmationModal({
             <AlertDialogCancel asChild>
               <ConstructiveActionButton
                 onClick={onCancel}
-                className="h-[clamp(2.5rem,10vw,3rem)] px-[clamp(1rem,4vw,1.5rem)] mb-[clamp(0.5rem,2vw,0.75rem)]"
+                className="mb-[clamp(0.5rem,2vw,0.75rem)]"
               >
                 {cancelText}
               </ConstructiveActionButton>

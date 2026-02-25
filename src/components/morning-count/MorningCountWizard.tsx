@@ -183,10 +183,6 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
     setShowCancelConfirmation(false);
   };
 
-  // 🤖 [IA] - v1.2.11 - Detección de viewport y escala proporcional
-  const viewportScale = typeof window !== 'undefined' ? Math.min(window.innerWidth / 430, 1) : 1;
-  const isMobileDevice = typeof window !== 'undefined' && window.innerWidth < 768;
-
   const renderStepContent = () => {
     switch (currentStep) {
       case 0: // 🤖 [IA] - v1.2.38: Paso 0 - Protocolo de Seguridad Matutino
@@ -212,8 +208,7 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
           <WizardGlassCard className="space-y-fluid-lg">
             {/* Header del paso */}
             <WizardGlassCard
-              className="flex items-center wizard-inline-gap"
-              style={{ padding: `clamp(14px, ${16 * viewportScale}px, 16px)` }}
+              className="flex items-center wizard-inline-gap p-[clamp(0.875rem,3vw,1rem)]"
             >
               <MapPin className="wizard-step-icon flex-shrink-0" style={{
                 background: 'linear-gradient(135deg, #f4a52a 0%, #ffb84d 100%)',
@@ -258,18 +253,13 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
                 animate={{ opacity: 1, y: 0 }}
               >
                 <WizardGlassCard
-                  className="flex items-center wizard-inline-gap"
+                  className="flex items-center wizard-inline-gap p-[clamp(0.625rem,2.5vw,0.75rem)]"
                   style={{
                     borderColor: 'rgba(0, 186, 124, 0.4)',
-                    padding: `clamp(10px, ${12 * viewportScale}px, 12px)`
                   }}
                 >
-                  <CheckCircle style={{ 
-                    width: `clamp(16px, 4vw, 20px)`,
-                    height: `clamp(16px, 4vw, 20px)`,
-                    color: '#00ba7c' 
-                  }} />
-                  <span className="wizard-step-subtitle" style={{ marginTop: 0 }}>
+                  <CheckCircle className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)] text-[#00ba7c]" />
+                  <span className="wizard-step-subtitle mt-0">
                     Sucursal seleccionada correctamente
                   </span>
                 </WizardGlassCard>
@@ -283,8 +273,7 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
           <WizardGlassCard className="space-y-fluid-lg">
             {/* Header del paso */}
             <WizardGlassCard
-              className="flex items-center wizard-inline-gap"
-              style={{ padding: `clamp(14px, ${16 * viewportScale}px, 16px)` }}
+              className="flex items-center wizard-inline-gap p-[clamp(0.875rem,3vw,1rem)]"
             >
               <Users className="wizard-step-icon flex-shrink-0" style={{
                 background: 'linear-gradient(135deg, #f4a52a 0%, #ffb84d 100%)',
@@ -329,14 +318,13 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
                 animate={{ opacity: 1, y: 0 }}
               >
                 <WizardGlassCard
-                  className="flex items-center wizard-inline-gap"
+                  className="flex items-center wizard-inline-gap p-[clamp(0.625rem,2.5vw,0.75rem)]"
                   style={{
                     borderColor: 'rgba(0, 186, 124, 0.4)',
-                    padding: `clamp(10px, ${12 * viewportScale}px, 12px)`
                   }}
                 >
                   <CheckCircle className="w-[clamp(1rem,4vw,1.25rem)] h-[clamp(1rem,4vw,1.25rem)] text-[#00ba7c]" />
-                  <span className="wizard-step-subtitle" style={{ marginTop: 0 }}>
+                  <span className="wizard-step-subtitle mt-0">
                     Cajero seleccionado
                   </span>
                 </WizardGlassCard>
@@ -350,8 +338,7 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
           <WizardGlassCard className="space-y-fluid-lg">
             {/* Header del paso */}
             <WizardGlassCard
-              className="flex items-center wizard-inline-gap"
-              style={{ padding: `clamp(14px, ${16 * viewportScale}px, 16px)` }}
+              className="flex items-center wizard-inline-gap p-[clamp(0.875rem,3vw,1rem)]"
             >
               <Users className="wizard-step-icon flex-shrink-0" style={{
                 background: 'linear-gradient(135deg, #ffb84d 0%, #f4a52a 100%)',
@@ -398,10 +385,9 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
                 animate={{ opacity: 1, y: 0 }}
               >
                 <WizardGlassCard
-                  className="flex items-center wizard-inline-gap"
+                  className="flex items-center wizard-inline-gap p-[clamp(0.625rem,2.5vw,0.75rem)]"
                   style={{
                     borderColor: showValidation ? 'rgba(0, 186, 124, 0.4)' : 'rgba(244, 33, 46, 0.4)',
-                    padding: `clamp(10px, ${12 * viewportScale}px, 12px)`
                   }}
                 >
                   {showValidation ? (
@@ -437,9 +423,6 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
     }}>
       <DialogContent
         className="glass-morphism-panel wizard-dialog-content modal-size-standard overflow-y-auto overflow-x-hidden p-0 [&>button]:hidden"
-        style={{
-          maxHeight: isMobileDevice ? '90vh' : '85vh'
-        }}
       >
         {/* 🤖 [IA] - v1.2.12 - DialogTitle y DialogDescription para accesibilidad */}
         {/* 🤖 [IA] - v1.2.38 - Actualizado a 4 pasos (0-3) */}
@@ -450,10 +433,10 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
           Complete los pasos para realizar el conteo matutino del cambio de caja. Paso 1: Protocolo de Seguridad, Pasos 2-4: Información del conteo. Este proceso verificará el fondo inicial de $50 para el inicio del turno.
         </DialogDescription>
         
-        <div style={{ padding: `clamp(16px, ${24 * viewportScale}px, 24px)` }}>
+        <div className="p-fluid-lg">
           {/* Header del modal simplificado - 🤖 [IA] - v1.2.13 */}
           {/* 🤖 [IA] - v1.2.41Y: Subtítulo agregado para elegancia profesional */}
-          <div className="flex items-center justify-between" style={{ marginBottom: `clamp(16px, ${20 * viewportScale}px, 20px)` }}>
+          <div className="flex items-center justify-between mb-fluid-md">
             <div className="flex items-center wizard-inline-gap">
               <Sunrise className="wizard-step-icon" style={{ color: '#f4a52a' }} />
               <div className="flex flex-col">
@@ -477,7 +460,7 @@ export function MorningCountWizard({ isOpen, onClose, onComplete }: MorningCount
           </div>
 
           {/* Indicador de paso - 🤖 [IA] - v1.2.13 + v1.2.38 (4 pasos totales) */}
-          <div style={{ marginBottom: `clamp(20px, ${24 * viewportScale}px, 24px)` }}>
+          <div className="mb-fluid-md">
             {/* Texto del paso */}
             <div className="flex justify-between items-center">
               <span className="wizard-progress-label" data-testid="step-indicator">

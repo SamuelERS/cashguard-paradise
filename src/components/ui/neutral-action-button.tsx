@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils"
 
 const neutralActionButtonVariants = cva(
   `inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-semibold
-   h-fluid-3xl min-h-[var(--space-3xl)] px-fluid-lg py-2 transition-colors duration-200 ease-in-out
+   h-[clamp(2.75rem,7.2vw,3rem)] min-h-[44px] px-[clamp(0.875rem,3vw,1.25rem)] transition-colors duration-200 ease-in-out
    focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2
    focus-visible:ring-gray-500 focus-visible:ring-offset-slate-900
    disabled:pointer-events-none disabled:opacity-50`,

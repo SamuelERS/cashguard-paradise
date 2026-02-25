@@ -186,7 +186,7 @@ export function DeliveryDetailsModal({
 
   return (
     <Dialog open={!!delivery} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="modal-size-compact bg-[rgba(36,36,36,0.95)] backdrop-blur-xl border-[rgba(255,255,255,0.15)]">
+      <DialogContent className="glass-morphism-panel modal-size-compact">
         {delivery && (
           <>
             {/* HEADER */}
@@ -327,21 +327,19 @@ export function DeliveryDetailsModal({
               <DialogFooter className="flex flex-col sm:flex-row gap-2">
                 <ConstructiveActionButton
                   onClick={handleMarkPaid}
-                  className="flex-1 h-auto py-2 px-4"
+                  className="flex-1"
                 >
                   <Check className="mr-2 h-4 w-4" />
                   Marcar Pagado
                 </ConstructiveActionButton>
                 <DestructiveActionButton
                   onClick={handleCancel}
-                  className="h-auto py-2 px-4"
                 >
                   <X className="mr-2 h-4 w-4" />
                   Cancelar
                 </DestructiveActionButton>
                 <DestructiveActionButton
                   onClick={handleReject}
-                  className="h-auto py-2 px-4"
                 >
                   <Ban className="mr-2 h-4 w-4" />
                   Rechazar
@@ -354,7 +352,7 @@ export function DeliveryDetailsModal({
 
       {/* 🤖 [IA] - v3.1.0: Modal razón cancelación/rechazo (reemplaza prompt() para PWA iOS) */}
       <AlertDialog open={!!reasonModal} onOpenChange={(open) => !open && setReasonModal(null)}>
-        <AlertDialogContent className="modal-size-compact bg-[rgba(36,36,36,0.95)] backdrop-blur-xl border-[rgba(255,255,255,0.15)]">
+        <AlertDialogContent className="glass-morphism-panel modal-size-compact">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-[#e1e8ed]">
               {reasonModal?.type === 'cancel' ? 'Cancelar Delivery' : 'Rechazar Delivery'}
@@ -378,14 +376,12 @@ export function DeliveryDetailsModal({
           <AlertDialogFooter className="flex flex-col sm:flex-row gap-2">
             <DestructiveActionButton
               onClick={() => setReasonModal(null)}
-              className="h-auto py-2 px-4"
             >
               Volver
             </DestructiveActionButton>
             <ConstructiveActionButton
               onClick={handleReasonConfirm}
               disabled={!reasonText.trim()}
-              className="h-auto py-2 px-4"
             >
               Confirmar
             </ConstructiveActionButton>

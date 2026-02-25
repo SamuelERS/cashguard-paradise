@@ -124,7 +124,7 @@ export function PinModal({
             </p>
             <DestructiveActionButton
               onClick={onCancel}
-              className="mt-[clamp(1.5rem,6vw,2rem)] h-[clamp(2.5rem,10vw,3rem)] px-[clamp(1rem,4vw,1.5rem)]"
+              className="mt-[clamp(1.5rem,6vw,2rem)]"
             >
               Volver
             </DestructiveActionButton>
@@ -162,7 +162,7 @@ export function PinModal({
                 type="button"
                 data-testid="pin-cancel"
                 onClick={onCancel}
-                className="flex-1 h-[clamp(2.5rem,10vw,3rem)] px-[clamp(1rem,4vw,1.5rem)]"
+                className="flex-1"
                 disabled={isValidating}
               >
                 Cancelar
@@ -171,7 +171,7 @@ export function PinModal({
                 type="submit"
                 data-testid="pin-submit"
                 disabled={pin.length < 4 || isValidating}
-                className="flex-1 h-[clamp(2.5rem,10vw,3rem)] px-[clamp(1rem,4vw,1.5rem)]"
+                className="flex-1"
               >
                 {isValidating ? 'Validando...' : 'Validar'}
               </ConstructiveActionButton>

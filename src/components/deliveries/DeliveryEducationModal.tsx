@@ -99,7 +99,7 @@ export function DeliveryEducationModal({
 }: DeliveryEducationModalProps) {
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-      <DialogContent className="modal-size-large overflow-y-auto bg-[rgba(36,36,36,0.95)] backdrop-blur-xl border-[rgba(255,255,255,0.15)]">
+      <DialogContent className="glass-morphism-panel modal-size-large overflow-y-auto">
         {/* HEADER */}
         <DialogHeader>
           <DialogTitle className="text-[clamp(1.25rem,3.5vw,1.5rem)] text-[#e1e8ed] flex items-center gap-2">
@@ -329,7 +329,7 @@ export function DeliveryEducationModal({
         <DialogFooter>
           <ConstructiveActionButton
             onClick={onClose}
-            className="w-full sm:w-auto h-auto py-2 px-4"
+            className="w-full sm:w-auto"
           >
             <CheckCircle className="mr-2 h-4 w-4" />
             Entendido
