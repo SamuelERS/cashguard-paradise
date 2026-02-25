@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSupervisorTodayFeed } from '@/hooks/supervisor/useSupervisorTodayFeed';
 import { CorteListaItem } from './CorteListaItem';
 import { SupervisorLiveBadge } from './SupervisorLiveBadge';
+import { buildCorrelativoDashboardMetrics } from './correlativoMetrics';
 
 // ---------------------------------------------------------------------------
 // Helper privado
@@ -57,6 +58,13 @@ export function CortesDelDia() {
   const finalizados = cortes.filter(
     corte => corte.estado === 'FINALIZADO' || corte.estado === 'ABORTADO',
   );
+  const correlativoMetrics = buildCorrelativoDashboardMetrics(cortes);
+  const sucursalesConActividad = correlativoMetrics.maxSecuencialPorSucursal.size;
+  const resumenCorrelativoPorSucursal = Array.from(
+    correlativoMetrics.maxSecuencialPorSucursal.entries(),
+  )
+    .sort(([codigoA], [codigoB]) => codigoA.localeCompare(codigoB))
+    .map(([codigo, maxSecuencial]) => `${codigo}: #${String(maxSecuencial).padStart(3, '0')}`);
   const hayActividad = activos.length > 0 || finalizados.length > 0;
 
   // ── Handlers ──────────────────────────────────────────────────────────────
@@ -159,6 +167,20 @@ export function CortesDelDia() {
         </div>
       ) : (
         <div className="flex flex-col gap-4">
+          <div className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-white/70">
+              <span>Sucursales activas: {sucursalesConActividad}</span>
+              <span>Activos atrasados: {correlativoMetrics.activosAtrasados}</span>
+            </div>
+            <div className="mt-1 flex flex-wrap gap-2 text-[11px] text-white/55">
+              {resumenCorrelativoPorSucursal.map((entry) => (
+                <span key={entry} className="px-2 py-0.5 rounded-full border border-white/10">
+                  {entry}
+                </span>
+              ))}
+            </div>
+          </div>
+
           {activos.length > 0 && (
             <section className="flex flex-col gap-2" aria-label="Activos ahora">
               <div className="flex items-center justify-between px-1">
@@ -167,15 +189,21 @@ export function CortesDelDia() {
                   {activos.length} {activos.length === 1 ? 'corte' : 'cortes'}
                 </span>
               </div>
-              <ul className="flex flex-col gap-2" role="list" aria-label="Lista de cortes activos">
-                {activos.map(corte => (
-                  <li key={corte.id}>
-                    <CorteListaItem corte={corte} onClick={irADetalle} />
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
+                <ul className="flex flex-col gap-2" role="list" aria-label="Lista de cortes activos">
+                  {activos.map(corte => (
+                    <li key={corte.id}>
+                      <CorteListaItem
+                        corte={corte}
+                        onClick={irADetalle}
+                        contextoCorrelativo={{
+                          atraso: correlativoMetrics.atrasoPorCorteId.get(corte.id) ?? 0,
+                        }}
+                      />
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
 
           {finalizados.length > 0 && (
             <section className="flex flex-col gap-2" aria-label="Finalizados hoy">
@@ -185,15 +213,21 @@ export function CortesDelDia() {
                   {finalizados.length} {finalizados.length === 1 ? 'corte' : 'cortes'}
                 </span>
               </div>
-              <ul className="flex flex-col gap-2" role="list" aria-label="Lista de cortes finalizados hoy">
-                {finalizados.map(corte => (
-                  <li key={corte.id}>
-                    <CorteListaItem corte={corte} onClick={irADetalle} />
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
+                <ul className="flex flex-col gap-2" role="list" aria-label="Lista de cortes finalizados hoy">
+                  {finalizados.map(corte => (
+                    <li key={corte.id}>
+                      <CorteListaItem
+                        corte={corte}
+                        onClick={irADetalle}
+                        contextoCorrelativo={{
+                          atraso: correlativoMetrics.atrasoPorCorteId.get(corte.id) ?? 0,
+                        }}
+                      />
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
         </div>
       )}
 

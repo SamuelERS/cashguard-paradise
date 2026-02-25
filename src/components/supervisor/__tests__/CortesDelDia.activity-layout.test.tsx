@@ -21,10 +21,10 @@ vi.mock('@/hooks/supervisor/useSupervisorTodayFeed', () => ({
       },
       {
         id: 'f1',
-        correlativo: 'CORTE-2026-02-24-H-001',
+        correlativo: 'CORTE-2026-02-24-M-004',
         estado: 'FINALIZADO',
-        sucursales: { id: 'suc-001', nombre: 'Los Héroes', codigo: 'H', activa: true },
-        cajero: 'Jonathan Melara',
+        sucursales: { id: 'suc-002', nombre: 'Plaza Merliot', codigo: 'M', activa: true },
+        cajero: 'Irvin Abarca',
         created_at: '2026-02-24T17:00:00.000Z',
         finalizado_at: '2026-02-24T19:20:00.000Z',
         venta_esperada: 200,
@@ -49,7 +49,7 @@ describe('CortesDelDia - activity layout', () => {
     expect(await screen.findByText('Activos ahora')).toBeInTheDocument();
     expect(screen.getByText('Finalizados hoy')).toBeInTheDocument();
 
-    expect(screen.getByText('Plaza Merliot')).toBeInTheDocument();
-    expect(screen.getByText('Los Héroes')).toBeInTheDocument();
+    expect(screen.getAllByText('Plaza Merliot').length).toBeGreaterThan(0);
+    expect(screen.getByText('Atraso 3')).toBeInTheDocument();
   });
 });
