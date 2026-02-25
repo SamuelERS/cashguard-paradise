@@ -104,16 +104,88 @@ export type Database = {
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
 
-// 🤖 [IA] - Fix OT-02: Degradación controlada cuando env vars no están presentes.
+// Fallback de emergencia exclusivo para dominio productivo.
+// El anon key de Supabase es publicable por diseño (publishable key).
+const EMERGENCY_SUPABASE_URL = 'https://gjoeiqhxvbvdrgkjtohv.supabase.co';
+const EMERGENCY_SUPABASE_ANON_KEY = 'sb_publishable_EdY_qwMvFmYCKMmaKZI-sw_T1NX4TKM';
+const PRODUCTION_HOST_ALLOWLIST = new Set(['cashguard.paradisesystemlabs.com', 'www.cashguard.paradisesystemlabs.com']);
+
+// Degradación controlada cuando no hay configuración válida.
 // En lugar de throw que crashea toda la app/tests al importar el módulo,
 // se usa un placeholder que falla en runtime solo cuando se intenta usar.
 const PLACEHOLDER_URL = 'https://placeholder.supabase.co';
 const PLACEHOLDER_KEY = 'placeholder-key';
 
-if (!supabaseUrl || !supabaseAnonKey) {
+type SupabaseCredentialSource = 'env' | 'emergency-fallback' | 'placeholder';
+
+interface ResolveSupabaseCredentialsInput {
+  envUrl?: string;
+  envAnonKey?: string;
+  host?: string;
+  isProd?: boolean;
+}
+
+interface ResolveSupabaseCredentialsOutput {
+  url: string;
+  anonKey: string;
+  configured: boolean;
+  source: SupabaseCredentialSource;
+}
+
+export function resolveSupabaseCredentials({
+  envUrl,
+  envAnonKey,
+  host,
+  isProd = false,
+}: ResolveSupabaseCredentialsInput): ResolveSupabaseCredentialsOutput {
+  if (envUrl && envAnonKey) {
+    return {
+      url: envUrl,
+      anonKey: envAnonKey,
+      configured: true,
+      source: 'env',
+    };
+  }
+
+  if (isProd && host && PRODUCTION_HOST_ALLOWLIST.has(host)) {
+    return {
+      url: EMERGENCY_SUPABASE_URL,
+      anonKey: EMERGENCY_SUPABASE_ANON_KEY,
+      configured: true,
+      source: 'emergency-fallback',
+    };
+  }
+
+  return {
+    url: PLACEHOLDER_URL,
+    anonKey: PLACEHOLDER_KEY,
+    configured: false,
+    source: 'placeholder',
+  };
+}
+
+const runtimeHost =
+  typeof window !== 'undefined' && typeof window.location?.hostname === 'string'
+    ? window.location.hostname
+    : undefined;
+
+const resolvedCredentials = resolveSupabaseCredentials({
+  envUrl: supabaseUrl,
+  envAnonKey: supabaseAnonKey,
+  host: runtimeHost,
+  isProd: Boolean(import.meta.env.PROD),
+});
+
+if (resolvedCredentials.source === 'placeholder') {
   console.warn(
     '[supabase] VITE_SUPABASE_URL o VITE_SUPABASE_ANON_KEY no configuradas. ' +
     'El cliente Supabase operará en modo degradado (las llamadas fallarán).'
+  );
+}
+
+if (resolvedCredentials.source === 'emergency-fallback') {
+  console.warn(
+    '[supabase] Variables VITE_SUPABASE_* ausentes en producción; usando fallback de emergencia.'
   );
 }
 
@@ -123,12 +195,12 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 /** Cliente Supabase tipado — singleton para toda la aplicación. */
 export const supabase = createClient<Database>(
-  supabaseUrl ?? PLACEHOLDER_URL,
-  supabaseAnonKey ?? PLACEHOLDER_KEY,
+  resolvedCredentials.url,
+  resolvedCredentials.anonKey,
 );
 
 /** Indica si el cliente Supabase tiene credenciales reales configuradas. */
-export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
+export const isSupabaseConfigured = resolvedCredentials.configured;
 
 // ---------------------------------------------------------------------------
 // 4. Helpers tipados
