@@ -222,4 +222,56 @@ describe('useSupervisorQueries - reconciliación diaria', () => {
     expect(payload.datos).toHaveLength(1);
     expect(result.current.error).toBeNull();
   });
+
+  it('si un corte aparece en activos y finalizados, prioriza estado terminal y evita duplicados', async () => {
+    const finalizadosQuery = buildFinalizadosQuery({
+      data: [
+        {
+          id: 'dup-1',
+          correlativo: 'CORTE-2026-02-25-M-003',
+          estado: 'FINALIZADO',
+          created_at: '2026-02-25T13:00:00.000-06:00',
+          finalizado_at: '2026-02-25T14:00:00.000-06:00',
+        },
+      ],
+      error: null,
+    });
+    const activosQuery = buildActivosQuery({
+      data: [
+        {
+          id: 'dup-1',
+          correlativo: 'CORTE-2026-02-25-M-003',
+          estado: 'EN_PROGRESO',
+          created_at: '2026-02-25T13:00:00.000-06:00',
+          finalizado_at: null,
+        },
+      ],
+      error: null,
+    });
+    const cortesMock = vi
+      .fn()
+      .mockReturnValueOnce({ select: finalizadosQuery.select })
+      .mockReturnValueOnce({ select: activosQuery.select });
+    const rpcMock = vi.fn().mockResolvedValue({ data: 0, error: null });
+
+    vi.doMock('@/lib/supabase', () => ({
+      tables: {
+        rpc: rpcMock,
+        cortes: cortesMock,
+      },
+    }));
+
+    const { useSupervisorQueries } = await import('../useSupervisorQueries');
+    const { result } = renderHook(() => useSupervisorQueries());
+
+    let filas: Array<{ id: string; estado: string }> = [];
+    await act(async () => {
+      filas = await result.current.obtenerCortesDelDia();
+    });
+
+    expect(filas).toHaveLength(1);
+    expect(filas[0].id).toBe('dup-1');
+    expect(filas[0].estado).toBe('FINALIZADO');
+    expect(rpcMock).toHaveBeenCalledTimes(1);
+  });
 });

@@ -114,6 +114,15 @@ function toCorteConSucursal(raw: unknown): CorteConSucursal {
   return raw as CorteConSucursal;
 }
 
+function esEstadoTerminal(estado: EstadoCorte): boolean {
+  return estado === 'FINALIZADO' || estado === 'ABORTADO';
+}
+
+function timestampOperativo(corte: Pick<CorteConSucursal, 'created_at' | 'finalizado_at'>): number {
+  const parsed = Date.parse(corte.finalizado_at ?? corte.created_at);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
 async function reconciliarCortesVencidos(fechaCorte: string): Promise<void> {
   type RpcError = {
     message: string;
@@ -233,15 +242,36 @@ export function useSupervisorQueries(): UseSupervisorQueriesReturn {
         throw new Error(activosRes.error.message);
       }
 
-      const merged = [...(activosRes.data ?? []), ...(finalizadosRes.data ?? [])]
-        .map(toCorteConSucursal)
-        .sort((a, b) => {
-          const timeA = Date.parse(a.finalizado_at ?? a.created_at);
-          const timeB = Date.parse(b.finalizado_at ?? b.created_at);
-          const safeA = Number.isFinite(timeA) ? timeA : 0;
-          const safeB = Number.isFinite(timeB) ? timeB : 0;
-          return safeB - safeA;
-        });
+      const mergedCrudo = [...(activosRes.data ?? []), ...(finalizadosRes.data ?? [])].map(toCorteConSucursal);
+      const porId = new Map<string, CorteConSucursal>();
+
+      for (const corte of mergedCrudo) {
+        const existente = porId.get(corte.id);
+        if (!existente) {
+          porId.set(corte.id, corte);
+          continue;
+        }
+
+        const existenteTerminal = esEstadoTerminal(existente.estado);
+        const actualTerminal = esEstadoTerminal(corte.estado);
+
+        if (!existenteTerminal && actualTerminal) {
+          porId.set(corte.id, corte);
+          continue;
+        }
+
+        if (existenteTerminal && !actualTerminal) {
+          continue;
+        }
+
+        if (timestampOperativo(corte) >= timestampOperativo(existente)) {
+          porId.set(corte.id, corte);
+        }
+      }
+
+      const merged = Array.from(porId.values()).sort(
+        (a, b) => timestampOperativo(b) - timestampOperativo(a),
+      );
 
       finalizarQuery();
       return merged;

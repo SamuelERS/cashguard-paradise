@@ -1,4 +1,4 @@
-// 🤖 [IA] - v4.0.1: OT11 - Caso-UX-UI-Feb-19 COMPLETADO (glass morphism, botones estandarizados, viewport-scale eliminado, style blocks 64→38)
+// 🤖 [IA] - v4.0.2: OT11 - Caso-UX-UI-Feb-19 COMPLETADO (glass morphism, botones estandarizados, viewport-scale eliminado, style blocks 64→38)
 // Previous: v3.4.1 - OT12 - Fix denomination images (6 archivos copiados con nombres correctos + tests TDD)
 // Previous: v3.3.2 - CASO-SANN-R2 - Panel interactivo sesión activa en Step 5 (reanudar/abortar)
 // Previous: v3.3.1 - CASO-SANN-R1 - Banner sesión activa oculto en Paso 1 (Protocolo)
@@ -77,7 +77,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
               }}>
                 Seleccione Operación
               </h1>
-              {/* 🤖 [IA] - v4.0.1: OT11 UX-Audit Feb-19 completado */}
+              {/* 🤖 [IA] - v4.0.2: OT11 UX-Audit Feb-19 completado */}
               <span className="px-3 py-1 rounded-full text-xs font-semibold shadow-lg" style={{
                 background: 'linear-gradient(135deg, #d4af37 0%, #aa8c2d 100%)',
                 color: '#1a1a1a',
@@ -85,7 +85,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
                 boxShadow: '0 4px 6px rgba(212, 175, 55, 0.4)',
                 border: '1px solid rgba(255, 215, 0, 0.3)'
               }}>
-                  v4.0.1
+                  v4.0.2
               </span>
             </div>
           </div>
