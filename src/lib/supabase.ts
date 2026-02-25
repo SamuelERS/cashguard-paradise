@@ -92,6 +92,17 @@ export type Database = {
         };
         Returns: number;
       };
+      iniciar_corte_transaccional: {
+        Args: {
+          p_sucursal_id: string;
+          p_cajero: string;
+          p_testigo: string;
+          p_venta_esperada?: number | null;
+          p_cajero_id?: string | null;
+          p_testigo_id?: string | null;
+        };
+        Returns: Corte;
+      };
     };
     Enums: Record<string, never>;
   };

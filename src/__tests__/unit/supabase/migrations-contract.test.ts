@@ -68,4 +68,12 @@ describe('Supabase migrations contract', () => {
     expect(sql).toMatch(/alter\s+publication\s+supabase_realtime\s+add\s+table\s+public\.cortes/i);
     expect(sql).toMatch(/alter\s+publication\s+supabase_realtime\s+add\s+table\s+public\.corte_intentos/i);
   });
+
+  it('incluye RPC transaccional para iniciar corte con correlativo server-side', () => {
+    const sql = readAllMigrations();
+    expect(sql).toMatch(/create\s+or\s+replace\s+function\s+public\.iniciar_corte_transaccional/i);
+    expect(sql).toMatch(/pg_advisory_xact_lock/i);
+    expect(sql).toMatch(/insert\s+into\s+public\.cortes/i);
+    expect(sql).toMatch(/return\s+v_corte/i);
+  });
 });

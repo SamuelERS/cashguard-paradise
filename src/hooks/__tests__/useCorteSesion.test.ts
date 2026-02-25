@@ -10,7 +10,7 @@ import { CORRELATIVO_REGEX } from '../../types/auditoria';
 // Hoisted mocks — vi.hoisted() runs before all imports
 // ---------------------------------------------------------------------------
 
-const { mockChain, resetMockChain } = vi.hoisted(() => {
+const { mockChain, mockSupabaseRpc, resetMockChain } = vi.hoisted(() => {
   const createMockChain = () => {
     const chain: Record<string, ReturnType<typeof vi.fn>> = {};
     chain.select = vi.fn(() => chain);
@@ -30,26 +30,39 @@ const { mockChain, resetMockChain } = vi.hoisted(() => {
   const mockCortes = createMockChain();
   const mockIntentos = createMockChain();
   const mockSucursales = createMockChain();
+  const mockRpc = vi.fn();
 
   const resetAll = () => {
     Object.values(mockCortes).forEach((fn) => fn.mockClear());
     Object.values(mockIntentos).forEach((fn) => fn.mockClear());
     Object.values(mockSucursales).forEach((fn) => fn.mockClear());
+    mockRpc.mockClear();
     // Restablecer defaults — sin corte activo (auto-recovery retorna null)
     mockCortes.single.mockResolvedValue({ data: null, error: null });
     mockCortes.maybeSingle.mockResolvedValue({ data: null, error: null });
     mockIntentos.single.mockResolvedValue({ data: null, error: null });
     mockIntentos.maybeSingle.mockResolvedValue({ data: null, error: null });
     mockSucursales.single.mockResolvedValue({ data: null, error: null });
+    mockRpc.mockResolvedValue({
+      data: null,
+      error: {
+        code: 'PGRST202',
+        message: 'Could not find the function public.iniciar_corte_transaccional',
+      },
+    });
   };
 
   return {
     mockChain: { cortes: mockCortes, intentos: mockIntentos, sucursales: mockSucursales },
+    mockSupabaseRpc: mockRpc,
     resetMockChain: resetAll,
   };
 });
 
 vi.mock('../../lib/supabase', () => ({
+  supabase: {
+    rpc: (...args: unknown[]) => mockSupabaseRpc(...args),
+  },
   tables: {
     cortes: () => mockChain.cortes,
     corteIntentos: () => mockChain.intentos,
@@ -542,6 +555,89 @@ describe('Suite 3: iniciarCorte', () => {
         });
       }),
     ).rejects.toThrow('Ya existe un corte finalizado para hoy');
+  });
+
+  it('3.8 - Reintenta con correlativo incrementado cuando Supabase responde duplicate key', async () => {
+    const { result } = renderHook(() => useCorteSesion(SUCURSAL_ID));
+
+    await waitFor(() => {
+      expect(result.current.cargando).toBe(false);
+    });
+
+    // Sucursal OK
+    mockChain.sucursales.single.mockResolvedValueOnce({
+      data: { codigo: SUCURSAL_CODIGO },
+      error: null,
+    });
+    // Cortes hoy vacíos (secuencial base = 1)
+    mockChain.cortes.lt.mockResolvedValueOnce({ data: [], error: null });
+    // Primer insert falla por unique constraint correlativo
+    mockChain.cortes.single
+      .mockResolvedValueOnce({
+        data: null,
+        error: {
+          message: 'duplicate key value violates unique constraint "cortes_correlativo_key"',
+        },
+      })
+      // Segundo insert exitoso con correlativo siguiente
+      .mockResolvedValueOnce({
+        data: { ...CORTE_MOCK, correlativo: 'CORTE-2026-02-08-H-002' },
+        error: null,
+      });
+    // Insert intento OK
+    mockChain.intentos.single.mockResolvedValueOnce({ data: INTENTO_MOCK, error: null });
+
+    await act(async () => {
+      await result.current.iniciarCorte({
+        sucursal_id: SUCURSAL_ID,
+        cajero: 'Juan Perez',
+        testigo: 'Maria Lopez',
+      });
+    });
+
+    expect(mockChain.cortes.insert).toHaveBeenCalledTimes(2);
+    const firstInsert = mockChain.cortes.insert.mock.calls[0][0] as Record<string, unknown>;
+    const secondInsert = mockChain.cortes.insert.mock.calls[1][0] as Record<string, unknown>;
+
+    expect(String(firstInsert.correlativo)).toMatch(/^CORTE-\d{4}-\d{2}-\d{2}-H-001$/);
+    expect(String(secondInsert.correlativo)).toMatch(/^CORTE-\d{4}-\d{2}-\d{2}-H-002$/);
+    expect(result.current.corte_actual?.correlativo).toMatch(/^CORTE-\d{4}-\d{2}-\d{2}-H-002$/);
+  });
+
+  it('3.9 - Usa RPC transaccional cuando está disponible y evita insert client-side de cortes', async () => {
+    const { result } = renderHook(() => useCorteSesion(SUCURSAL_ID));
+
+    await waitFor(() => {
+      expect(result.current.cargando).toBe(false);
+    });
+
+    mockSupabaseRpc.mockResolvedValueOnce({
+      data: CORTE_MOCK,
+      error: null,
+    });
+    mockChain.intentos.single.mockResolvedValueOnce({ data: INTENTO_MOCK, error: null });
+
+    await act(async () => {
+      await result.current.iniciarCorte({
+        sucursal_id: SUCURSAL_ID,
+        cajero: 'Juan Perez',
+        cajero_id: 'tito-gomez',
+        testigo: 'Maria Lopez',
+        testigo_id: 'adonay-torres',
+        venta_esperada: 653.65,
+      });
+    });
+
+    expect(mockSupabaseRpc).toHaveBeenCalledWith('iniciar_corte_transaccional', {
+      p_sucursal_id: SUCURSAL_ID,
+      p_cajero: 'Juan Perez',
+      p_testigo: 'Maria Lopez',
+      p_venta_esperada: 653.65,
+      p_cajero_id: 'tito-gomez',
+      p_testigo_id: 'adonay-torres',
+    });
+    expect(mockChain.cortes.insert).not.toHaveBeenCalled();
+    expect(result.current.corte_actual?.id).toBe(CORTE_MOCK.id);
   });
 });
 

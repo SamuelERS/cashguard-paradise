@@ -6,7 +6,7 @@
 // Orden de Trabajo #004 — Director General de Proyecto
 
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { tables } from '../lib/supabase';
+import { supabase, tables } from '../lib/supabase';
 import { insertSnapshot } from '../lib/snapshots';
 import {
   agregarOperacion,
@@ -101,6 +101,25 @@ export function useCorteSesion(
     return mentionsEmployeeIdColumn && isSchemaColumnError;
   };
 
+  const isCorrelativoDuplicateKeyError = (message?: string | null): boolean => {
+    const normalized = (message ?? '').toLowerCase();
+    return (
+      normalized.includes('cortes_correlativo_key') ||
+      normalized.includes('duplicate key value violates unique constraint')
+    );
+  };
+
+  const isIniciarCorteRpcNoDisponible = (
+    error: { message?: string | null; code?: string | null } | null | undefined,
+  ): boolean => {
+    const message = (error?.message ?? '').toLowerCase();
+    return (
+      error?.code === 'PGRST202' ||
+      message.includes('could not find the function public.iniciar_corte_transaccional') ||
+      message.includes('schema cache')
+    );
+  };
+
   const autoRecuperarSesion = options?.autoRecuperarSesion ?? true;
   const procesarColaEnReconexion = options?.procesarColaEnReconexion ?? true;
   const [corteActual, setCorteActual] = useState<Corte | null>(null);
@@ -131,92 +150,133 @@ export function useCorteSesion(
         throw new Error('Cajero y testigo deben ser diferentes');
       }
 
-      // 🤖 [IA] - v1.0.0: Obtener codigo de sucursal
-      const { data: sucursal, error: sucursalError } = await tables
-        .sucursales()
-        .select('codigo')
-        .eq('id', params.sucursal_id)
-        .single();
-
-      if (sucursalError || !sucursal) {
-        throw new Error(sucursalError?.message ?? 'Sucursal no encontrada');
-      }
-
-      // 🤖 [IA] - v1.0.0: Verificar no existe corte FINALIZADO hoy
-      const hoy = new Date();
-      hoy.setHours(0, 0, 0, 0);
-      const manana = new Date(hoy);
-      manana.setDate(manana.getDate() + 1);
-      const fechaHoyInicio = hoy.toISOString();
-      const fechaMananaInicio = manana.toISOString();
-
-      const { data: cortesHoy, error: cortesError } = await tables
-        .cortes()
-        .select('id, estado')
-        .eq('sucursal_id', params.sucursal_id)
-        .gte('created_at', fechaHoyInicio)
-        .lt('created_at', fechaMananaInicio);
-
-      if (cortesError) {
-        throw new Error(cortesError.message);
-      }
-
-      const cortesFinalizados = (cortesHoy ?? []).filter(
-        (c) => c.estado === 'FINALIZADO',
-      );
-      if (cortesFinalizados.length > 0) {
-        throw new Error('Ya existe un corte finalizado para hoy');
-      }
-
-      // 🤖 [IA] - v1.0.0: Calcular secuencial e insertar corte
-      const secuencial = (cortesHoy ?? []).length + 1;
-      const correlativo = generarCorrelativo(
-        sucursal.codigo,
-        new Date(),
-        secuencial,
+      let corte: Corte | null = null;
+      const { data: corteRpc, error: rpcError } = await supabase.rpc(
+        'iniciar_corte_transaccional',
+        {
+          p_sucursal_id: params.sucursal_id,
+          p_cajero: params.cajero,
+          p_testigo: params.testigo,
+          p_venta_esperada: params.venta_esperada ?? null,
+          p_cajero_id: params.cajero_id ?? null,
+          p_testigo_id: params.testigo_id ?? null,
+        },
       );
 
-      const baseInsertPayload = {
-        sucursal_id: params.sucursal_id,
-        cajero: params.cajero,
-        testigo: params.testigo,
-        estado: 'INICIADO' as EstadoCorte,
-        correlativo: correlativo,
-        fase_actual: 0,
-        intento_actual: 1,
-        venta_esperada: params.venta_esperada ?? null,
-        datos_conteo: null,
-        datos_entrega: null,
-        datos_verificacion: null,
-        datos_reporte: null,
-        reporte_hash: null,
-        finalizado_at: null,
-        motivo_aborto: null,
-      };
+      if (!rpcError && corteRpc) {
+        corte = corteRpc as unknown as Corte;
+      } else if (rpcError && !isIniciarCorteRpcNoDisponible(rpcError)) {
+        throw new Error(rpcError.message);
+      }
 
-      const payloadWithEmployeeIds = {
-        ...baseInsertPayload,
-        cajero_id: params.cajero_id ?? null,
-        testigo_id: params.testigo_id ?? null,
-      };
+      // Fallback temporal para entornos que aún no tienen la RPC OT-25 desplegada.
+      if (!corte) {
+        // 🤖 [IA] - v1.0.0: Obtener codigo de sucursal
+        const { data: sucursal, error: sucursalError } = await tables
+          .sucursales()
+          .select('codigo')
+          .eq('id', params.sucursal_id)
+          .single();
 
-      let { data: corte, error: insertError } = await tables
-        .cortes()
-        .insert(payloadWithEmployeeIds)
-        .select()
-        .single();
+        if (sucursalError || !sucursal) {
+          throw new Error(sucursalError?.message ?? 'Sucursal no encontrada');
+        }
 
-      // Backward compatibility: algunos entornos aún no tienen columnas cajero_id/testigo_id.
-      if (insertError && isMissingEmployeeIdColumnError(insertError.message)) {
-        ({ data: corte, error: insertError } = await tables
+        // 🤖 [IA] - v1.0.0: Verificar no existe corte FINALIZADO hoy
+        const hoy = new Date();
+        hoy.setHours(0, 0, 0, 0);
+        const manana = new Date(hoy);
+        manana.setDate(manana.getDate() + 1);
+        const fechaHoyInicio = hoy.toISOString();
+        const fechaMananaInicio = manana.toISOString();
+
+        const { data: cortesHoy, error: cortesError } = await tables
           .cortes()
-          .insert(baseInsertPayload)
-          .select()
-          .single());
-      }
+          .select('id, estado')
+          .eq('sucursal_id', params.sucursal_id)
+          .gte('created_at', fechaHoyInicio)
+          .lt('created_at', fechaMananaInicio);
 
-      if (insertError || !corte) {
-        throw new Error(insertError?.message ?? 'Error al crear corte');
+        if (cortesError) {
+          throw new Error(cortesError.message);
+        }
+
+        const cortesFinalizados = (cortesHoy ?? []).filter(
+          (c) => c.estado === 'FINALIZADO',
+        );
+        if (cortesFinalizados.length > 0) {
+          throw new Error('Ya existe un corte finalizado para hoy');
+        }
+
+        // Evita fallas por carrera/reintento: si colisiona correlativo, incrementa secuencial y reintenta.
+        const secuencialBase = (cortesHoy ?? []).length + 1;
+        const fechaCorrelativo = new Date();
+        const MAX_REINTENTOS_CORRELATIVO = 5;
+        let insertError: { message?: string | null } | null = null;
+
+        for (let reintento = 0; reintento < MAX_REINTENTOS_CORRELATIVO; reintento += 1) {
+          const correlativo = generarCorrelativo(
+            sucursal.codigo,
+            fechaCorrelativo,
+            secuencialBase + reintento,
+          );
+
+          const baseInsertPayload = {
+            sucursal_id: params.sucursal_id,
+            cajero: params.cajero,
+            testigo: params.testigo,
+            estado: 'INICIADO' as EstadoCorte,
+            correlativo: correlativo,
+            fase_actual: 0,
+            intento_actual: 1,
+            venta_esperada: params.venta_esperada ?? null,
+            datos_conteo: null,
+            datos_entrega: null,
+            datos_verificacion: null,
+            datos_reporte: null,
+            reporte_hash: null,
+            finalizado_at: null,
+            motivo_aborto: null,
+          };
+
+          const payloadWithEmployeeIds = {
+            ...baseInsertPayload,
+            cajero_id: params.cajero_id ?? null,
+            testigo_id: params.testigo_id ?? null,
+          };
+
+          let { data: corteIntento, error: errorIntento } = await tables
+            .cortes()
+            .insert(payloadWithEmployeeIds)
+            .select()
+            .single();
+
+          // Backward compatibility: algunos entornos aún no tienen columnas cajero_id/testigo_id.
+          if (errorIntento && isMissingEmployeeIdColumnError(errorIntento.message)) {
+            ({ data: corteIntento, error: errorIntento } = await tables
+              .cortes()
+              .insert(baseInsertPayload)
+              .select()
+              .single());
+          }
+
+          if (!errorIntento && corteIntento) {
+            corte = corteIntento;
+            insertError = null;
+            break;
+          }
+
+          insertError = errorIntento;
+          if (isCorrelativoDuplicateKeyError(errorIntento?.message ?? null)) {
+            continue;
+          }
+
+          break;
+        }
+
+        if (insertError || !corte) {
+          throw new Error(insertError?.message ?? 'Error al crear corte');
+        }
       }
 
       // 🤖 [IA] - v1.0.0: Crear primer intento
