@@ -388,14 +388,24 @@ const Index = () => {
   // [IA] - R3-B5 FIX: Cleanup de estado SOLO en éxito; re-throw en error para que Step5 muestre toast.error
   const handleAbortSession = useCallback(async () => {
     try {
+      const corteActivo = await recuperarSesionActiva();
+      if (!corteActivo) {
+        // Si la sesión ya no existe (otra pestaña/dispositivo), desbloquear el flujo local.
+        setActiveSessionInfo(null);
+        setActiveCashCutSucursalId(null);
+        setHasActiveCashCutSession(false);
+        return;
+      }
+
       await abortarCorteActivo('Sesión abortada por usuario desde wizard');
+      setActiveSessionInfo(null);
       setActiveCashCutSucursalId(null);
       setHasActiveCashCutSession(false);
     } catch (err: unknown) {
       console.warn('[Index] abortarCorte falló:', err);
       throw err;
     }
-  }, [abortarCorteActivo]);
+  }, [abortarCorteActivo, recuperarSesionActiva]);
 
   // [IA] - R3-B2: Tipo extendido con sessionInfo para propagar identificador al wizard
   const detectActiveCashCutSession = useCallback(async (sucursalId?: string): Promise<ActiveSessionCheck> => {

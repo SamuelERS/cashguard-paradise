@@ -85,11 +85,13 @@ vi.mock('@/components/InitialWizardModal', () => ({
     initialSucursalId,
     hasActiveSession,
     onResumeSession,
+    onAbortSession,
   }: {
     isOpen: boolean;
     initialSucursalId?: string | null;
     hasActiveSession?: boolean;
     onResumeSession?: () => void;
+    onAbortSession?: () => void | Promise<void>;
   }) =>
     isOpen ? (
       <div
@@ -104,6 +106,15 @@ vi.mock('@/components/InitialWizardModal', () => ({
             onClick={onResumeSession}
           >
             Reanudar sesión
+          </button>
+        )}
+        {hasActiveSession && onAbortSession && (
+          <button
+            type="button"
+            data-testid="abort-session-btn"
+            onClick={() => void onAbortSession()}
+          >
+            Abortar sesión
           </button>
         )}
       </div>
@@ -289,6 +300,19 @@ describe('R3-B1: Index — reanudar sesión salta wizard directamente a CashCoun
     // GUARD: al reanudar una sesión existente, no debe crearse una nueva.
     // PUEDE PASAR en RED (el flujo actual tampoco llama iniciarCorte al reanudar).
     expect(corteSesionMocks.iniciarCorteMock).not.toHaveBeenCalled();
+  });
+
+  it('abortar sesión desde wizard recupera sesión activa antes de marcar ABORTADO', async () => {
+    const { user } = await renderWithActiveSession();
+
+    await user.click(screen.getByTestId('abort-session-btn'));
+
+    await waitFor(() => {
+      expect(corteSesionMocks.recuperarSesionMock).toHaveBeenCalledTimes(1);
+    });
+    expect(corteSesionMocks.abortarCorteMock).toHaveBeenCalledWith(
+      'Sesión abortada por usuario desde wizard',
+    );
   });
 });
 

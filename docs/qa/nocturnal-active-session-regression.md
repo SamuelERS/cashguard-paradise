@@ -6,6 +6,9 @@ Ambiente: local (`http://localhost:5173`)
 ## Objetivo
 Validar que el flujo nocturno y el dashboard de supervisor usan la misma fuente de verdad para estados activos/terminales, y que errores de conexión Supabase se muestran de forma accionable.
 
+## Precondición
+Antes de ejecutar esta checklist, correr el runbook [supabase-reset-y-validacion-cortes.md](/Users/samuelers/Paradise%20System%20Labs/cashguard-paradise/docs/qa/supabase-reset-y-validacion-cortes.md) para trabajar con dataset limpio y reciente.
+
 ## Guion manual
 1. Iniciar un corte nocturno y dejarlo en estado `EN_PROGRESO` (sin finalizar).
 2. Abrir Dashboard Supervisor y confirmar que el corte aparece como `EN_PROGRESO`.
