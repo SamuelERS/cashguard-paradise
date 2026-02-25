@@ -2,7 +2,11 @@
 // Clasificador robusto de errores de red (reemplaza check estrecho TypeError('Failed to fetch'))
 
 import { describe, it, expect } from 'vitest';
-import { esErrorDeRed } from '../esErrorDeRed';
+import {
+  esErrorDeRed,
+  esErrorInmutabilidadTerminal,
+  MENSAJE_CORTE_TERMINAL_INMUTABLE,
+} from '../esErrorDeRed';
 
 // ─── Suite 1: TypeError del navegador (fetch nativo falla) ──────────────────
 
@@ -105,6 +109,11 @@ describe('esErrorDeRed — negativos (NO son errores de red)', () => {
     expect(esErrorDeRed(err)).toBe(false);
   });
 
+  it('rechaza Error de inmutabilidad terminal (negocio, no conectividad)', () => {
+    const err = new Error('Corte terminal inmutable');
+    expect(esErrorDeRed(err)).toBe(false);
+  });
+
   it('rechaza Error genérico de Supabase (no-red)', () => {
     const err = new Error('Row not found');
     expect(esErrorDeRed(err)).toBe(false);
@@ -146,5 +155,19 @@ describe('esErrorDeRed — contrato de tipos', () => {
     const resultFalse = esErrorDeRed(new Error('JWT expired'));
     expect(resultTrue).toStrictEqual(true);
     expect(resultFalse).toStrictEqual(false);
+  });
+});
+
+describe('esErrorInmutabilidadTerminal', () => {
+  it('detecta error de corte terminal inmutable', () => {
+    expect(esErrorInmutabilidadTerminal(new Error('Corte terminal inmutable'))).toBe(true);
+  });
+
+  it('detecta mensaje UX de corte cerrado', () => {
+    expect(esErrorInmutabilidadTerminal(new Error(MENSAJE_CORTE_TERMINAL_INMUTABLE))).toBe(true);
+  });
+
+  it('retorna false para errores de red reales', () => {
+    expect(esErrorInmutabilidadTerminal(new TypeError('Failed to fetch'))).toBe(false);
   });
 });

@@ -79,6 +79,7 @@ vi.mock('../../lib/offlineQueue', () => ({
 
 // NOW import the module under test
 import { useCorteSesion, generarCorrelativo } from '../useCorteSesion';
+import { MENSAJE_CORTE_TERMINAL_INMUTABLE } from '../../lib/esErrorDeRed';
 
 // ---------------------------------------------------------------------------
 // Fixtures
@@ -745,6 +746,21 @@ describe('Suite 5: finalizarCorte', () => {
     ).rejects.toThrow('Solo se puede finalizar un corte EN_PROGRESO');
   });
 
+  it('5.3b - Error de inmutabilidad terminal retorna mensaje de negocio claro', async () => {
+    const result = await renderWithCorte(CORTE_EN_PROGRESO, INTENTO_MOCK);
+
+    mockChain.cortes.single.mockResolvedValueOnce({
+      data: null,
+      error: { message: 'Corte terminal inmutable' },
+    });
+
+    await expect(
+      act(async () => {
+        await result.current.finalizarCorte('hash-bloqueado');
+      }),
+    ).rejects.toThrow(MENSAJE_CORTE_TERMINAL_INMUTABLE);
+  });
+
   it('5.4 - Fallo de red en finalizar encola FINALIZAR_CORTE sin lanzar error', async () => {
     const result = await renderWithCorte(CORTE_EN_PROGRESO, INTENTO_MOCK);
 
@@ -768,6 +784,42 @@ describe('Suite 5: finalizarCorte', () => {
       }),
       corteId: CORTE_EN_PROGRESO.id,
     });
+  });
+
+  it('5.5 - Persistencia: finalizarCorte incluye datos_reporte si se envían', async () => {
+    const result = await renderWithCorte(CORTE_EN_PROGRESO, INTENTO_MOCK);
+    const snapshotReporte = {
+      difference: -30.43,
+      total_with_expenses: 623.57,
+      expected_sales_adjusted: 654,
+    };
+
+    const corteFinalizado: Corte = {
+      ...CORTE_EN_PROGRESO,
+      estado: 'FINALIZADO',
+      reporte_hash: 'hash-con-reporte',
+      datos_reporte: snapshotReporte,
+      finalizado_at: '2026-02-08T17:00:00.000Z',
+    };
+
+    mockChain.cortes.single.mockResolvedValueOnce({
+      data: corteFinalizado,
+      error: null,
+    });
+    mockChain.intentos.eq.mockResolvedValueOnce({ error: null });
+
+    await act(async () => {
+      await (result.current.finalizarCorte as unknown as (
+        hash: string,
+        datosReporte?: Record<string, unknown>
+      ) => Promise<Corte>)('hash-con-reporte', snapshotReporte);
+    });
+
+    const updateCall = mockChain.cortes.update.mock.calls[
+      mockChain.cortes.update.mock.calls.length - 1
+    ][0];
+
+    expect(updateCall.datos_reporte).toEqual(snapshotReporte);
   });
 });
 

@@ -14,7 +14,11 @@ import {
   procesarCola,
 } from '../lib/offlineQueue';
 import type { OperacionOffline } from '../lib/offlineQueue';
-import { esErrorDeRed } from '../lib/esErrorDeRed';
+import {
+  esErrorDeRed,
+  esErrorInmutabilidadTerminal,
+  MENSAJE_CORTE_TERMINAL_INMUTABLE,
+} from '../lib/esErrorDeRed';
 import type { CashCount, ElectronicPayments } from '../types/cash';
 import type {
   Corte,
@@ -346,7 +350,9 @@ export function useCorteSesion(
 
   const finalizarCorte = useCallback(async (
     reporte_hash: string,
+    datos_reporte?: Record<string, unknown> | null,
   ): Promise<Corte> => {
+    const incluirDatosReporte = datos_reporte !== undefined;
     try {
       loadingCount.current += 1;
       setCargando(true);
@@ -368,6 +374,7 @@ export function useCorteSesion(
         .update({
           estado: 'FINALIZADO' as EstadoCorte,
           reporte_hash: reporte_hash,
+          ...(incluirDatosReporte ? { datos_reporte: datos_reporte ?? null } : {}),
           finalizado_at: ahora,
           updated_at: ahora,
         })
@@ -376,6 +383,9 @@ export function useCorteSesion(
         .single();
 
       if (updateError || !corteFinalizado) {
+        if (esErrorInmutabilidadTerminal(updateError?.message ?? null)) {
+          throw new Error(MENSAJE_CORTE_TERMINAL_INMUTABLE);
+        }
         throw new Error(updateError?.message ?? 'Error al finalizar corte');
       }
 
@@ -405,6 +415,7 @@ export function useCorteSesion(
           tipo: 'FINALIZAR_CORTE',
           payload: {
             reporte_hash,
+            ...(incluirDatosReporte ? { datos_reporte: datos_reporte ?? null } : {}),
             finalizado_at: ahora,
             intento_id: intentoActual?.id ?? null,
           },
@@ -415,6 +426,7 @@ export function useCorteSesion(
           ...corteActual,
           estado: 'FINALIZADO',
           reporte_hash,
+          ...(incluirDatosReporte ? { datos_reporte: datos_reporte ?? null } : {}),
           finalizado_at: ahora,
           updated_at: ahora,
         };
@@ -699,6 +711,9 @@ export function useCorteSesion(
           .single();
 
         if (updateError) {
+          if (esErrorInmutabilidadTerminal(updateError.message)) {
+            throw new Error(MENSAJE_CORTE_TERMINAL_INMUTABLE);
+          }
           throw new Error(updateError.message);
         }
         return;
@@ -707,6 +722,7 @@ export function useCorteSesion(
       if (op.tipo === 'FINALIZAR_CORTE') {
         const payload = op.payload as {
           reporte_hash?: string;
+          datos_reporte?: Record<string, unknown> | null;
           finalizado_at?: string;
           intento_id?: string | null;
         };
@@ -721,6 +737,9 @@ export function useCorteSesion(
           .update({
             estado: 'FINALIZADO',
             reporte_hash: payload.reporte_hash,
+            ...(Object.prototype.hasOwnProperty.call(payload, 'datos_reporte')
+              ? { datos_reporte: payload.datos_reporte ?? null }
+              : {}),
             finalizado_at: finalizadoAt,
             updated_at: finalizadoAt,
           })

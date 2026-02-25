@@ -14,6 +14,7 @@ describe('Supabase maintenance scripts contract', () => {
     expect(existsSync(path.join(maintenanceDir, '000_diagnostics_cortes.sql'))).toBe(true);
     expect(existsSync(path.join(maintenanceDir, '010_reset_operational_data.sql'))).toBe(true);
     expect(existsSync(path.join(maintenanceDir, '020_seed_cortes_realistas.sql'))).toBe(true);
+    expect(existsSync(path.join(maintenanceDir, '030_smoke_terminal_antitamper.sql'))).toBe(true);
   });
 
   it('reset solo toca tablas operativas de cortes', () => {

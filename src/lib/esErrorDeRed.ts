@@ -38,6 +38,34 @@ const PATRONES_MENSAJE_RED: ReadonlyArray<RegExp> = [
 ];
 
 /**
+ * Mensajes de negocio que NO deben ser tratados como conectividad.
+ * Se prioriza check temprano para evitar fallback offline indebido.
+ */
+const PATRONES_MENSAJE_NO_RED: ReadonlyArray<RegExp> = [
+  /corte terminal inmutable/i,
+  /intento terminal inmutable/i,
+  /ya está cerrado y no puede modificarse/i,
+];
+
+/**
+ * Mensaje UX consistente cuando BD bloquea mutación por estado terminal.
+ */
+export const MENSAJE_CORTE_TERMINAL_INMUTABLE =
+  'Este corte ya está cerrado y no puede modificarse.';
+
+/**
+ * Detecta errores de negocio por inmutabilidad terminal.
+ */
+export function esErrorInmutabilidadTerminal(err: unknown): boolean {
+  if (typeof err === 'string') {
+    return PATRONES_MENSAJE_NO_RED.some((patron) => patron.test(err));
+  }
+
+  if (!(err instanceof Error)) return false;
+  return PATRONES_MENSAJE_NO_RED.some((patron) => patron.test(err.message));
+}
+
+/**
  * Determina si un error es causado por fallo de conectividad de red.
  *
  * Cubre:
@@ -59,6 +87,9 @@ export function esErrorDeRed(err: unknown): boolean {
   }
 
   if (!(err instanceof Error)) return false;
+
+  // Errores de negocio explícitos no deben clasificarse como red.
+  if (esErrorInmutabilidadTerminal(err)) return false;
 
   // 1. TypeError del navegador (fetch nativo)
   if (err instanceof TypeError) {
