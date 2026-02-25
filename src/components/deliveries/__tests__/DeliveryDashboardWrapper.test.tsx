@@ -25,8 +25,14 @@ vi.mock('sonner', () => ({
 
 const LOCKOUT_KEY = 'delivery_pin_lockout';
 const LOCKOUT_DURATION = 5 * 60 * 1000; // 5 minutes
+const VALID_HASH = 'a819d9c7e7e38df73f5609df41a7fd29fe48dc01410cbc52d51bab2d4973d429';
 
 const mockOnGoBack = vi.fn();
+
+const hexToBuffer = (hex: string): ArrayBuffer => {
+  const bytes = hex.match(/.{1,2}/g)?.map((byte) => Number.parseInt(byte, 16)) ?? [];
+  return new Uint8Array(bytes).buffer;
+};
 
 const renderWrapper = (props?: { requirePin?: boolean; onGoBack?: () => void }) => {
   return render(
@@ -53,6 +59,7 @@ describe('DeliveryDashboardWrapper', () => {
   });
 
   afterEach(() => {
+    vi.restoreAllMocks();
     // Restore real timers in case a test used vi.useFakeTimers()
     vi.useRealTimers();
   });
@@ -78,10 +85,11 @@ describe('DeliveryDashboardWrapper', () => {
     });
 
     it('muestra dashboard después de PIN correcto', async () => {
+      vi.spyOn(crypto.subtle, 'digest').mockResolvedValue(hexToBuffer(VALID_HASH));
       renderWrapper();
 
       const input = screen.getByPlaceholderText(/Ingrese PIN/i);
-      fireEvent.change(input, { target: { value: '1234' } });
+      fireEvent.change(input, { target: { value: 'TEST_AUTH_OK' } });
 
       const form = input.closest('form');
       if (form) {
@@ -121,11 +129,12 @@ describe('DeliveryDashboardWrapper', () => {
     });
 
     it('botón Volver a Operaciones navega a / después de PIN válido', async () => {
+      vi.spyOn(crypto.subtle, 'digest').mockResolvedValue(hexToBuffer(VALID_HASH));
       renderWrapper();
 
       // First, authenticate
       const input = screen.getByPlaceholderText(/Ingrese PIN/i);
-      fireEvent.change(input, { target: { value: '1234' } });
+      fireEvent.change(input, { target: { value: 'TEST_AUTH_OK' } });
       const form = input.closest('form');
       if (form) {
         fireEvent.submit(form);
@@ -298,10 +307,11 @@ describe('DeliveryDashboardWrapper', () => {
     });
 
     it('limpia lockout de localStorage al validar PIN exitosamente', async () => {
+      vi.spyOn(crypto.subtle, 'digest').mockResolvedValue(hexToBuffer(VALID_HASH));
       renderWrapper();
 
       const input = screen.getByPlaceholderText(/Ingrese PIN/i);
-      fireEvent.change(input, { target: { value: '1234' } });
+      fireEvent.change(input, { target: { value: 'TEST_AUTH_OK' } });
       const form = input.closest('form');
       if (form) {
         fireEvent.submit(form);

@@ -9,6 +9,12 @@ describe('PinModal', () => {
   const mockOnSuccess = vi.fn();
   const mockOnError = vi.fn();
   const mockOnCancel = vi.fn();
+  const VALID_HASH = 'a819d9c7e7e38df73f5609df41a7fd29fe48dc01410cbc52d51bab2d4973d429';
+
+  const hexToBuffer = (hex: string): ArrayBuffer => {
+    const bytes = hex.match(/.{1,2}/g)?.map((byte) => Number.parseInt(byte, 16)) ?? [];
+    return new Uint8Array(bytes).buffer;
+  };
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -125,7 +131,7 @@ describe('PinModal', () => {
     expect(validateButton).not.toBeDisabled();
   });
 
-  it('solo permite dígitos numéricos en input', () => {
+  it('permite contraseña alfanumérica en input', () => {
     render(
       <PinModal
         isOpen={true}
@@ -139,13 +145,12 @@ describe('PinModal', () => {
     );
     
     const input = screen.getByPlaceholderText(/Ingrese PIN/i) as HTMLInputElement;
-    fireEvent.change(input, { target: { value: 'abc123def' } });
-    
-    // Solo los dígitos deberían quedar
-    expect(input.value).toBe('123');
+    fireEvent.change(input, { target: { value: 'abC123xYz' } });
+
+    expect(input.value).toBe('abC123xYz');
   });
 
-  it('limita PIN a máximo 6 dígitos', () => {
+  it('limita contraseña a máximo 32 caracteres', () => {
     render(
       <PinModal
         isOpen={true}
@@ -159,7 +164,7 @@ describe('PinModal', () => {
     );
     
     const input = screen.getByPlaceholderText(/Ingrese PIN/i) as HTMLInputElement;
-    expect(input).toHaveAttribute('maxLength', '6');
+    expect(input).toHaveAttribute('maxLength', '32');
   });
 
   it('muestra botón Volver cuando está bloqueado', () => {
@@ -199,7 +204,7 @@ describe('PinModal', () => {
       expect(hash).toBe(expectedHash);
     });
 
-    it('PIN correcto "1234" llama onSuccess', async () => {
+    it('PIN legado "1234" ya no autentica y llama onError', async () => {
       render(
         <PinModal
           isOpen={true}
@@ -221,7 +226,7 @@ describe('PinModal', () => {
       }
 
       await waitFor(() => {
-        expect(mockOnSuccess).toHaveBeenCalledTimes(1);
+        expect(mockOnError).toHaveBeenCalledTimes(1);
       }, { timeout: 3000 });
     });
 
@@ -251,7 +256,37 @@ describe('PinModal', () => {
       }, { timeout: 3000 });
     });
 
+    it('llama onSuccess con hash válido sin exponer contraseña real', async () => {
+      vi.spyOn(crypto.subtle, 'digest').mockResolvedValue(hexToBuffer(VALID_HASH));
+
+      render(
+        <PinModal
+          isOpen={true}
+          onSuccess={mockOnSuccess}
+          onError={mockOnError}
+          onCancel={mockOnCancel}
+          isLocked={false}
+          attempts={0}
+          maxAttempts={3}
+        />
+      );
+
+      const input = screen.getByPlaceholderText(/Ingrese PIN/i);
+      fireEvent.change(input, { target: { value: 'TEST_AUTH_OK' } });
+
+      const form = input.closest('form');
+      if (form) {
+        fireEvent.submit(form);
+      }
+
+      await waitFor(() => {
+        expect(mockOnSuccess).toHaveBeenCalledTimes(1);
+      }, { timeout: 3000 });
+    });
+
     it('PIN limpia input después de validación exitosa', async () => {
+      vi.spyOn(crypto.subtle, 'digest').mockResolvedValue(hexToBuffer(VALID_HASH));
+
       render(
         <PinModal
           isOpen={true}
@@ -265,7 +300,7 @@ describe('PinModal', () => {
       );
 
       const input = screen.getByPlaceholderText(/Ingrese PIN/i) as HTMLInputElement;
-      fireEvent.change(input, { target: { value: '1234' } });
+      fireEvent.change(input, { target: { value: 'TEST_AUTH_OK' } });
 
       const form = input.closest('form');
       if (form) {
@@ -276,7 +311,6 @@ describe('PinModal', () => {
         expect(mockOnSuccess).toHaveBeenCalled();
       }, { timeout: 3000 });
 
-      // Input should be cleared after success
       expect(input.value).toBe('');
     });
 

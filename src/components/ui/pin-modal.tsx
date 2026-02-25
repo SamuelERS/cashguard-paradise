@@ -14,10 +14,8 @@ import { Input } from './input';
 import { Lock, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
-// PIN ejemplo: "1234" → hash SHA-256
-// Para generar: echo -n "1234" | shasum -a 256
-// Hash verificado con openssl: echo -n "1234" | openssl dgst -sha256
-const SUPERVISOR_PIN_HASH = '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4';
+// Hash SHA-256 de la clave de supervisor (no almacenar clave en texto plano)
+const SUPERVISOR_PIN_HASH = 'a819d9c7e7e38df73f5609df41a7fd29fe48dc01410cbc52d51bab2d4973d429';
 
 interface PinModalProps {
   isOpen: boolean;
@@ -50,7 +48,7 @@ export function PinModal({
     }
 
     if (pin.length < 4) {
-      toast.error('PIN debe tener al menos 4 dígitos');
+      toast.error('PIN debe tener al menos 4 caracteres');
       return;
     }
 
@@ -139,12 +137,10 @@ export function PinModal({
                 id="pin-input"
                 data-testid="pin-input"
                 type="password"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                placeholder="Ingrese PIN (4-6 dígitos)"
+                placeholder="Ingrese PIN/clave de supervisor"
                 value={pin}
-                onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))}
-                maxLength={6}
+                onChange={(e) => setPin(e.target.value)}
+                maxLength={32}
                 autoFocus
                 disabled={isValidating}
                 className="text-center text-[clamp(1rem,4vw,1.125rem)] tracking-widest h-[clamp(2.5rem,10vw,3rem)]"
