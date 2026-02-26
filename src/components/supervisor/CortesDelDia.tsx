@@ -8,6 +8,7 @@ import { useSupervisorTodayFeed } from '@/hooks/supervisor/useSupervisorTodayFee
 import { CorteListaItem } from './CorteListaItem';
 import { SupervisorLiveBadge } from './SupervisorLiveBadge';
 import { buildCorrelativoDashboardMetrics } from './correlativoMetrics';
+import { buildSupervisorTodayViewModel } from './supervisorTodayOrdering';
 
 // ---------------------------------------------------------------------------
 // Helper privado
@@ -54,10 +55,9 @@ export function CortesDelDia() {
     realtimeStatus,
     refrescar,
   } = useSupervisorTodayFeed();
-  const activos = cortes.filter(corte => corte.estado === 'INICIADO' || corte.estado === 'EN_PROGRESO');
-  const finalizados = cortes.filter(
-    corte => corte.estado === 'FINALIZADO' || corte.estado === 'ABORTADO',
-  );
+  const todayView = buildSupervisorTodayViewModel(cortes);
+  const activos = todayView.activos;
+  const finalizados = todayView.finalizados;
   const correlativoMetrics = buildCorrelativoDashboardMetrics(cortes);
   const sucursalesConActividad = correlativoMetrics.maxSecuencialPorSucursal.size;
   const resumenCorrelativoPorSucursal = Array.from(
@@ -65,7 +65,10 @@ export function CortesDelDia() {
   )
     .sort(([codigoA], [codigoB]) => codigoA.localeCompare(codigoB))
     .map(([codigo, maxSecuencial]) => `${codigo}: #${String(maxSecuencial).padStart(3, '0')}`);
-  const hayActividad = activos.length > 0 || finalizados.length > 0;
+  const hayActividad = todayView.resumen.total > 0;
+  const ultimaActividadTexto = todayView.resumen.ultimaActividad
+    ? `${todayView.resumen.ultimaActividad.correlativo} · ${todayView.resumen.ultimaActividad.estado.replace(/_/g, ' ')}`
+    : 'Sin actividad reciente';
 
   // ── Handlers ──────────────────────────────────────────────────────────────
 
@@ -152,6 +155,31 @@ export function CortesDelDia() {
         </div>
       )}
 
+      {hayActividad && (
+        <div className="sticky top-20 z-10 rounded-lg border border-white/10 bg-[#0b0b0b]/95 backdrop-blur px-3 py-2">
+          <h3 className="text-xs font-semibold text-white/80">Resumen en vivo</h3>
+          <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-white/70">
+            <span>Total cortes: {todayView.resumen.total}</span>
+            <span>Activos: {todayView.resumen.activos}</span>
+            <span>Finalizados: {todayView.resumen.finalizados}</span>
+            <span>Activos atrasados: {correlativoMetrics.activosAtrasados}</span>
+          </div>
+          <p className="mt-1 text-[11px] text-white/55 truncate">
+            Última actividad: {ultimaActividadTexto}
+          </p>
+          <div className="mt-1 flex flex-wrap gap-2 text-[11px] text-white/55">
+            <span className="px-2 py-0.5 rounded-full border border-white/10">
+              Sucursales activas: {sucursalesConActividad}
+            </span>
+            {resumenCorrelativoPorSucursal.map((entry) => (
+              <span key={entry} className="px-2 py-0.5 rounded-full border border-white/10">
+                {entry}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Actividad del día o estado vacío */}
       {!hayActividad ? (
         <div className="flex flex-col items-center justify-center py-12 gap-3 text-center">
@@ -167,20 +195,6 @@ export function CortesDelDia() {
         </div>
       ) : (
         <div className="flex flex-col gap-4">
-          <div className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2">
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-white/70">
-              <span>Sucursales activas: {sucursalesConActividad}</span>
-              <span>Activos atrasados: {correlativoMetrics.activosAtrasados}</span>
-            </div>
-            <div className="mt-1 flex flex-wrap gap-2 text-[11px] text-white/55">
-              {resumenCorrelativoPorSucursal.map((entry) => (
-                <span key={entry} className="px-2 py-0.5 rounded-full border border-white/10">
-                  {entry}
-                </span>
-              ))}
-            </div>
-          </div>
-
           {activos.length > 0 && (
             <section className="flex flex-col gap-2" aria-label="Activos ahora">
               <div className="flex items-center justify-between px-1">
