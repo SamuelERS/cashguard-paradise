@@ -105,12 +105,31 @@ describe('CorteDetalle - contrato de resumen operativo', () => {
     expect(scoped.getByText(/monto restante en caja/i)).toBeInTheDocument();
     expect(scoped.getByText(/efectivo contado/i)).toBeInTheDocument();
     expect(scoped.getByText(/pagos electrónicos/i)).toBeInTheDocument();
-    expect(scoped.getByText(/total contado/i)).toBeInTheDocument();
     expect(scoped.getByText(/venta esperada \(sicar\)/i)).toBeInTheDocument();
-    expect(scoped.getByText(/^diferencia$/i)).toBeInTheDocument();
+    expect(scoped.queryByText(/total contado/i)).not.toBeInTheDocument();
+    expect(scoped.queryByText(/^diferencia$/i)).not.toBeInTheDocument();
+    expect(scoped.queryByRole('button', { name: /detalle financiero/i })).not.toBeInTheDocument();
 
     expect(screen.queryByText(/^entrega a gerencia$/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/^resumen financiero$/i)).not.toBeInTheDocument();
+  });
+
+  it('evita duplicar kpis globales del panel operativo en cierre y entrega', async () => {
+    detailFeedMock.corte = BASE_FIXTURE;
+    render(<CorteDetalle />);
+
+    const panel = await screen.findByLabelText(/panel operativo del corte/i);
+    const panelScoped = within(panel);
+    expect(panelScoped.getByText(/total contado/i)).toBeInTheDocument();
+    expect(panelScoped.getByText(/diferencia vs sicar/i)).toBeInTheDocument();
+
+    const heading = await screen.findByText(/cierre y entrega/i);
+    const card = heading.closest('div');
+    expect(card).not.toBeNull();
+    const scoped = within(card as HTMLElement);
+
+    expect(scoped.queryByText(/total contado/i)).not.toBeInTheDocument();
+    expect(scoped.queryByText(/^diferencia$/i)).not.toBeInTheDocument();
   });
 
   it('en estado ABORTADO muestra incidencia de cierre con motivo visible', async () => {
@@ -130,7 +149,7 @@ describe('CorteDetalle - contrato de resumen operativo', () => {
     ).toBeInTheDocument();
   });
 
-  it('prioriza snapshot matemático de datos_reporte cuando existe', async () => {
+  it('prioriza snapshot matemático de datos_reporte en KPIs del panel', async () => {
     detailFeedMock.corte = {
       ...BASE_FIXTURE,
       estado: 'FINALIZADO',
@@ -144,13 +163,17 @@ describe('CorteDetalle - contrato de resumen operativo', () => {
 
     render(<CorteDetalle />);
 
+    const panel = await screen.findByLabelText(/panel operativo del corte/i);
+    const scopedPanel = within(panel);
+    expect(scopedPanel.getByText('$987.65')).toBeInTheDocument();
+    expect(scopedPanel.getByText('+$45.65')).toBeInTheDocument();
+
     const financialHeading = await screen.findByText(/cierre y entrega/i);
     const financialCard = financialHeading.closest('div');
     expect(financialCard).not.toBeNull();
-    const scoped = within(financialCard as HTMLElement);
-
-    expect(scoped.getByText('$987.65')).toBeInTheDocument();
-    expect(scoped.getByText('+$45.65')).toBeInTheDocument();
-    expect(scoped.getByText('$942.00')).toBeInTheDocument();
+    const scopedCard = within(financialCard as HTMLElement);
+    expect(scopedCard.getByText('$942.00')).toBeInTheDocument();
+    expect(scopedCard.queryByText('$987.65')).not.toBeInTheDocument();
+    expect(scopedCard.queryByText('+$45.65')).not.toBeInTheDocument();
   });
 });

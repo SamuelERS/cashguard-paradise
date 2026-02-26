@@ -122,6 +122,21 @@ function parseIsoTimestamp(isoString: string | null): number {
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
+function acortarCorrelativo(correlativo: string | null | undefined): string {
+  if (!correlativo) return '—';
+  const match = correlativo.match(/^CORTE-\d{4}-\d{2}-\d{2}-([A-Z]+)-(\d+)$/);
+  if (match) {
+    return `${match[1]}-${match[2]}`;
+  }
+
+  const partes = correlativo.split('-');
+  if (partes.length >= 2) {
+    return `${partes[partes.length - 2]}-${partes[partes.length - 1]}`;
+  }
+
+  return correlativo;
+}
+
 /**
  * Extrae totales desde el JSONB datos_conteo de forma defensiva.
  *
@@ -621,9 +636,9 @@ export function CorteDetalle() {
   const gastosConValor = datos.gastosDia;
   const entrega = extraerDatosEntrega(corte.datos_entrega);
   const entregaLive = extraerEntregaLiveRows(corte.datos_entrega);
+  const correlativoCorto = acortarCorrelativo(corte.correlativo);
   const entregadoAcumulado = entregaLive.liveTotal;
   const faltanteEntrega = Math.max((entrega.amountToDeliver ?? 0) - entregadoAcumulado, 0);
-  const mostrarEntrega = entrega.amountToDeliver !== null || entrega.amountRemaining !== null;
   const objetivoEntrega = entrega.amountToDeliver ?? 0;
   const progresoEntrega = objetivoEntrega > 0
     ? Math.min((entregadoAcumulado / objetivoEntrega) * 100, 100)
@@ -746,59 +761,39 @@ export function CorteDetalle() {
         <p className="text-xs font-medium text-white/40 uppercase tracking-wider mb-2">
           Cierre y entrega
         </p>
-        <div className="divide-y divide-white/[0.06]">
-          {entrega.amountToDeliver !== null && (
-            <MetaFila
-              label="Monto a entregar"
-              valor={formatCurrency(entrega.amountToDeliver)}
-              mono
-              destacado
-            />
-          )}
-          {entrega.amountRemaining !== null && (
-            <MetaFila
-              label="Monto restante en caja"
-              valor={formatCurrency(entrega.amountRemaining)}
-              mono
-            />
-          )}
-          {resumenDisponible ? (
-            <>
-              {mostrarEntrega && <div className="pt-0.5" />}
-              <MetaFila
-                label="Efectivo contado"
-                valor={formatCurrency(datos.totalEfectivo)}
-                mono
-                destacado
-              />
-              {datos.totalElectronico > 0 && (
-                <MetaFila
-                  label="Pagos electrónicos"
-                  valor={formatCurrency(datos.totalElectronico)}
-                  mono
-                />
-              )}
-              <MetaFila
-                label="Total contado"
-                valor={formatCurrency(totalContado)}
-                mono
-                destacado
-              />
-              <MetaFila
-                label="Venta esperada (SICAR)"
-                valor={formatCurrency(ventaEsperada)}
-                mono
-              />
-              <MetaFila
-                label="Diferencia"
-                valor={diferenciaTexto}
-                mono
-                colorClase={diferenciaColorClase}
-              />
-            </>
-          ) : (
-            <p className="text-xs text-white/40 italic py-1">Sin datos de conteo disponibles</p>
-          )}
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-2">
+          <div className="rounded-lg border border-white/[0.08] bg-black/20 px-3 py-2">
+            <p className="text-[11px] uppercase tracking-wider text-white/45">Monto a entregar</p>
+            <p className="mt-1 text-base tabular-nums font-semibold text-white/90">
+              {entrega.amountToDeliver === null ? '—' : formatCurrency(entrega.amountToDeliver)}
+            </p>
+          </div>
+          <div className="rounded-lg border border-white/[0.08] bg-black/20 px-3 py-2">
+            <p className="text-[11px] uppercase tracking-wider text-white/45">Monto restante en caja</p>
+            <p className="mt-1 text-base tabular-nums text-white/80">
+              {entrega.amountRemaining === null ? '—' : formatCurrency(entrega.amountRemaining)}
+            </p>
+          </div>
+          <div className="rounded-lg border border-white/[0.08] bg-black/20 px-3 py-2">
+            <p className="text-[11px] uppercase tracking-wider text-white/45">Efectivo contado</p>
+            <p className="mt-1 text-base tabular-nums font-semibold text-white/90">
+              {resumenDisponible ? formatCurrency(datos.totalEfectivo) : '—'}
+            </p>
+          </div>
+          <div className="rounded-lg border border-white/[0.08] bg-black/20 px-3 py-2">
+            <p className="text-[11px] uppercase tracking-wider text-white/45">Pagos electrónicos</p>
+            <p className="mt-1 text-base tabular-nums font-semibold text-white/90">
+              {resumenDisponible ? formatCurrency(datos.totalElectronico) : '—'}
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-2 border-t border-white/[0.06]">
+          <MetaFila
+            label="Venta esperada (SICAR)"
+            valor={resumenDisponible ? formatCurrency(ventaEsperada) : '—'}
+            mono
+          />
         </div>
       </div>
     ),
@@ -957,8 +952,8 @@ export function CorteDetalle() {
             <p className="text-[11px] uppercase tracking-wider text-white/45 mb-1.5">Snapshot</p>
             <div className="divide-y divide-white/[0.06]">
               <MetaFila
-                label="Correlativo"
-                valor={corte.correlativo}
+                label="ID corte"
+                valor={correlativoCorto}
                 mono
                 colorClase="text-white/80"
               />

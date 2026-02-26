@@ -111,8 +111,9 @@ describe('CorteDetalle - panel operativo compacto', () => {
 
     const scoped = within(panel as HTMLElement);
     expect(scoped.getByText(/snapshot/i)).toBeInTheDocument();
-    expect(scoped.getByText(/correlativo/i)).toBeInTheDocument();
-    expect(scoped.getByText('CORTE-2026-02-25-H-002')).toBeInTheDocument();
+    expect(scoped.getByText(/id corte/i)).toBeInTheDocument();
+    expect(scoped.getByText('H-002')).toBeInTheDocument();
+    expect(scoped.queryByText('CORTE-2026-02-25-H-002')).not.toBeInTheDocument();
 
     expect(screen.queryByText(/radar operativo/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/resumen ejecutivo/i)).not.toBeInTheDocument();
