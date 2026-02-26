@@ -102,6 +102,12 @@ function formatearFechaHora(isoString: string | null): string {
   }
 }
 
+function parseIsoTimestamp(isoString: string | null): number {
+  if (!isoString) return 0;
+  const parsed = Date.parse(isoString);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
 /**
  * Extrae totales desde el JSONB datos_conteo de forma defensiva.
  *
@@ -336,6 +342,11 @@ function extraerEntregaLiveRows(
         missing: Math.max(expectedValue - deliveredValue, 0),
         lastCapturedAt: lastEvent?.capturedAt ?? null,
       };
+    })
+    .sort((a, b) => {
+      const timeDiff = parseIsoTimestamp(b.lastCapturedAt) - parseIsoTimestamp(a.lastCapturedAt);
+      if (timeDiff !== 0) return timeDiff;
+      return a.label.localeCompare(b.label, 'es');
     });
 
   return { rows, liveTotal };
@@ -610,6 +621,275 @@ export function CorteDetalle() {
         ? 'text-yellow-200'
         : 'text-emerald-300';
   const cardClassName = 'p-4 rounded-xl border border-white/10 bg-white/[0.04]';
+  const actividadBaseMs = parseIsoTimestamp(corte.updated_at ?? corte.created_at);
+  const actividadEntregaLiveMs = entregaLive.rows.reduce(
+    (maximo, row) => Math.max(maximo, parseIsoTimestamp(row.lastCapturedAt)),
+    0,
+  );
+  const actividadGastosMs = gastosConValor.reduce(
+    (maximo, gasto) => Math.max(maximo, parseIsoTimestamp(gasto.timestamp)),
+    0,
+  );
+  type OperationalCard = {
+    key: string;
+    activityMs: number;
+    fallbackOrder: number;
+    node: JSX.Element;
+  };
+  const operationalCards: OperationalCard[] = [];
+
+  if (entregaLive.rows.length > 0) {
+    operationalCards.push({
+      key: 'entrega-live',
+      activityMs: actividadEntregaLiveMs || actividadBaseMs,
+      fallbackOrder: 10,
+      node: (
+        <div key="entrega-live" className={`${cardClassName} border-cyan-500/20`} aria-live="polite">
+          <p className="text-xs font-medium text-cyan-200/80 uppercase tracking-wider mb-2">
+            Progreso de entrega en vivo
+          </p>
+          <div className="h-2 w-full rounded-full bg-white/[0.08] overflow-hidden mb-3">
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-cyan-400 to-blue-400 transition-all duration-300"
+              style={{ width: `${progresoEntrega === 0 ? 0 : Math.max(progresoEntrega, 4)}%` }}
+            />
+          </div>
+          <div className="flex items-center justify-between gap-2 pb-2 border-b border-white/[0.06] mb-2">
+            <span className="text-xs text-white/50">Entregado acumulado</span>
+            <span className="text-sm tabular-nums text-white/90">
+              {formatCurrency(entregadoAcumulado)}
+            </span>
+          </div>
+          <div className="flex items-center justify-between gap-2 pb-2 border-b border-white/[0.06] mb-2">
+            <span className="text-xs text-white/50">Faltante por entregar</span>
+            <span className="text-sm tabular-nums text-amber-300">
+              {formatCurrency(faltanteEntrega)}
+            </span>
+          </div>
+          <div className="flex items-center justify-between gap-2 pb-2 border-b border-white/[0.06] mb-2">
+            <span className="text-xs text-white/50">Cumplimiento</span>
+            <span className="text-sm tabular-nums text-cyan-200">
+              {progresoEntrega.toFixed(1)}%
+            </span>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="text-white/50">
+                  <th className="text-left py-1">Denominación</th>
+                  <th className="text-right py-1">Esperado</th>
+                  <th className="text-right py-1">Entregado</th>
+                  <th className="text-right py-1">Faltante</th>
+                  <th className="text-right py-1">Hora</th>
+                </tr>
+              </thead>
+              <tbody>
+                {entregaLive.rows.map((row) => (
+                  <tr key={row.stepKey} className="border-t border-white/[0.06]">
+                    <td className="py-1.5 text-white/80">{row.label}</td>
+                    <td className="py-1.5 text-right tabular-nums text-white/70">{row.expected}</td>
+                    <td className="py-1.5 text-right tabular-nums text-white/90">{row.delivered}</td>
+                    <td className="py-1.5 text-right tabular-nums text-amber-300">{row.missing}</td>
+                    <td className="py-1.5 text-right text-white/50">{formatearFechaHora(row.lastCapturedAt)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ),
+    });
+  }
+
+  if (mostrarEntrega) {
+    operationalCards.push({
+      key: 'entrega-gerencia',
+      activityMs: Math.max(actividadEntregaLiveMs, actividadBaseMs),
+      fallbackOrder: 20,
+      node: (
+        <div key="entrega-gerencia" className={cardClassName}>
+          <p className="text-xs font-medium text-white/40 uppercase tracking-wider mb-2">
+            Entrega a gerencia
+          </p>
+          <div className="divide-y divide-white/[0.06]">
+            {entrega.amountToDeliver !== null && (
+              <MetaFila
+                label="Monto a entregar"
+                valor={formatCurrency(entrega.amountToDeliver)}
+                mono
+                destacado
+              />
+            )}
+            {entrega.amountRemaining !== null && (
+              <MetaFila
+                label="Monto restante en caja"
+                valor={formatCurrency(entrega.amountRemaining)}
+                mono
+              />
+            )}
+          </div>
+        </div>
+      ),
+    });
+  }
+
+  if (gastosConValor.length > 0) {
+    operationalCards.push({
+      key: 'gastos-dia',
+      activityMs: actividadGastosMs || actividadBaseMs,
+      fallbackOrder: 30,
+      node: (
+        <div key="gastos-dia" className={cardClassName}>
+          <p className="text-xs font-medium text-white/40 uppercase tracking-wider mb-2">
+            Gastos del día
+          </p>
+          <div className="divide-y divide-white/[0.06]">
+            {gastosConValor.map((gasto) => (
+              <div key={gasto.id} className="flex items-center justify-between gap-2 py-1.5">
+                <div className="min-w-0">
+                  <p className="text-xs text-white/80 truncate">{gasto.concept}</p>
+                  <p className="text-[11px] text-white/45 truncate">{gasto.category}</p>
+                </div>
+                <span className="text-sm tabular-nums text-white/80">
+                  {formatCurrency(gasto.amount)}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      ),
+    });
+  }
+
+  operationalCards.push({
+    key: 'resumen-financiero',
+    activityMs: actividadBaseMs,
+    fallbackOrder: 40,
+    node: (
+      <div key="resumen-financiero" className={cardClassName}>
+        <p className="text-xs font-medium text-white/40 uppercase tracking-wider mb-2">
+          Resumen financiero
+        </p>
+        {resumenDisponible ? (
+          <div className="divide-y divide-white/[0.06]">
+            <MetaFila
+              label="Efectivo contado"
+              valor={formatCurrency(datos.totalEfectivo)}
+              mono
+              destacado
+            />
+            {datos.totalElectronico > 0 && (
+              <MetaFila
+                label="Pagos electrónicos"
+                valor={formatCurrency(datos.totalElectronico)}
+                mono
+              />
+            )}
+            <MetaFila
+              label="Total contado"
+              valor={formatCurrency(totalContado)}
+              mono
+              destacado
+            />
+            <div className="pt-0.5" />
+            <MetaFila
+              label="Venta esperada (SICAR)"
+              valor={formatCurrency(ventaEsperada)}
+              mono
+            />
+            <MetaFila
+              label="Diferencia"
+              valor={diferenciaTexto}
+              mono
+              colorClase={diferenciaColorClase}
+            />
+          </div>
+        ) : (
+          <p className="text-xs text-white/40 italic py-1">Sin datos de conteo disponibles</p>
+        )}
+      </div>
+    ),
+  });
+
+  if (datos.disponible && pagosConValor.length > 0) {
+    operationalCards.push({
+      key: 'pagos-electronicos',
+      activityMs: actividadBaseMs,
+      fallbackOrder: 50,
+      node: (
+        <div key="pagos-electronicos" className={cardClassName}>
+          <p className="text-xs font-medium text-white/40 uppercase tracking-wider mb-2">
+            Pagos electrónicos
+          </p>
+          <div className="divide-y divide-white/[0.06]">
+            {pagosConValor.map(key => (
+              <MetaFila
+                key={key}
+                label={LABEL_PAGO[key]}
+                valor={formatCurrency(datos.pagosElectronicos[key])}
+                mono
+              />
+            ))}
+          </div>
+        </div>
+      ),
+    });
+  }
+
+  if (datos.disponible && denominacionesConDatos.length > 0) {
+    operationalCards.push({
+      key: 'desglose-efectivo',
+      activityMs: actividadBaseMs,
+      fallbackOrder: 60,
+      node: (
+        <div key="desglose-efectivo" className={cardClassName}>
+          <p className="text-xs font-medium text-white/40 uppercase tracking-wider mb-2">
+            Desglose efectivo
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
+            <div className="rounded-lg border border-white/[0.08] bg-black/20 p-2.5">
+              <p className="text-[11px] uppercase tracking-wider text-white/45">
+                Subtotal monedas
+              </p>
+              <p className="mt-1 text-sm tabular-nums text-white/90">
+                {formatCurrency(subtotalMonedas)}
+              </p>
+            </div>
+            <div className="rounded-lg border border-white/[0.08] bg-black/20 p-2.5">
+              <p className="text-[11px] uppercase tracking-wider text-white/45">
+                Subtotal billetes
+              </p>
+              <p className="mt-1 text-sm tabular-nums text-white/90">
+                {formatCurrency(subtotalBilletes)}
+              </p>
+            </div>
+          </div>
+          <div className="divide-y divide-white/[0.06]">
+            {denominacionesConDatos.map(d => {
+              const qty = datos.cashCount[d.key] ?? 0;
+              const subtotal = qty * d.valorUnitario;
+              return (
+                <div key={d.key} className="flex items-center justify-between gap-2 py-1.5">
+                  <span className="text-xs text-white/50">
+                    {d.label} × {qty}
+                  </span>
+                  <span className="text-sm tabular-nums text-white/80">
+                    {formatCurrency(subtotal)}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ),
+    });
+  }
+
+  const operationalCardsOrdenadas = [...operationalCards].sort((a, b) => {
+    const activityDiff = b.activityMs - a.activityMs;
+    if (activityDiff !== 0) return activityDiff;
+    return a.fallbackOrder - b.fallbackOrder;
+  });
 
   // ── Render principal ──────────────────────────────────────────────────────
 
@@ -732,217 +1012,7 @@ export function CorteDetalle() {
         </div>
       </div>
 
-      {/* Card: resumen financiero */}
-      <div className={cardClassName}>
-        <p className="text-xs font-medium text-white/40 uppercase tracking-wider mb-2">
-          Resumen financiero
-        </p>
-        {resumenDisponible ? (
-          <div className="divide-y divide-white/[0.06]">
-            <MetaFila
-              label="Efectivo contado"
-              valor={formatCurrency(datos.totalEfectivo)}
-              mono
-              destacado
-            />
-            {datos.totalElectronico > 0 && (
-              <MetaFila
-                label="Pagos electrónicos"
-                valor={formatCurrency(datos.totalElectronico)}
-                mono
-              />
-            )}
-            <MetaFila
-              label="Total contado"
-              valor={formatCurrency(totalContado)}
-              mono
-              destacado
-            />
-            {/* Divisor visual antes de comparación con SICAR */}
-            <div className="pt-0.5" />
-            <MetaFila
-              label="Venta esperada (SICAR)"
-              valor={formatCurrency(ventaEsperada)}
-              mono
-            />
-            <MetaFila
-              label="Diferencia"
-              valor={diferenciaTexto}
-              mono
-              colorClase={diferenciaColorClase}
-            />
-          </div>
-        ) : (
-          <p className="text-xs text-white/40 italic py-1">Sin datos de conteo disponibles</p>
-        )}
-      </div>
-
-      {/* Card: pagos electrónicos desglosados (solo si hay) */}
-      {datos.disponible && pagosConValor.length > 0 && (
-        <div className={cardClassName}>
-          <p className="text-xs font-medium text-white/40 uppercase tracking-wider mb-2">
-            Pagos electrónicos
-          </p>
-          <div className="divide-y divide-white/[0.06]">
-            {pagosConValor.map(key => (
-              <MetaFila
-                key={key}
-                label={LABEL_PAGO[key]}
-                valor={formatCurrency(datos.pagosElectronicos[key])}
-                mono
-              />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Card: entrega en vivo por denominación */}
-      {entregaLive.rows.length > 0 && (
-        <div className={`${cardClassName} border-cyan-500/20`} aria-live="polite">
-          <p className="text-xs font-medium text-cyan-200/80 uppercase tracking-wider mb-2">
-            Progreso de entrega en vivo
-          </p>
-          <div className="h-2 w-full rounded-full bg-white/[0.08] overflow-hidden mb-3">
-            <div
-              className="h-full rounded-full bg-gradient-to-r from-cyan-400 to-blue-400 transition-all duration-300"
-              style={{ width: `${progresoEntrega === 0 ? 0 : Math.max(progresoEntrega, 4)}%` }}
-            />
-          </div>
-          <div className="flex items-center justify-between gap-2 pb-2 border-b border-white/[0.06] mb-2">
-            <span className="text-xs text-white/50">Entregado acumulado</span>
-            <span className="text-sm tabular-nums text-white/90">
-              {formatCurrency(entregadoAcumulado)}
-            </span>
-          </div>
-          <div className="flex items-center justify-between gap-2 pb-2 border-b border-white/[0.06] mb-2">
-            <span className="text-xs text-white/50">Faltante por entregar</span>
-            <span className="text-sm tabular-nums text-amber-300">
-              {formatCurrency(faltanteEntrega)}
-            </span>
-          </div>
-          <div className="flex items-center justify-between gap-2 pb-2 border-b border-white/[0.06] mb-2">
-            <span className="text-xs text-white/50">Cumplimiento</span>
-            <span className="text-sm tabular-nums text-cyan-200">
-              {progresoEntrega.toFixed(1)}%
-            </span>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs">
-              <thead>
-                <tr className="text-white/50">
-                  <th className="text-left py-1">Denominación</th>
-                  <th className="text-right py-1">Esperado</th>
-                  <th className="text-right py-1">Entregado</th>
-                  <th className="text-right py-1">Faltante</th>
-                  <th className="text-right py-1">Hora</th>
-                </tr>
-              </thead>
-              <tbody>
-                {entregaLive.rows.map((row) => (
-                  <tr key={row.stepKey} className="border-t border-white/[0.06]">
-                    <td className="py-1.5 text-white/80">{row.label}</td>
-                    <td className="py-1.5 text-right tabular-nums text-white/70">{row.expected}</td>
-                    <td className="py-1.5 text-right tabular-nums text-white/90">{row.delivered}</td>
-                    <td className="py-1.5 text-right tabular-nums text-amber-300">{row.missing}</td>
-                    <td className="py-1.5 text-right text-white/50">{formatearFechaHora(row.lastCapturedAt)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {/* Card: entrega a gerencia (fase 2) */}
-      {mostrarEntrega && (
-        <div className={cardClassName}>
-          <p className="text-xs font-medium text-white/40 uppercase tracking-wider mb-2">
-            Entrega a gerencia
-          </p>
-          <div className="divide-y divide-white/[0.06]">
-            {entrega.amountToDeliver !== null && (
-              <MetaFila
-                label="Monto a entregar"
-                valor={formatCurrency(entrega.amountToDeliver)}
-                mono
-                destacado
-              />
-            )}
-            {entrega.amountRemaining !== null && (
-              <MetaFila
-                label="Monto restante en caja"
-                valor={formatCurrency(entrega.amountRemaining)}
-                mono
-              />
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Card: gastos del día */}
-      {gastosConValor.length > 0 && (
-        <div className={cardClassName}>
-          <p className="text-xs font-medium text-white/40 uppercase tracking-wider mb-2">
-            Gastos del día
-          </p>
-          <div className="divide-y divide-white/[0.06]">
-            {gastosConValor.map((gasto) => (
-              <div key={gasto.id} className="flex items-center justify-between gap-2 py-1.5">
-                <div className="min-w-0">
-                  <p className="text-xs text-white/80 truncate">{gasto.concept}</p>
-                  <p className="text-[11px] text-white/45 truncate">{gasto.category}</p>
-                </div>
-                <span className="text-sm tabular-nums text-white/80">
-                  {formatCurrency(gasto.amount)}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Card: desglose de efectivo por denominación */}
-      {datos.disponible && denominacionesConDatos.length > 0 && (
-        <div className={cardClassName}>
-          <p className="text-xs font-medium text-white/40 uppercase tracking-wider mb-2">
-            Desglose efectivo
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
-            <div className="rounded-lg border border-white/[0.08] bg-black/20 p-2.5">
-              <p className="text-[11px] uppercase tracking-wider text-white/45">
-                Subtotal monedas
-              </p>
-              <p className="mt-1 text-sm tabular-nums text-white/90">
-                {formatCurrency(subtotalMonedas)}
-              </p>
-            </div>
-            <div className="rounded-lg border border-white/[0.08] bg-black/20 p-2.5">
-              <p className="text-[11px] uppercase tracking-wider text-white/45">
-                Subtotal billetes
-              </p>
-              <p className="mt-1 text-sm tabular-nums text-white/90">
-                {formatCurrency(subtotalBilletes)}
-              </p>
-            </div>
-          </div>
-          <div className="divide-y divide-white/[0.06]">
-            {denominacionesConDatos.map(d => {
-              const qty = datos.cashCount[d.key] ?? 0;
-              const subtotal = qty * d.valorUnitario;
-              return (
-                <div key={d.key} className="flex items-center justify-between gap-2 py-1.5">
-                  <span className="text-xs text-white/50">
-                    {d.label} × {qty}
-                  </span>
-                  <span className="text-sm tabular-nums text-white/80">
-                    {formatCurrency(subtotal)}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
+      {operationalCardsOrdenadas.map((card) => card.node)}
     </div>
   );
 }

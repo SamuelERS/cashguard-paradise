@@ -110,4 +110,14 @@ describe('CorteDetalle - UX hierarchy', () => {
     expect(screen.getByText(/subtotal monedas/i)).toBeInTheDocument();
     expect(screen.getByText(/subtotal billetes/i)).toBeInTheDocument();
   });
+
+  it('prioriza arriba el bloque operativo con actividad mas reciente', async () => {
+    render(<CorteDetalle />);
+
+    const progresoHeading = await screen.findByText(/progreso de entrega en vivo/i);
+    const resumenFinancieroHeading = screen.getByText(/resumen financiero/i);
+
+    const relation = progresoHeading.compareDocumentPosition(resumenFinancieroHeading);
+    expect(relation & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
 });

@@ -107,4 +107,14 @@ describe('CorteDetalle - tabla entrega en vivo', () => {
     expect(screen.getByText(/diez centavos/i)).toBeInTheDocument();
     expect(screen.getByText(/veinticinco centavos/i)).toBeInTheDocument();
   });
+
+  it('ordena filas por ultima hora capturada (mas reciente arriba)', async () => {
+    const { container } = render(<CorteDetalle />);
+
+    await screen.findByText(/progreso de entrega en vivo/i);
+    const rows = Array.from(container.querySelectorAll('tbody tr'));
+    expect(rows.length).toBeGreaterThanOrEqual(2);
+    expect(rows[0].textContent?.toLowerCase()).toContain('veinticinco centavos');
+    expect(rows[1].textContent?.toLowerCase()).toContain('diez centavos');
+  });
 });
