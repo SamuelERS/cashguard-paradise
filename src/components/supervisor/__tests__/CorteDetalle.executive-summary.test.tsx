@@ -102,9 +102,9 @@ describe('CorteDetalle - contrato de resumen operativo', () => {
 
     const scoped = within(card as HTMLElement);
     expect(scoped.getByText(/monto a entregar/i)).toBeInTheDocument();
-    expect(scoped.getByText(/monto restante en caja/i)).toBeInTheDocument();
+    expect(scoped.getByText(/vuelto fijo en caja/i)).toBeInTheDocument();
     expect(scoped.getByText(/efectivo contado/i)).toBeInTheDocument();
-    expect(scoped.getByText(/pagos electrónicos/i)).toBeInTheDocument();
+    expect(scoped.getByText(/electrónico registrado/i)).toBeInTheDocument();
     expect(scoped.getByText(/venta esperada \(sicar\)/i)).toBeInTheDocument();
     expect(scoped.queryByText(/total contado/i)).not.toBeInTheDocument();
     expect(scoped.queryByText(/^diferencia$/i)).not.toBeInTheDocument();

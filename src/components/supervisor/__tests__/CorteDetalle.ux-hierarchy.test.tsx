@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const detailFeedMock = vi.hoisted(() => ({
@@ -109,6 +109,26 @@ describe('CorteDetalle - UX hierarchy', () => {
     await screen.findByText(/progreso de entrega en vivo/i);
     expect(screen.getByText(/subtotal monedas/i)).toBeInTheDocument();
     expect(screen.getByText(/subtotal billetes/i)).toBeInTheDocument();
+  });
+
+  it('consolida electrónicos y desglose en un solo bloque de composición', async () => {
+    render(<CorteDetalle />);
+
+    const heading = await screen.findByText(/composición de entrega/i);
+    const card = heading.closest('div');
+    expect(card).not.toBeNull();
+    const scoped = within(card as HTMLElement);
+
+    expect(scoped.getByText(/canales electrónicos/i)).toBeInTheDocument();
+    expect(scoped.getByText(/denominaciones usadas/i)).toBeInTheDocument();
+    expect(scoped.getByText(/subtotal monedas/i)).toBeInTheDocument();
+    expect(scoped.getByText(/subtotal billetes/i)).toBeInTheDocument();
+    expect(scoped.getByText(/credomatic/i)).toBeInTheDocument();
+
+    const bloqueDenominaciones = scoped.getByText(/denominaciones usadas/i);
+    const bloqueCanales = scoped.getByText(/canales electrónicos/i);
+    const ordenBloques = bloqueDenominaciones.compareDocumentPosition(bloqueCanales);
+    expect(ordenBloques & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
   it('mantiene orden panel operativo -> cierre y entrega -> entrega live', async () => {

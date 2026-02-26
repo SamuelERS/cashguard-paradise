@@ -769,7 +769,7 @@ export function CorteDetalle() {
             </p>
           </div>
           <div className="rounded-lg border border-white/[0.08] bg-black/20 px-3 py-2">
-            <p className="text-[11px] uppercase tracking-wider text-white/45">Monto restante en caja</p>
+            <p className="text-[11px] uppercase tracking-wider text-white/45">Vuelto Fijo en caja</p>
             <p className="mt-1 text-base tabular-nums text-white/80">
               {entrega.amountRemaining === null ? '—' : formatCurrency(entrega.amountRemaining)}
             </p>
@@ -781,7 +781,7 @@ export function CorteDetalle() {
             </p>
           </div>
           <div className="rounded-lg border border-white/[0.08] bg-black/20 px-3 py-2">
-            <p className="text-[11px] uppercase tracking-wider text-white/45">Pagos electrónicos</p>
+            <p className="text-[11px] uppercase tracking-wider text-white/45">Electrónico registrado</p>
             <p className="mt-1 text-base tabular-nums font-semibold text-white/90">
               {resumenDisponible ? formatCurrency(datos.totalElectronico) : '—'}
             </p>
@@ -827,74 +827,80 @@ export function CorteDetalle() {
     });
   }
 
-  if (datos.disponible && pagosConValor.length > 0) {
+  if (datos.disponible && (pagosConValor.length > 0 || denominacionesConDatos.length > 0)) {
     operationalCards.push({
-      key: 'pagos-electronicos',
+      key: 'composicion-entrega',
       activityMs: actividadBaseMs,
       fallbackOrder: 50,
       node: (
-        <div key="pagos-electronicos" className={cardClassName}>
+        <div key="composicion-entrega" className={cardClassName}>
           <p className="text-xs font-medium text-white/40 uppercase tracking-wider mb-2">
-            Pagos electrónicos
+            Composición de entrega
           </p>
-          <div className="divide-y divide-white/[0.06]">
-            {pagosConValor.map(key => (
-              <MetaFila
-                key={key}
-                label={LABEL_PAGO[key]}
-                valor={formatCurrency(datos.pagosElectronicos[key])}
-                mono
-              />
-            ))}
-          </div>
-        </div>
-      ),
-    });
-  }
-
-  if (datos.disponible && denominacionesConDatos.length > 0) {
-    operationalCards.push({
-      key: 'desglose-efectivo',
-      activityMs: actividadBaseMs,
-      fallbackOrder: 60,
-      node: (
-        <div key="desglose-efectivo" className={cardClassName}>
-          <p className="text-xs font-medium text-white/40 uppercase tracking-wider mb-2">
-            Desglose efectivo
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
-            <div className="rounded-lg border border-white/[0.08] bg-black/20 p-2.5">
-              <p className="text-[11px] uppercase tracking-wider text-white/45">
-                Subtotal monedas
-              </p>
-              <p className="mt-1 text-sm tabular-nums text-white/90">
-                {formatCurrency(subtotalMonedas)}
-              </p>
-            </div>
-            <div className="rounded-lg border border-white/[0.08] bg-black/20 p-2.5">
-              <p className="text-[11px] uppercase tracking-wider text-white/45">
-                Subtotal billetes
-              </p>
-              <p className="mt-1 text-sm tabular-nums text-white/90">
-                {formatCurrency(subtotalBilletes)}
-              </p>
-            </div>
-          </div>
-          <div className="divide-y divide-white/[0.06]">
-            {denominacionesConDatos.map(d => {
-              const qty = datos.cashCount[d.key] ?? 0;
-              const subtotal = qty * d.valorUnitario;
-              return (
-                <div key={d.key} className="flex items-center justify-between gap-2 py-1.5">
-                  <span className="text-xs text-white/50">
-                    {d.label} × {qty}
-                  </span>
-                  <span className="text-sm tabular-nums text-white/80">
-                    {formatCurrency(subtotal)}
-                  </span>
+          <div
+            className={`grid grid-cols-1 gap-3 ${
+              pagosConValor.length > 0 && denominacionesConDatos.length > 0 ? 'xl:grid-cols-2' : ''
+            }`}
+          >
+            {denominacionesConDatos.length > 0 && (
+              <div className="rounded-lg border border-white/[0.08] bg-black/20 px-3 py-2.5">
+                <p className="text-[11px] uppercase tracking-wider text-white/45 mb-1.5">
+                  Denominaciones usadas
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
+                  <div className="rounded-lg border border-white/[0.08] bg-black/20 p-2.5">
+                    <p className="text-[11px] uppercase tracking-wider text-white/45">
+                      Subtotal monedas
+                    </p>
+                    <p className="mt-1 text-sm tabular-nums text-white/90">
+                      {formatCurrency(subtotalMonedas)}
+                    </p>
+                  </div>
+                  <div className="rounded-lg border border-white/[0.08] bg-black/20 p-2.5">
+                    <p className="text-[11px] uppercase tracking-wider text-white/45">
+                      Subtotal billetes
+                    </p>
+                    <p className="mt-1 text-sm tabular-nums text-white/90">
+                      {formatCurrency(subtotalBilletes)}
+                    </p>
+                  </div>
                 </div>
-              );
-            })}
+                <div className="divide-y divide-white/[0.06]">
+                  {denominacionesConDatos.map(d => {
+                    const qty = datos.cashCount[d.key] ?? 0;
+                    const subtotal = qty * d.valorUnitario;
+                    return (
+                      <div key={d.key} className="flex items-center justify-between gap-2 py-1.5">
+                        <span className="text-xs text-white/50">
+                          {d.label} × {qty}
+                        </span>
+                        <span className="text-sm tabular-nums text-white/80">
+                          {formatCurrency(subtotal)}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {pagosConValor.length > 0 && (
+              <div className="rounded-lg border border-white/[0.08] bg-black/20 px-3 py-2.5">
+                <p className="text-[11px] uppercase tracking-wider text-white/45 mb-1.5">
+                  Canales electrónicos
+                </p>
+                <div className="divide-y divide-white/[0.06]">
+                  {pagosConValor.map(key => (
+                    <MetaFila
+                      key={key}
+                      label={LABEL_PAGO[key]}
+                      valor={formatCurrency(datos.pagosElectronicos[key])}
+                      mono
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       ),

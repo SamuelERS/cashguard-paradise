@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 const detailFeedMock = vi.hoisted(() => ({
@@ -67,8 +67,11 @@ describe('CorteDetalle - sync de entrega live', () => {
 
     const { rerender } = render(<CorteDetalle />);
 
-    expect(screen.getByText(/entrega en vivo/i)).toBeInTheDocument();
-    expect(screen.getByText('$0.00')).toBeInTheDocument();
+    const liveHeadingInicial = screen.getByText(/progreso de entrega en vivo/i);
+    const liveCardInicial = liveHeadingInicial.closest('div');
+    expect(liveCardInicial).not.toBeNull();
+    const liveScopedInicial = within(liveCardInicial as HTMLElement);
+    expect(liveScopedInicial.getByText('$0.00')).toBeInTheDocument();
 
     detailFeedMock.state.corte = {
       ...BASE_CORTE,
@@ -89,8 +92,11 @@ describe('CorteDetalle - sync de entrega live', () => {
 
     rerender(<CorteDetalle />);
 
-    expect(await screen.findByText(/entrega en vivo/i)).toBeInTheDocument();
-    expect(screen.getByText(/diez centavos/i)).toBeInTheDocument();
-    expect(screen.getByText('$0.20')).toBeInTheDocument();
+    const liveHeadingActualizado = await screen.findByText(/progreso de entrega en vivo/i);
+    const liveCardActualizado = liveHeadingActualizado.closest('div');
+    expect(liveCardActualizado).not.toBeNull();
+    const liveScopedActualizado = within(liveCardActualizado as HTMLElement);
+    expect(liveScopedActualizado.getByText(/diez centavos/i)).toBeInTheDocument();
+    expect(liveScopedActualizado.getByText('$0.20')).toBeInTheDocument();
   });
 });
