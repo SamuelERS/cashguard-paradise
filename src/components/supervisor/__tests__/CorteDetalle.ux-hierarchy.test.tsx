@@ -111,17 +111,17 @@ describe('CorteDetalle - UX hierarchy', () => {
     expect(screen.getByText(/subtotal billetes/i)).toBeInTheDocument();
   });
 
-  it('mantiene orden panel operativo -> entrega live -> resumen financiero', async () => {
+  it('mantiene orden panel operativo -> cierre y entrega -> entrega live', async () => {
     render(<CorteDetalle />);
 
     const panelHeading = await screen.findByText(/panel operativo del corte/i);
+    const cierreEntregaHeading = await screen.findByText(/cierre y entrega/i);
     const progresoHeading = await screen.findByText(/progreso de entrega en vivo/i);
-    const resumenFinancieroHeading = screen.getByText(/resumen financiero/i);
 
-    const panelVsProgreso = panelHeading.compareDocumentPosition(progresoHeading);
-    expect(panelVsProgreso & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    const panelVsCierre = panelHeading.compareDocumentPosition(cierreEntregaHeading);
+    expect(panelVsCierre & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
 
-    const progresoVsResumen = progresoHeading.compareDocumentPosition(resumenFinancieroHeading);
-    expect(progresoVsResumen & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    const cierreVsProgreso = cierreEntregaHeading.compareDocumentPosition(progresoHeading);
+    expect(cierreVsProgreso & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 });

@@ -102,16 +102,23 @@ describe('CorteDetalle - panel operativo compacto', () => {
     expect(scoped.getByText(/testigo/i)).toBeInTheDocument();
   });
 
-  it('deja de renderizar headings legacy separados y mantiene header del corte', async () => {
+  it('elimina header duplicado y reubica correlativo en Snapshot', async () => {
     render(<CorteDetalle />);
 
-    await screen.findByText(/panel operativo del corte/i);
+    const heading = await screen.findByText(/panel operativo del corte/i);
+    const panel = heading.closest('section') ?? heading.closest('div');
+    expect(panel).not.toBeNull();
+
+    const scoped = within(panel as HTMLElement);
+    expect(scoped.getByText(/snapshot/i)).toBeInTheDocument();
+    expect(scoped.getByText(/correlativo/i)).toBeInTheDocument();
+    expect(scoped.getByText('CORTE-2026-02-25-H-002')).toBeInTheDocument();
 
     expect(screen.queryByText(/radar operativo/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/resumen ejecutivo/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/identificación/i)).not.toBeInTheDocument();
 
-    expect(screen.getByText(/corte #corte-2026-02-25-h-002/i)).toBeInTheDocument();
+    expect(screen.queryByText(/corte #corte-2026-02-25-h-002/i)).not.toBeInTheDocument();
     expect(screen.getByText(/en vivo/i)).toBeInTheDocument();
   });
 });

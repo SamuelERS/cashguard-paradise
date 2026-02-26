@@ -98,8 +98,9 @@ describe('CorteDetalle - legibilidad de dinero del corte', () => {
   it('muestra bloques legibles de entrega y gastos cuando vienen en Supabase', async () => {
     render(<CorteDetalle />);
 
-    await screen.findByText(/resumen financiero/i);
-    expect(screen.getByText(/entrega a gerencia/i)).toBeInTheDocument();
+    await screen.findByText(/cierre y entrega/i);
+    expect(screen.queryByText(/^entrega a gerencia$/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/^resumen financiero$/i)).not.toBeInTheDocument();
     expect(screen.getByText(/monto a entregar/i)).toBeInTheDocument();
     expect(screen.getByText(/gastos del día/i)).toBeInTheDocument();
     expect(screen.getByText(/taxi cierre/i)).toBeInTheDocument();

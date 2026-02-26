@@ -737,37 +737,72 @@ export function CorteDetalle() {
     )
     : null;
 
-  if (mostrarEntrega) {
-    operationalCards.push({
-      key: 'entrega-gerencia',
-      activityMs: Math.max(actividadEntregaLiveMs, actividadBaseMs),
-      fallbackOrder: 20,
-      node: (
-        <div key="entrega-gerencia" className={cardClassName}>
-          <p className="text-xs font-medium text-white/40 uppercase tracking-wider mb-2">
-            Entrega a gerencia
-          </p>
-          <div className="divide-y divide-white/[0.06]">
-            {entrega.amountToDeliver !== null && (
+  operationalCards.push({
+    key: 'cierre-entrega',
+    activityMs: Math.max(actividadEntregaLiveMs, actividadBaseMs),
+    fallbackOrder: 20,
+    node: (
+      <div key="cierre-entrega" className={cardClassName}>
+        <p className="text-xs font-medium text-white/40 uppercase tracking-wider mb-2">
+          Cierre y entrega
+        </p>
+        <div className="divide-y divide-white/[0.06]">
+          {entrega.amountToDeliver !== null && (
+            <MetaFila
+              label="Monto a entregar"
+              valor={formatCurrency(entrega.amountToDeliver)}
+              mono
+              destacado
+            />
+          )}
+          {entrega.amountRemaining !== null && (
+            <MetaFila
+              label="Monto restante en caja"
+              valor={formatCurrency(entrega.amountRemaining)}
+              mono
+            />
+          )}
+          {resumenDisponible ? (
+            <>
+              {mostrarEntrega && <div className="pt-0.5" />}
               <MetaFila
-                label="Monto a entregar"
-                valor={formatCurrency(entrega.amountToDeliver)}
+                label="Efectivo contado"
+                valor={formatCurrency(datos.totalEfectivo)}
                 mono
                 destacado
               />
-            )}
-            {entrega.amountRemaining !== null && (
+              {datos.totalElectronico > 0 && (
+                <MetaFila
+                  label="Pagos electrónicos"
+                  valor={formatCurrency(datos.totalElectronico)}
+                  mono
+                />
+              )}
               <MetaFila
-                label="Monto restante en caja"
-                valor={formatCurrency(entrega.amountRemaining)}
+                label="Total contado"
+                valor={formatCurrency(totalContado)}
+                mono
+                destacado
+              />
+              <MetaFila
+                label="Venta esperada (SICAR)"
+                valor={formatCurrency(ventaEsperada)}
                 mono
               />
-            )}
-          </div>
+              <MetaFila
+                label="Diferencia"
+                valor={diferenciaTexto}
+                mono
+                colorClase={diferenciaColorClase}
+              />
+            </>
+          ) : (
+            <p className="text-xs text-white/40 italic py-1">Sin datos de conteo disponibles</p>
+          )}
         </div>
-      ),
-    });
-  }
+      </div>
+    ),
+  });
 
   if (gastosConValor.length > 0) {
     operationalCards.push({
@@ -796,56 +831,6 @@ export function CorteDetalle() {
       ),
     });
   }
-
-  operationalCards.push({
-    key: 'resumen-financiero',
-    activityMs: actividadBaseMs,
-    fallbackOrder: 40,
-    node: (
-      <div key="resumen-financiero" className={cardClassName}>
-        <p className="text-xs font-medium text-white/40 uppercase tracking-wider mb-2">
-          Resumen financiero
-        </p>
-        {resumenDisponible ? (
-          <div className="divide-y divide-white/[0.06]">
-            <MetaFila
-              label="Efectivo contado"
-              valor={formatCurrency(datos.totalEfectivo)}
-              mono
-              destacado
-            />
-            {datos.totalElectronico > 0 && (
-              <MetaFila
-                label="Pagos electrónicos"
-                valor={formatCurrency(datos.totalElectronico)}
-                mono
-              />
-            )}
-            <MetaFila
-              label="Total contado"
-              valor={formatCurrency(totalContado)}
-              mono
-              destacado
-            />
-            <div className="pt-0.5" />
-            <MetaFila
-              label="Venta esperada (SICAR)"
-              valor={formatCurrency(ventaEsperada)}
-              mono
-            />
-            <MetaFila
-              label="Diferencia"
-              valor={diferenciaTexto}
-              mono
-              colorClase={diferenciaColorClase}
-            />
-          </div>
-        ) : (
-          <p className="text-xs text-white/40 italic py-1">Sin datos de conteo disponibles</p>
-        )}
-      </div>
-    ),
-  });
 
   if (datos.disponible && pagosConValor.length > 0) {
     operationalCards.push({
@@ -926,6 +911,10 @@ export function CorteDetalle() {
     if (activityDiff !== 0) return activityDiff;
     return a.fallbackOrder - b.fallbackOrder;
   });
+  const cierreEntregaCard = operationalCardsOrdenadas.find((card) => card.key === 'cierre-entrega');
+  const operationalCardsSecundarias = operationalCardsOrdenadas.filter(
+    (card) => card.key !== 'cierre-entrega',
+  );
 
   // ── Render principal ──────────────────────────────────────────────────────
 
@@ -940,24 +929,19 @@ export function CorteDetalle() {
         ← Volver
       </button>
 
-      {/* Header: semáforo + correlativo + fecha */}
-      <div className="flex items-center gap-3 px-1">
-        <SemaforoIndicador color={colorSemaforo} razon={razonSemaforo} size="lg" />
-        <div>
-          <div className="flex items-center gap-2">
-            <h2 className="text-base font-semibold text-white/90">
-              Corte #{corte.correlativo}
-            </h2>
-            <SupervisorLiveBadge
-              status={realtimeStatus}
-              actualizando={actualizando}
-              spinnerAriaLabel="Actualizando detalle"
-            />
-          </div>
-          <p className="text-xs text-white/40 mt-0.5">
-            {formatearFechaHora(corte.finalizado_at)}
+      {/* Header compacto: semáforo + estado live */}
+      <div className="flex items-center justify-between gap-3 px-1">
+        <div className="flex items-center gap-2">
+          <SemaforoIndicador color={colorSemaforo} razon={razonSemaforo} size="lg" />
+          <p className="text-xs uppercase tracking-wider text-white/45">
+            Semáforo operativo
           </p>
         </div>
+        <SupervisorLiveBadge
+          status={realtimeStatus}
+          actualizando={actualizando}
+          spinnerAriaLabel="Actualizando detalle"
+        />
       </div>
 
       {/* Card: panel operativo compacto */}
@@ -972,6 +956,12 @@ export function CorteDetalle() {
           <div className="rounded-lg border border-white/[0.08] bg-black/25 px-3 py-2.5">
             <p className="text-[11px] uppercase tracking-wider text-white/45 mb-1.5">Snapshot</p>
             <div className="divide-y divide-white/[0.06]">
+              <MetaFila
+                label="Correlativo"
+                valor={corte.correlativo}
+                mono
+                colorClase="text-white/80"
+              />
               <MetaFila
                 label="Estado"
                 valor={corte.estado}
@@ -1024,6 +1014,7 @@ export function CorteDetalle() {
         </div>
       </section>
 
+      {cierreEntregaCard?.node ?? null}
       {entregaLiveCard}
 
       {/* Card: incidencia de cierre en estado ABORTADO */}
@@ -1045,7 +1036,7 @@ export function CorteDetalle() {
         </div>
       )}
 
-      {operationalCardsOrdenadas.map((card) => card.node)}
+      {operationalCardsSecundarias.map((card) => card.node)}
     </div>
   );
 }

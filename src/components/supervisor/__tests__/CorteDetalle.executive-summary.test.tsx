@@ -92,6 +92,27 @@ describe('CorteDetalle - contrato de resumen operativo', () => {
     expect(scoped.getByText(/diferencia vs sicar/i)).toBeInTheDocument();
   });
 
+  it('consolida entrega y resumen financiero en una sola card operativa', async () => {
+    detailFeedMock.corte = BASE_FIXTURE;
+    render(<CorteDetalle />);
+
+    const heading = await screen.findByText(/cierre y entrega/i);
+    const card = heading.closest('div');
+    expect(card).not.toBeNull();
+
+    const scoped = within(card as HTMLElement);
+    expect(scoped.getByText(/monto a entregar/i)).toBeInTheDocument();
+    expect(scoped.getByText(/monto restante en caja/i)).toBeInTheDocument();
+    expect(scoped.getByText(/efectivo contado/i)).toBeInTheDocument();
+    expect(scoped.getByText(/pagos electrónicos/i)).toBeInTheDocument();
+    expect(scoped.getByText(/total contado/i)).toBeInTheDocument();
+    expect(scoped.getByText(/venta esperada \(sicar\)/i)).toBeInTheDocument();
+    expect(scoped.getByText(/^diferencia$/i)).toBeInTheDocument();
+
+    expect(screen.queryByText(/^entrega a gerencia$/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/^resumen financiero$/i)).not.toBeInTheDocument();
+  });
+
   it('en estado ABORTADO muestra incidencia de cierre con motivo visible', async () => {
     detailFeedMock.corte = {
       ...BASE_FIXTURE,
@@ -123,7 +144,7 @@ describe('CorteDetalle - contrato de resumen operativo', () => {
 
     render(<CorteDetalle />);
 
-    const financialHeading = await screen.findByText(/resumen financiero/i);
+    const financialHeading = await screen.findByText(/cierre y entrega/i);
     const financialCard = financialHeading.closest('div');
     expect(financialCard).not.toBeNull();
     const scoped = within(financialCard as HTMLElement);
