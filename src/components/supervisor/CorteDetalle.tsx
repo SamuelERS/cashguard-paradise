@@ -287,6 +287,22 @@ type EntregaLiveRow = {
   lastCapturedAt: string | null;
 };
 
+type VueltoCajaRow = {
+  stepKey: keyof CashCount;
+  label: string;
+  expected: number;
+  actual: number;
+  delta: number;
+  status: 'EXACTO' | 'FALTANTE' | 'SOBRANTE';
+};
+
+type VueltoCajaSnapshot = {
+  rows: VueltoCajaRow[];
+  expectedTotal: number;
+  actualTotal: number;
+  deltaTotal: number;
+};
+
 const LIVE_DENOMINATION_LABELS: Record<keyof CashCount, string> = {
   penny: 'Un centavo',
   nickel: 'Cinco centavos',
@@ -391,6 +407,68 @@ function extraerEntregaLiveRows(
   return { rows, liveTotal };
 }
 
+function extraerVueltoCajaSnapshot(
+  cashCount: Partial<CashCount>,
+  datosEntrega: Record<string, unknown> | null,
+): VueltoCajaSnapshot {
+  if (!datosEntrega) {
+    return { rows: [], expectedTotal: 0, actualTotal: 0, deltaTotal: 0 };
+  }
+
+  const expectedKeepRaw = toPartialCashCount(datosEntrega.denominations_to_keep);
+  const expectedDeliverRaw = toPartialCashCount(datosEntrega.denominations_to_deliver);
+  const deliveredLiveRaw = toPartialCashCount(datosEntrega.live_delivery_progress);
+
+  const hasExpectedKeep = DENOMINACIONES.some(
+    (denomination) => (expectedKeepRaw[denomination.key] ?? 0) > 0,
+  );
+
+  const rows = DENOMINACIONES
+    .map((denomination) => {
+      const initialCount = cashCount[denomination.key] ?? 0;
+      const fallbackExpected = Math.max(initialCount - (expectedDeliverRaw[denomination.key] ?? 0), 0);
+      const expected = hasExpectedKeep
+        ? (expectedKeepRaw[denomination.key] ?? fallbackExpected)
+        : fallbackExpected;
+      const actual = Math.max(initialCount - (deliveredLiveRaw[denomination.key] ?? 0), 0);
+      const delta = actual - expected;
+      const status: VueltoCajaRow['status'] = delta === 0
+        ? 'EXACTO'
+        : delta < 0
+          ? 'FALTANTE'
+          : 'SOBRANTE';
+
+      return {
+        stepKey: denomination.key,
+        label: denomination.label,
+        expected,
+        actual,
+        delta,
+        status,
+      };
+    })
+    .filter((row) => row.expected > 0 || row.actual > 0);
+
+  const totals = rows.reduce(
+    (acc, row) => {
+      const denomination = DENOMINACIONES.find((item) => item.key === row.stepKey);
+      if (!denomination) return acc;
+      return {
+        expectedTotal: acc.expectedTotal + (row.expected * denomination.valorUnitario),
+        actualTotal: acc.actualTotal + (row.actual * denomination.valorUnitario),
+      };
+    },
+    { expectedTotal: 0, actualTotal: 0 },
+  );
+
+  return {
+    rows,
+    expectedTotal: totals.expectedTotal,
+    actualTotal: totals.actualTotal,
+    deltaTotal: totals.actualTotal - totals.expectedTotal,
+  };
+}
+
 function sumarSubtotalPorDenominaciones(
   cashCount: Partial<CashCount>,
   keys: ReadonlyArray<keyof CashCount>,
@@ -414,6 +492,12 @@ function firstFiniteNumber(...values: unknown[]): number | null {
     if (parsed !== null) return parsed;
   }
   return null;
+}
+
+function formatSignedCurrency(value: number): string {
+  if (Math.abs(value) < 0.0001) return formatCurrency(0);
+  if (value > 0) return `+${formatCurrency(value)}`;
+  return formatCurrency(value);
 }
 
 function extraerResumenReporte(datosReporte: Record<string, unknown> | null): {
@@ -636,6 +720,8 @@ export function CorteDetalle() {
   const gastosConValor = datos.gastosDia;
   const entrega = extraerDatosEntrega(corte.datos_entrega);
   const entregaLive = extraerEntregaLiveRows(corte.datos_entrega);
+  const vueltoCaja = extraerVueltoCajaSnapshot(datos.cashCount, corte.datos_entrega);
+  const vueltoCajaByStep = new Map(vueltoCaja.rows.map((row) => [row.stepKey, row]));
   const correlativoCorto = acortarCorrelativo(corte.correlativo);
   const entregadoAcumulado = entregaLive.liveTotal;
   const faltanteEntrega = Math.max((entrega.amountToDeliver ?? 0) - entregadoAcumulado, 0);
@@ -689,57 +775,80 @@ export function CorteDetalle() {
             style={{ width: `${progresoEntrega === 0 ? 0 : Math.max(progresoEntrega, 4)}%` }}
           />
         </div>
-        <div className="flex items-center justify-between gap-2 pb-2 border-b border-white/[0.06] mb-2">
-          <span className="text-xs text-white/50">Entregado acumulado</span>
-          <span className="text-sm tabular-nums text-white/90">
-            {formatCurrency(entregadoAcumulado)}
-          </span>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-2">
+          <div className="rounded-lg border border-white/[0.08] bg-black/20 px-2.5 py-1.5">
+            <p className="text-[10px] uppercase tracking-wide text-white/45">Entregado</p>
+            <p className="mt-0.5 text-sm tabular-nums text-white/90">{formatCurrency(entregadoAcumulado)}</p>
+          </div>
+          <div className="rounded-lg border border-white/[0.08] bg-black/20 px-2.5 py-1.5">
+            <p className="text-[10px] uppercase tracking-wide text-white/45">Pendiente</p>
+            <p className="mt-0.5 text-sm tabular-nums text-amber-300">{formatCurrency(faltanteEntrega)}</p>
+          </div>
+          <div className="rounded-lg border border-white/[0.08] bg-black/20 px-2.5 py-1.5">
+            <p className="text-[10px] uppercase tracking-wide text-white/45">% Cumpl.</p>
+            <p className="mt-0.5 text-sm tabular-nums text-cyan-200">{progresoEntrega.toFixed(1)}%</p>
+          </div>
+          <div className="rounded-lg border border-white/[0.08] bg-black/20 px-2.5 py-1.5">
+            <p className="text-[10px] uppercase tracking-wide text-white/45">Δ Caja</p>
+            <p
+              className={`mt-0.5 text-sm tabular-nums ${
+                Math.abs(vueltoCaja.deltaTotal) < 0.0001 ? 'text-amber-300' : 'text-red-400'
+              }`}
+            >
+              {formatSignedCurrency(vueltoCaja.deltaTotal)}
+            </p>
+          </div>
         </div>
-        <div className="flex items-center justify-between gap-2 pb-2 border-b border-white/[0.06] mb-2">
-          <span className="text-xs text-white/50">Faltante por entregar</span>
-          <span className="text-sm tabular-nums text-amber-300">
-            {formatCurrency(faltanteEntrega)}
-          </span>
-        </div>
-        <div className="flex items-center justify-between gap-2 pb-2 border-b border-white/[0.06] mb-2">
-          <span className="text-xs text-white/50">Cumplimiento</span>
-          <span className="text-sm tabular-nums text-cyan-200">
-            {progresoEntrega.toFixed(1)}%
-          </span>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-xs">
+        <div className="overflow-x-auto border-t border-white/[0.06] pt-2">
+          <table className="w-full text-[11px]">
             <thead>
               <tr className="text-white/50">
-                <th className="text-left py-1">Denominación</th>
-                <th className="text-right py-1">Esperado</th>
-                <th className="text-right py-1">Entregado</th>
-                <th className="text-right py-1">Faltante</th>
+                <th className="text-left py-1">Denom.</th>
+                <th className="text-right py-1">Base</th>
+                <th className="text-right py-1">Meta Ent.</th>
+                <th className="text-right py-1">Ent.</th>
+                <th className="text-right py-1">Δ Ent.</th>
+                <th className="text-right py-1">Caja Obj.</th>
+                <th className="text-right py-1">Caja Real</th>
+                <th className="text-right py-1">Δ Caja</th>
                 <th className="text-right py-1">Hora</th>
               </tr>
             </thead>
             <tbody>
               {entregaLive.rows.map((row) => {
                 const statusLabel = row.status === 'EXACTO'
-                  ? 'Exacto'
+                  ? 'OK'
                   : row.status === 'FALTANTE'
-                    ? 'Faltante'
-                    : 'Sobrante';
+                    ? 'FALTA'
+                    : 'SOBRA';
                 const statusColorClass = row.status === 'EXACTO' ? 'text-amber-300' : 'text-red-400';
                 const faltanteValor = row.status === 'SOBRANTE' ? `+${row.delta}` : `${row.missing}`;
+                const conteoGeneral = datos.cashCount[row.stepKey] ?? 0;
+                const vueltoRow = vueltoCajaByStep.get(row.stepKey);
+                const debeQuedar = vueltoRow?.expected ?? Math.max(conteoGeneral - row.expected, 0);
+                const quedoCaja = vueltoRow?.actual ?? Math.max(conteoGeneral - row.delivered, 0);
+                const deltaCaja = vueltoRow?.delta ?? (quedoCaja - debeQuedar);
+                const deltaCajaColorClass = deltaCaja === 0 ? 'text-amber-300' : 'text-red-400';
+                const deltaCajaTexto = deltaCaja > 0 ? `+${deltaCaja}` : `${deltaCaja}`;
 
                 return (
                   <tr key={row.stepKey} className="border-t border-white/[0.06]">
                     <td className="py-1.5 text-white/80">{row.label}</td>
+                    <td className="py-1.5 text-right tabular-nums text-white/65">{conteoGeneral}</td>
                     <td className="py-1.5 text-right tabular-nums text-white/70">{row.expected}</td>
                     <td className="py-1.5 text-right tabular-nums text-white/90">{row.delivered}</td>
                     <td className="py-1.5 text-right tabular-nums">
-                      <div className="inline-flex items-center gap-1">
+                      <div className="inline-flex items-center gap-1 justify-end">
                         <span className={statusColorClass}>{faltanteValor}</span>
-                        <span className={`text-[11px] uppercase tracking-wide ${statusColorClass}`}>
+                        <span className={`text-[10px] uppercase tracking-wide ${statusColorClass}`}>
                           {statusLabel}
                         </span>
                       </div>
+                    </td>
+                    <td className="py-1.5 text-right tabular-nums text-white/70">{debeQuedar}</td>
+                    <td className="py-1.5 text-right tabular-nums text-white/90">{quedoCaja}</td>
+                    <td className={`py-1.5 text-right tabular-nums ${deltaCajaColorClass}`}>
+                      {deltaCajaTexto}
                     </td>
                     <td className="py-1.5 text-right text-white/50">{formatearHoraLocal(row.lastCapturedAt)}</td>
                   </tr>
@@ -827,7 +936,16 @@ export function CorteDetalle() {
     });
   }
 
-  if (datos.disponible && (pagosConValor.length > 0 || denominacionesConDatos.length > 0)) {
+  if (
+    datos.disponible &&
+    (pagosConValor.length > 0 || denominacionesConDatos.length > 0 || vueltoCaja.rows.length > 0)
+  ) {
+    const mostrarColumnaIzquierda = denominacionesConDatos.length > 0;
+    const mostrarColumnaDerecha = pagosConValor.length > 0 || vueltoCaja.rows.length > 0;
+    const diferenciaVueltoColorClase = Math.abs(vueltoCaja.deltaTotal) < 0.0001
+      ? 'text-amber-300'
+      : 'text-red-400';
+
     operationalCards.push({
       key: 'composicion-entrega',
       activityMs: actividadBaseMs,
@@ -839,10 +957,10 @@ export function CorteDetalle() {
           </p>
           <div
             className={`grid grid-cols-1 gap-3 ${
-              pagosConValor.length > 0 && denominacionesConDatos.length > 0 ? 'xl:grid-cols-2' : ''
+              mostrarColumnaIzquierda && mostrarColumnaDerecha ? 'xl:grid-cols-2' : ''
             }`}
           >
-            {denominacionesConDatos.length > 0 && (
+            {mostrarColumnaIzquierda && (
               <div className="rounded-lg border border-white/[0.08] bg-black/20 px-3 py-2.5">
                 <p className="text-[11px] uppercase tracking-wider text-white/45 mb-1.5">
                   Denominaciones usadas
@@ -884,21 +1002,88 @@ export function CorteDetalle() {
               </div>
             )}
 
-            {pagosConValor.length > 0 && (
-              <div className="rounded-lg border border-white/[0.08] bg-black/20 px-3 py-2.5">
-                <p className="text-[11px] uppercase tracking-wider text-white/45 mb-1.5">
-                  Canales electrónicos
-                </p>
-                <div className="divide-y divide-white/[0.06]">
-                  {pagosConValor.map(key => (
-                    <MetaFila
-                      key={key}
-                      label={LABEL_PAGO[key]}
-                      valor={formatCurrency(datos.pagosElectronicos[key])}
-                      mono
-                    />
-                  ))}
-                </div>
+            {mostrarColumnaDerecha && (
+              <div className="flex flex-col gap-2">
+                {pagosConValor.length > 0 && (
+                  <div className="rounded-lg border border-white/[0.08] bg-black/20 px-3 py-2.5">
+                    <p className="text-[11px] uppercase tracking-wider text-white/45 mb-1.5">
+                      Canales electrónicos
+                    </p>
+                    <div className="divide-y divide-white/[0.06]">
+                      {pagosConValor.map(key => (
+                        <MetaFila
+                          key={key}
+                          label={LABEL_PAGO[key]}
+                          valor={formatCurrency(datos.pagosElectronicos[key])}
+                          mono
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {vueltoCaja.rows.length > 0 && (
+                  <div className="rounded-lg border border-white/[0.08] bg-black/20 px-3 py-2.5">
+                    <p className="text-[11px] uppercase tracking-wider text-white/45 mb-1.5">
+                      Vuelto en caja
+                    </p>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-2">
+                      <div className="rounded-lg border border-white/[0.08] bg-black/20 p-2">
+                        <p className="text-[10px] uppercase tracking-wider text-white/45">
+                          Debe quedar
+                        </p>
+                        <p className="mt-1 text-sm tabular-nums text-white/90">
+                          {formatCurrency(vueltoCaja.expectedTotal)}
+                        </p>
+                      </div>
+                      <div className="rounded-lg border border-white/[0.08] bg-black/20 p-2">
+                        <p className="text-[10px] uppercase tracking-wider text-white/45">
+                          Quedó
+                        </p>
+                        <p className="mt-1 text-sm tabular-nums text-white/90">
+                          {formatCurrency(vueltoCaja.actualTotal)}
+                        </p>
+                      </div>
+                      <div className="rounded-lg border border-white/[0.08] bg-black/20 p-2">
+                        <p className="text-[10px] uppercase tracking-wider text-white/45">
+                          Diferencia
+                        </p>
+                        <p className={`mt-1 text-sm tabular-nums font-medium ${diferenciaVueltoColorClase}`}>
+                          {formatSignedCurrency(vueltoCaja.deltaTotal)}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-xs">
+                        <thead>
+                          <tr className="text-white/50 border-b border-white/[0.06]">
+                            <th className="text-left py-1">Denominación</th>
+                            <th className="text-right py-1">Debe</th>
+                            <th className="text-right py-1">Quedó</th>
+                            <th className="text-right py-1">Δ</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {vueltoCaja.rows.map((row) => {
+                            const statusColorClass = row.status === 'EXACTO' ? 'text-amber-300' : 'text-red-400';
+                            const deltaTexto = row.delta > 0 ? `+${row.delta}` : `${row.delta}`;
+                            return (
+                              <tr key={row.stepKey} className="border-t border-white/[0.06]">
+                                <td className="py-1.5 text-white/70">{row.label}</td>
+                                <td className="py-1.5 text-right tabular-nums text-white/70">{row.expected}</td>
+                                <td className="py-1.5 text-right tabular-nums text-white/90">{row.actual}</td>
+                                <td className={`py-1.5 text-right tabular-nums ${statusColorClass}`}>
+                                  {deltaTexto}
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>

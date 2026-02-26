@@ -59,6 +59,11 @@ const CORTE_FIXTURE = {
   datos_entrega: {
     amount_to_deliver: 327.2,
     amount_remaining: 50,
+    denominations_to_keep: {
+      dime: 5,
+      quarter: 2,
+      bill20: 1,
+    },
     denominations_to_deliver: {
       dime: 5,
       quarter: 3,
@@ -129,6 +134,22 @@ describe('CorteDetalle - UX hierarchy', () => {
     const bloqueCanales = scoped.getByText(/canales electrónicos/i);
     const ordenBloques = bloqueDenominaciones.compareDocumentPosition(bloqueCanales);
     expect(ordenBloques & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it('muestra vuelto en caja con debe quedar, quedó y diferencia en vivo', async () => {
+    render(<CorteDetalle />);
+
+    const heading = await screen.findByText(/vuelto en caja/i);
+    const block = heading.closest('div');
+    expect(block).not.toBeNull();
+    const scoped = within(block as HTMLElement);
+
+    expect(scoped.getByText(/debe quedar/i)).toBeInTheDocument();
+    expect(scoped.getAllByText(/quedó/i).length).toBeGreaterThanOrEqual(1);
+    expect(scoped.getByText(/diferencia/i)).toBeInTheDocument();
+    expect(scoped.getByText('$229.70')).toBeInTheDocument();
+    expect(scoped.getByText('$230.05')).toBeInTheDocument();
+    expect(scoped.getByText('+$0.35')).toBeInTheDocument();
   });
 
   it('mantiene orden panel operativo -> cierre y entrega -> entrega live', async () => {

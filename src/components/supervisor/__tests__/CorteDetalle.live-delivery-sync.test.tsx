@@ -68,7 +68,7 @@ describe('CorteDetalle - sync de entrega live', () => {
     const { rerender } = render(<CorteDetalle />);
 
     const liveHeadingInicial = screen.getByText(/progreso de entrega en vivo/i);
-    const liveCardInicial = liveHeadingInicial.closest('div');
+    const liveCardInicial = liveHeadingInicial.closest('div[aria-live="polite"]');
     expect(liveCardInicial).not.toBeNull();
     const liveScopedInicial = within(liveCardInicial as HTMLElement);
     expect(liveScopedInicial.getByText('$0.00')).toBeInTheDocument();
@@ -93,7 +93,7 @@ describe('CorteDetalle - sync de entrega live', () => {
     rerender(<CorteDetalle />);
 
     const liveHeadingActualizado = await screen.findByText(/progreso de entrega en vivo/i);
-    const liveCardActualizado = liveHeadingActualizado.closest('div');
+    const liveCardActualizado = liveHeadingActualizado.closest('div[aria-live="polite"]');
     expect(liveCardActualizado).not.toBeNull();
     const liveScopedActualizado = within(liveCardActualizado as HTMLElement);
     expect(liveScopedActualizado.getByText(/diez centavos/i)).toBeInTheDocument();

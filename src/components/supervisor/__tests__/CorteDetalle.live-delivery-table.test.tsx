@@ -95,17 +95,45 @@ describe('CorteDetalle - tabla entrega en vivo', () => {
     detailFeedMock.corte = CORTE_FIXTURE;
   });
 
-  it('renderiza tabla de entrega en vivo con esperado/entregado/faltante', async () => {
+  it('renderiza tabla compacta de entrega en vivo con columnas clave visibles por defecto', async () => {
     render(<CorteDetalle />);
 
-    await screen.findByText(/entrega en vivo/i);
-    expect(screen.getByRole('columnheader', { name: /denominación/i })).toBeInTheDocument();
-    expect(screen.getByRole('columnheader', { name: /esperado/i })).toBeInTheDocument();
-    expect(screen.getByRole('columnheader', { name: /entregado/i })).toBeInTheDocument();
-    expect(screen.getByRole('columnheader', { name: /faltante/i })).toBeInTheDocument();
-    expect(screen.getByRole('columnheader', { name: /hora/i })).toBeInTheDocument();
-    expect(screen.getByText(/diez centavos/i)).toBeInTheDocument();
-    expect(screen.getByText(/veinticinco centavos/i)).toBeInTheDocument();
+    const liveHeading = await screen.findByText(/progreso de entrega en vivo/i);
+    const liveCard = liveHeading.closest('div[aria-live="polite"]');
+    expect(liveCard).not.toBeNull();
+    const scoped = within(liveCard as HTMLElement);
+
+    expect(scoped.getByRole('columnheader', { name: /denom/i })).toBeInTheDocument();
+    expect(scoped.getByRole('columnheader', { name: /base/i })).toBeInTheDocument();
+    expect(scoped.getByRole('columnheader', { name: /meta ent/i })).toBeInTheDocument();
+    expect(scoped.getByRole('columnheader', { name: /^ent\.$/i })).toBeInTheDocument();
+    expect(scoped.getByRole('columnheader', { name: /Δ ent/i })).toBeInTheDocument();
+    expect(scoped.getByRole('columnheader', { name: /caja obj/i })).toBeInTheDocument();
+    expect(scoped.getByRole('columnheader', { name: /caja real/i })).toBeInTheDocument();
+    expect(scoped.getByRole('columnheader', { name: /Δ caja/i })).toBeInTheDocument();
+    expect(scoped.getByRole('columnheader', { name: /hora/i })).toBeInTheDocument();
+    expect(scoped.queryByRole('button', { name: /ver caja|ocultar caja/i })).not.toBeInTheDocument();
+    expect(scoped.getByText(/diez centavos/i)).toBeInTheDocument();
+    expect(scoped.getByText(/veinticinco centavos/i)).toBeInTheDocument();
+  });
+
+  it('muestra valores compactos de entrega y caja por denominación', async () => {
+    render(<CorteDetalle />);
+
+    const liveHeading = await screen.findByText(/progreso de entrega en vivo/i);
+    const liveCard = liveHeading.closest('div[aria-live="polite"]');
+    expect(liveCard).not.toBeNull();
+    const scoped = within(liveCard as HTMLElement);
+
+    const rowDiezCentavos = scoped.getByText(/diez centavos/i).closest('tr');
+    expect(rowDiezCentavos).not.toBeNull();
+    const rowScoped = within(rowDiezCentavos as HTMLElement);
+    expect(rowScoped.getByText('12')).toBeInTheDocument();
+    expect(rowScoped.getByText('5')).toBeInTheDocument();
+    expect(rowScoped.getByText('2')).toBeInTheDocument();
+    expect(rowScoped.getByText('7')).toBeInTheDocument();
+    expect(rowScoped.getByText('10')).toBeInTheDocument();
+    expect(rowScoped.getByText('+3')).toBeInTheDocument();
   });
 
   it('ordena filas por ultima hora capturada (mas reciente arriba)', async () => {
@@ -122,7 +150,7 @@ describe('CorteDetalle - tabla entrega en vivo', () => {
     render(<CorteDetalle />);
 
     const liveHeading = await screen.findByText(/progreso de entrega en vivo/i);
-    const liveCard = liveHeading.closest('div');
+    const liveCard = liveHeading.closest('div[aria-live="polite"]');
     expect(liveCard).not.toBeNull();
     const scoped = within(liveCard as HTMLElement);
 
