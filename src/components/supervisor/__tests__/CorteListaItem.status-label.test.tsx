@@ -49,6 +49,18 @@ describe('CorteListaItem - status labels', () => {
     expect((layout as HTMLElement).style.gridTemplateColumns).toBe('56px 1fr auto');
   });
 
+  it('aplica variante ultra-compact para pantallas 2xl sin afectar mobile', () => {
+    render(<CorteListaItem corte={makeCorte({ estado: 'EN_PROGRESO' })} onClick={vi.fn()} />);
+
+    const card = screen.getByRole('button', { name: /Ver detalle del corte/i });
+    const metrics = screen.getByTestId('corte-item-metrics');
+    const layout = screen.getByTestId('corte-item-layout');
+
+    expect(card.className).toContain('2xl:py-2');
+    expect(layout.className).toContain('2xl:gap-x-2');
+    expect(metrics.className).toContain('2xl:min-w-[96px]');
+  });
+
   it('muestra layout jerárquico legible (tiempo, contexto y métricas)', () => {
     render(<CorteListaItem corte={makeCorte({ estado: 'EN_PROGRESO' })} onClick={vi.fn()} />);
 

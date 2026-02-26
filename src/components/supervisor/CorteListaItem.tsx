@@ -231,30 +231,30 @@ export function CorteListaItem({
     <button
       type="button"
       onClick={() => onClick(corte.id)}
-      className="w-full text-left rounded-2xl border border-white/12 bg-white/[0.04] px-3 py-2.5 md:px-3.5 md:py-2.5 hover:bg-white/[0.07] active:bg-white/[0.06] transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
+      className="w-full text-left rounded-2xl border border-white/12 bg-white/[0.04] px-3 py-2.5 md:px-3.5 md:py-2.5 2xl:px-3 2xl:py-2 hover:bg-white/[0.07] active:bg-white/[0.06] transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
       aria-label={`Ver detalle del corte ${corte.correlativo} — ${estadoVisible} — ${nombreSucursal}, ${etiquetaTemporal} ${hora}`}
     >
       <div
         data-testid="corte-item-layout"
-        className="grid items-start gap-x-2.5 gap-y-1"
+        className="grid items-start gap-x-2.5 gap-y-1 2xl:gap-x-2"
         style={{ gridTemplateColumns: '56px 1fr auto' }}
       >
         {/* Rail temporal */}
         <div
           data-testid="corte-item-time-rail"
-          className="flex flex-col items-center justify-start gap-1"
+          className="flex flex-col items-center justify-start gap-1 2xl:gap-0.5"
         >
           <SemaforoIndicador color={colorSemaforo} razon={razonSemaforo} size="md" />
           <div className="text-center leading-tight">
             <p className="text-[9px] uppercase tracking-[0.1em] text-white/35">Hora</p>
-            <p className="text-sm md:text-base font-medium text-white/65 tabular-nums">{hora}</p>
+            <p className="text-sm md:text-base 2xl:text-sm font-medium text-white/65 tabular-nums">{hora}</p>
           </div>
         </div>
 
         {/* Contexto principal */}
         <div data-testid="corte-item-context" className="min-w-0 space-y-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <p className="text-base md:text-lg font-semibold text-white/90 truncate leading-tight">
+          <div className="flex flex-wrap items-center gap-2 2xl:gap-1.5">
+            <p className="text-base md:text-lg 2xl:text-base font-semibold text-white/90 truncate leading-tight">
               {nombreSucursal}
             </p>
             <span
@@ -263,19 +263,19 @@ export function CorteListaItem({
               {estadoVisible}
             </span>
           </div>
-          <p className="text-sm md:text-base text-white/60 truncate leading-tight">
+          <p className="text-sm md:text-base 2xl:text-sm text-white/60 truncate leading-tight">
             {corte.cajero}
           </p>
 
-          <div className="flex flex-wrap items-center gap-1.5 md:gap-1">
-            <span className="inline-flex items-center rounded-md border border-white/15 bg-white/[0.02] px-2 py-0.5 text-[11px] font-medium font-mono text-white/60">
+          <div className="flex flex-wrap items-center gap-1.5 md:gap-1 2xl:gap-0.5">
+            <span className="inline-flex items-center rounded-md border border-white/15 bg-white/[0.02] px-2 py-0.5 2xl:px-1.5 2xl:text-[10px] text-[11px] font-medium font-mono text-white/60">
               {corte.correlativo}
             </span>
-            <span className="inline-flex items-center rounded-full border border-white/15 px-2 py-0.5 text-[10px] text-white/65">
+            <span className="inline-flex items-center rounded-full border border-white/15 px-2 py-0.5 2xl:px-1.5 text-[10px] text-white/65">
               {secuencialTexto}
             </span>
             {contextoCorrelativo && contextoCorrelativo.atraso > 0 && (
-              <span className="inline-flex items-center rounded-full border border-amber-500/35 bg-amber-500/10 px-2 py-0.5 text-[10px] font-medium text-amber-300">
+              <span className="inline-flex items-center rounded-full border border-amber-500/35 bg-amber-500/10 px-2 py-0.5 2xl:px-1.5 text-[10px] font-medium text-amber-300">
                 Atraso {contextoCorrelativo.atraso}
               </span>
             )}
@@ -287,15 +287,15 @@ export function CorteListaItem({
         </div>
 
         {/* Metricas */}
-        <div data-testid="corte-item-metrics" className="text-right flex-shrink-0 min-w-[110px] md:min-w-[102px]">
+        <div data-testid="corte-item-metrics" className="text-right flex-shrink-0 min-w-[110px] md:min-w-[102px] 2xl:min-w-[96px]">
           {disponible ? (
             <>
               <p className="text-[9px] uppercase tracking-[0.1em] text-white/35">Total</p>
-              <p className="text-xl md:text-[1.55rem] font-semibold text-white/90 tabular-nums leading-none mt-0.5">
+              <p className="text-xl md:text-[1.55rem] 2xl:text-[1.35rem] font-semibold text-white/90 tabular-nums leading-none mt-0.5">
                 {formatCurrency(totalContado)}
               </p>
               <p className="text-[9px] uppercase tracking-[0.1em] text-white/35 mt-1">Diferencia</p>
-              <p className={`text-lg md:text-xl font-semibold tabular-nums leading-none mt-0.5 ${diferenciaClaseColor}`}>
+              <p className={`text-lg md:text-xl 2xl:text-lg font-semibold tabular-nums leading-none mt-0.5 ${diferenciaClaseColor}`}>
                 {diferenciaTexto}
               </p>
             </>
