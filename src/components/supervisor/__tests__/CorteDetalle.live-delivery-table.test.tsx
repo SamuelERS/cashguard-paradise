@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const detailFeedMock = vi.hoisted(() => ({
@@ -116,5 +116,16 @@ describe('CorteDetalle - tabla entrega en vivo', () => {
     expect(rows.length).toBeGreaterThanOrEqual(2);
     expect(rows[0].textContent?.toLowerCase()).toContain('veinticinco centavos');
     expect(rows[1].textContent?.toLowerCase()).toContain('diez centavos');
+  });
+
+  it('muestra hora compacta sin fecha en filas de entrega live', async () => {
+    render(<CorteDetalle />);
+
+    const liveHeading = await screen.findByText(/progreso de entrega en vivo/i);
+    const liveCard = liveHeading.closest('div');
+    expect(liveCard).not.toBeNull();
+    const scoped = within(liveCard as HTMLElement);
+
+    expect(scoped.queryByText(/\d{2}\/\d{2}\/\d{4}/i)).not.toBeInTheDocument();
   });
 });

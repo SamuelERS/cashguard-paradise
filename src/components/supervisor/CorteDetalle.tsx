@@ -102,6 +102,20 @@ function formatearFechaHora(isoString: string | null): string {
   }
 }
 
+function formatearHoraLocal(isoString: string | null): string {
+  if (!isoString) return '—';
+  try {
+    return new Intl.DateTimeFormat('es', {
+      timeZone: 'America/El_Salvador',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+    }).format(new Date(isoString));
+  } catch {
+    return '—';
+  }
+}
+
 function parseIsoTimestamp(isoString: string | null): number {
   if (!isoString) return 0;
   const parsed = Date.parse(isoString);
@@ -253,6 +267,8 @@ type EntregaLiveRow = {
   expected: number;
   delivered: number;
   missing: number;
+  delta: number;
+  status: 'EXACTO' | 'FALTANTE' | 'SOBRANTE';
   lastCapturedAt: string | null;
 };
 
@@ -333,6 +349,12 @@ function extraerEntregaLiveRows(
     .map((denomination) => {
       const expectedValue = expected[denomination.key] ?? 0;
       const deliveredValue = delivered[denomination.key] ?? 0;
+      const delta = deliveredValue - expectedValue;
+      const status: EntregaLiveRow['status'] = delta === 0
+        ? 'EXACTO'
+        : delta < 0
+          ? 'FALTANTE'
+          : 'SOBRANTE';
       const lastEvent = [...events].reverse().find((event) => event.stepKey === denomination.key);
       return {
         stepKey: denomination.key,
@@ -340,6 +362,8 @@ function extraerEntregaLiveRows(
         expected: expectedValue,
         delivered: deliveredValue,
         missing: Math.max(expectedValue - deliveredValue, 0),
+        delta,
+        status,
         lastCapturedAt: lastEvent?.capturedAt ?? null,
       };
     })
@@ -638,68 +662,80 @@ export function CorteDetalle() {
   };
   const operationalCards: OperationalCard[] = [];
 
-  if (entregaLive.rows.length > 0) {
-    operationalCards.push({
-      key: 'entrega-live',
-      activityMs: actividadEntregaLiveMs || actividadBaseMs,
-      fallbackOrder: 10,
-      node: (
-        <div key="entrega-live" className={`${cardClassName} border-cyan-500/20`} aria-live="polite">
-          <p className="text-xs font-medium text-cyan-200/80 uppercase tracking-wider mb-2">
-            Progreso de entrega en vivo
-          </p>
-          <div className="h-2 w-full rounded-full bg-white/[0.08] overflow-hidden mb-3">
-            <div
-              className="h-full rounded-full bg-gradient-to-r from-cyan-400 to-blue-400 transition-all duration-300"
-              style={{ width: `${progresoEntrega === 0 ? 0 : Math.max(progresoEntrega, 4)}%` }}
-            />
-          </div>
-          <div className="flex items-center justify-between gap-2 pb-2 border-b border-white/[0.06] mb-2">
-            <span className="text-xs text-white/50">Entregado acumulado</span>
-            <span className="text-sm tabular-nums text-white/90">
-              {formatCurrency(entregadoAcumulado)}
-            </span>
-          </div>
-          <div className="flex items-center justify-between gap-2 pb-2 border-b border-white/[0.06] mb-2">
-            <span className="text-xs text-white/50">Faltante por entregar</span>
-            <span className="text-sm tabular-nums text-amber-300">
-              {formatCurrency(faltanteEntrega)}
-            </span>
-          </div>
-          <div className="flex items-center justify-between gap-2 pb-2 border-b border-white/[0.06] mb-2">
-            <span className="text-xs text-white/50">Cumplimiento</span>
-            <span className="text-sm tabular-nums text-cyan-200">
-              {progresoEntrega.toFixed(1)}%
-            </span>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs">
-              <thead>
-                <tr className="text-white/50">
-                  <th className="text-left py-1">Denominación</th>
-                  <th className="text-right py-1">Esperado</th>
-                  <th className="text-right py-1">Entregado</th>
-                  <th className="text-right py-1">Faltante</th>
-                  <th className="text-right py-1">Hora</th>
-                </tr>
-              </thead>
-              <tbody>
-                {entregaLive.rows.map((row) => (
+  const entregaLiveCard = entregaLive.rows.length > 0
+    ? (
+      <div key="entrega-live" className={`${cardClassName} border-cyan-500/20`} aria-live="polite">
+        <p className="text-xs font-medium text-cyan-200/80 uppercase tracking-wider mb-2">
+          Progreso de entrega en vivo
+        </p>
+        <div className="h-2 w-full rounded-full bg-white/[0.08] overflow-hidden mb-3">
+          <div
+            className="h-full rounded-full bg-gradient-to-r from-cyan-400 to-blue-400 transition-all duration-300"
+            style={{ width: `${progresoEntrega === 0 ? 0 : Math.max(progresoEntrega, 4)}%` }}
+          />
+        </div>
+        <div className="flex items-center justify-between gap-2 pb-2 border-b border-white/[0.06] mb-2">
+          <span className="text-xs text-white/50">Entregado acumulado</span>
+          <span className="text-sm tabular-nums text-white/90">
+            {formatCurrency(entregadoAcumulado)}
+          </span>
+        </div>
+        <div className="flex items-center justify-between gap-2 pb-2 border-b border-white/[0.06] mb-2">
+          <span className="text-xs text-white/50">Faltante por entregar</span>
+          <span className="text-sm tabular-nums text-amber-300">
+            {formatCurrency(faltanteEntrega)}
+          </span>
+        </div>
+        <div className="flex items-center justify-between gap-2 pb-2 border-b border-white/[0.06] mb-2">
+          <span className="text-xs text-white/50">Cumplimiento</span>
+          <span className="text-sm tabular-nums text-cyan-200">
+            {progresoEntrega.toFixed(1)}%
+          </span>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs">
+            <thead>
+              <tr className="text-white/50">
+                <th className="text-left py-1">Denominación</th>
+                <th className="text-right py-1">Esperado</th>
+                <th className="text-right py-1">Entregado</th>
+                <th className="text-right py-1">Faltante</th>
+                <th className="text-right py-1">Hora</th>
+              </tr>
+            </thead>
+            <tbody>
+              {entregaLive.rows.map((row) => {
+                const statusLabel = row.status === 'EXACTO'
+                  ? 'Exacto'
+                  : row.status === 'FALTANTE'
+                    ? 'Faltante'
+                    : 'Sobrante';
+                const statusColorClass = row.status === 'EXACTO' ? 'text-amber-300' : 'text-red-400';
+                const faltanteValor = row.status === 'SOBRANTE' ? `+${row.delta}` : `${row.missing}`;
+
+                return (
                   <tr key={row.stepKey} className="border-t border-white/[0.06]">
                     <td className="py-1.5 text-white/80">{row.label}</td>
                     <td className="py-1.5 text-right tabular-nums text-white/70">{row.expected}</td>
                     <td className="py-1.5 text-right tabular-nums text-white/90">{row.delivered}</td>
-                    <td className="py-1.5 text-right tabular-nums text-amber-300">{row.missing}</td>
-                    <td className="py-1.5 text-right text-white/50">{formatearFechaHora(row.lastCapturedAt)}</td>
+                    <td className="py-1.5 text-right tabular-nums">
+                      <div className="inline-flex items-center gap-1">
+                        <span className={statusColorClass}>{faltanteValor}</span>
+                        <span className={`text-[11px] uppercase tracking-wide ${statusColorClass}`}>
+                          {statusLabel}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="py-1.5 text-right text-white/50">{formatearHoraLocal(row.lastCapturedAt)}</td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
-      ),
-    });
-  }
+      </div>
+    )
+    : null;
 
   if (mostrarEntrega) {
     operationalCards.push({
@@ -987,6 +1023,8 @@ export function CorteDetalle() {
           </div>
         </div>
       </section>
+
+      {entregaLiveCard}
 
       {/* Card: incidencia de cierre en estado ABORTADO */}
       {corte.estado === 'ABORTADO' && (
