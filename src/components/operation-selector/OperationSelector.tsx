@@ -1,4 +1,4 @@
-// 🤖 [IA] - v4.0.5: versión oficial con mejoras UX recientes
+// 🤖 [IA] - v4.0.8: versión oficial con mejoras UX recientes
 // Previous: v3.4.1 - OT12 - Fix denomination images (6 archivos copiados con nombres correctos + tests TDD)
 // Previous: v3.3.2 - CASO-SANN-R2 - Panel interactivo sesión activa en Step 5 (reanudar/abortar)
 // Previous: v3.3.1 - CASO-SANN-R1 - Banner sesión activa oculto en Paso 1 (Protocolo)
@@ -27,37 +27,43 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
   const deliveryView = OPERATION_MODES[OperationMode.DELIVERY_VIEW];
   
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <div className="h-full relative overflow-hidden">
       {/* 🤖 [IA] - v1.2.24 - Partículas flotantes eliminadas para mejorar rendimiento */}
       
       {/* 🤖 [IA] - v1.0.87 - Logos corporativos en esquinas superiores */}
       <div className="operation-brand-strip">
-        <motion.img 
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.1 }}
-          className="operation-brand-logo operation-brand-logo--left"
-          src="/logo-paradise.png"
-          alt=""
-          aria-hidden="true"
-        />
-        <motion.img 
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.1 }}
-          className="operation-brand-logo operation-brand-logo--right"
-          src="/productos-acuarios.png"
-          alt=""
-          aria-hidden="true"
-        />
+        <div className="operation-brand-shell">
+          <div className="operation-brand-left">
+            <motion.img 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.1 }}
+              className="operation-brand-logo operation-brand-logo--left"
+              src="/logo-paradise.png"
+              alt=""
+              aria-hidden="true"
+            />
+          </div>
+          <div className="operation-brand-right">
+            <motion.img 
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.1 }}
+              className="operation-brand-logo operation-brand-logo--right"
+              src="/productos-acuarios.png"
+              alt=""
+              aria-hidden="true"
+            />
+          </div>
+        </div>
       </div>
       
-      <div className="relative z-10 container mx-auto px-4 py-5 md:py-7">
+      <div className="relative z-10 container mx-auto px-4 py-2 md:py-3">
         {/* Header con título principal */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8 pt-12 text-center md:pt-16"
+          className="mb-5 pt-2 text-center md:pt-3"
         >
           <div className="flex items-center justify-center gap-3 mb-4">
             <Calculator
@@ -77,7 +83,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
               }}>
                 Seleccione Operación
               </h1>
-              {/* 🤖 [IA] - v4.0.5: release oficial */}
+              {/* 🤖 [IA] - v4.0.8: release oficial */}
               <span className="px-3 py-1 rounded-full text-xs font-semibold shadow-lg" style={{
                 background: 'linear-gradient(135deg, #d4af37 0%, #aa8c2d 100%)',
                 color: '#1a1a1a',
@@ -85,7 +91,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
                 boxShadow: '0 4px 6px rgba(212, 175, 55, 0.4)',
                 border: '1px solid rgba(255, 215, 0, 0.3)'
               }}>
-                  v4.0.5
+                  v4.0.8
               </span>
             </div>
           </div>
@@ -427,33 +433,6 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
           </motion.button>
         </div>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-          className="mx-auto mt-8 max-w-2xl"
-        >
-          <motion.div
-            role="note"
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.25 }}
-            className="operation-team-panel operation-team-panel--fixed rounded-xl"
-          >
-            <p className="operation-team-heading">Compromiso Operativo</p>
-            <p className="operation-team-body">
-              Este sistema resguarda tu trabajo diario con trazabilidad, orden y transparencia en cada corte.
-            </p>
-            <p className="operation-team-body operation-team-body--secondary">
-              Gracias por operar con precisión y cuidar los recursos de Paradise en cada turno.
-            </p>
-
-            <div className="operation-team-footer">
-              <span className="operation-team-signature">Equipo de Acuarios Paradise</span>
-              <span className="operation-team-tag font-semibold">🕊️ JesucristoEsDios ❤️</span>
-            </div>
-          </motion.div>
-        </motion.div>
       </div>
     </div>
   );

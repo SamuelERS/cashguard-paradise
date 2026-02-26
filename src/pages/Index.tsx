@@ -10,6 +10,7 @@ import InitialWizardModal from "@/components/InitialWizardModal";
 import { OperationSelector } from "@/components/operation-selector/OperationSelector";
 import { MorningCountWizard } from "@/components/morning-count/MorningCountWizard";
 import { DeliveryDashboardWrapper } from "@/components/deliveries/DeliveryDashboardWrapper";
+import { AppFooter } from '@/components/AppFooter';
 import { useOperationMode } from "@/hooks/useOperationMode";
 import { OperationMode } from "@/types/operation-mode";
 import { DailyExpense, isDailyExpense } from '@/types/expenses'; // 🤖 [IA] - v1.4.0 + ORDEN #28 M6
@@ -552,43 +553,46 @@ const Index = () => {
   // 🤖 [IA] - v1.0.88 - Mostrar OperationSelector si no hay modo O si hay wizard abierto
   if (!currentMode || showWizard || showMorningWizard || cashCutSessionCheckInProgress) {
     return (
-      <>
-        <OperationSelector onSelectMode={handleModeSelection} />
-        <AnimatePresence initial={false} mode="wait">
-          {showWizard && (
-            <InitialWizardModal
-              isOpen={showWizard}
-              onClose={() => {
-                setShowWizard(false);
-                setWizardCompletionError(null);
-                resetMode(); // 🤖 [IA] - v1.0.88 - Resetear modo para volver a OperationSelector
-              }}
-              onComplete={handleWizardComplete}
-              initialSucursalId={activeCashCutSucursalId}
-              hasActiveSession={hasActiveCashCutSession}
-              // [IA] - CASO-SANN-R2: Callbacks para panel sesión activa Step 5
-              onResumeSession={handleResumeSession}
-              onAbortSession={handleAbortSession}
-              // [IA] - R3-B2: Info enriquecida para identificador en Step 5
-              activeSessionInfo={activeSessionInfo}
-              // [IA] - BRANCH-ISOLATION: sucursal dueña de sesión activa detectada
-              activeSessionSucursalId={activeCashCutSucursalId}
-              onCheckActiveSessionForStore={handleCheckActiveSessionForStore}
-              completionError={wizardCompletionError}
-            />
-          )}
-          {showMorningWizard && (
-            <MorningCountWizard
-              isOpen={showMorningWizard}
-              onClose={() => {
-                setShowMorningWizard(false);
-                resetMode(); // 🤖 [IA] - v1.0.88 - Resetear modo para volver a OperationSelector
-              }}
-              onComplete={handleWizardComplete}
-            />
-          )}
-        </AnimatePresence>
-      </>
+      <div className="min-h-screen bg-[#0a0a0a] text-white flex flex-col">
+        <div className="flex-1">
+          <OperationSelector onSelectMode={handleModeSelection} />
+          <AnimatePresence initial={false} mode="wait">
+            {showWizard && (
+              <InitialWizardModal
+                isOpen={showWizard}
+                onClose={() => {
+                  setShowWizard(false);
+                  setWizardCompletionError(null);
+                  resetMode(); // 🤖 [IA] - v1.0.88 - Resetear modo para volver a OperationSelector
+                }}
+                onComplete={handleWizardComplete}
+                initialSucursalId={activeCashCutSucursalId}
+                hasActiveSession={hasActiveCashCutSession}
+                // [IA] - CASO-SANN-R2: Callbacks para panel sesión activa Step 5
+                onResumeSession={handleResumeSession}
+                onAbortSession={handleAbortSession}
+                // [IA] - R3-B2: Info enriquecida para identificador en Step 5
+                activeSessionInfo={activeSessionInfo}
+                // [IA] - BRANCH-ISOLATION: sucursal dueña de sesión activa detectada
+                activeSessionSucursalId={activeCashCutSucursalId}
+                onCheckActiveSessionForStore={handleCheckActiveSessionForStore}
+                completionError={wizardCompletionError}
+              />
+            )}
+            {showMorningWizard && (
+              <MorningCountWizard
+                isOpen={showMorningWizard}
+                onClose={() => {
+                  setShowMorningWizard(false);
+                  resetMode(); // 🤖 [IA] - v1.0.88 - Resetear modo para volver a OperationSelector
+                }}
+                onComplete={handleWizardComplete}
+              />
+            )}
+          </AnimatePresence>
+        </div>
+        <AppFooter containerClassName="max-w-6xl px-4" />
+      </div>
     );
   }
 
@@ -651,7 +655,14 @@ const Index = () => {
   }
 
   // Fallback seguro: nunca dejar pantalla negra.
-  return <OperationSelector onSelectMode={handleModeSelection} />;
+  return (
+    <div className="min-h-screen bg-[#0a0a0a] text-white flex flex-col">
+      <div className="flex-1">
+        <OperationSelector onSelectMode={handleModeSelection} />
+      </div>
+      <AppFooter containerClassName="max-w-6xl px-4" />
+    </div>
+  );
 };
 
 export default Index;

@@ -120,6 +120,16 @@ export function useCorteSesion(
     );
   };
 
+  const isNoRowsFromSingle = (
+    error: { message?: string | null; code?: string | null } | null | undefined,
+  ): boolean => {
+    const message = (error?.message ?? '').toLowerCase();
+    return (
+      error?.code === 'PGRST116' ||
+      message.includes('multiple (or no) rows returned')
+    );
+  };
+
   const autoRecuperarSesion = options?.autoRecuperarSesion ?? true;
   const procesarColaEnReconexion = options?.procesarColaEnReconexion ?? true;
   const [corteActual, setCorteActual] = useState<Corte | null>(null);
@@ -361,10 +371,15 @@ export function useCorteSesion(
           updated_at: new Date().toISOString(),
         })
         .eq('id', corteActual.id)
+        .in('estado', ['INICIADO', 'EN_PROGRESO'])
         .select()
         .single();
 
       if (updateError || !corteActualizado) {
+        // No-op seguro: un autosave tardío no debe reabrir un corte terminal.
+        if (isNoRowsFromSingle(updateError)) {
+          return;
+        }
         throw new Error(updateError?.message ?? 'Error al guardar progreso');
       }
 
@@ -805,10 +820,14 @@ export function useCorteSesion(
             updated_at: new Date().toISOString(),
           })
           .eq('id', op.corteId)
+          .in('estado', ['INICIADO', 'EN_PROGRESO'])
           .select()
           .single();
 
         if (updateError) {
+          if (isNoRowsFromSingle(updateError)) {
+            return;
+          }
           if (esErrorInmutabilidadTerminal(updateError.message)) {
             throw new Error(MENSAJE_CORTE_TERMINAL_INMUTABLE);
           }

@@ -156,20 +156,18 @@ describe('🌅 Morning Count Flow Simplified Tests', () => {
     expect(screen.getByText('Fin de Turno')).toBeInTheDocument();
   });
 
-  it('debe mostrar mensaje institucional fijo del equipo', async () => {
+  it('debe mostrar mensaje institucional en footer global', async () => {
     renderWithProviders(<Index />);
 
     await waitFor(() => {
       expect(screen.getByText(/Seleccione Operación/)).toBeInTheDocument();
     });
 
-    const panel = screen.getByRole('note');
-    expect(within(panel).getByText(/Compromiso Operativo/i)).toBeInTheDocument();
-    expect(
-      within(panel).getByText(/Este sistema resguarda tu trabajo diario/i),
-    ).toBeInTheDocument();
-    expect(within(panel).getByText(/Equipo de Acuarios Paradise/i)).toBeInTheDocument();
-    expect(within(panel).getByText(/JesucristoEsDios/i)).toBeInTheDocument();
+    const footer = screen.getByRole('contentinfo', { name: /compromiso operativo/i });
+    expect(within(footer).getByText(/Compromiso Operativo/i)).toBeInTheDocument();
+    expect(within(footer).getByText(/Este sistema resguarda tu trabajo diario/i)).toBeInTheDocument();
+    expect(within(footer).getByText(/Equipo de Acuarios Paradise/i)).toBeInTheDocument();
+    expect(within(footer).getByText(/JesucristoEsDios/i)).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /ver mensaje del equipo/i })).not.toBeInTheDocument();
   });
 

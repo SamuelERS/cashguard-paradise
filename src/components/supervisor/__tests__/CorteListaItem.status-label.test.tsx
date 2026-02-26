@@ -35,6 +35,28 @@ function makeCorte(overrides: Partial<CorteConSucursal>): CorteConSucursal {
 }
 
 describe('CorteListaItem - status labels', () => {
+  it('usa densidad compacta para evitar tarjetas gigantes', () => {
+    render(<CorteListaItem corte={makeCorte({ estado: 'EN_PROGRESO' })} onClick={vi.fn()} />);
+
+    const card = screen.getByRole('button', { name: /Ver detalle del corte/i });
+    const metrics = screen.getByTestId('corte-item-metrics');
+    const context = screen.getByTestId('corte-item-context');
+    const layout = screen.getByTestId('corte-item-layout');
+
+    expect(card.className).toContain('py-2.5');
+    expect(metrics.className).toContain('min-w-[110px]');
+    expect(context.className).toContain('space-y-1');
+    expect((layout as HTMLElement).style.gridTemplateColumns).toBe('56px 1fr auto');
+  });
+
+  it('muestra layout jerárquico legible (tiempo, contexto y métricas)', () => {
+    render(<CorteListaItem corte={makeCorte({ estado: 'EN_PROGRESO' })} onClick={vi.fn()} />);
+
+    expect(screen.getByTestId('corte-item-time-rail')).toBeInTheDocument();
+    expect(screen.getByTestId('corte-item-context')).toBeInTheDocument();
+    expect(screen.getByTestId('corte-item-metrics')).toBeInTheDocument();
+  });
+
   it('muestra badge EN PROGRESO y etiqueta temporal Creado', () => {
     render(<CorteListaItem corte={makeCorte({ estado: 'EN_PROGRESO' })} onClick={vi.fn()} />);
 

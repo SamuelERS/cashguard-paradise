@@ -66,9 +66,11 @@ export function CortesDelDia() {
     .sort(([codigoA], [codigoB]) => codigoA.localeCompare(codigoB))
     .map(([codigo, maxSecuencial]) => `${codigo}: #${String(maxSecuencial).padStart(3, '0')}`);
   const hayActividad = todayView.resumen.total > 0;
-  const ultimaActividadTexto = todayView.resumen.ultimaActividad
-    ? `${todayView.resumen.ultimaActividad.correlativo} · ${todayView.resumen.ultimaActividad.estado.replace(/_/g, ' ')}`
-    : 'Sin actividad reciente';
+  const ultimaActividad = todayView.resumen.ultimaActividad;
+  const ultimaActividadEstado = ultimaActividad
+    ? ultimaActividad.estado.replace(/_/g, ' ')
+    : 'SIN ACTIVIDAD';
+  const ultimaActividadCorrelativo = ultimaActividad?.correlativo ?? 'Sin actividad reciente';
 
   // ── Handlers ──────────────────────────────────────────────────────────────
 
@@ -120,11 +122,11 @@ export function CortesDelDia() {
   // ── Render principal ──────────────────────────────────────────────────────
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-5">
       {/* Encabezado con timestamp de última actualización */}
-      <div className="flex items-center justify-between px-1">
-        <h2 className="text-base font-semibold text-white/90">Cortes de hoy</h2>
-        <div className="flex items-center gap-2">
+      <div className="flex items-end justify-between gap-2 px-1">
+        <h2 className="text-lg font-semibold tracking-tight text-white/90">Cortes de hoy</h2>
+        <div className="flex items-center gap-2 whitespace-nowrap">
           <SupervisorLiveBadge
             status={realtimeStatus}
             actualizando={actualizando}
@@ -156,18 +158,45 @@ export function CortesDelDia() {
       )}
 
       {hayActividad && (
-        <div className="sticky top-20 z-10 rounded-lg border border-white/10 bg-[#0b0b0b]/95 backdrop-blur px-3 py-2">
-          <h3 className="text-xs font-semibold text-white/80">Resumen en vivo</h3>
-          <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-white/70">
-            <span>Total cortes: {todayView.resumen.total}</span>
-            <span>Activos: {todayView.resumen.activos}</span>
-            <span>Finalizados: {todayView.resumen.finalizados}</span>
-            <span>Activos atrasados: {correlativoMetrics.activosAtrasados}</span>
+        <div
+          data-testid="cortes-resumen-card"
+          className="sticky top-20 z-10 rounded-xl border border-white/12 bg-[#0b0b0b]/95 backdrop-blur-xl px-3.5 py-3"
+        >
+          <h3 className="text-sm font-semibold tracking-tight text-white/85">Resumen en vivo</h3>
+          <ul
+            data-testid="cortes-resumen-metrics"
+            className="mt-2 grid grid-cols-2 gap-2 md:grid-cols-4"
+            role="list"
+            aria-label="Métricas resumidas de cortes"
+          >
+            <li data-testid="metric-total-cortes" className="rounded-lg border border-white/10 bg-white/[0.03] px-2 py-1.5">
+              <p className="text-[10px] uppercase tracking-[0.08em] text-white/45">Total</p>
+              <p className="text-xs text-white/80">Total cortes: {todayView.resumen.total}</p>
+            </li>
+            <li data-testid="metric-activos" className="rounded-lg border border-emerald-500/20 bg-emerald-500/[0.07] px-2 py-1.5">
+              <p className="text-[10px] uppercase tracking-[0.08em] text-emerald-300/80">Activos</p>
+              <p className="text-xs text-emerald-300">Activos: {todayView.resumen.activos}</p>
+            </li>
+            <li data-testid="metric-finalizados" className="rounded-lg border border-sky-500/20 bg-sky-500/[0.07] px-2 py-1.5">
+              <p className="text-[10px] uppercase tracking-[0.08em] text-sky-300/80">Finalizados</p>
+              <p className="text-xs text-sky-300">Finalizados: {todayView.resumen.finalizados}</p>
+            </li>
+            <li data-testid="metric-atrasados" className="rounded-lg border border-amber-500/20 bg-amber-500/[0.07] px-2 py-1.5">
+              <p className="text-[10px] uppercase tracking-[0.08em] text-amber-300/80">Atrasados</p>
+              <p className="text-xs text-amber-300">Activos atrasados: {correlativoMetrics.activosAtrasados}</p>
+            </li>
+          </ul>
+          <div data-testid="cortes-ultima-actividad" className="mt-2 flex flex-wrap items-center gap-1.5">
+            <span className="text-[10px] uppercase tracking-[0.08em] text-white/45">Última actividad</span>
+            <span className="text-xs text-white/75">{ultimaActividadCorrelativo}</span>
+            <span
+              data-testid="cortes-ultima-estado"
+              className="px-2 py-0.5 rounded-full border border-white/15 text-[10px] font-semibold text-white/70"
+            >
+              {ultimaActividadEstado}
+            </span>
           </div>
-          <p className="mt-1 text-[11px] text-white/55 truncate">
-            Última actividad: {ultimaActividadTexto}
-          </p>
-          <div className="mt-1 flex flex-wrap gap-2 text-[11px] text-white/55">
+          <div className="mt-2 flex flex-wrap gap-2 text-[11px] text-white/55">
             <span className="px-2 py-0.5 rounded-full border border-white/10">
               Sucursales activas: {sucursalesConActividad}
             </span>
@@ -198,7 +227,12 @@ export function CortesDelDia() {
           {activos.length > 0 && (
             <section className="flex flex-col gap-2" aria-label="Activos ahora">
               <div className="flex items-center justify-between px-1">
-                <h3 className="text-sm font-semibold text-emerald-300/90">Activos ahora</h3>
+                <h3
+                  data-testid="cortes-activos-heading"
+                  className="text-base font-semibold tracking-tight text-emerald-300/90"
+                >
+                  Activos ahora
+                </h3>
                 <span className="text-xs text-white/40">
                   {activos.length} {activos.length === 1 ? 'corte' : 'cortes'}
                 </span>
@@ -222,7 +256,12 @@ export function CortesDelDia() {
           {finalizados.length > 0 && (
             <section className="flex flex-col gap-2" aria-label="Finalizados hoy">
               <div className="flex items-center justify-between px-1">
-                <h3 className="text-sm font-semibold text-sky-300/90">Finalizados hoy</h3>
+                <h3
+                  data-testid="cortes-finalizados-heading"
+                  className="text-base font-semibold tracking-tight text-sky-300/90"
+                >
+                  Finalizados hoy
+                </h3>
                 <span className="text-xs text-white/40">
                   {finalizados.length} {finalizados.length === 1 ? 'corte' : 'cortes'}
                 </span>

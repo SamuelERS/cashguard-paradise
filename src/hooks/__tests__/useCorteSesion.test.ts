@@ -850,6 +850,30 @@ describe('Suite 4: guardarProgreso', () => {
     ][0];
     expect(updateCall.datos_entrega).toBeNull();
   });
+
+  it('4.8 - Ignora autosave tardío cuando la fila ya no está activa', async () => {
+    const result = await renderWithCorte(CORTE_EN_PROGRESO, INTENTO_MOCK);
+
+    mockChain.cortes.single.mockResolvedValueOnce({
+      data: null,
+      error: {
+        code: 'PGRST116',
+        message: 'JSON object requested, multiple (or no) rows returned',
+      },
+    });
+
+    await act(async () => {
+      await result.current.guardarProgreso({
+        fase_actual: 3,
+        conteo_parcial: { penny: 1 },
+        pagos_electronicos: { credomatic: 2 },
+        gastos_dia: null,
+      });
+    });
+
+    expect(mockChain.cortes.in).toHaveBeenCalledWith('estado', ['INICIADO', 'EN_PROGRESO']);
+    expect(result.current.error).toBeNull();
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -1631,6 +1655,39 @@ describe('Suite 11: Reconexión automática — procesarCola al volver online', 
         estado: 'COMPLETADO',
       }),
     );
+  });
+
+  it('11.2c - Executor ignora GUARDAR_PROGRESO tardío cuando el corte ya no está activo', async () => {
+    await renderWithCorte(CORTE_EN_PROGRESO, INTENTO_MOCK);
+
+    const executor = mockProcesarCola.mock.calls[0][0] as (op: {
+      tipo: string;
+      payload: Record<string, unknown>;
+      corteId: string;
+    }) => Promise<void>;
+
+    mockChain.cortes.single.mockResolvedValueOnce({
+      data: null,
+      error: {
+        code: 'PGRST116',
+        message: 'JSON object requested, multiple (or no) rows returned',
+      },
+    });
+
+    await executor({
+      tipo: 'GUARDAR_PROGRESO',
+      payload: {
+        fase_actual: 2,
+        datos_conteo: {
+          conteo_parcial: { penny: 3 },
+          pagos_electronicos: { credomatic: 5 },
+          gastos_dia: null,
+        },
+      },
+      corteId: CORTE_EN_PROGRESO.id,
+    });
+
+    expect(mockChain.cortes.in).toHaveBeenCalledWith('estado', ['INICIADO', 'EN_PROGRESO']);
   });
 
   it('11.3 - Si procesarCola falla, no rompe la UI (degradación elegante)', async () => {

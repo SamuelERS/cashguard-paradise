@@ -39,12 +39,25 @@ describe('OperationSelector UX contract (TDD RED)', () => {
     const tsx = readFileSync(resolve(TSX_PATH), 'utf-8');
 
     expect(tsx).toMatch(/operation-brand-strip/);
+    expect(tsx).toMatch(/operation-brand-shell/);
+    expect(tsx).toMatch(/operation-brand-left/);
+    expect(tsx).toMatch(/operation-brand-right/);
     expect(tsx).toMatch(/operation-brand-logo operation-brand-logo--left/);
     expect(tsx).toMatch(/operation-brand-logo operation-brand-logo--right/);
 
-    expect(css).toMatch(/\.operation-brand-logo\s*\{[\s\S]*height:\s*clamp\(32px,\s*7vw,\s*64px\)/);
-    expect(css).toMatch(/\.operation-brand-logo--right\s*\{[\s\S]*max-height:\s*60px/);
-    expect(css).toMatch(/@media\s*\(max-width:\s*430px\)[\s\S]*\.operation-brand-logo--right[\s\S]*(scale\(|max-height:\s*44px|opacity:\s*0\.[0-9]+)/);
+    expect(css).toMatch(/\.operation-brand-strip\s*\{[\s\S]*position:\s*relative/);
+    expect(css).toMatch(/\.operation-brand-shell\s*\{[\s\S]*display:\s*flex/);
+    expect(css).toMatch(/\.operation-brand-shell\s*\{[\s\S]*justify-content:\s*space-between/);
+    expect(css).toMatch(/\.operation-brand-shell\s*\{[\s\S]*max-width:\s*1400px/);
+    expect(css).toMatch(/\.operation-brand-shell\s*\{[\s\S]*padding:\s*clamp\(8px,\s*1\.2vw,\s*12px\)\s*clamp\(14px,\s*2\.8vw,\s*32px\)\s*0/);
+    expect(css).toMatch(/\.operation-brand-right\s*\{[\s\S]*margin-left:\s*auto/);
+    expect(css).toMatch(/\.operation-brand-right\s*\{[\s\S]*justify-content:\s*flex-end/);
+    expect(css).toMatch(/\.operation-brand-shell\s*\{[\s\S]*min-height:\s*clamp\(48px,\s*6vw,\s*64px\)/);
+    expect(css).toMatch(/\.operation-brand-logo--left\s*\{[\s\S]*max-height:\s*58px/);
+    expect(css).toMatch(/\.operation-brand-logo--right\s*\{[\s\S]*max-height:\s*52px/);
+    expect(css).toMatch(/@media\s*\(min-width:\s*1280px\)[\s\S]*\.operation-brand-logo--right[\s\S]*max-height:\s*50px/);
+    expect(css).toMatch(/@media\s*\(min-width:\s*1536px\)[\s\S]*\.operation-brand-logo--left[\s\S]*max-height:\s*50px/);
+    expect(css).toMatch(/@media\s*\(max-width:\s*430px\)[\s\S]*\.operation-brand-logo--right[\s\S]*(scale\(|max-height:\s*40px|opacity:\s*0\.[0-9]+)/);
   });
 
   test('operation cards use denser spacing and lower visual height for professional rhythm', () => {
@@ -56,7 +69,7 @@ describe('OperationSelector UX contract (TDD RED)', () => {
     expect(css).toMatch(/@media\s*\(max-width:\s*1024px\)[\s\S]*\.operation-card[\s\S]*min-height:\s*auto/);
 
     expect(tsx).not.toMatch(/className="operation-card[^"]*"\s*style=\{\{[\s\S]*padding:/);
-    expect(tsx).not.toMatch(/mb-6/g);
+    expect(tsx).not.toMatch(/mb-8/g);
     expect(tsx).toMatch(/mb-4/g);
   });
 
@@ -76,19 +89,19 @@ describe('OperationSelector UX contract (TDD RED)', () => {
     expect(css).toMatch(/@media\s*\(hover:\s*none\)[\s\S]*\.operation-card:hover[\s\S]*transform:\s*none/);
   });
 
-  test('mensaje institucional inferior es fijo y sin toggle', () => {
+  test('mensaje institucional se delega al footer global y no vive en selector', () => {
     const css = readFileSync(resolve(CSS_PATH), 'utf-8');
     const tsx = readFileSync(resolve(TSX_PATH), 'utf-8');
 
     expect(tsx).not.toMatch(/Ver mensaje del equipo/);
     expect(tsx).not.toMatch(/Ocultar mensaje del equipo/);
     expect(tsx).not.toMatch(/showTeamMessage/);
-    expect(tsx).toMatch(/operation-team-panel operation-team-panel--fixed/);
-    expect(tsx).toMatch(/Compromiso Operativo/);
-    expect(tsx).toMatch(/JesucristoEsDios/);
+    expect(tsx).not.toMatch(/role="note"/);
+    expect(tsx).not.toMatch(/Compromiso Operativo/);
+    expect(tsx).not.toMatch(/JesucristoEsDios/);
 
-    expect(css).toMatch(/\.operation-team-panel--fixed\s*\{/);
-    expect(css).toMatch(/\.operation-team-heading\s*\{/);
+    expect(css).not.toMatch(/\.operation-team-panel/);
+    expect(css).not.toMatch(/\.operation-team-heading/);
   });
 
   test('texto guía evita redundancias y elimina leyenda inferior duplicada', () => {
@@ -97,5 +110,14 @@ describe('OperationSelector UX contract (TDD RED)', () => {
     expect(tsx).toMatch(/Elige el proceso según el momento del día/);
     expect(tsx).not.toMatch(/Seleccione el Proceso según momento del día/);
     expect(tsx).not.toMatch(/Seleccione la operación correcta según el horario actual/);
+  });
+
+  test('distribución vertical evita saturación: sin min-h-screen anidado y con ritmo compacto', () => {
+    const tsx = readFileSync(resolve(TSX_PATH), 'utf-8');
+
+    expect(tsx).toMatch(/className="h-full relative overflow-hidden"/);
+    expect(tsx).not.toMatch(/className="min-h-screen relative overflow-hidden"/);
+    expect(tsx).toMatch(/className="relative z-10 container mx-auto px-4 py-2 md:py-3"/);
+    expect(tsx).toMatch(/className="mb-5 pt-2 text-center md:pt-3"/);
   });
 });

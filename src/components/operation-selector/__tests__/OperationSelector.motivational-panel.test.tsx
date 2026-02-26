@@ -1,11 +1,11 @@
-import { render, screen, within } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
 
 import { OperationSelector } from '../OperationSelector';
 
 describe('OperationSelector motivational panel', () => {
-  it('renderiza mensaje institucional fijo sin toggle', () => {
+  it('no duplica el mensaje institucional dentro del selector', () => {
     const onSelectMode = vi.fn();
 
     render(
@@ -14,13 +14,8 @@ describe('OperationSelector motivational panel', () => {
       </MemoryRouter>,
     );
 
-    const panel = screen.getByRole('note');
-    expect(within(panel).getByText(/Compromiso Operativo/i)).toBeInTheDocument();
-    expect(
-      within(panel).getByText(/Este sistema resguarda tu trabajo diario/i),
-    ).toBeInTheDocument();
-    expect(within(panel).getByText(/Equipo de Acuarios Paradise/i)).toBeInTheDocument();
-    expect(within(panel).getByText(/JesucristoEsDios/i)).toBeInTheDocument();
+    expect(screen.queryByRole('note')).not.toBeInTheDocument();
+    expect(screen.queryByText(/Compromiso Operativo/i)).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /ver mensaje del equipo/i })).not.toBeInTheDocument();
   });
 });

@@ -86,4 +86,9 @@ describe('SupervisorDashboard - botones de navegación', () => {
     expect(sessionStorage.getItem('supervisor_session')).toBeNull();
     expect(screen.getByTestId('pin-modal-mock')).toBeInTheDocument();
   });
+
+  it('renderiza footer institucional cuando el dashboard está autenticado', async () => {
+    await renderAutenticado();
+    expect(screen.getByRole('contentinfo', { name: /compromiso operativo/i })).toBeInTheDocument();
+  });
 });
