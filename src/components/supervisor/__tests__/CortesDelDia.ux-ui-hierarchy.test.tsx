@@ -49,6 +49,7 @@ describe('CortesDelDia - UX/UI hierarchy', () => {
     render(<CortesDelDia />);
 
     const resumen = await screen.findByTestId('cortes-resumen-card');
+    expect(resumen.className).not.toContain('sticky');
     const metrics = within(resumen).getByTestId('cortes-resumen-metrics');
 
     expect(metrics.className).toContain('grid');

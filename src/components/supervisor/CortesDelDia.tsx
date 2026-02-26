@@ -160,7 +160,7 @@ export function CortesDelDia() {
       {hayActividad && (
         <div
           data-testid="cortes-resumen-card"
-          className="sticky top-20 z-10 rounded-xl border border-white/12 bg-[#0b0b0b]/95 backdrop-blur-xl px-3.5 py-3"
+          className="rounded-xl border border-white/12 bg-[#0b0b0b]/95 backdrop-blur-xl px-3.5 py-3"
         >
           <h3 className="text-sm font-semibold tracking-tight text-white/85">Resumen en vivo</h3>
           <ul
