@@ -75,20 +75,18 @@ const BASE_FIXTURE = {
   },
 };
 
-describe('CorteDetalle - contrato de resumen ejecutivo', () => {
+describe('CorteDetalle - contrato de resumen operativo', () => {
   beforeEach(() => {
     detailFeedMock.corte = null;
   });
 
-  it('muestra un Resumen ejecutivo con estado, total y diferencia', async () => {
+  it('muestra panel operativo con estado, total y diferencia', async () => {
     detailFeedMock.corte = BASE_FIXTURE;
     render(<CorteDetalle />);
 
-    const heading = await screen.findByText(/resumen ejecutivo/i);
-    const executiveCard = heading.closest('div');
-    expect(executiveCard).not.toBeNull();
-    const scoped = within(executiveCard as HTMLElement);
-    expect(scoped.getByText(/estado actual/i)).toBeInTheDocument();
+    const panel = await screen.findByLabelText(/panel operativo del corte/i);
+    const scoped = within(panel);
+    expect(scoped.getByText(/^estado$/i)).toBeInTheDocument();
     expect(scoped.getByText('EN_PROGRESO')).toBeInTheDocument();
     expect(scoped.getByText(/total contado/i)).toBeInTheDocument();
     expect(scoped.getByText(/diferencia vs sicar/i)).toBeInTheDocument();

@@ -96,10 +96,10 @@ describe('CorteDetalle - UX hierarchy', () => {
     detailFeedMock.corte = CORTE_FIXTURE;
   });
 
-  it('muestra banda operativa con prioridad de supervision', async () => {
+  it('muestra panel operativo compacto con datos de supervision', async () => {
     render(<CorteDetalle />);
 
-    await screen.findByText(/radar operativo/i);
+    await screen.findByText(/panel operativo del corte/i);
     expect(screen.getByText(/prioridad supervisión/i)).toBeInTheDocument();
   });
 

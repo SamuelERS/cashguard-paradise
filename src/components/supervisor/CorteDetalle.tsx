@@ -924,61 +924,69 @@ export function CorteDetalle() {
         </div>
       </div>
 
-      {/* Card: radar operativo */}
-      <div className={`${cardClassName} border-cyan-500/20 bg-gradient-to-r from-cyan-500/[0.07] to-blue-500/[0.03]`}>
+      {/* Card: panel operativo compacto */}
+      <section
+        aria-label="panel operativo del corte"
+        className={`${cardClassName} border-cyan-500/20 bg-gradient-to-r from-cyan-500/[0.08] to-blue-500/[0.03]`}
+      >
         <p className="text-xs font-medium text-cyan-200/80 uppercase tracking-wider mb-3">
-          Radar operativo
+          Panel operativo del corte
         </p>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div className="rounded-lg border border-white/[0.08] bg-black/20 p-3">
-            <p className="text-[11px] uppercase tracking-wider text-white/45">Prioridad supervisión</p>
-            <p className={`mt-1 text-sm font-semibold ${prioridadColorClase}`}>
-              {prioridadSupervision}
-            </p>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+          <div className="rounded-lg border border-white/[0.08] bg-black/25 px-3 py-2.5">
+            <p className="text-[11px] uppercase tracking-wider text-white/45 mb-1.5">Snapshot</p>
+            <div className="divide-y divide-white/[0.06]">
+              <MetaFila
+                label="Estado"
+                valor={corte.estado}
+                colorClase={estadoColorClase}
+              />
+              <MetaFila
+                label="Prioridad supervisión"
+                valor={prioridadSupervision}
+                colorClase={`font-semibold ${prioridadColorClase}`}
+              />
+              <MetaFila
+                label="Fase"
+                valor={`Fase ${corte.fase_actual}`}
+                colorClase="font-semibold text-white/90"
+              />
+            </div>
           </div>
-          <div className="rounded-lg border border-white/[0.08] bg-black/20 p-3">
-            <p className="text-[11px] uppercase tracking-wider text-white/45">Fase activa</p>
-            <p className="mt-1 text-sm font-semibold text-white/90">Fase {corte.fase_actual}</p>
-          </div>
-          <div className="rounded-lg border border-white/[0.08] bg-black/20 p-3">
-            <p className="text-[11px] uppercase tracking-wider text-white/45">Diferencia actual</p>
-            <p className={`mt-1 text-sm font-semibold tabular-nums ${diferenciaColorClase}`}>
-              {diferenciaTexto}
-            </p>
-          </div>
-        </div>
-      </div>
 
-      {/* Card: resumen ejecutivo (lectura rápida para supervisor) */}
-      <div className={cardClassName}>
-        <p className="text-xs font-medium text-white/40 uppercase tracking-wider mb-2">
-          Resumen ejecutivo
-        </p>
-        <div className="divide-y divide-white/[0.06]">
-          <MetaFila
-            label="Estado actual"
-            valor={corte.estado}
-            colorClase={estadoColorClase}
-          />
-          <MetaFila
-            label="Total contado"
-            valor={formatCurrency(totalContado)}
-            mono
-            destacado
-          />
-          <MetaFila
-            label="Diferencia vs SICAR"
-            valor={diferenciaTexto}
-            mono
-            colorClase={diferenciaColorClase}
-          />
-          <MetaFila
-            label="Diferencia porcentual"
-            valor={porcentajeDiferenciaTexto}
-            mono
-          />
+          <div className="rounded-lg border border-white/[0.08] bg-black/25 px-3 py-2.5">
+            <p className="text-[11px] uppercase tracking-wider text-white/45 mb-1.5">KPIs</p>
+            <div className="divide-y divide-white/[0.06]">
+              <MetaFila
+                label="Total contado"
+                valor={formatCurrency(totalContado)}
+                mono
+                destacado
+              />
+              <MetaFila
+                label="Diferencia vs SICAR"
+                valor={diferenciaTexto}
+                mono
+                colorClase={diferenciaColorClase}
+              />
+              <MetaFila
+                label="Diferencia porcentual"
+                valor={porcentajeDiferenciaTexto}
+                mono
+              />
+            </div>
+          </div>
+
+          <div className="rounded-lg border border-white/[0.08] bg-black/25 px-3 py-2.5">
+            <p className="text-[11px] uppercase tracking-wider text-white/45 mb-1.5">Contexto</p>
+            <div className="divide-y divide-white/[0.06]">
+              <MetaFila label="Sucursal" valor={corte.sucursales?.nombre ?? '—'} />
+              <MetaFila label="Cajero" valor={corte.cajero} />
+              {corte.testigo && <MetaFila label="Testigo" valor={corte.testigo} />}
+            </div>
+          </div>
         </div>
-      </div>
+      </section>
 
       {/* Card: incidencia de cierre en estado ABORTADO */}
       {corte.estado === 'ABORTADO' && (
@@ -998,19 +1006,6 @@ export function CorteDetalle() {
           </div>
         </div>
       )}
-
-      {/* Card: identificación */}
-      <div className={cardClassName}>
-        <p className="text-xs font-medium text-white/40 uppercase tracking-wider mb-2">
-          Identificación
-        </p>
-        <div className="divide-y divide-white/[0.06]">
-          <MetaFila label="Sucursal" valor={corte.sucursales?.nombre ?? '—'} />
-          <MetaFila label="Cajero" valor={corte.cajero} />
-          {corte.testigo && <MetaFila label="Testigo" valor={corte.testigo} />}
-          <MetaFila label="Estado" valor={corte.estado} />
-        </div>
-      </div>
 
       {operationalCardsOrdenadas.map((card) => card.node)}
     </div>
