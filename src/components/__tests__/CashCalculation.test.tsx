@@ -11,8 +11,10 @@
 // → useEffect([isCalculated, performCalculation]) se dispara → setCalculationData
 // → re-render → nuevas referencias → loop → OOM
 // Fix: arrays estables en scope de módulo (expenses en defaultProps) y en factory fn (useDeliveries)
+// 🤖 [IA] - v3.6.0: TDD RED — Tests para botón Imprimir (impresión térmica 80mm)
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import type { ReactNode, ButtonHTMLAttributes } from 'react';
 import CashCalculation from '../CashCalculation';
 import type { CashCount, ElectronicPayments } from '@/types/cash';
 
@@ -98,6 +100,12 @@ vi.mock('@/utils/generate-evening-report', () => ({
   generatePrintableHTML: vi.fn(() => '<html>Mock</html>'),
 }));
 
+// 🤖 [IA] - v3.6.0: Mock para nueva utilidad de impresión térmica 80mm
+vi.mock('@/utils/generate-thermal-print', () => ({
+  generateThermalHTML: vi.fn(() => '<html>Thermal Mock</html>'),
+  sanitizeForThermal: vi.fn((text: string) => text),
+}));
+
 vi.mock('@/components/cash-calculation/CashResultsDisplay', () => ({
   CashResultsDisplay: () => null,
 }));
@@ -111,17 +119,37 @@ vi.mock('@/components/shared/WhatsAppInstructionsModal', () => ({
 }));
 
 vi.mock('@/components/ui/badge', () => ({ Badge: () => null }));
+
+// 🤖 [IA] - v3.6.0: Button mocks renderan children + forwarded props (disabled, aria-label)
+// Seguro contra OOM: vi.mock intercepta module resolution (previene árbol transitivo),
+// renderizar children NO cambia esto — solo permite testear presencia/props de botones.
+// Tests 1.1 y 1.2 existentes NO se afectan (buscan h3/text, no botones).
 vi.mock('@/components/ui/primary-action-button', () => ({
-  PrimaryActionButton: () => null,
+  PrimaryActionButton: ({ children, ...props }: ButtonHTMLAttributes<HTMLButtonElement> & { children?: ReactNode }) => (
+    <button {...props}>{children}</button>
+  ),
 }));
 vi.mock('@/components/shared/ConstructiveActionButton', () => ({
-  ConstructiveActionButton: () => null,
+  ConstructiveActionButton: ({ children, ...props }: ButtonHTMLAttributes<HTMLButtonElement> & { children?: ReactNode }) => (
+    <button {...props}>{children}</button>
+  ),
 }));
 vi.mock('@/components/shared/DestructiveActionButton', () => ({
-  DestructiveActionButton: () => null,
+  DestructiveActionButton: ({ children, ...props }: ButtonHTMLAttributes<HTMLButtonElement> & { children?: ReactNode }) => (
+    <button {...props}>{children}</button>
+  ),
 }));
+// 🤖 [IA] - v3.6.0: Mock NeutralActionButton en path correcto (ui/, no shared/)
+vi.mock('@/components/ui/neutral-action-button', () => ({
+  NeutralActionButton: ({ children, ...props }: ButtonHTMLAttributes<HTMLButtonElement> & { children?: ReactNode }) => (
+    <button {...props}>{children}</button>
+  ),
+}));
+// 🤖 [IA] - v3.6.0: Mock legacy path (shared/) para compatibilidad
 vi.mock('@/components/shared/NeutralActionButton', () => ({
-  NeutralActionButton: () => null,
+  NeutralActionButton: ({ children, ...props }: ButtonHTMLAttributes<HTMLButtonElement> & { children?: ReactNode }) => (
+    <button {...props}>{children}</button>
+  ),
 }));
 
 // ── Fixtures ──
@@ -177,5 +205,36 @@ describe('CashCalculation — estado inicial bloqueado (v2.4.1)', () => {
   it('1.2 — no muestra resultados financieros hasta confirmar envío WhatsApp', () => {
     render(<CashCalculation {...defaultProps} />);
     expect(screen.queryByText(/Total Día:/i)).not.toBeInTheDocument();
+  });
+});
+
+// ============================================================
+// ESCENARIO 2: Botón Imprimir — impresión térmica 80mm (v3.6.0)
+// ============================================================
+// 🤖 [IA] - v3.6.0: TDD RED — Tests escritos ANTES de implementar botón Imprimir
+// Estos tests DEBEN FALLAR hasta que se agregue el botón en CashCalculation.tsx
+describe('CashCalculation — botón Imprimir (v3.6.0)', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('2.1 — muestra botón Imprimir con aria-label correcto', () => {
+    render(<CashCalculation {...defaultProps} />);
+    // El botón debe existir en el grid de acciones
+    const printButton = screen.getByRole('button', { name: /imprimir reporte/i });
+    expect(printButton).toBeInTheDocument();
+  });
+
+  it('2.2 — botón Imprimir está deshabilitado cuando reportSent es false', () => {
+    render(<CashCalculation {...defaultProps} />);
+    // Por defecto reportSent=false → botón debe estar disabled (anti-fraude)
+    const printButton = screen.getByRole('button', { name: /imprimir reporte/i });
+    expect(printButton).toBeDisabled();
+  });
+
+  it('2.3 — botón Imprimir contiene texto visible "Imprimir"', () => {
+    render(<CashCalculation {...defaultProps} />);
+    const printButton = screen.getByRole('button', { name: /imprimir reporte/i });
+    expect(printButton).toHaveTextContent(/imprimir/i);
   });
 });

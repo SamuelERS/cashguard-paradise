@@ -3,13 +3,14 @@
 // Previous: v1.3.7 - ANTI-FRAUDE - Confirmación explícita envío WhatsApp ANTES de revelar resultados
 import { useState, useEffect, useCallback } from "react";
 // 🤖 [IA] - v1.3.6Z: Framer Motion removido (GPU compositing bug iOS Safari causa pantalla congelada Phase 3)
-import { Calculator, AlertTriangle, CheckCircle, Share, Lock } from "lucide-react";
+import { Calculator, AlertTriangle, CheckCircle, Share, Lock, Printer } from "lucide-react";
 // 🤖 [IA] - FAE-02: PURGA QUIRÚRGICA COMPLETADA - CSS imports eliminados
 // Los 1 archivos CSS están ahora importados globalmente vía index.css:
 // - report-action-button.css
 import { Badge } from "@/components/ui/badge";
 import { PrimaryActionButton } from "@/components/ui/primary-action-button";
-// 🤖 [IA] - Reactivar NeutralActionButton + Copy icon si se necesita botón manual de copia
+// 🤖 [IA] - v3.6.0: NeutralActionButton reactivado para botón Imprimir (impresión térmica 80mm)
+import { NeutralActionButton } from '@/components/ui/neutral-action-button';
 import { ConstructiveActionButton } from '@/components/shared/ConstructiveActionButton';
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { WhatsAppInstructionsModal } from '@/components/shared/WhatsAppInstructionsModal';
@@ -25,6 +26,8 @@ import { useDeliveries } from "@/hooks/useDeliveries";
 // 🤖 [IA] - Desmonolitado: Tipos e interfaces movidos a generate-evening-report.ts
 import type { CalculationData } from '@/utils/generate-evening-report';
 import { generateCompleteReport as generateCompleteReportFn, generatePrintableHTML } from '@/utils/generate-evening-report';
+// 🤖 [IA] - v3.6.0: Impresión térmica 80mm — sanitiza emojis + genera HTML optimizado
+import { generateThermalHTML } from '@/utils/generate-thermal-print';
 // 🤖 [IA] - Desmonolitado: JSX de resultados extraído a CashResultsDisplay.tsx
 import { CashResultsDisplay } from '@/components/cash-calculation/CashResultsDisplay';
 
@@ -222,11 +225,11 @@ const CashCalculation = ({
     toast.success('✅ Reporte confirmado como enviado');
   }, []);
 
-  // 🤖 [IA] - Desmonolitado: HTML delegado a generatePrintableHTML en generate-evening-report.ts
+  // 🤖 [IA] - v3.6.0: Handler impresión térmica 80mm — usa generateThermalHTML (sanitiza emojis + CSS @page 80mm)
   const generatePrintableReport = () => {
     try {
       const report = generateCompleteReport();
-      const html = generatePrintableHTML(report, displayStoreName);
+      const html = generateThermalHTML(report, displayStoreName);
       const printWindow = window.open('', '_blank');
       if (printWindow) {
         printWindow.document.write(html);
@@ -347,9 +350,8 @@ const CashCalculation = ({
                 {!reportSent && ' Debe enviar el reporte para continuar.'}
               </p>
 
-              {/* 🤖 [IA] - v2.4.1: Grid adaptativo */}
-              {/* Reactivar botón Copiar: importar NeutralActionButton + Copy icon, descomentar bloque */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-[clamp(0.5rem,2vw,0.75rem)] lg:max-w-2xl mx-auto">
+              {/* 🤖 [IA] - v3.6.0: Grid adaptativo 3 columnas (WhatsApp + Imprimir + Finalizar) */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-[clamp(0.5rem,2vw,0.75rem)] lg:max-w-2xl mx-auto">
                 <ConstructiveActionButton
                   onClick={handleWhatsAppSend}
                   disabled={false}
@@ -358,6 +360,16 @@ const CashCalculation = ({
                   <Share />
                   {reportSent ? '✅ Reporte Enviado' : whatsappOpened ? 'Reenviar WhatsApp' : 'Enviar WhatsApp'}
                 </ConstructiveActionButton>
+
+                {/* 🤖 [IA] - v3.6.0: Botón Imprimir — impresión térmica 80mm (disabled hasta reportSent) */}
+                <NeutralActionButton
+                  onClick={generatePrintableReport}
+                  disabled={!reportSent}
+                  aria-label="Imprimir reporte"
+                >
+                  <Printer />
+                  Imprimir
+                </NeutralActionButton>
 
                 <PrimaryActionButton
                   onClick={() => setShowFinishConfirmation(true)}

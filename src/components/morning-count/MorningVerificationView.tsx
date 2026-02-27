@@ -13,6 +13,7 @@ import {
   ArrowLeft,
   Copy,
   Lock,
+  Printer,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -88,6 +89,7 @@ export function MorningVerificationView(props: MorningVerificationProps) {
     handleWhatsAppSend,
     handleConfirmSent,
     handleCopyToClipboard,
+    handlePrintableReport,
     handleBack,
     handleComplete,
     setShowWhatsAppInstructions,
@@ -290,7 +292,8 @@ export function MorningVerificationView(props: MorningVerificationProps) {
                   </div>
                 )}
 
-                <div className="mx-auto grid max-w-3xl gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {/* 🤖 [IA] - v3.6.0: Grid adaptativo 4 botones (WhatsApp + Copiar + Imprimir + Finalizar) */}
+                <div className="mx-auto grid max-w-3xl gap-3 sm:grid-cols-2 lg:grid-cols-4">
                   <ConstructiveActionButton
                     onClick={handleWhatsAppSend}
                     disabled={reportSent}
@@ -307,6 +310,17 @@ export function MorningVerificationView(props: MorningVerificationProps) {
                   >
                     <Copy className="mr-2 h-4 w-4" />
                     Copiar
+                  </NeutralActionButton>
+
+                  {/* 🤖 [IA] - v3.6.0: Botón Imprimir — impresión térmica 80mm (disabled hasta reportSent) */}
+                  <NeutralActionButton
+                    onClick={handlePrintableReport}
+                    disabled={!reportSent}
+                    aria-label="Imprimir reporte"
+                    className="w-full gap-2"
+                  >
+                    <Printer className="mr-2 h-4 w-4" />
+                    Imprimir
                   </NeutralActionButton>
 
                   <Button

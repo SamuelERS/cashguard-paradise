@@ -30,6 +30,12 @@ vi.mock('sonner', () => ({
   }
 }));
 
+// 🤖 [IA] - v3.6.0: Mock para utilidad de impresión térmica 80mm
+vi.mock('@/utils/generate-thermal-print', () => ({
+  generateThermalHTML: vi.fn(() => '<html>Thermal Mock</html>'),
+  sanitizeForThermal: vi.fn((text: string) => text),
+}));
+
 // 🤖 [IA] - v1.4.1: Mock @/data/paradise — controller llama resolveVerificationActors()
 // Sin este mock, store/cashierIn/cashierOut son undefined → handleWhatsAppSend retorna early
 vi.mock('@/data/paradise', () => ({
@@ -330,6 +336,37 @@ describe('MorningVerification - v1.3.7 WhatsApp Confirmation Flow', () => {
   //   - grep '10000' useMorningVerificationController.ts → 0 matches
   // Controller usa confirmación manual explícita (handleConfirmSent) sin auto-timeout
   // Tests eliminados: 4.1 (setTimeout 10s), 4.2 (auto-confirm), 4.3 (cancel before timeout)
+
+  // ============================================================
+  // GRUPO 6: Botón Imprimir — impresión térmica 80mm (v3.6.0)
+  // ============================================================
+  // 🤖 [IA] - v3.6.0: TDD RED — Tests escritos ANTES de implementar botón Imprimir
+  // Estos tests DEBEN FALLAR hasta que se agregue el botón en MorningVerificationView.tsx
+  describe('Grupo 6: Botón Imprimir (v3.6.0)', () => {
+    it('6.1 — muestra botón Imprimir con aria-label correcto', async () => {
+      render(<MorningVerification {...defaultProps} />);
+      await waitFor(() => {
+        const printButton = screen.getByRole('button', { name: /imprimir reporte/i });
+        expect(printButton).toBeInTheDocument();
+      });
+    });
+
+    it('6.2 — botón Imprimir está deshabilitado cuando reportSent es false', async () => {
+      render(<MorningVerification {...defaultProps} />);
+      await waitFor(() => {
+        const printButton = screen.getByRole('button', { name: /imprimir reporte/i });
+        expect(printButton).toBeDisabled();
+      });
+    });
+
+    it('6.3 — botón Imprimir contiene texto visible "Imprimir"', async () => {
+      render(<MorningVerification {...defaultProps} />);
+      await waitFor(() => {
+        const printButton = screen.getByRole('button', { name: /imprimir reporte/i });
+        expect(printButton).toHaveTextContent(/imprimir/i);
+      });
+    });
+  });
 
   describe('Grupo 5: Banners adaptativos', () => {
     it('5.1 - Debe mostrar banner advertencia inicial cuando NO enviado', async () => {
