@@ -1,4 +1,4 @@
-// 🤖 [IA] - v1.0.0 - Footer corporativo con mensaje espiritual
+// 🤖 [IA] - v1.0.1 - Footer corporativo — escala dinámica eliminada (patrón DACC v3.5.0 P2)
 import { motion } from 'framer-motion';
 import { Heart } from 'lucide-react';
 
@@ -7,8 +7,6 @@ interface AppFooterProps {
 }
 
 export function AppFooter({ variant = 'minimal' }: AppFooterProps) {
-  const viewportScale = typeof window !== 'undefined' ? Math.min(window.innerWidth / 430, 1) : 1;
-
   // Opción 1: Footer Minimalista con Gradiente
   if (variant === 'minimal') {
     return (
@@ -18,13 +16,13 @@ export function AppFooter({ variant = 'minimal' }: AppFooterProps) {
         transition={{ delay: 0.8, duration: 0.6 }}
         className="fixed bottom-0 left-0 right-0 z-10 pointer-events-none"
         style={{
-          padding: `clamp(12px, ${16 * viewportScale}px, 20px)`,
+          padding: 'clamp(12px, 3.7vw, 20px)',
         }}
       >
         <div
           className="max-w-fit mx-auto flex items-center justify-center gap-2 pointer-events-auto"
           style={{
-            padding: `clamp(8px, ${12 * viewportScale}px, 16px) clamp(16px, ${24 * viewportScale}px, 32px)`,
+            padding: 'clamp(8px, 2.8vw, 16px) clamp(16px, 5.6vw, 32px)',
             background: 'rgba(36, 36, 36, 0.6)',
             backdropFilter: 'blur(16px)',
             WebkitBackdropFilter: 'blur(16px)',
@@ -98,7 +96,7 @@ export function AppFooter({ variant = 'minimal' }: AppFooterProps) {
         transition={{ delay: 0.8, duration: 0.6 }}
         className="fixed bottom-6 right-6 z-30 cursor-default"
         style={{
-          padding: `clamp(10px, ${14 * viewportScale}px, 18px) clamp(14px, ${20 * viewportScale}px, 24px)`,
+          padding: 'clamp(10px, 3.3vw, 18px) clamp(14px, 4.7vw, 24px)',
           background: 'rgba(36, 36, 36, 0.85)',
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
@@ -191,8 +189,8 @@ export function AppFooter({ variant = 'minimal' }: AppFooterProps) {
       <div
         className="container mx-auto flex items-center justify-center"
         style={{
-          padding: `clamp(16px, ${20 * viewportScale}px, 24px)`,
-          gap: `clamp(8px, ${12 * viewportScale}px, 16px)`,
+          padding: 'clamp(16px, 4.7vw, 24px)',
+          gap: 'clamp(8px, 2.8vw, 16px)',
         }}
       >
         <motion.span
