@@ -183,7 +183,18 @@ describe('💳 GuidedElectronicPaymentItem - Integration Tests', () => {
       );
       
       const input = screen.getByRole('textbox');
-      
+
+      // 🤖 [IA] - FIX Flaky: Esperar al auto-focus (100ms timeout) antes de escribir.
+      // Root cause: el useEffect de GuidedElectronicPaymentItem agenda select() a 100ms.
+      // Si el timer dispara durante user.type('0.01') (tras 2 secuencias previas ~25ms),
+      // select() selecciona el '0' ya escrito y el siguiente carácter '.' lo reemplaza,
+      // produciendo '.01' en lugar de '0.01'.
+      // Solución: dejar que el timer dispare sobre input vacío (select() = no-op)
+      // antes de iniciar la secuencia de typing.
+      await waitFor(() => {
+        expect(input).toHaveFocus();
+      }, { timeout: 200 });
+
       await user.type(input, '125.50');
       expect(input).toHaveValue('125.50');
       
