@@ -247,14 +247,14 @@ export function CorteListaItem({
           <SemaforoIndicador color={colorSemaforo} razon={razonSemaforo} size="md" />
           <div className="text-center leading-tight">
             <p className="text-[9px] uppercase tracking-[0.1em] text-white/35">Hora</p>
-            <p className="text-sm md:text-base 2xl:text-sm font-medium text-white/65 tabular-nums">{hora}</p>
+            <p className="text-sm font-medium text-white/65 tabular-nums">{hora}</p>
           </div>
         </div>
 
         {/* Contexto principal */}
         <div data-testid="corte-item-context" className="min-w-0 space-y-1">
           <div className="flex flex-wrap items-center gap-2 2xl:gap-1.5">
-            <p className="text-base md:text-lg 2xl:text-base font-semibold text-white/90 truncate leading-tight">
+            <p className="text-sm md:text-base font-semibold text-white/90 truncate leading-tight">
               {nombreSucursal}
             </p>
             <span
@@ -263,7 +263,7 @@ export function CorteListaItem({
               {estadoVisible}
             </span>
           </div>
-          <p className="text-sm md:text-base 2xl:text-sm text-white/60 truncate leading-tight">
+          <p className="text-xs md:text-sm text-white/60 truncate leading-tight">
             {corte.cajero}
           </p>
 
@@ -291,11 +291,11 @@ export function CorteListaItem({
           {disponible ? (
             <>
               <p className="text-[9px] uppercase tracking-[0.1em] text-white/35">Total</p>
-              <p className="text-xl md:text-[1.55rem] 2xl:text-[1.35rem] font-semibold text-white/90 tabular-nums leading-none mt-0.5">
+              <p className="text-lg md:text-xl font-semibold text-white/90 tabular-nums leading-none mt-0.5">
                 {formatCurrency(totalContado)}
               </p>
               <p className="text-[9px] uppercase tracking-[0.1em] text-white/35 mt-1">Diferencia</p>
-              <p className={`text-lg md:text-xl 2xl:text-lg font-semibold tabular-nums leading-none mt-0.5 ${diferenciaClaseColor}`}>
+              <p className={`text-base md:text-lg font-semibold tabular-nums leading-none mt-0.5 ${diferenciaClaseColor}`}>
                 {diferenciaTexto}
               </p>
             </>

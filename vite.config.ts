@@ -5,11 +5,11 @@ import { componentTagger } from "lovable-tagger";
 import { VitePWA } from 'vite-plugin-pwa';
 
 // https://vitejs.dev/config/
-// 🤖 [IA] - Puerto actualizado a 5173 para desarrollo con Docker
+// 🤖 [IA] - Puerto actualizado a 5377 para desarrollo local sin colisiones
 export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
-    port: 5173,
+    port: 5377,
   },
   plugins: [
     react(),
