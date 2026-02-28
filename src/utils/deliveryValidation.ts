@@ -176,7 +176,7 @@ function isValidDeliveryStatus(value: unknown): value is DeliveryStatus {
  * // Ejemplo 3: Testing con datos mock
  * const mockDelivery = {
  *   id: crypto.randomUUID(),
- *   customerName: 'Juan Pérez',
+ *   customerName: 'Carlos Rivera',
  *   amount: 75.50,
  *   courier: 'C807',
  *   status: 'pending_cod',

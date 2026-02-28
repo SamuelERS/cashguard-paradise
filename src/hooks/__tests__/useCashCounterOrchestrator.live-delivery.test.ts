@@ -165,7 +165,7 @@ describe('useCashCounterOrchestrator - live delivery autosave payload', () => {
       useCashCounterOrchestrator({
         operationMode: OperationMode.CASH_CUT,
         initialStore: 'Sucursal Central',
-        initialCashier: 'Juan Pérez',
+        initialCashier: 'Carlos Rivera',
         initialWitness: 'María López',
         initialExpectedSales: '653.65',
         initialDailyExpenses: [],

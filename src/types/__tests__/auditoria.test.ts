@@ -35,6 +35,7 @@ function makeCorte(overrides: Partial<Record<string, unknown>> = {}): Record<str
     updated_at: '2026-02-08T14:00:00.000Z',
     finalizado_at: null,
     motivo_aborto: null,
+    motivo_nuevo_corte: null,
     ...overrides,
   };
 }
@@ -543,6 +544,61 @@ describe('auditoria.ts - Tipos y Guards del sistema de auditoria', () => {
         testigo: 'Adonay Torres',
         venta_esperada: 'abc',
       })).toBe(false);
+    });
+
+    // 🤖 [IA] - TDD RED: motivo_nuevo_corte override
+    it('Acepta params con motivo_nuevo_corte valido', () => {
+      expect(isIniciarCorteParamsValido({
+        sucursal_id: 'suc-001',
+        cajero: 'Tito Gomez',
+        testigo: 'Adonay Torres',
+        motivo_nuevo_corte: 'Error en conteo anterior, se requiere nuevo corte',
+      })).toBe(true);
+    });
+
+    it('Acepta params sin motivo_nuevo_corte (campo opcional)', () => {
+      expect(isIniciarCorteParamsValido({
+        sucursal_id: 'suc-001',
+        cajero: 'Tito Gomez',
+        testigo: 'Adonay Torres',
+      })).toBe(true);
+    });
+
+    it('Rechaza motivo_nuevo_corte vacio o solo espacios', () => {
+      expect(isIniciarCorteParamsValido({
+        sucursal_id: 'suc-001',
+        cajero: 'Tito Gomez',
+        testigo: 'Adonay Torres',
+        motivo_nuevo_corte: '',
+      })).toBe(false);
+
+      expect(isIniciarCorteParamsValido({
+        sucursal_id: 'suc-001',
+        cajero: 'Tito Gomez',
+        testigo: 'Adonay Torres',
+        motivo_nuevo_corte: '   ',
+      })).toBe(false);
+    });
+  });
+
+  // =========================================================================
+  // isCorte() — motivo_nuevo_corte field
+  // =========================================================================
+  describe('isCorte() — campo motivo_nuevo_corte', () => {
+    // 🤖 [IA] - TDD RED: motivo_nuevo_corte en Corte
+    it('Acepta corte con motivo_nuevo_corte null', () => {
+      const corte = makeCorte({ motivo_nuevo_corte: null });
+      expect(isCorte(corte)).toBe(true);
+    });
+
+    it('Acepta corte con motivo_nuevo_corte string valido', () => {
+      const corte = makeCorte({ motivo_nuevo_corte: 'Reconteo solicitado por gerencia' });
+      expect(isCorte(corte)).toBe(true);
+    });
+
+    it('Rechaza corte con motivo_nuevo_corte tipo invalido', () => {
+      expect(isCorte(makeCorte({ motivo_nuevo_corte: 123 }))).toBe(false);
+      expect(isCorte(makeCorte({ motivo_nuevo_corte: true }))).toBe(false);
     });
   });
 });

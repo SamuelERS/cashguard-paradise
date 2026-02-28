@@ -284,6 +284,29 @@ describe('InitialWizardModalView — Integration', () => {
       fireEvent.click(btn);
       expect(mockCtrl.handleComplete).toHaveBeenCalledTimes(1);
     });
+
+    it('"Finalizar" se deshabilita cuando el backend exige motivo_nuevo_corte y está vacío', () => {
+      resetMockCtrl({
+        currentStep: 6,
+        totalSteps: 6,
+        wizardData: {
+          ...mockCtrl.wizardData,
+          motivo_nuevo_corte: '',
+        } as typeof mockCtrl.wizardData,
+        getNavigationState: vi.fn(() => ({
+          currentStep: 6, totalSteps: 6, data: mockCtrl.wizardData,
+          canGoNext: false, canGoPrevious: true, isCompleted: true,
+        })),
+      });
+      render(
+        <InitialWizardModalView
+          {...defaultProps}
+          completionError="No se pudo iniciar el corte: Ya existe un corte finalizado para hoy"
+        />
+      );
+      const btn = screen.getByTestId('wizard-button-complete');
+      expect(btn).toBeDisabled();
+    });
   });
 
   // ── 4. X close button ──

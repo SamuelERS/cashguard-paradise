@@ -26,7 +26,7 @@ export const mockDeliveryPaid: DeliveryEntry = {
 
 export const mockDeliveryCancelled: DeliveryEntry = {
   id: 'test-delivery-3',
-  customerName: 'Roberto Pérez',
+  customerName: 'Roberto Mendoza',
   amount: 75.50,
   courier: 'C807',
   guideNumber: 'APA-5544-TEST',

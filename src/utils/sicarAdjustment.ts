@@ -127,7 +127,7 @@ export interface SicarAdjustmentResult {
  * SICAR Ventas Totales: $2,500
  * - Venta efectivo: $1,200
  * - Venta electrónica: $800
- * - Envío C807 Juan Pérez: $500 (PENDIENTE cobro)
+ * - Envío C807 Carlos Rivera: $500 (PENDIENTE cobro)
  *
  * ANTES (workaround):
  * - Registrar $500 como "efectivo" (FALSO)
@@ -294,7 +294,7 @@ export function calculateSicarAdjusted(
  * // ━━━━━━━━━━━━
  * // 📦 DELIVERIES PENDIENTES (3)
  * //
- * // 1. Juan Pérez - $100.00
+ * // 1. Carlos Rivera - $100.00
  * //    C807 | 5 días pendiente
  * //
  * // 2. Ana Martínez - $200.00

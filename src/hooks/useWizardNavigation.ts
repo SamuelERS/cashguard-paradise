@@ -63,6 +63,9 @@ export interface WizardData {
   
   // Paso 5: Venta Esperada
   expectedSales: string;
+
+  // Override opcional: motivo cuando se necesita abrir nuevo corte con uno finalizado hoy
+  motivo_nuevo_corte?: string;
   
   // 🤖 [IA] - v1.4.0: Paso 6 - Gastos del Día (opcional)
   dailyExpenses?: DailyExpense[];
@@ -83,6 +86,7 @@ const INITIAL_WIZARD_DATA: WizardData = {
   selectedCashier: '',
   selectedWitness: '',
   expectedSales: '',
+  motivo_nuevo_corte: '',
   dailyExpenses: [] // 🤖 [IA] - v1.4.0: Array vacío por defecto
 };
 

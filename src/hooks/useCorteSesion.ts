@@ -90,15 +90,17 @@ export function useCorteSesion(
   sucursal_id: string,
   options?: UseCorteSesionOptions,
 ): UseCorteSesionReturn {
-  const isMissingEmployeeIdColumnError = (message?: string | null): boolean => {
+  const isMissingOptionalColumnError = (message?: string | null): boolean => {
     const normalized = (message ?? '').toLowerCase();
-    const mentionsEmployeeIdColumn =
-      normalized.includes('cajero_id') || normalized.includes('testigo_id');
+    const mentionsOptionalColumn =
+      normalized.includes('cajero_id') ||
+      normalized.includes('testigo_id') ||
+      normalized.includes('motivo_nuevo_corte');
     const isSchemaColumnError =
       normalized.includes('schema cache') ||
       normalized.includes('column') ||
       normalized.includes('does not exist');
-    return mentionsEmployeeIdColumn && isSchemaColumnError;
+    return mentionsOptionalColumn && isSchemaColumnError;
   };
 
   const isCorrelativoDuplicateKeyError = (message?: string | null): boolean => {
@@ -170,6 +172,8 @@ export function useCorteSesion(
           p_venta_esperada: params.venta_esperada ?? null,
           p_cajero_id: params.cajero_id ?? null,
           p_testigo_id: params.testigo_id ?? null,
+          // 🤖 [IA] - Override corte finalizado: solo enviar cuando tiene valor (compatible pre-migración 012)
+          ...(params.motivo_nuevo_corte?.trim() ? { p_motivo_nuevo_corte: params.motivo_nuevo_corte } : {}),
         },
       );
 
@@ -214,7 +218,9 @@ export function useCorteSesion(
         const cortesFinalizados = (cortesHoy ?? []).filter(
           (c) => c.estado === 'FINALIZADO',
         );
-        if (cortesFinalizados.length > 0) {
+        // 🤖 [IA] - Override corte finalizado: bypass si motivo_nuevo_corte valido proporcionado
+        const tieneMotivo = params.motivo_nuevo_corte && params.motivo_nuevo_corte.trim().length > 0;
+        if (cortesFinalizados.length > 0 && !tieneMotivo) {
           throw new Error('Ya existe un corte finalizado para hoy');
         }
 
@@ -253,6 +259,8 @@ export function useCorteSesion(
             ...baseInsertPayload,
             cajero_id: params.cajero_id ?? null,
             testigo_id: params.testigo_id ?? null,
+            // 🤖 [IA] - Override corte finalizado: solo incluir cuando tiene valor (compatible pre-migración 012)
+            ...(params.motivo_nuevo_corte?.trim() ? { motivo_nuevo_corte: params.motivo_nuevo_corte } : {}),
           };
 
           let { data: corteIntento, error: errorIntento } = await tables
@@ -261,8 +269,8 @@ export function useCorteSesion(
             .select()
             .single();
 
-          // Backward compatibility: algunos entornos aún no tienen columnas cajero_id/testigo_id.
-          if (errorIntento && isMissingEmployeeIdColumnError(errorIntento.message)) {
+          // Backward compatibility: algunos entornos aún no tienen columnas cajero_id/testigo_id/motivo_nuevo_corte.
+          if (errorIntento && isMissingOptionalColumnError(errorIntento.message)) {
             ({ data: corteIntento, error: errorIntento } = await tables
               .cortes()
               .insert(baseInsertPayload)

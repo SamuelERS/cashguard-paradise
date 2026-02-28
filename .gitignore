@@ -42,3 +42,7 @@ dev-dist/
 
 # Backups de refactorizaciones
 Backups-RESPALDOS/
+
+# Local agent/runtime artifacts
+.claude/worktrees/
+.playwright-mcp/

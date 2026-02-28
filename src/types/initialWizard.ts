@@ -15,6 +15,7 @@ export interface InitialWizardModalProps {
     selectedWitness: string;
     expectedSales: string;
     dailyExpenses: DailyExpense[];
+    motivo_nuevo_corte?: string;
   }) => void;
   /** 🤖 [IA] - DACC-CIERRE: ID de sucursal para preselección desde sesión activa Supabase */
   initialSucursalId?: string | null;
@@ -95,6 +96,10 @@ export interface Step5Props extends WizardStepProps {
   } | null;
   /** [IA] - BRANCH-ISOLATION: Sucursal dueña de la sesión activa detectada */
   activeSessionSucursalId?: string | null;
+}
+
+export interface Step6Props extends WizardStepProps {
+  completionError?: string | null;
 }
 
 // ────────────────────────────────────────────────────────────────

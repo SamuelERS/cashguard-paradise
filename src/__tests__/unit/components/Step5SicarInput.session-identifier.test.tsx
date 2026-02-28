@@ -96,15 +96,15 @@ describe('R3-B2: Step5SicarInput — identificador sesión visible', () => {
         activeSessionInfo={{
           correlativo: null,
           createdAt: null,
-          cajero: 'Juan Pérez',
+          cajero: 'Carlos Rivera',
           estado: null,
         }}
       />
     );
 
     // FALLA actualmente: prop ignorada — componente no renderiza nombre del cajero.
-    // En GREEN, debe aparecer "Cajero: Juan Pérez" dentro del panel.
-    expect(screen.getByText(/Cajero: Juan Pérez/i)).toBeInTheDocument();
+    // En GREEN, debe aparecer "Cajero: Carlos Rivera" dentro del panel.
+    expect(screen.getByText(/Cajero: Carlos Rivera/i)).toBeInTheDocument();
   });
 
   // ── Test 4 (guard — puede PASAR en RED) ────────────────────────────────────

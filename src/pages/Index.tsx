@@ -235,6 +235,7 @@ const Index = () => {
     selectedWitness: string;
     expectedSales: string;
     dailyExpenses?: DailyExpense[]; // 🤖 [IA] - v1.4.0: Gastos del día (opcional para MorningCountWizard)
+    motivo_nuevo_corte?: string; // 🤖 [IA] - Override corte finalizado: justificacion obligatoria
   }) => {
     setWizardCompletionError(null);
     // 🤖 [IA] - v1.4.0: Asegurar que dailyExpenses siempre sea array
@@ -299,6 +300,8 @@ const Index = () => {
             testigo: witnessName,
             testigo_id: data.selectedWitness,
             venta_esperada: Number.isFinite(expectedSalesValue) ? expectedSalesValue : undefined,
+            // 🤖 [IA] - Override corte finalizado: pasar motivo al hook
+            motivo_nuevo_corte: data.motivo_nuevo_corte,
           });
 
           setInitialData(prev => prev ? {

@@ -1,7 +1,7 @@
-// 🤖 [IA] - Dashboard Supervisor v4.1.2 (DACC Órdenes #1-#5b completadas)
+// 🤖 [IA] - Dashboard Supervisor v4.3.0 (override corte finalizado + motivo_nuevo_corte)
 // Shell de autenticación y layout del módulo supervisor.
 // PIN auth vía PinModal + sessionStorage TTL 4h + lockout tras 5 intentos fallidos.
-// v4.1.2: versión oficial con mejoras UX recientes en supervisor.
+// v4.3.0: override corte finalizado con justificación obligatoria.
 
 import { useState, useCallback } from 'react';
 import { useNavigate, useLocation, Outlet } from 'react-router-dom';
@@ -176,7 +176,7 @@ export default function SupervisorDashboard() {
             </button>
             <h1 className="text-sm font-semibold text-white/90">
               Dashboard Supervisor
-              <span className="ml-2 text-[10px] font-normal text-white/30">v4.1.2</span>
+              <span className="ml-2 text-[10px] font-normal text-white/30">v4.3.0</span>
             </h1>
           </div>
 

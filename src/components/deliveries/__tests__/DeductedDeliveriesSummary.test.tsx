@@ -23,13 +23,13 @@ describe('DeductedDeliveriesSummary', () => {
 
   it('debe mostrar deliveries deducidos con nombre, monto y courier', () => {
     const deliveries = [
-      makeDelivery({ customerName: 'Juan Pérez', amount: 76, courier: 'C807', deductedAt: '2026-02-28T10:00:00Z' }),
+      makeDelivery({ customerName: 'Carlos Rivera', amount: 76, courier: 'C807', deductedAt: '2026-02-28T10:00:00Z' }),
       makeDelivery({ customerName: 'Ana López', amount: 50, courier: 'Melos', deductedAt: '2026-02-28T10:00:00Z' }),
     ];
 
     render(<DeductedDeliveriesSummary deliveries={deliveries} />);
 
-    expect(screen.getByText('Juan Pérez')).toBeInTheDocument();
+    expect(screen.getByText('Carlos Rivera')).toBeInTheDocument();
     expect(screen.getByText('Ana López')).toBeInTheDocument();
     expect(screen.getByText(/\$76\.00/)).toBeInTheDocument();
     expect(screen.getByText(/\$50\.00/)).toBeInTheDocument();

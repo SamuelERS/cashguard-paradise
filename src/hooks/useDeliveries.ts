@@ -198,7 +198,7 @@ function saveToStorage(key: string, deliveries: DeliveryEntry[]): void {
  *
  *   const handleCreate = () => {
  *     const newDelivery = createDelivery({
- *       customerName: 'Juan Pérez',
+ *       customerName: 'Carlos Rivera',
  *       amount: 75.50,
  *       courier: 'C807',
  *       guideNumber: 'C807-2025-001234',

@@ -321,6 +321,7 @@ describe('useInitialWizardController', () => {
         selectedWitness: '',
         expectedSales: '',
         dailyExpenses: [],
+        motivo_nuevo_corte: undefined,
       });
       expect(mockResetWizard).not.toHaveBeenCalled();
     });

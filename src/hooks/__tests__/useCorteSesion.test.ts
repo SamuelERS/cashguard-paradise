@@ -105,7 +105,7 @@ const CORTE_MOCK: Corte = {
   id: 'corte-uuid-001',
   correlativo: 'CORTE-2026-02-08-H-001',
   sucursal_id: SUCURSAL_ID,
-  cajero: 'Juan Perez',
+  cajero: 'Carlos Rivera',
   testigo: 'Maria Lopez',
   estado: 'INICIADO',
   fase_actual: 0,
@@ -120,6 +120,7 @@ const CORTE_MOCK: Corte = {
   updated_at: '2026-02-08T08:00:00.000Z',
   finalizado_at: null,
   motivo_aborto: null,
+  motivo_nuevo_corte: null,
 };
 
 const CORTE_EN_PROGRESO: Corte = {
@@ -312,7 +313,7 @@ describe('Suite 3: iniciarCorte', () => {
     await act(async () => {
       corteCreado = await result.current.iniciarCorte({
         sucursal_id: SUCURSAL_ID,
-        cajero: 'Juan Perez',
+        cajero: 'Carlos Rivera',
         testigo: 'Maria Lopez',
       });
     });
@@ -334,7 +335,7 @@ describe('Suite 3: iniciarCorte', () => {
     await act(async () => {
       await result.current.iniciarCorte({
         sucursal_id: SUCURSAL_ID,
-        cajero: 'Juan Perez',
+        cajero: 'Carlos Rivera',
         testigo: 'Maria Lopez',
       });
     });
@@ -354,8 +355,8 @@ describe('Suite 3: iniciarCorte', () => {
       act(async () => {
         await result.current.iniciarCorte({
           sucursal_id: SUCURSAL_ID,
-          cajero: 'Juan Perez',
-          testigo: 'Juan Perez',
+          cajero: 'Carlos Rivera',
+          testigo: 'Carlos Rivera',
         });
       }),
     ).rejects.toThrow('Cajero y testigo deben ser diferentes');
@@ -387,7 +388,7 @@ describe('Suite 3: iniciarCorte', () => {
       try {
         await result.current.iniciarCorte({
           sucursal_id: SUCURSAL_ID,
-          cajero: 'Juan Perez',
+          cajero: 'Carlos Rivera',
           testigo: 'Maria Lopez',
         });
       } catch (e) {
@@ -413,7 +414,7 @@ describe('Suite 3: iniciarCorte', () => {
     await act(async () => {
       await result.current.iniciarCorte({
         sucursal_id: SUCURSAL_ID,
-        cajero: 'Juan Perez',
+        cajero: 'Carlos Rivera',
         testigo: 'Maria Lopez',
         venta_esperada: 653.65,
       });
@@ -439,7 +440,7 @@ describe('Suite 3: iniciarCorte', () => {
     await act(async () => {
       await result.current.iniciarCorte({
         sucursal_id: SUCURSAL_ID,
-        cajero: 'Juan Perez',
+        cajero: 'Carlos Rivera',
         testigo: 'Maria Lopez',
       });
     });
@@ -464,7 +465,7 @@ describe('Suite 3: iniciarCorte', () => {
     await act(async () => {
       await result.current.iniciarCorte({
         sucursal_id: SUCURSAL_ID,
-        cajero: 'Juan Perez',
+        cajero: 'Carlos Rivera',
         testigo: 'Maria Lopez',
         cajero_id: 'tito-gomez',
         testigo_id: 'adonay-torres',
@@ -510,7 +511,7 @@ describe('Suite 3: iniciarCorte', () => {
     await act(async () => {
       await result.current.iniciarCorte({
         sucursal_id: SUCURSAL_ID,
-        cajero: 'Juan Perez',
+        cajero: 'Carlos Rivera',
         testigo: 'Maria Lopez',
         cajero_id: 'tito-gomez',
         testigo_id: 'adonay-torres',
@@ -550,11 +551,183 @@ describe('Suite 3: iniciarCorte', () => {
       act(async () => {
         await result.current.iniciarCorte({
           sucursal_id: SUCURSAL_ID,
-          cajero: 'Juan Perez',
+          cajero: 'Carlos Rivera',
           testigo: 'Maria Lopez',
         });
       }),
     ).rejects.toThrow('Ya existe un corte finalizado para hoy');
+  });
+
+  // 🤖 [IA] - Override corte finalizado: tests motivo_nuevo_corte bypass
+  it('3.7b - Permite crear corte con FINALIZADO existente SI motivo_nuevo_corte proporcionado', async () => {
+    const { result } = renderHook(() => useCorteSesion(SUCURSAL_ID));
+
+    await waitFor(() => {
+      expect(result.current.cargando).toBe(false);
+    });
+
+    // Sucursal OK
+    mockChain.sucursales.single.mockResolvedValueOnce({
+      data: { codigo: SUCURSAL_CODIGO },
+      error: null,
+    });
+    // Cortes hoy retorna uno FINALIZADO
+    mockChain.cortes.lt.mockResolvedValueOnce({
+      data: [{ id: 'corte-existente', estado: 'FINALIZADO' }],
+      error: null,
+    });
+    // Insert exitoso
+    mockChain.cortes.single.mockResolvedValueOnce({
+      data: { ...CORTE_MOCK, motivo_nuevo_corte: 'Corte de prueba por error en conteo anterior' },
+      error: null,
+    });
+    // Insert intento OK
+    mockChain.intentos.single.mockResolvedValueOnce({ data: INTENTO_MOCK, error: null });
+
+    await act(async () => {
+      await result.current.iniciarCorte({
+        sucursal_id: SUCURSAL_ID,
+        cajero: 'Carlos Rivera',
+        testigo: 'Maria Lopez',
+        motivo_nuevo_corte: 'Corte de prueba por error en conteo anterior',
+      });
+    });
+
+    // Debe haber creado el corte exitosamente (sin throw)
+    expect(result.current.corte_actual).not.toBeNull();
+  });
+
+  it('3.7c - Sigue bloqueando con FINALIZADO existente SI motivo_nuevo_corte NO proporcionado', async () => {
+    const { result } = renderHook(() => useCorteSesion(SUCURSAL_ID));
+
+    await waitFor(() => {
+      expect(result.current.cargando).toBe(false);
+    });
+
+    // Sucursal OK
+    mockChain.sucursales.single.mockResolvedValueOnce({
+      data: { codigo: SUCURSAL_CODIGO },
+      error: null,
+    });
+    // Cortes hoy retorna uno FINALIZADO
+    mockChain.cortes.lt.mockResolvedValueOnce({
+      data: [{ id: 'corte-existente', estado: 'FINALIZADO' }],
+      error: null,
+    });
+
+    await expect(
+      act(async () => {
+        await result.current.iniciarCorte({
+          sucursal_id: SUCURSAL_ID,
+          cajero: 'Carlos Rivera',
+          testigo: 'Maria Lopez',
+          // SIN motivo_nuevo_corte — debe seguir bloqueando
+        });
+      }),
+    ).rejects.toThrow('Ya existe un corte finalizado para hoy');
+  });
+
+  it('3.7d - Rechaza motivo_nuevo_corte vacio o solo espacios', async () => {
+    const { result } = renderHook(() => useCorteSesion(SUCURSAL_ID));
+
+    await waitFor(() => {
+      expect(result.current.cargando).toBe(false);
+    });
+
+    // Sucursal OK
+    mockChain.sucursales.single.mockResolvedValueOnce({
+      data: { codigo: SUCURSAL_CODIGO },
+      error: null,
+    });
+    // Cortes hoy retorna uno FINALIZADO
+    mockChain.cortes.lt.mockResolvedValueOnce({
+      data: [{ id: 'corte-existente', estado: 'FINALIZADO' }],
+      error: null,
+    });
+
+    await expect(
+      act(async () => {
+        await result.current.iniciarCorte({
+          sucursal_id: SUCURSAL_ID,
+          cajero: 'Carlos Rivera',
+          testigo: 'Maria Lopez',
+          motivo_nuevo_corte: '   ', // solo espacios
+        });
+      }),
+    ).rejects.toThrow('Ya existe un corte finalizado para hoy');
+  });
+
+  it('3.7e - Insert payload incluye motivo_nuevo_corte en fallback path', async () => {
+    const { result } = renderHook(() => useCorteSesion(SUCURSAL_ID));
+
+    await waitFor(() => {
+      expect(result.current.cargando).toBe(false);
+    });
+
+    // Sucursal OK
+    mockChain.sucursales.single.mockResolvedValueOnce({
+      data: { codigo: SUCURSAL_CODIGO },
+      error: null,
+    });
+    // Cortes hoy retorna uno FINALIZADO (bypass con motivo)
+    mockChain.cortes.lt.mockResolvedValueOnce({
+      data: [{ id: 'corte-existente', estado: 'FINALIZADO' }],
+      error: null,
+    });
+    // Insert exitoso
+    mockChain.cortes.single.mockResolvedValueOnce({
+      data: { ...CORTE_MOCK, motivo_nuevo_corte: 'Error en conteo anterior' },
+      error: null,
+    });
+    // Insert intento OK
+    mockChain.intentos.single.mockResolvedValueOnce({ data: INTENTO_MOCK, error: null });
+
+    await act(async () => {
+      await result.current.iniciarCorte({
+        sucursal_id: SUCURSAL_ID,
+        cajero: 'Carlos Rivera',
+        testigo: 'Maria Lopez',
+        motivo_nuevo_corte: 'Error en conteo anterior',
+      });
+    });
+
+    // Verificar que insert payload incluye motivo_nuevo_corte
+    const insertCall = mockChain.cortes.insert.mock.calls[0][0] as Record<string, unknown>;
+    expect(insertCall.motivo_nuevo_corte).toBe('Error en conteo anterior');
+  });
+
+  it('3.7f - RPC call incluye p_motivo_nuevo_corte parametro', async () => {
+    const { result } = renderHook(() => useCorteSesion(SUCURSAL_ID));
+
+    await waitFor(() => {
+      expect(result.current.cargando).toBe(false);
+    });
+
+    // RPC disponible y exitoso
+    mockSupabaseRpc.mockResolvedValueOnce({
+      data: { ...CORTE_MOCK, motivo_nuevo_corte: 'Reconteo solicitado por supervisor' },
+      error: null,
+    });
+    mockChain.intentos.single.mockResolvedValueOnce({ data: INTENTO_MOCK, error: null });
+
+    await act(async () => {
+      await result.current.iniciarCorte({
+        sucursal_id: SUCURSAL_ID,
+        cajero: 'Carlos Rivera',
+        testigo: 'Maria Lopez',
+        motivo_nuevo_corte: 'Reconteo solicitado por supervisor',
+      });
+    });
+
+    expect(mockSupabaseRpc).toHaveBeenCalledWith('iniciar_corte_transaccional', {
+      p_sucursal_id: SUCURSAL_ID,
+      p_cajero: 'Carlos Rivera',
+      p_testigo: 'Maria Lopez',
+      p_venta_esperada: null,
+      p_cajero_id: null,
+      p_testigo_id: null,
+      p_motivo_nuevo_corte: 'Reconteo solicitado por supervisor',
+    });
   });
 
   it('3.8 - Reintenta con correlativo incrementado cuando Supabase responde duplicate key', async () => {
@@ -590,7 +763,7 @@ describe('Suite 3: iniciarCorte', () => {
     await act(async () => {
       await result.current.iniciarCorte({
         sucursal_id: SUCURSAL_ID,
-        cajero: 'Juan Perez',
+        cajero: 'Carlos Rivera',
         testigo: 'Maria Lopez',
       });
     });
@@ -620,7 +793,7 @@ describe('Suite 3: iniciarCorte', () => {
     await act(async () => {
       await result.current.iniciarCorte({
         sucursal_id: SUCURSAL_ID,
-        cajero: 'Juan Perez',
+        cajero: 'Carlos Rivera',
         cajero_id: 'tito-gomez',
         testigo: 'Maria Lopez',
         testigo_id: 'adonay-torres',
@@ -630,11 +803,12 @@ describe('Suite 3: iniciarCorte', () => {
 
     expect(mockSupabaseRpc).toHaveBeenCalledWith('iniciar_corte_transaccional', {
       p_sucursal_id: SUCURSAL_ID,
-      p_cajero: 'Juan Perez',
+      p_cajero: 'Carlos Rivera',
       p_testigo: 'Maria Lopez',
       p_venta_esperada: 653.65,
       p_cajero_id: 'tito-gomez',
       p_testigo_id: 'adonay-torres',
+      // 🤖 [IA] - p_motivo_nuevo_corte NO presente: solo se incluye cuando tiene valor (compatible pre-migración 012)
     });
     expect(mockChain.cortes.insert).not.toHaveBeenCalled();
     expect(result.current.corte_actual?.id).toBe(CORTE_MOCK.id);
@@ -1295,7 +1469,7 @@ describe('Suite 9: Manejo de errores', () => {
       try {
         await result.current.iniciarCorte({
           sucursal_id: SUCURSAL_ID,
-          cajero: 'Juan Perez',
+          cajero: 'Carlos Rivera',
           testigo: 'Maria Lopez',
         });
       } catch (e) {
@@ -1363,7 +1537,7 @@ describe('Suite 9: Manejo de errores', () => {
     await act(async () => {
       await result.current.iniciarCorte({
         sucursal_id: SUCURSAL_ID,
-        cajero: 'Juan Perez',
+        cajero: 'Carlos Rivera',
         testigo: 'Maria Lopez',
       });
     });
@@ -1728,7 +1902,7 @@ describe('Suite 11: Reconexión automática — procesarCola al volver online', 
     await act(async () => {
       await result.current.iniciarCorte({
         sucursal_id: SUCURSAL_ID,
-        cajero: 'Juan Perez',
+        cajero: 'Carlos Rivera',
         testigo: 'Maria Lopez',
       });
     });

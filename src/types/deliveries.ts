@@ -106,7 +106,7 @@ export type AlertLevel = 'ok' | 'warning' | 'urgent' | 'critical';
  * ```typescript
  * const delivery: DeliveryEntry = {
  *   id: crypto.randomUUID(),
- *   customerName: 'Juan Pérez',
+ *   customerName: 'Carlos Rivera',
  *   amount: 75.50,
  *   courier: 'C807',
  *   guideNumber: 'C807-2025-001234',

@@ -236,7 +236,7 @@ describe('calculateSicarAdjusted - Desglose', () => {
     const deliveries: DeliveryEntry[] = [
       createTestDelivery({
         id: 'delivery-1',
-        customerName: 'Juan Pérez',
+        customerName: 'Carlos Rivera',
         amount: 100.0,
         courier: 'C807',
       }),
@@ -255,7 +255,7 @@ describe('calculateSicarAdjusted - Desglose', () => {
     // Verificar primer delivery
     expect(result.deliveriesBreakdown[0]).toMatchObject({
       id: 'delivery-1',
-      customerName: 'Juan Pérez',
+      customerName: 'Carlos Rivera',
       amount: 100.0,
       courier: 'C807',
     });
@@ -328,7 +328,7 @@ describe('formatDeliveriesForWhatsApp', () => {
       deliveriesBreakdown: [
         {
           id: '1',
-          customerName: 'Juan Pérez',
+          customerName: 'Carlos Rivera',
           amount: 100.0,
           courier: 'C807',
           daysOld: 5,
@@ -339,7 +339,7 @@ describe('formatDeliveriesForWhatsApp', () => {
     const formatted = formatDeliveriesForWhatsApp(result);
 
     expect(formatted).toContain('📦 DELIVERIES PENDIENTES (1)');
-    expect(formatted).toContain('1. Juan Pérez - $100.00');
+    expect(formatted).toContain('1. Carlos Rivera - $100.00');
     expect(formatted).toContain('C807 | 5 días pendiente');
     expect(formatted).toContain('TOTAL PENDIENTE: $100.00');
     expect(formatted).toContain('━━━━━━━━━━━━'); // Separador

@@ -122,6 +122,9 @@ export interface Corte {
   finalizado_at: string | null;
   /** Motivo de aborto (solo en ABORTADO) */
   motivo_aborto: string | null;
+  // 🤖 [IA] - Override corte finalizado: justificacion obligatoria para nuevo corte en mismo dia
+  /** Motivo por el cual se crea un nuevo corte cuando ya existe uno FINALIZADO hoy */
+  motivo_nuevo_corte: string | null;
 }
 
 /**
@@ -210,6 +213,9 @@ export interface IniciarCorteParams {
   testigo_id?: string;
   /** Venta esperada segun SICAR (opcional, >= 0) */
   venta_esperada?: number;
+  // 🤖 [IA] - Override corte finalizado: justificacion obligatoria para nuevo corte en mismo dia
+  /** Motivo obligatorio si ya existe corte FINALIZADO hoy. Si se proporciona, debe ser no-vacio. */
+  motivo_nuevo_corte?: string;
 }
 
 /**
@@ -360,6 +366,8 @@ export function isCorte(obj: unknown): obj is Corte {
   if (record.reporte_hash !== null && typeof record.reporte_hash !== 'string') return false;
   if (record.finalizado_at !== null && typeof record.finalizado_at !== 'string') return false;
   if (record.motivo_aborto !== null && typeof record.motivo_aborto !== 'string') return false;
+  // 🤖 [IA] - Override corte finalizado
+  if (record.motivo_nuevo_corte !== null && typeof record.motivo_nuevo_corte !== 'string') return false;
 
   // Campos nullable (number | null)
   if (record.venta_esperada !== null && typeof record.venta_esperada !== 'number') return false;
@@ -434,6 +442,12 @@ export function isIniciarCorteParamsValido(obj: unknown): obj is IniciarCortePar
   if (record.venta_esperada !== undefined) {
     if (typeof record.venta_esperada !== 'number') return false;
     if (record.venta_esperada < 0) return false;
+  }
+
+  // 🤖 [IA] - Override corte finalizado: si motivo presente, debe ser string no-vacio
+  if (record.motivo_nuevo_corte !== undefined) {
+    if (typeof record.motivo_nuevo_corte !== 'string') return false;
+    if (record.motivo_nuevo_corte.trim().length === 0) return false;
   }
 
   return true;

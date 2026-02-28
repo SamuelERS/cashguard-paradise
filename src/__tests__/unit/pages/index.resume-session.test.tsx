@@ -185,7 +185,7 @@ const mockCorteActivo = {
   sucursal_id: 'suc-test-1',
   correlativo: 'CRT-2025-001',
   created_at: '2025-02-18T10:00:00Z',
-  cajero: 'Juan Pérez',
+  cajero: 'Carlos Rivera',
   testigo: 'María García', // 🤖 [IA] - ORDEN #24 M1: campo requerido para Test 6
   estado: 'INICIADO',
   venta_esperada: 500,
@@ -269,7 +269,7 @@ describe('R3-B1: Index — reanudar sesión salta wizard directamente a CashCoun
     // En GREEN, CashCounter recibirá sucursal_id, cajero y venta_esperada de la sesión.
     const counter = await screen.findByTestId('cash-counter');
     expect(counter.getAttribute('data-initial-store')).toBe('suc-test-1');
-    expect(counter.getAttribute('data-initial-cashier')).toBe('Juan Pérez');
+    expect(counter.getAttribute('data-initial-cashier')).toBe('Carlos Rivera');
     expect(counter.getAttribute('data-initial-expected-sales')).toBe('500');
   });
 

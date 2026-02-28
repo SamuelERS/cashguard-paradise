@@ -21,6 +21,10 @@ const InitialWizardModalView = (props: InitialWizardModalProps) => {
   const { isOpen, onCheckActiveSessionForStore } = props;
 
   const navState = ctrl.getNavigationState(ctrl.isFlowCompleted());
+  const requiereMotivoNuevoCorte = (props.completionError ?? '')
+    .toLowerCase()
+    .includes('ya existe un corte finalizado para hoy');
+  const motivoNuevoCorteValido = (ctrl.wizardData.motivo_nuevo_corte ?? '').trim().length > 0;
 
   useEffect(() => {
     if (!isOpen) return;
@@ -108,6 +112,7 @@ const InitialWizardModalView = (props: InitialWizardModalProps) => {
           <Step6Expenses
             wizardData={ctrl.wizardData}
             updateWizardData={ctrl.updateWizardData}
+            completionError={props.completionError}
           />
         );
       default:
@@ -217,7 +222,7 @@ const InitialWizardModalView = (props: InitialWizardModalProps) => {
             {ctrl.currentStep === ctrl.totalSteps && (
               <ConstructiveActionButton
                 onClick={ctrl.handleComplete}
-                disabled={!navState.isCompleted}
+                disabled={!navState.isCompleted || (requiereMotivoNuevoCorte && !motivoNuevoCorteValido)}
                 data-testid="wizard-button-complete"
               >
                 <CheckCircle className="h-4 w-4 mr-2" />

@@ -138,6 +138,7 @@ export function useInitialWizardController(
         selectedWitness: wizardData.selectedWitness,
         expectedSales: wizardData.expectedSales,
         dailyExpenses: wizardData.dailyExpenses || [],
+        motivo_nuevo_corte: wizardData.motivo_nuevo_corte?.trim() || undefined,
       });
     }
   }, [getNavigationState, isFlowCompleted, onComplete, wizardData]);

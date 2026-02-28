@@ -122,7 +122,7 @@ function defaultOptions(overrides = {}) {
   return {
     operationMode: OperationMode.CASH_CUT,
     initialStore: 'Sucursal Central',
-    initialCashier: 'Juan Pérez',
+    initialCashier: 'Carlos Rivera',
     initialWitness: 'María López',
     initialExpectedSales: '653.65',
     initialDailyExpenses: [],

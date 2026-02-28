@@ -56,7 +56,7 @@ describe('generate-thermal-print - ESCENARIO 1: sanitizeForThermal', () => {
   });
 
   test('1.4 - preserva texto plano sin emojis', () => {
-    const input = 'Sucursal: Los Heroes\nCajero: Juan Perez';
+    const input = 'Sucursal: Los Heroes\nCajero: Carlos Rivera';
     const result = sanitizeForThermal(input);
     expect(result).toBe(input);
   });

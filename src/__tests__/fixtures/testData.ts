@@ -88,7 +88,7 @@ export const testStores = {
   
   employees: {
     heroes: [
-      { id: 'emp1', name: 'Juan Pérez', role: 'Cajero' },
+      { id: 'emp1', name: 'Carlos Rivera', role: 'Cajero' },
       { id: 'emp2', name: 'María García', role: 'Supervisor' },
       { id: 'emp3', name: 'Carlos López', role: 'Cajero' },
     ],
@@ -105,7 +105,7 @@ export const testWizardData = {
   valid: {
     protocolAccepted: true,
     selectedStore: 'Los Héroes',
-    selectedCashier: 'Juan Pérez',
+    selectedCashier: 'Carlos Rivera',
     selectedWitness: 'María García',
     expectedAmount: 500.00,
   },
@@ -113,15 +113,15 @@ export const testWizardData = {
   invalidSamePerson: {
     protocolAccepted: true,
     selectedStore: 'Los Héroes',
-    selectedCashier: 'Juan Pérez',
-    selectedWitness: 'Juan Pérez', // Same as cashier - should fail
+    selectedCashier: 'Carlos Rivera',
+    selectedWitness: 'Carlos Rivera', // Same as cashier - should fail
     expectedAmount: 500.00,
   },
   
   invalidNoProtocol: {
     protocolAccepted: false, // Protocol not accepted
     selectedStore: 'Los Héroes',
-    selectedCashier: 'Juan Pérez',
+    selectedCashier: 'Carlos Rivera',
     selectedWitness: 'María García',
     expectedAmount: 500.00,
   },
