@@ -13,10 +13,12 @@
 // Fix: arrays estables en scope de módulo (expenses en defaultProps) y en factory fn (useDeliveries)
 // 🤖 [IA] - v3.6.0: TDD RED — Tests para botón Imprimir (impresión térmica 80mm)
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import type { ReactNode, ButtonHTMLAttributes } from 'react';
 import CashCalculation from '../CashCalculation';
 import type { CashCount, ElectronicPayments } from '@/types/cash';
+import { useDeliveries } from '@/hooks/useDeliveries';
+import { calculateSicarAdjusted } from '@/utils/sicarAdjustment';
 
 // ── Mocks anti-OOM: bloquean module resolution transitivo de dependencias UI pesadas ──
 vi.mock('@/data/paradise', () => ({
@@ -53,6 +55,7 @@ vi.mock('@/hooks/useDeliveries', () => {
       createDelivery: vi.fn(),
       updateDelivery: vi.fn(),
       markAsPaid: vi.fn(),
+      markAsDeducted: vi.fn(),
       cancelDelivery: vi.fn(),
       rejectDelivery: vi.fn(),
       getDeliveryById: vi.fn(),
@@ -236,5 +239,140 @@ describe('CashCalculation — botón Imprimir (v3.6.0)', () => {
     render(<CashCalculation {...defaultProps} />);
     const printButton = screen.getByRole('button', { name: /imprimir reporte/i });
     expect(printButton).toHaveTextContent(/imprimir/i);
+  });
+});
+
+// ============================================================
+// ESCENARIO 3: Fix doble ejecución — markAsDeducted separado (v3.5.3)
+// ============================================================
+// 🤖 [IA] - v3.5.3: Tests para bug crítico de integración reportado por director
+// Bug: markAsDeducted dentro de performCalculation causaba loop infinito
+// que sobreescribía el resultado correcto con uno sin deducción
+describe('CashCalculation — prevención doble ejecución (v3.5.3)', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('3.1 — markAsDeducted se llama exactamente una vez por delivery sin deductedAt', async () => {
+    const mockMarkAsDeducted = vi.fn();
+    const stablePendingWithDeliveries = [
+      {
+        id: 'delivery-1',
+        customerName: 'Cliente COD',
+        amount: 76.00,
+        courier: 'C807' as const,
+        status: 'pending_cod' as const,
+        createdAt: '2026-02-28T10:00:00.000Z',
+      },
+    ];
+
+    vi.mocked(useDeliveries).mockReturnValue({
+      pending: stablePendingWithDeliveries,
+      history: [],
+      isLoading: false,
+      error: null,
+      createDelivery: vi.fn(),
+      updateDelivery: vi.fn(),
+      markAsPaid: vi.fn(),
+      markAsDeducted: mockMarkAsDeducted,
+      cancelDelivery: vi.fn(),
+      rejectDelivery: vi.fn(),
+      getDeliveryById: vi.fn(),
+      filterPending: vi.fn(() => []),
+      filterHistory: vi.fn(() => []),
+      cleanupHistory: vi.fn(),
+      refresh: vi.fn(),
+    });
+
+    render(<CashCalculation {...defaultProps} />);
+
+    await waitFor(() => {
+      expect(mockMarkAsDeducted).toHaveBeenCalledTimes(1);
+    });
+    expect(mockMarkAsDeducted).toHaveBeenCalledWith('delivery-1');
+  });
+
+  it('3.2 — no llama markAsDeducted para deliveries ya deducidos', async () => {
+    const mockMarkAsDeducted = vi.fn();
+    const stablePendingAlreadyDeducted = [
+      {
+        id: 'delivery-already',
+        customerName: 'Cliente Ayer',
+        amount: 76.00,
+        courier: 'C807' as const,
+        status: 'pending_cod' as const,
+        createdAt: '2026-02-27T10:00:00.000Z',
+        deductedAt: '2026-02-27T20:00:00.000Z',
+      },
+    ];
+
+    vi.mocked(useDeliveries).mockReturnValue({
+      pending: stablePendingAlreadyDeducted,
+      history: [],
+      isLoading: false,
+      error: null,
+      createDelivery: vi.fn(),
+      updateDelivery: vi.fn(),
+      markAsPaid: vi.fn(),
+      markAsDeducted: mockMarkAsDeducted,
+      cancelDelivery: vi.fn(),
+      rejectDelivery: vi.fn(),
+      getDeliveryById: vi.fn(),
+      filterPending: vi.fn(() => []),
+      filterHistory: vi.fn(() => []),
+      cleanupHistory: vi.fn(),
+      refresh: vi.fn(),
+    });
+
+    render(<CashCalculation {...defaultProps} />);
+
+    // Wait for effects to settle, then verify no calls
+    await waitFor(() => {
+      expect(screen.getByText('🔒 Resultados Bloqueados')).toBeInTheDocument();
+    });
+    expect(mockMarkAsDeducted).not.toHaveBeenCalled();
+  });
+
+  it('3.3 — calculateSicarAdjusted recibe deliveries originales sin mutación', async () => {
+    const stablePending = [
+      {
+        id: 'delivery-fresh',
+        customerName: 'Cliente Hoy',
+        amount: 76.00,
+        courier: 'C807' as const,
+        status: 'pending_cod' as const,
+        createdAt: '2026-02-28T10:00:00.000Z',
+      },
+    ];
+
+    vi.mocked(useDeliveries).mockReturnValue({
+      pending: stablePending,
+      history: [],
+      isLoading: false,
+      error: null,
+      createDelivery: vi.fn(),
+      updateDelivery: vi.fn(),
+      markAsPaid: vi.fn(),
+      markAsDeducted: vi.fn(),
+      cancelDelivery: vi.fn(),
+      rejectDelivery: vi.fn(),
+      getDeliveryById: vi.fn(),
+      filterPending: vi.fn(() => []),
+      filterHistory: vi.fn(() => []),
+      cleanupHistory: vi.fn(),
+      refresh: vi.fn(),
+    });
+
+    render(<CashCalculation {...defaultProps} />);
+
+    await waitFor(() => {
+      expect(vi.mocked(calculateSicarAdjusted)).toHaveBeenCalled();
+    });
+
+    // Verify calculateSicarAdjusted received the original deliveries (without deductedAt)
+    const callArgs = vi.mocked(calculateSicarAdjusted).mock.calls[0];
+    expect(callArgs[0]).toBe(100); // expectedSales from defaultProps
+    expect(callArgs[1]).toBe(stablePending); // exact same reference, not mutated
+    expect(callArgs[1][0]).not.toHaveProperty('deductedAt');
   });
 });

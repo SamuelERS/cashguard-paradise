@@ -1,7 +1,8 @@
-// 🤖 [IA] - v3.0: VERSION 3.0 DELIVERY CONTROL - FASE 3 Integración DeliveryManager
+// 🤖 [IA] - v3.5.3: FIX BUG CRÍTICO doble ejecución — markAsDeducted separado de performCalculation con useRef guard
+// Previous: v3.0 DELIVERY CONTROL - FASE 3 Integración DeliveryManager
 // Desmonolitado: generate-evening-report.ts (reporte) + CashResultsDisplay.tsx (JSX resultados)
 // Previous: v1.3.7 - ANTI-FRAUDE - Confirmación explícita envío WhatsApp ANTES de revelar resultados
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 // 🤖 [IA] - v1.3.6Z: Framer Motion removido (GPU compositing bug iOS Safari causa pantalla congelada Phase 3)
 import { Calculator, AlertTriangle, CheckCircle, Share, Lock, Printer } from "lucide-react";
 // 🤖 [IA] - FAE-02: PURGA QUIRÚRGICA COMPLETADA - CSS imports eliminados
@@ -94,6 +95,12 @@ const CashCalculation = ({
   const displayCashierName = cashierName?.trim() || cashierId;
   const displayWitnessName = witnessName?.trim() || witnessId;
 
+  // 🤖 [IA] - v3.5.3: useRef guard para marcar deliveries una sola vez después del primer cálculo
+  // Root cause fix: markAsDeducted dentro de performCalculation causaba loop infinito
+  // markAsDeducted → setPending → nuevo markAsDeducted ref → nuevo performCalculation ref → re-ejecución
+  // Run 2 veía deliveries CON deductedAt → los filtraba → sobreescribía resultado correcto
+  const hasMarkedDeliveriesRef = useRef(false);
+
   const performCalculation = useCallback(() => {
     const totalCash = calculateCashTotal(cashCount);
     const totalElectronic = Object.values(electronicPayments).reduce((sum, val) => sum + val, 0);
@@ -137,18 +144,25 @@ const CashCalculation = ({
     };
 
     setCalculationData(data);
-
-    // 🤖 [IA] - v3.5.2: Marcar deliveries como deducidos para prevenir doble deducción
-    pendingDeliveries
-      .filter((d) => !d.deductedAt)
-      .forEach((d) => markAsDeducted(d.id));
-  }, [cashCount, electronicPayments, expectedSales, expenses, pendingDeliveries, markAsDeducted]);
+  }, [cashCount, electronicPayments, expectedSales, expenses, pendingDeliveries]);
 
   useEffect(() => {
     if (!isCalculated) {
       performCalculation();
     }
   }, [isCalculated, performCalculation]);
+
+  // 🤖 [IA] - v3.5.3: Marcar deliveries como deducidos UNA SOLA VEZ después del primer cálculo exitoso
+  // Separado de performCalculation para evitar loop: markAsDeducted muta pending state →
+  // cambia ref de markAsDeducted → cambiaría ref de performCalculation → re-ejecución infinita
+  useEffect(() => {
+    if (calculationData && !hasMarkedDeliveriesRef.current) {
+      hasMarkedDeliveriesRef.current = true;
+      pendingDeliveries
+        .filter((d) => !d.deductedAt)
+        .forEach((d) => markAsDeducted(d.id));
+    }
+  }, [calculationData, pendingDeliveries, markAsDeducted]);
 
   // 🤖 [IA] - Desmonolitado: Wrapper delegando a función pura en generate-evening-report.ts
   const generateCompleteReport = useCallback(() => {
