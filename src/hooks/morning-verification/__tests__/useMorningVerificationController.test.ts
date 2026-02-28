@@ -34,6 +34,12 @@ vi.mock('../../../lib/morning-verification/mvFormatters', () => ({
   downloadPrintableReport: vi.fn(),
 }));
 
+// 🤖 [IA] - v3.6.0: Mock para impresión térmica 80mm (reemplaza downloadPrintableReport)
+vi.mock('@/utils/generate-thermal-print', () => ({
+  generateThermalHTML: vi.fn(() => '<html>Thermal Mock</html>'),
+  sanitizeForThermal: vi.fn((text: string) => text),
+}));
+
 // ────────────────────────────────────────────────────────────────
 // Fixtures
 // ────────────────────────────────────────────────────────────────
@@ -345,18 +351,47 @@ describe('useMorningVerificationController - handleShare', () => {
 // handlePrintableReport
 // ────────────────────────────────────────────────────────────────
 
+// 🤖 [IA] - v3.6.1: Tests actualizados para impresión térmica 80mm con tenant-aware (tenantId = storeId)
 describe('useMorningVerificationController - handlePrintableReport', () => {
   beforeEach(() => { vi.clearAllMocks(); });
 
-  it('llama downloadPrintableReport con reporte', async () => {
-    const { downloadPrintableReport } = await import('@/lib/morning-verification/mvFormatters');
+  it('genera HTML térmico y abre ventana de impresión con tenantId', async () => {
+    const { generateThermalHTML } = await import('@/utils/generate-thermal-print');
+    const mockPrintWindow = {
+      document: { write: vi.fn(), close: vi.fn() },
+    };
+    const openSpy = vi.spyOn(window, 'open').mockReturnValue(mockPrintWindow as unknown as Window);
+
     const { result } = renderHook(() => useMorningVerificationController(makeProps()));
 
     await act(async () => {
       result.current.handlePrintableReport();
     });
 
-    expect(downloadPrintableReport).toHaveBeenCalledWith('MOCK_REPORT_TEXT');
+    // 🤖 [IA] - v3.6.1: Verificar que pasa storeId como tenantId (3er argumento)
+    expect(generateThermalHTML).toHaveBeenCalledWith('MOCK_REPORT_TEXT', 'Los Heroes', 'store1');
+    expect(openSpy).toHaveBeenCalledWith('', '_blank');
+    expect(mockPrintWindow.document.write).toHaveBeenCalledWith('<html>Thermal Mock</html>');
+    expect(mockPrintWindow.document.close).toHaveBeenCalled();
+
+    openSpy.mockRestore();
+  });
+
+  it('muestra toast error si window.open falla', async () => {
+    const { toast } = await import('sonner');
+    const openSpy = vi.spyOn(window, 'open').mockReturnValue(null);
+
+    const { result } = renderHook(() => useMorningVerificationController(makeProps()));
+
+    await act(async () => {
+      result.current.handlePrintableReport();
+    });
+
+    // No toast.error because the handler only toasts on exception, not on null window
+    // But it should NOT toast success either
+    expect(toast.success).not.toHaveBeenCalled();
+
+    openSpy.mockRestore();
   });
 });
 

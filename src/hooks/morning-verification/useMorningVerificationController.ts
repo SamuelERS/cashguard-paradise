@@ -17,7 +17,8 @@ import type {
 } from '@/types/morningVerification';
 
 import { performVerification, generateDataHash } from '@/lib/morning-verification/mvRules';
-import { generateMorningReport, downloadPrintableReport } from '@/lib/morning-verification/mvFormatters';
+import { generateMorningReport } from '@/lib/morning-verification/mvFormatters';
+import { generateThermalHTML } from '@/utils/generate-thermal-print';
 import { copyToClipboard } from '@/utils/clipboard';
 
 // ────────────────────────────────────────────────────────────────
@@ -215,10 +216,22 @@ export function useMorningVerificationController(
     }
   }, [report, handleCopyToClipboard]);
 
+  // 🤖 [IA] - v3.6.1: Impresión térmica 80mm con tenantId (storeId) para personalización tenant-aware
   const handlePrintableReport = useCallback(() => {
-    downloadPrintableReport(report);
-    toast.success('Reporte descargado exitosamente');
-  }, [report]);
+    try {
+      const html = generateThermalHTML(report, store?.name, storeId);
+      const printWindow = window.open('', '_blank');
+      if (printWindow) {
+        printWindow.document.write(html);
+        printWindow.document.close();
+        toast.success('📄 Reporte generado', { description: 'Imprimiendo automáticamente...' });
+      }
+    } catch (error) {
+      toast.error('❌ Error al generar reporte', {
+        description: error instanceof Error ? error.message : 'Error desconocido',
+      });
+    }
+  }, [report, store?.name, storeId]);
 
   const handleBack = useCallback(() => {
     onBack();

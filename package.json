@@ -1,7 +1,7 @@
 {
   "name": "vite_react_shadcn_ts",
   "private": true,
-  "version": "4.1.1",
+  "version": "4.1.2",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -9,7 +9,7 @@
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
-    "prepare": "husky install",
+    "prepare": "husky install && sh Scripts/setup-env.sh",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:watch": "vitest watch",
