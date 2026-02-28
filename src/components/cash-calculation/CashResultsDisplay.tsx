@@ -7,7 +7,8 @@ import type { CashCount, ElectronicPayments } from '@/types/cash';
 import type { PhaseState, DeliveryCalculation } from '@/types/phases';
 import type { CalculationData } from '@/utils/generate-evening-report';
 import { DenominationsList } from '@/components/cash-calculation/DenominationsList';
-import { DeliveryManager } from '@/components/deliveries/DeliveryManager';
+import { DeductedDeliveriesSummary } from '@/components/deliveries/DeductedDeliveriesSummary';
+import type { DeliveryEntry } from '@/types/deliveries';
 
 interface CashResultsDisplayProps {
   calculationData: CalculationData;
@@ -19,6 +20,8 @@ interface CashResultsDisplayProps {
   storeName?: string;
   cashierName?: string;
   witnessName?: string;
+  /** 🤖 [IA] - v3.5.2: Deliveries pendientes para mostrar resumen read-only */
+  pendingDeliveries?: DeliveryEntry[];
 }
 
 // --- Helper: Display remaining denominations when Phase 2 was skipped ---
@@ -56,6 +59,7 @@ export function CashResultsDisplay({
   storeName,
   cashierName,
   witnessName,
+  pendingDeliveries = [],
 }: CashResultsDisplayProps) {
   return (
     <>
@@ -174,23 +178,19 @@ export function CashResultsDisplay({
         </div>
       </div>
 
-      {/* Deliveries COD Section */}
+      {/* 🤖 [IA] - v3.5.2: Resumen read-only de deliveries deducidos (reemplaza DeliveryManager CRUD) */}
       <div className="glass-morphism-panel">
         <h3 className="text-[clamp(1rem,4.5vw,1.25rem)] font-bold mb-[clamp(0.75rem,3vw,1rem)]" style={{ color: '#e1e8ed' }}>
-          📦 Deliveries Pendientes (COD)
+          📦 Deliveries Deducidos
         </h3>
-        <p className="text-[clamp(0.75rem,3vw,0.875rem)] mb-2" style={{ color: '#8899a6' }}>
-          Gestiona entregas pendientes que deben restarse del efectivo esperado
-        </p>
-        {/* 🤖 [IA] - D-01 GREEN: Nota explícita ajuste SICAR automático por deliveries COD */}
         <p
           data-testid="delivery-sicar-note"
           className="text-[clamp(0.7rem,2.8vw,0.8rem)] mb-[clamp(1rem,4vw,1.5rem)] px-2 py-1 rounded"
           style={{ color: '#00ba7c', background: 'rgba(0,186,124,0.08)' }}
         >
-          Los deliveries COD registrados aquí ajustan el SICAR automáticamente al calcular la diferencia del corte.
+          Estos deliveries fueron restados del SICAR esperado en este corte.
         </p>
-        <DeliveryManager />
+        <DeductedDeliveriesSummary deliveries={pendingDeliveries} />
       </div>
 
       {/* Cambio para Mañana */}

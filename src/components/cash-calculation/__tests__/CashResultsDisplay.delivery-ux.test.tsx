@@ -25,8 +25,8 @@ import type { CashCount, ElectronicPayments } from '@/types/cash';
 
 // ─── Mocks: dependencias pesadas (prevención OOM) ───────────────────────────
 
-vi.mock('@/components/deliveries/DeliveryManager', () => ({
-  DeliveryManager: () => null,
+vi.mock('@/components/deliveries/DeductedDeliveriesSummary', () => ({
+  DeductedDeliveriesSummary: () => null,
 }));
 
 vi.mock('@/components/cash-calculation/DenominationsList', () => ({
@@ -96,8 +96,8 @@ describe('CashResultsDisplay — Comunicación UX de ajuste SICAR por deliveries
     // Debe mencionar SICAR explícitamente
     expect(note.textContent).toMatch(/SICAR/i);
 
-    // Debe dejar claro que el ajuste es automático
-    expect(note.textContent).toMatch(/automáticamente/i);
+    // Debe dejar claro que los deliveries fueron restados
+    expect(note.textContent).toMatch(/restados/i);
   });
 
   /**
@@ -119,7 +119,7 @@ describe('CashResultsDisplay — Comunicación UX de ajuste SICAR por deliveries
       />
     );
 
-    // El heading de deliveries debe seguir presente
-    expect(screen.getByText(/Deliveries Pendientes/i)).toBeInTheDocument();
+    // El heading de deliveries debe seguir presente (ahora "Deliveries Deducidos")
+    expect(screen.getByText(/Deliveries Deducidos/i)).toBeInTheDocument();
   });
 });

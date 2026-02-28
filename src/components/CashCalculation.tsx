@@ -333,6 +333,7 @@ const CashCalculation = ({
               storeName={displayStoreName}
               cashierName={displayCashierName}
               witnessName={displayWitnessName}
+              pendingDeliveries={pendingDeliveries}
             />
           )}
 
