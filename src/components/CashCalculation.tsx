@@ -80,7 +80,8 @@ const CashCalculation = ({
   const [showWhatsAppInstructions, setShowWhatsAppInstructions] = useState(false);
 
   // 🤖 [IA] - v3.0 FASE 4: Hook para acceder a deliveries pendientes
-  const { pending: pendingDeliveries } = useDeliveries();
+  // 🤖 [IA] - v3.5.2: markAsDeducted para prevenir doble deducción en cortes consecutivos
+  const { pending: pendingDeliveries, markAsDeducted } = useDeliveries();
 
   // 🤖 [IA] - v1.3.6Z: FIX iOS Safari - Cleanup defensivo de modal state
   useEffect(() => {
@@ -136,7 +137,12 @@ const CashCalculation = ({
     };
 
     setCalculationData(data);
-  }, [cashCount, electronicPayments, expectedSales, expenses, pendingDeliveries]);
+
+    // 🤖 [IA] - v3.5.2: Marcar deliveries como deducidos para prevenir doble deducción
+    pendingDeliveries
+      .filter((d) => !d.deductedAt)
+      .forEach((d) => markAsDeducted(d.id));
+  }, [cashCount, electronicPayments, expectedSales, expenses, pendingDeliveries, markAsDeducted]);
 
   useEffect(() => {
     if (!isCalculated) {
