@@ -111,7 +111,7 @@ describe('CorteDetalle - UX compacta entrega live', () => {
     expect(scoped.queryByText(/\d{2}\/\d{2}\/\d{4}/i)).not.toBeInTheDocument();
   });
 
-  it('muestra estado visual por fila: OK (amarillo), FALTA/SOBRA (rojo)', async () => {
+  it('muestra estado visual por fila: OK (verde), SOBRA (amarillo), FALTA (rojo)', async () => {
     render(<CorteDetalle />);
 
     const liveHeading = await screen.findByText(/progreso de entrega en vivo/i);
@@ -119,14 +119,14 @@ describe('CorteDetalle - UX compacta entrega live', () => {
     expect(card).not.toBeNull();
     const scoped = within(card as HTMLElement);
 
-    expect(scoped.getByText(/^OK$/i)).toHaveClass('text-amber-300');
+    expect(scoped.getByText(/^OK$/i)).toHaveClass('text-green-400');
 
     const faltanteEstado = scoped
       .getAllByText(/^FALTA$/i)
       .find((element) => element.className.includes('text-red-400'));
     expect(faltanteEstado).toBeDefined();
 
-    expect(scoped.getByText(/^SOBRA$/i)).toHaveClass('text-red-400');
+    expect(scoped.getByText(/^SOBRA$/i)).toHaveClass('text-amber-300');
   });
 
   it('ubica Progreso de entrega en vivo inmediatamente despues del panel operativo', async () => {
