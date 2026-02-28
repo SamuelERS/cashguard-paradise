@@ -211,6 +211,17 @@ export interface DeliveryEntry {
   createdAt: string;
 
   /**
+   * Timestamp ISO 8601 de cuando se dedujo del corte de caja
+   *
+   * @remarks
+   * - Se establece automáticamente al finalizar un corte
+   * - Previene doble deducción en cortes consecutivos
+   * - null/undefined = nunca deducido (se deducirá en próximo corte)
+   * - Delivery sigue como 'pending_cod' para gestión manual (paid/cancelled)
+   */
+  deductedAt?: string;
+
+  /**
    * Timestamp ISO 8601 cuando cliente pagó (status → paid)
    *
    * @remarks
