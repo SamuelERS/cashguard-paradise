@@ -96,6 +96,8 @@ interface UseDeliveriesReturn {
   cancelDelivery: (id: string, reason: string) => void;
   /** Rechazar delivery (pending_cod → rejected) */
   rejectDelivery: (id: string, reason: string) => void;
+  /** Marcar delivery como ya deducido del corte (establece deductedAt, NO cambia status) */
+  markAsDeducted: (id: string) => void;
 
   // ─────────────────────────────────────────
   // QUERIES
@@ -432,6 +434,28 @@ export function useDeliveries(): UseDeliveriesReturn {
   }, [pending]);
 
   /**
+   * Marca delivery como deducido del corte de caja (establece deductedAt)
+   * NO cambia status — delivery sigue como pending_cod para gestión manual
+   *
+   * @remarks
+   * - 🤖 [IA] - v3.5.2: Prevención doble deducción
+   * - Solo establece deductedAt timestamp, sin mover entre arrays
+   * - calculateSicarAdjusted filtra por !deductedAt para evitar doble resta
+   */
+  const markAsDeducted = useCallback((id: string): void => {
+    const delivery = pending.find((d) => d.id === id);
+    if (!delivery) {
+      throw new Error(`Delivery with id ${id} not found in pending`);
+    }
+
+    setPending((prev) =>
+      prev.map((d) =>
+        d.id === id ? { ...d, deductedAt: new Date().toISOString() } : d
+      )
+    );
+  }, [pending]);
+
+  /**
    * Cancela delivery (pending_cod → cancelled)
    * Mueve de pending[] a history[]
    */
@@ -552,6 +576,7 @@ export function useDeliveries(): UseDeliveriesReturn {
     createDelivery,
     updateDelivery,
     markAsPaid,
+    markAsDeducted,
     cancelDelivery,
     rejectDelivery,
 

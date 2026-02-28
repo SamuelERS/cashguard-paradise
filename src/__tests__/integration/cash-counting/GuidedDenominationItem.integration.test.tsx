@@ -3,7 +3,7 @@
 // Cobertura: Auto-navegación, validación, PWA mode, timing, mobile keyboard
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GuidedDenominationItem } from '@/components/ui/GuidedDenominationItem';
 import { cleanupMocks, waitForAnimation } from '../../fixtures/test-helpers';
@@ -167,12 +167,17 @@ describe('🎯 GuidedDenominationItem - Integration Tests (CORE)', () => {
       await user.type(input, 'abc!@#$%');
       expect(input).toHaveValue('');
       
+      // 🤖 [IA] - v3.5.3: fireEvent.change para entradas mixtas (dígitos + no-dígitos)
+      // userEvent.type simula carácter por carácter; cuando el componente controlado
+      // elimina el '.' y resetea el valor, el cursor interno de userEvent pierde sincronía
+      // → produce '34' en vez de '1234'. fireEvent.change simula pegar el valor completo,
+      // probando la misma lógica de validación sin el problema de cursor en jsdom.
       await user.clear(input);
-      await user.type(input, '12.34');
+      fireEvent.change(input, { target: { value: '12.34' } });
       expect(input).toHaveValue('1234');
-      
+
       await user.clear(input);
-      await user.type(input, '-5');
+      fireEvent.change(input, { target: { value: '-5' } });
       expect(input).toHaveValue('5');
     });
 

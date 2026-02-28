@@ -470,3 +470,61 @@ describe('formatSicarAdjustment', () => {
     expect(formatted).toContain('= SICAR Ajustado: $2150.00');
   });
 });
+
+// ═══════════════════════════════════════════════════════════
+// SUITE 7: DEDUCCIÓN ÚNICA — PREVENCIÓN DOBLE DEDUCCIÓN
+// ═══════════════════════════════════════════════════════════
+
+describe('calculateSicarAdjusted - Prevención Doble Deducción', () => {
+  it('debe ignorar deliveries que ya tienen deductedAt establecido', () => {
+    const deliveries: DeliveryEntry[] = [
+      createTestDelivery({ amount: 76.00, deductedAt: '2026-02-27T20:00:00.000Z' }),
+      createTestDelivery({ amount: 50.00 }),
+    ];
+
+    const result = calculateSicarAdjusted(2500, deliveries);
+
+    expect(result.totalPendingDeliveries).toBe(50.00);
+    expect(result.adjustedExpected).toBe(2450.00);
+    expect(result.pendingDeliveriesCount).toBe(1);
+  });
+
+  it('debe deducir normalmente si ningún delivery tiene deductedAt', () => {
+    const deliveries: DeliveryEntry[] = [
+      createTestDelivery({ amount: 76.00 }),
+      createTestDelivery({ amount: 50.00 }),
+    ];
+
+    const result = calculateSicarAdjusted(2500, deliveries);
+
+    expect(result.totalPendingDeliveries).toBe(126.00);
+    expect(result.adjustedExpected).toBe(2374.00);
+    expect(result.pendingDeliveriesCount).toBe(2);
+  });
+
+  it('debe retornar sin cambios si TODOS los deliveries ya fueron deducidos', () => {
+    const deliveries: DeliveryEntry[] = [
+      createTestDelivery({ amount: 76.00, deductedAt: '2026-02-27T20:00:00.000Z' }),
+      createTestDelivery({ amount: 50.00, deductedAt: '2026-02-27T20:00:00.000Z' }),
+    ];
+
+    const result = calculateSicarAdjusted(2500, deliveries);
+
+    expect(result.totalPendingDeliveries).toBe(0);
+    expect(result.adjustedExpected).toBe(2500);
+    expect(result.pendingDeliveriesCount).toBe(0);
+    expect(result.deliveriesBreakdown).toEqual([]);
+  });
+
+  it('debe excluir deliveries deducidos del breakdown', () => {
+    const deliveries: DeliveryEntry[] = [
+      createTestDelivery({ customerName: 'Cliente Ayer', amount: 76.00, deductedAt: '2026-02-27T20:00:00.000Z' }),
+      createTestDelivery({ customerName: 'Cliente Hoy', amount: 50.00 }),
+    ];
+
+    const result = calculateSicarAdjusted(2500, deliveries);
+
+    expect(result.deliveriesBreakdown).toHaveLength(1);
+    expect(result.deliveriesBreakdown[0].customerName).toBe('Cliente Hoy');
+  });
+});
