@@ -1,5 +1,5 @@
-// 🤖 [IA] - v4.1.2: versión oficial con mejoras UX recientes
-// Previous: v3.4.1 - OT12 - Fix denomination images (6 archivos copiados con nombres correctos + tests TDD)
+// 🤖 [IA] - v4.2.0: fix delivery double-deduction (deductedAt + markAsDeducted + useRef guard)
+// Previous: v4.1.2 - versión oficial con mejoras UX recientes
 // Previous: v3.3.2 - CASO-SANN-R2 - Panel interactivo sesión activa en Step 5 (reanudar/abortar)
 // Previous: v3.3.1 - CASO-SANN-R1 - Banner sesión activa oculto en Paso 1 (Protocolo)
 // Previous: v3.3.0 - CASO-SANN - Banner sesión activa en wizard CASH_CUT
@@ -83,7 +83,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
               }}>
                 Seleccione Operación
               </h1>
-              {/* 🤖 [IA] - v4.1.2: release oficial */}
+              {/* 🤖 [IA] - v4.2.0: fix delivery double-deduction */}
               <span className="px-3 py-1 rounded-full text-xs font-semibold shadow-lg" style={{
                 background: 'linear-gradient(135deg, #d4af37 0%, #aa8c2d 100%)',
                 color: '#1a1a1a',
@@ -91,7 +91,7 @@ export function OperationSelector({ onSelectMode }: OperationSelectorProps) {
                 boxShadow: '0 4px 6px rgba(212, 175, 55, 0.4)',
                 border: '1px solid rgba(255, 215, 0, 0.3)'
               }}>
-                  v4.1.2
+                  v4.2.0
               </span>
             </div>
           </div>
