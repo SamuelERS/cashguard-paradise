@@ -200,8 +200,9 @@ export function calculateSicarAdjusted(
   // ─────────────────────────────────────────
   // FILTRAR SOLO DELIVERIES PENDIENTES
   // ─────────────────────────────────────────
+  // 🤖 [IA] - v3.5.2: Filtrar pending_cod SIN deductedAt (prevención doble deducción)
   const pendingDeliveries = deliveries.filter(
-    (d) => d.status === 'pending_cod'
+    (d) => d.status === 'pending_cod' && !d.deductedAt
   );
 
   // Si no hay pendientes, retornar sin cambios
