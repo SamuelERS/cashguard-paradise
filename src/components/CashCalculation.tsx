@@ -225,11 +225,11 @@ const CashCalculation = ({
     toast.success('✅ Reporte confirmado como enviado');
   }, []);
 
-  // 🤖 [IA] - v3.6.0: Handler impresión térmica 80mm — usa generateThermalHTML (sanitiza emojis + CSS @page 80mm)
+  // 🤖 [IA] - v3.6.1: Impresión térmica 80mm con tenantId (storeId) para personalización tenant-aware
   const generatePrintableReport = () => {
     try {
       const report = generateCompleteReport();
-      const html = generateThermalHTML(report, displayStoreName);
+      const html = generateThermalHTML(report, displayStoreName, storeId);
       const printWindow = window.open('', '_blank');
       if (printWindow) {
         printWindow.document.write(html);

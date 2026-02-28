@@ -117,15 +117,21 @@ function escapeHTML(text: string): string {
  * - Auto-impresión al cargar (window.print())
  * - Charset UTF-8 para acentos español
  * - Escapa HTML del contenido para prevenir XSS
+ * - Personalización tenant-aware con tenantId (v3.6.1)
  *
  * @param report - Texto crudo del reporte (con emojis WhatsApp)
  * @param storeName - Nombre de sucursal para título (opcional)
+ * @param tenantId - Identificador de sucursal/tenant para trazabilidad (opcional)
  * @returns String HTML completo listo para escribir en ventana
  */
-export function generateThermalHTML(report: string, storeName?: string): string {
+export function generateThermalHTML(report: string, storeName?: string, tenantId?: string): string {
   const sanitized = sanitizeForThermal(report);
   const escaped = escapeHTML(sanitized);
   const title = storeName ? `Corte de Caja - ${escapeHTML(storeName)}` : 'Corte de Caja';
+  // 🤖 [IA] - v3.6.1: Encabezado tenant-aware para trazabilidad de sucursal
+  const tenantHeader = tenantId
+    ? `<div class="tenant-id">Sucursal ID: ${escapeHTML(tenantId)}</div>`
+    : '';
 
   return `<!DOCTYPE html>
 <html lang="es">
@@ -152,6 +158,13 @@ export function generateThermalHTML(report: string, storeName?: string): string 
       font-family: inherit;
       font-size: inherit;
       margin: 0;
+    }
+    .tenant-id {
+      font-size: 8px;
+      color: #666;
+      border-bottom: 1px dashed #ccc;
+      padding-bottom: 2mm;
+      margin-bottom: 2mm;
     }
     .no-print {
       text-align: center;
@@ -180,6 +193,7 @@ export function generateThermalHTML(report: string, storeName?: string): string 
     Imprimiendo automaticamente...<br>
     <small>Cierre esta ventana cuando termine la impresion</small>
   </div>
+  ${tenantHeader}
   <pre>${escaped}</pre>
 </body>
 </html>`;

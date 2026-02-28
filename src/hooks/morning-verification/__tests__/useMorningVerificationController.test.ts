@@ -351,11 +351,11 @@ describe('useMorningVerificationController - handleShare', () => {
 // handlePrintableReport
 // ────────────────────────────────────────────────────────────────
 
-// 🤖 [IA] - v3.6.0: Tests actualizados para impresión térmica 80mm (reemplaza downloadPrintableReport)
+// 🤖 [IA] - v3.6.1: Tests actualizados para impresión térmica 80mm con tenant-aware (tenantId = storeId)
 describe('useMorningVerificationController - handlePrintableReport', () => {
   beforeEach(() => { vi.clearAllMocks(); });
 
-  it('genera HTML térmico y abre ventana de impresión', async () => {
+  it('genera HTML térmico y abre ventana de impresión con tenantId', async () => {
     const { generateThermalHTML } = await import('@/utils/generate-thermal-print');
     const mockPrintWindow = {
       document: { write: vi.fn(), close: vi.fn() },
@@ -368,7 +368,8 @@ describe('useMorningVerificationController - handlePrintableReport', () => {
       result.current.handlePrintableReport();
     });
 
-    expect(generateThermalHTML).toHaveBeenCalledWith('MOCK_REPORT_TEXT', 'Los Heroes');
+    // 🤖 [IA] - v3.6.1: Verificar que pasa storeId como tenantId (3er argumento)
+    expect(generateThermalHTML).toHaveBeenCalledWith('MOCK_REPORT_TEXT', 'Los Heroes', 'store1');
     expect(openSpy).toHaveBeenCalledWith('', '_blank');
     expect(mockPrintWindow.document.write).toHaveBeenCalledWith('<html>Thermal Mock</html>');
     expect(mockPrintWindow.document.close).toHaveBeenCalled();

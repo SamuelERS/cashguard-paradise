@@ -216,10 +216,10 @@ export function useMorningVerificationController(
     }
   }, [report, handleCopyToClipboard]);
 
-  // 🤖 [IA] - v3.6.0: Impresión térmica 80mm (reemplaza downloadPrintableReport)
+  // 🤖 [IA] - v3.6.1: Impresión térmica 80mm con tenantId (storeId) para personalización tenant-aware
   const handlePrintableReport = useCallback(() => {
     try {
-      const html = generateThermalHTML(report, store?.name);
+      const html = generateThermalHTML(report, store?.name, storeId);
       const printWindow = window.open('', '_blank');
       if (printWindow) {
         printWindow.document.write(html);
@@ -231,7 +231,7 @@ export function useMorningVerificationController(
         description: error instanceof Error ? error.message : 'Error desconocido',
       });
     }
-  }, [report, store?.name]);
+  }, [report, store?.name, storeId]);
 
   const handleBack = useCallback(() => {
     onBack();

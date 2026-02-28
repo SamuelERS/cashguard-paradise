@@ -9,6 +9,7 @@
  * - Escenario 2: generateThermalHTML estructura (5 tests)
  * - Escenario 3: generateThermalHTML estilos térmicos (4 tests)
  * - Escenario 4: Edge cases y seguridad (4 tests)
+ * - Escenario 5: Personalización tenant-aware (4 tests)
  *
  * TDD RED phase: Todos los tests DEBEN fallar inicialmente
  * (módulo generate-thermal-print.ts aún no existe)
@@ -190,5 +191,39 @@ describe('generate-thermal-print - ESCENARIO 4: Edge cases y seguridad', () => {
   test('4.4 - incluye charset UTF-8 para caracteres especiales', () => {
     const html = generateThermalHTML('Test');
     expect(html).toMatch(/charset.*utf-8/i);
+  });
+});
+
+// ============================================================
+// ESCENARIO 5: Personalización tenant-aware (tenantId)
+// 🤖 [IA] - v3.6.1: TDD RED — Tests para uso explícito de tenantId
+// Requerido por revisión agente director: identificación de sucursal
+// en reporte impreso para trazabilidad tenant-aware
+// ============================================================
+describe('generate-thermal-print - ESCENARIO 5: Personalización tenant-aware', () => {
+
+  test('5.1 - incluye tenantId en el HTML cuando se proporciona', () => {
+    const html = generateThermalHTML('Test report', 'Los Heroes', 'los-heroes');
+    expect(html).toContain('los-heroes');
+  });
+
+  test('5.2 - genera HTML válido sin tenantId (fallback)', () => {
+    const html = generateThermalHTML('Test report', 'Los Heroes');
+    expect(html).toContain('<html');
+    expect(html).toContain('</html>');
+    expect(html).toContain('Test report');
+    // No debe contener referencia a tenantId cuando no se proporciona
+    expect(html).not.toContain('Sucursal ID');
+  });
+
+  test('5.3 - tenantId aparece con etiqueta visible para auditoría', () => {
+    const html = generateThermalHTML('Test report', 'Los Heroes', 'los-heroes');
+    // Debe tener etiqueta identificadora para el tenant
+    expect(html).toMatch(/Sucursal ID.*los-heroes/i);
+  });
+
+  test('5.4 - tenantId se escapa contra XSS', () => {
+    const html = generateThermalHTML('Test', 'Store', '<script>alert("xss")</script>');
+    expect(html).not.toContain('<script>alert("xss")</script>');
   });
 });
