@@ -792,7 +792,7 @@ export function CorteDetalle() {
             <p className="text-[10px] uppercase tracking-wide text-white/45">Δ Caja</p>
             <p
               className={`mt-0.5 text-sm tabular-nums ${
-                Math.abs(vueltoCaja.deltaTotal) < 0.0001 ? 'text-amber-300' : 'text-red-400'
+                Math.abs(vueltoCaja.deltaTotal) < 0.0001 ? 'text-green-400' : vueltoCaja.deltaTotal > 0 ? 'text-amber-300' : 'text-red-400'
               }`}
             >
               {formatSignedCurrency(vueltoCaja.deltaTotal)}
@@ -821,14 +821,14 @@ export function CorteDetalle() {
                   : row.status === 'FALTANTE'
                     ? 'FALTA'
                     : 'SOBRA';
-                const statusColorClass = row.status === 'EXACTO' ? 'text-amber-300' : 'text-red-400';
+                const statusColorClass = row.status === 'EXACTO' ? 'text-green-400' : row.status === 'SOBRANTE' ? 'text-amber-300' : 'text-red-400';
                 const faltanteValor = row.status === 'SOBRANTE' ? `+${row.delta}` : `${row.missing}`;
                 const conteoGeneral = datos.cashCount[row.stepKey] ?? 0;
                 const vueltoRow = vueltoCajaByStep.get(row.stepKey);
                 const debeQuedar = vueltoRow?.expected ?? Math.max(conteoGeneral - row.expected, 0);
                 const quedoCaja = vueltoRow?.actual ?? Math.max(conteoGeneral - row.delivered, 0);
                 const deltaCaja = vueltoRow?.delta ?? (quedoCaja - debeQuedar);
-                const deltaCajaColorClass = deltaCaja === 0 ? 'text-amber-300' : 'text-red-400';
+                const deltaCajaColorClass = deltaCaja === 0 ? 'text-green-400' : deltaCaja > 0 ? 'text-amber-300' : 'text-red-400';
                 const deltaCajaTexto = deltaCaja > 0 ? `+${deltaCaja}` : `${deltaCaja}`;
 
                 return (
@@ -943,8 +943,8 @@ export function CorteDetalle() {
     const mostrarColumnaIzquierda = denominacionesConDatos.length > 0;
     const mostrarColumnaDerecha = pagosConValor.length > 0 || vueltoCaja.rows.length > 0;
     const diferenciaVueltoColorClase = Math.abs(vueltoCaja.deltaTotal) < 0.0001
-      ? 'text-amber-300'
-      : 'text-red-400';
+      ? 'text-green-400'
+      : vueltoCaja.deltaTotal > 0 ? 'text-amber-300' : 'text-red-400';
 
     operationalCards.push({
       key: 'composicion-entrega',
@@ -1066,7 +1066,7 @@ export function CorteDetalle() {
                         </thead>
                         <tbody>
                           {vueltoCaja.rows.map((row) => {
-                            const statusColorClass = row.status === 'EXACTO' ? 'text-amber-300' : 'text-red-400';
+                            const statusColorClass = row.status === 'EXACTO' ? 'text-green-400' : row.status === 'SOBRANTE' ? 'text-amber-300' : 'text-red-400';
                             const deltaTexto = row.delta > 0 ? `+${row.delta}` : `${row.delta}`;
                             return (
                               <tr key={row.stepKey} className="border-t border-white/[0.06]">
