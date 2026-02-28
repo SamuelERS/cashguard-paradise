@@ -124,14 +124,25 @@ describe('CortesResumen — analytics layout', () => {
     expect(screen.getByText('Exactos')).toBeInTheDocument();
   });
 
-  // T5: Estado datos OK → sucursales renderizan
-  it('renderiza filas por sucursal con nombres', () => {
+  // T5: Estado datos OK → sucursales renderizan sin tabla horizontal
+  it('renderiza sucursales en formato legible sin duplicados ni tabla ancha', () => {
     mockReturn = { kpi: KPI_FIXTURE, cargando: false, error: null, recargar: vi.fn() };
     render(<CortesResumen />);
 
     expect(screen.getByText(/por sucursal/i)).toBeInTheDocument();
-    expect(screen.getByText('Los Héroes')).toBeInTheDocument();
-    expect(screen.getByText('Plaza Merliot')).toBeInTheDocument();
+    expect(screen.getAllByText('Los Héroes')).toHaveLength(1);
+    expect(screen.getAllByText('Plaza Merliot')).toHaveLength(1);
+    expect(screen.queryByRole('table')).not.toBeInTheDocument();
+  });
+
+  it('usa layout de una columna y filas compactas para evitar huecos visuales', () => {
+    mockReturn = { kpi: KPI_FIXTURE, cargando: false, error: null, recargar: vi.fn() };
+    render(<CortesResumen />);
+
+    const grid = screen.getByTestId('sucursal-grid');
+    expect(grid).toHaveClass('grid-cols-1');
+    expect(screen.getAllByTestId('sucursal-metrics')).toHaveLength(2);
+    expect(screen.getAllByTestId('sucursal-metric-row')).toHaveLength(8);
   });
 
   // T6: Filtros de fecha renderizan
@@ -142,5 +153,20 @@ describe('CortesResumen — analytics layout', () => {
     expect(screen.getByText(/desde/i)).toBeInTheDocument();
     expect(screen.getByText(/hasta/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/recargar datos/i)).toBeInTheDocument();
+  });
+
+  it('muestra bloque de alertas operativas para lectura rápida', () => {
+    mockReturn = { kpi: KPI_FIXTURE, cargando: false, error: null, recargar: vi.fn() };
+    render(<CortesResumen />);
+
+    expect(screen.getByText(/alertas operativas/i)).toBeInTheDocument();
+  });
+
+  it('renderiza acciones rápidas de periodo para filtrar', () => {
+    mockReturn = { kpi: KPI_FIXTURE, cargando: false, error: null, recargar: vi.fn() };
+    render(<CortesResumen />);
+
+    expect(screen.getByRole('button', { name: /hoy/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /últimos 7 días/i })).toBeInTheDocument();
   });
 });
