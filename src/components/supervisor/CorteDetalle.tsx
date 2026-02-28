@@ -68,6 +68,20 @@ const COIN_KEYS: ReadonlyArray<keyof CashCount> = [
   'dollarCoin',
 ];
 
+// ---------------------------------------------------------------------------
+// Helpers semáforo ternario  (EXACTO → verde, SOBRANTE → ámbar, FALTANTE → rojo)
+// ---------------------------------------------------------------------------
+
+function semaforoColorPorDelta(delta: number): string {
+  if (Math.abs(delta) < 0.0001) return 'text-green-400';
+  return delta > 0 ? 'text-amber-300' : 'text-red-400';
+}
+
+function semaforoColorPorStatus(status: 'EXACTO' | 'FALTANTE' | 'SOBRANTE'): string {
+  if (status === 'EXACTO') return 'text-green-400';
+  return status === 'SOBRANTE' ? 'text-amber-300' : 'text-red-400';
+}
+
 const BILL_KEYS: ReadonlyArray<keyof CashCount> = [
   'bill1',
   'bill5',
@@ -791,9 +805,7 @@ export function CorteDetalle() {
           <div className="rounded-lg border border-white/[0.08] bg-black/20 px-2.5 py-1.5">
             <p className="text-[10px] uppercase tracking-wide text-white/45">Δ Caja</p>
             <p
-              className={`mt-0.5 text-sm tabular-nums ${
-                Math.abs(vueltoCaja.deltaTotal) < 0.0001 ? 'text-green-400' : vueltoCaja.deltaTotal > 0 ? 'text-amber-300' : 'text-red-400'
-              }`}
+              className={`mt-0.5 text-sm tabular-nums ${semaforoColorPorDelta(vueltoCaja.deltaTotal)}`}
             >
               {formatSignedCurrency(vueltoCaja.deltaTotal)}
             </p>
@@ -821,14 +833,14 @@ export function CorteDetalle() {
                   : row.status === 'FALTANTE'
                     ? 'FALTA'
                     : 'SOBRA';
-                const statusColorClass = row.status === 'EXACTO' ? 'text-green-400' : row.status === 'SOBRANTE' ? 'text-amber-300' : 'text-red-400';
+                const statusColorClass = semaforoColorPorStatus(row.status);
                 const faltanteValor = row.status === 'SOBRANTE' ? `+${row.delta}` : `${row.missing}`;
                 const conteoGeneral = datos.cashCount[row.stepKey] ?? 0;
                 const vueltoRow = vueltoCajaByStep.get(row.stepKey);
                 const debeQuedar = vueltoRow?.expected ?? Math.max(conteoGeneral - row.expected, 0);
                 const quedoCaja = vueltoRow?.actual ?? Math.max(conteoGeneral - row.delivered, 0);
                 const deltaCaja = vueltoRow?.delta ?? (quedoCaja - debeQuedar);
-                const deltaCajaColorClass = deltaCaja === 0 ? 'text-green-400' : deltaCaja > 0 ? 'text-amber-300' : 'text-red-400';
+                const deltaCajaColorClass = semaforoColorPorDelta(deltaCaja);
                 const deltaCajaTexto = deltaCaja > 0 ? `+${deltaCaja}` : `${deltaCaja}`;
 
                 return (
@@ -942,9 +954,7 @@ export function CorteDetalle() {
   ) {
     const mostrarColumnaIzquierda = denominacionesConDatos.length > 0;
     const mostrarColumnaDerecha = pagosConValor.length > 0 || vueltoCaja.rows.length > 0;
-    const diferenciaVueltoColorClase = Math.abs(vueltoCaja.deltaTotal) < 0.0001
-      ? 'text-green-400'
-      : vueltoCaja.deltaTotal > 0 ? 'text-amber-300' : 'text-red-400';
+    const diferenciaVueltoColorClase = semaforoColorPorDelta(vueltoCaja.deltaTotal);
 
     operationalCards.push({
       key: 'composicion-entrega',
@@ -1066,7 +1076,7 @@ export function CorteDetalle() {
                         </thead>
                         <tbody>
                           {vueltoCaja.rows.map((row) => {
-                            const statusColorClass = row.status === 'EXACTO' ? 'text-green-400' : row.status === 'SOBRANTE' ? 'text-amber-300' : 'text-red-400';
+                            const statusColorClass = semaforoColorPorStatus(row.status);
                             const deltaTexto = row.delta > 0 ? `+${row.delta}` : `${row.delta}`;
                             return (
                               <tr key={row.stepKey} className="border-t border-white/[0.06]">
